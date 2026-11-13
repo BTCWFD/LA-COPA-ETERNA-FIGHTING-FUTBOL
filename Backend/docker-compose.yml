@@ -1,0 +1,78 @@
+version: "3.9"
+
+services:
+  arbitration-gateway:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: saf-arbitration-gateway
+    restart: unless-stopped
+    ports:
+      - "8080:8080"
+    environment:
+      PORT: "8080"
+      SAF_HMAC_SECRET: "${SAF_HMAC_SECRET:-LA_COPA_ETERNA_CONMEBOL_PROD_KEY_2026}"
+      POSTGRES_DSN: "postgres://saf_admin:saf_secret_2026@postgres-db:5432/saf_esports?sslmode=disable"
+      REDIS_ADDR: "redis-leaderboard:6379"
+      S3_ENDPOINT: "http://minio-replays:9000"
+      S3_BUCKET_REPLAYS: "saf-replays-conmebol"
+    depends_on:
+      postgres-db:
+        condition: service_healthy
+      redis-leaderboard:
+        condition: service_healthy
+      minio-replays:
+        condition: service_started
+
+  postgres-db:
+    image: postgres:16-alpine
+    container_name: saf-postgres-db
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: saf_admin
+      POSTGRES_PASSWORD: saf_secret_2026
+      POSTGRES_DB: saf_esports
+    ports:
+      - "5432:5432"
+    volumes:
+      - ./sql/schema.sql:/docker-entrypoint-initdb.d/01_schema.sql:ro
+      - pg_esports_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U saf_admin -d saf_esports"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+
+  redis-leaderboard:
+    image: redis:7-alpine
+    container_name: saf-redis-leaderboard
+    restart: unless-stopped
+    command: ["redis-server", "--appendonly", "yes"]
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_leaderboard_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+
+  minio-replays:
+    image: minio/minio:latest
+    container_name: saf-minio-replays
+    restart: unless-stopped
+    command: server /data --console-address ":9001"
+    environment:
+      MINIO_ROOT_USER: saf_minio_admin
+      MINIO_ROOT_PASSWORD: saf_minio_password_2026
+    ports:
+      - "9000:9000"
+      - "9001:9001"
+    volumes:
+      - minio_replay_storage:/data
+
+volumes:
+  pg_esports_data:
+  redis_leaderboard_data:
+  minio_replay_storage:

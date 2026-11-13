@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="utf-8"?>
+<WwiseDocument Type="WorkUnit" ID="{9CE6AF36-3DF7-4DA3-8BF5-0AFD8736C22D}" SchemaVersion="119">
+	<Busses>
+		<WorkUnit Name="MasterMixerHierarchy" ID="{19301950-CA4A-4B10-9F00-CONMEBOL2026}" PersistMode="Standalone">
+			<ChildrenList>
+				<Bus Name="Master_Audio_Bus" ID="{A0000001-0000-4000-8000-000000000001}">
+					<PropertyList>
+						<Property Name="BusVolume" Type="Real64" Value="0"/>
+						<Property Name="CenterPercentage" Type="int32" Value="100"/>
+					</PropertyList>
+					<ReferenceList>
+						<Reference Name="Effect0">
+							<Custom>
+								<Effect Name="Master_Peak_Limiter_Minus1dBFS_14LUFS" ID="{E0000001-0000-4000-8000-000000000099}" PluginName="Wwise Peak Limiter" CompanyID="0" PluginID="110" PluginType="3">
+									<PropertyList>
+										<Property Name="OutputGain" Type="Real32" Value="0"/>
+										<Property Name="Ratio" Type="Real32" Value="50"/>
+										<Property Name="ReleaseTime" Type="Real32" Value="0.05"/>
+										<Property Name="Threshold" Type="Real32" Value="-1.0"/>
+									</PropertyList>
+								</Effect>
+							</Custom>
+						</Reference>
+					</ReferenceList>
+					<ChildrenList>
+						<Bus Name="BUS_COMBAT_CRITICAL" ID="{B0000001-0000-4000-8000-000000000100}">
+							<PropertyList>
+								<Property Name="MaxDuckVolume" Type="Real64" Value="-96"/>
+								<Property Name="Priority" Type="int16" Value="100"/>
+								<Property Name="RecoveryTime" Type="Real64" Value="0.18"/>
+							</PropertyList>
+							<DuckingList>
+								<DuckItem>
+									<BusRef Name="BUS_INTERACTIVE_MUSIC" ID="{B0000001-0000-4000-8000-000000000050}"/>
+									<DuckingParam>
+										<Volume>-6.0</Volume>
+										<FadeOutTime>0.005</FadeOutTime>
+										<FadeInTime>0.180</FadeInTime>
+										<FadeCurve>FadeLog3</FadeCurve>
+									</DuckingParam>
+								</DuckItem>
+								<DuckItem>
+									<BusRef Name="BUS_STADIUM_CROWD_3D" ID="{B0000001-0000-4000-8000-000000000060}"/>
+									<DuckingParam>
+										<Volume>-6.0</Volume>
+										<FadeOutTime>0.005</FadeOutTime>
+										<FadeInTime>0.180</FadeInTime>
+										<FadeCurve>FadeLog3</FadeCurve>
+									</DuckingParam>
+								</DuckItem>
+							</DuckingList>
+						</Bus>
+						<Bus Name="BUS_COMMENTARY_BOOTH" ID="{B0000001-0000-4000-8000-000000000085}">
+							<PropertyList>
+								<Property Name="Priority" Type="int16" Value="85"/>
+								<Property Name="RecoveryTime" Type="Real64" Value="0.35"/>
+							</PropertyList>
+							<DuckingList>
+								<DuckItem>
+									<BusRef Name="BUS_INTERACTIVE_MUSIC" ID="{B0000001-0000-4000-8000-000000000050}"/>
+									<DuckingParam>
+										<Volume>-4.5</Volume>
+										<FadeOutTime>0.020</FadeOutTime>
+										<FadeInTime>0.350</FadeInTime>
+										<FadeCurve>FadeSCurve</FadeCurve>
+									</DuckingParam>
+								</DuckItem>
+								<DuckItem>
+									<BusRef Name="BUS_STADIUM_CROWD_3D" ID="{B0000001-0000-4000-8000-000000000060}"/>
+									<DuckingParam>
+										<Volume>-4.5</Volume>
+										<FadeOutTime>0.020</FadeOutTime>
+										<FadeInTime>0.350</FadeInTime>
+										<FadeCurve>FadeSCurve</FadeCurve>
+									</DuckingParam>
+								</DuckItem>
+							</DuckingList>
+						</Bus>
+						<Bus Name="BUS_STADIUM_CROWD_3D" ID="{B0000001-0000-4000-8000-000000000060}">
+							<PropertyList>
+								<Property Name="ChannelConfigOverride" Type="int64" Value="520246"/>
+								<Property Name="Priority" Type="int16" Value="60"/>
+							</PropertyList>
+						</Bus>
+						<Bus Name="BUS_INTERACTIVE_MUSIC" ID="{B0000001-0000-4000-8000-000000000050}">
+							<PropertyList>
+								<Property Name="Priority" Type="int16" Value="50"/>
+							</PropertyList>
+						</Bus>
+						<Bus Name="BUS_HARDWARE_AUX" ID="{B0000001-0000-4000-8000-000000000095}">
+							<PropertyList>
+								<Property Name="Lowpass" Type="int16" Value="45"/>
+								<Property Name="Highpass" Type="int16" Value="15"/>
+								<Property Name="Priority" Type="int16" Value="95"/>
+							</PropertyList>
+						</Bus>
+					</ChildrenList>
+				</Bus>
+			</ChildrenList>
+		</WorkUnit>
+	</Busses>
+</WwiseDocument>

@@ -1,0 +1,1325 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>LA COPA ETERNA: SANGRE Y POTRERO — AAA Command Center & Interactive Lab</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+
+  <!-- ========================================================================
+       HEADER GLOBAL Y TELEMETRÍA EN TIEMPO REAL
+       ======================================================================== -->
+  <header class="top-header">
+    <div class="brand-block">
+      <div class="brand-crest">CE</div>
+      <div class="brand-titles">
+        <h1>
+          LA COPA ETERNA: SANGRE Y POTRERO
+          <span class="badge-engine">UE 5.4+ SouthAmericaFightersCore</span>
+        </h1>
+        <div class="subtitle">AAA Deterministic 2.5D Fighting Engine — Interactive Engineering, Netcode & Audio Lab</div>
+      </div>
+    </div>
+
+    <div class="telemetry-strip">
+      <div class="telemetry-pill">
+        <span class="dot" id="hdr-fps-dot"></span>
+        <span>SIM LOCK: <strong id="hdr-fps">60.0 FPS</strong> (16.66ms)</span>
+      </div>
+      <div class="telemetry-pill">
+        <span>MATH: <strong>FFixedPoint Q32.32</strong> (int64)</span>
+      </div>
+      <div class="telemetry-pill">
+        <span>FLETCHER-32: <strong id="hdr-checksum">0x9A4F2C01</strong></span>
+      </div>
+      <div class="telemetry-pill">
+        <span class="dot" id="hdr-net-dot"></span>
+        <span>GGPO EOS: <strong id="hdr-net-status">SYNC OK (1f RB)</strong></span>
+      </div>
+      <button class="btn btn-cyan btn-sm" id="btn-eos-modal" title="Abrir Filtro Pre-Partida CommonUI (EOS Matchmaking)">
+        📡 Matchmaking EOS
+      </button>
+      <button class="btn btn-turf btn-sm" id="btn-toggle-band" title="Activar/Pausar Banda Rítmica de Tribuna CONMEBOL (Web Audio API)">
+        🥁 Hinchada: OFF
+      </button>
+      <button class="btn btn-gold btn-sm" id="btn-toggle-tts" title="Activar/Silenciar Locución en Vivo del Relator Sudamericano">
+        🎙️ Relator Voz: ON
+      </button>
+      <button class="btn btn-gold btn-sm" id="btn-toggle-audio" title="Activar/Silenciar Sintetizador Web Audio API">
+        🔊 SFX: ON
+      </button>
+    </div>
+  </header>
+
+  <!-- ========================================================================
+       NAVEGACIÓN DE LAS 5 SUITES INTERACTIVAS
+       ======================================================================== -->
+  <nav class="nav-tabs" id="main-tabs">
+    <button class="tab-btn active" data-tab="tab1">
+      <span class="tab-idx">TAB 01</span>
+      Visor Frame Data, Hitboxes & Roster CONMEBOL (60 FPS)
+    </button>
+    <button class="tab-btn" data-tab="tab2">
+      <span class="tab-idx">TAB 02</span>
+      Kernel Determinista (Q32.32, Ring Buffer & Prioridades FGC)
+    </button>
+    <button class="tab-btn" data-tab="tab3">
+      <span class="tab-idx">TAB 03</span>
+      El Potrero (Multi-Slot Dummy), GGPO Netcode & Replay Takeover
+    </button>
+    <button class="tab-btn" data-tab="tab4">
+      <span class="tab-idx">TAB 04</span>
+      Arte Técnico, CommonUI, DualSense & Estudio Wwise
+    </button>
+    <button class="tab-btn" data-tab="tab5">
+      <span class="tab-idx">TAB 05</span>
+      Centro de Arbitraje eSports (Anti-Cheat, .safreplay & Glicko-2)
+    </button>
+    <button class="tab-btn" data-tab="tab6">
+      <span class="tab-idx" style="background:var(--crimson); color:#fff; border-color:#ff8a9f;">TAB 06</span>
+      ⚽ MODO VERSUS 1v1 JUGABLE EN TIEMPO REAL (60 FPS)
+    </button>
+    <button class="tab-btn" data-tab="tab7">
+      <span class="tab-idx" style="background:var(--purple); color:#06080d; border-color:#d1b3ff; font-weight:800;">TAB 07</span>
+      🧊 ESTUDIO 3D: RIGS, CHAOS CLOTH & VISOR glTF (60 FPS)
+    </button>
+  </nav>
+
+  <!-- ========================================================================
+       CONTENEDOR PRINCIPAL DE LABORATORIOS
+       ======================================================================== -->
+  <main class="workspace">
+
+    <!-- ======================================================================
+         TAB 1: VISOR TÉCNICO DE FRAME DATA, HITBOXES & ROSTER CONMEBOL (60 FPS)
+         ====================================================================== -->
+    <section class="tab-pane active" id="tab1">
+      <div class="grid-layout grid-tab1">
+
+        <!-- Columna Izquierda: Selector de las 16 Leyendas + Boss y Estadísticas -->
+        <div class="panel">
+          <div class="panel-header">
+            <div>
+              <div class="panel-title">⚽ Roster CONMEBOL (16 Leyendas + Boss)</div>
+              <div class="panel-subtitle">DT_SouthAmericaRoster.json</div>
+            </div>
+            <span class="badge-engine" id="t1-char-code">FENOMENO_BR</span>
+          </div>
+
+          <div class="roster-grid" id="t1-roster-grid">
+            <!-- Poblado dinámicamente por JS -->
+          </div>
+
+          <div class="panel-header" style="margin-top:4px;">
+            <div class="panel-title">📊 Atributos Base & Física Q32.32</div>
+            <span class="panel-subtitle" id="t1-char-era">1994-2006</span>
+          </div>
+
+          <div class="stats-box">
+            <div class="stat-item">
+              <div class="st-label">Max Health (HP)</div>
+              <div class="st-val" id="t1-stat-hp">10,000</div>
+            </div>
+            <div class="stat-item">
+              <div class="st-label">Stun Threshold</div>
+              <div class="st-val" id="t1-stat-stun">1,000</div>
+            </div>
+            <div class="stat-item">
+              <div class="st-label">Forward Dash</div>
+              <div class="st-val" id="t1-stat-fdash">15 Frames</div>
+            </div>
+            <div class="stat-item">
+              <div class="st-label">Back Dash</div>
+              <div class="st-val" id="t1-stat-bdash">21 Frames</div>
+            </div>
+          </div>
+
+          <div class="passive-banner">
+            <div style="font-weight:800; color:var(--gold-bright); margin-bottom:2px;" id="t1-passive-title">
+              Pasiva: Arrancada Imparable (Super Armor)
+            </div>
+            <div style="color:var(--text-main);" id="t1-passive-desc">
+              Los primeros 4 frames de su Forward Dash absorben 1 golpe de proyectil o poke ligero sin detener el avance.
+            </div>
+          </div>
+        </div>
+
+        <!-- Columna Central: Simulador Canvas 60 FPS + Controles Frame-by-Frame + Frame Meter -->
+        <div class="panel">
+          <div class="panel-header">
+            <div>
+              <div class="panel-title">🎯 Visor Determinista AABB & Frame Meter (60 Hz)</div>
+              <div class="panel-subtitle" id="t1-active-move-label">Movimiento Activo: 5LP (Startup 4f | Active 3f | Recovery 7f)</div>
+            </div>
+            <div class="btn-group">
+              <button class="btn btn-gold btn-sm" id="t1-btn-play">⏸ Pause</button>
+              <button class="btn btn-sm" id="t1-btn-prev">⏮ Frame -1</button>
+              <button class="btn btn-sm" id="t1-btn-next">⏭ Frame +1</button>
+              <button class="btn btn-cyan btn-sm" id="t1-btn-reset">↺ Reiniciar</button>
+            </div>
+          </div>
+
+          <div class="canvas-wrap">
+            <canvas id="t1-canvas" width="760" height="360"></canvas>
+          </div>
+
+          <div class="box-legend">
+            <div class="legend-item"><span class="swatch" style="background:#f5c451;"></span> Pushbox (Colisión Física)</div>
+            <div class="legend-item"><span class="swatch" style="background:#00e676;"></span> Hurtbox (Vulnerable)</div>
+            <div class="legend-item"><span class="swatch" style="background:#00e5ff;"></span> Hurtbox Invulnerable / High-Crush</div>
+            <div class="legend-item"><span class="swatch" style="background:#ff2a54;"></span> Hitbox Activa (Daño)</div>
+            <div class="legend-item"><span class="swatch" style="background:#ff9100;"></span> ProjectileBox (Balón)</div>
+            <label style="margin-left:auto; display:flex; align-items:center; gap:5px; cursor:pointer;">
+              <input type="checkbox" id="t1-chk-opponent" checked /> Mostrar Dummy & Vector Distancia
+            </label>
+          </div>
+
+          <div class="frame-meter-container">
+            <div style="display:flex; justify-content:space-between; align-items:center; font-size:11px; font-family:var(--font-mono);">
+              <span><strong>FRAME METER (60 CUADROS):</strong> Clic en cualquier cuadro para inspección exacta</span>
+              <span id="t1-frame-readout" style="color:var(--gold-bright);">FRAME ACTUAL: 01 / 60 [STARTUP]</span>
+            </div>
+            <div class="frame-meter-strip" id="t1-frame-strip">
+              <!-- 60 celdas generadas por JS -->
+            </div>
+            <div style="display:flex; gap:14px; margin-top:7px; font-size:10.5px; color:var(--text-muted); font-family:var(--font-mono);">
+              <span>🟢 Startup</span>
+              <span>🔴 Active</span>
+              <span>🔵 Recovery</span>
+              <span>🟨 Barra Sup: Ventana Cancel (CH/SP/SU/GB)</span>
+              <span>🟦 Barra Inf: Invulnerabilidad / Armor / Crush</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Columna Derecha: Tabla Completa de Movimientos y Propiedades de Cancelación -->
+        <div class="panel">
+          <div class="panel-header">
+            <div>
+              <div class="panel-title">📋 Catálogo de Frame Data</div>
+              <div class="panel-subtitle">Universales + Especiales + Grito Sagrado</div>
+            </div>
+            <span class="badge-engine" id="t1-move-count">15 Moves</span>
+          </div>
+
+          <div class="table-scroll">
+            <table class="data-table" id="t1-move-table">
+              <thead>
+                <tr>
+                  <th>Notación</th>
+                  <th>Movimiento</th>
+                  <th>S / A / R</th>
+                  <th>Block</th>
+                  <th>Hit</th>
+                  <th>Daño</th>
+                </tr>
+              </thead>
+              <tbody id="t1-move-tbody">
+                <!-- Poblado por JS -->
+              </tbody>
+            </table>
+          </div>
+
+          <div class="slot-card">
+            <div style="font-weight:800; color:var(--gold); font-size:11.5px;">
+              INSPECTOR DE FLAGS DE CANCELACIÓN (`ECancelWindowFlags`)
+            </div>
+            <div class="kv-row">
+              <span>MoveID Interno:</span>
+              <span id="t1-insp-id">5LP_UNIVERSAL</span>
+            </div>
+            <div class="kv-row">
+              <span>Total Animación:</span>
+              <span id="t1-insp-total">14 Frames (233.3 ms)</span>
+            </div>
+            <div class="kv-row">
+              <span>Bitmask CancelFlags:</span>
+              <span id="t1-insp-flags">0x07 (CH | SP | SU)</span>
+            </div>
+            <div class="kv-row">
+              <span>Ventana Cancelación:</span>
+              <span id="t1-insp-win">Frames 4 a 10 (6f duración)</span>
+            </div>
+            <div class="kv-row">
+              <span>Propiedad Hurtbox:</span>
+              <span id="t1-insp-invuln">Estándar Vulnerable</span>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ======================================================================
+         TAB 2: DEPURADOR DE KERNEL DETERMINISTA (Q32.32, RING BUFFER & FGC)
+         ====================================================================== -->
+    <section class="tab-pane" id="tab2">
+      <div class="grid-layout grid-tab2">
+
+        <!-- Izquierda: Ring Buffer de 60 Frames, Limpieza SOCD y Parser de Comandos -->
+        <div class="panel">
+          <div class="panel-header">
+            <div>
+              <div class="panel-title">🕹️ FFightingInputRingBuffer (60 Frames @ 60Hz) & Parser FGC</div>
+              <div class="panel-subtitle">Inversión de Lado Automática + Limpieza SOCD Neutral + Prioridad Anti-Overlap</div>
+            </div>
+            <div class="btn-group">
+              <button class="btn btn-gold btn-sm" id="t2-btn-side">Lado Actual: P1 (Mirando Derecha ▶)</button>
+              <button class="btn btn-sm" id="t2-btn-clear-buf">Limpiar Buffer</button>
+            </div>
+          </div>
+
+          <!-- Botones de Prueba Rápida de Ingeniería -->
+          <div class="slot-card">
+            <div style="font-size:11px; color:var(--text-muted); font-weight:700;">
+              ⚡ INYECTORES DE CASOS DE PRUEBA DE INGENIERÍA (`FightingInputParser.cpp`):
+            </div>
+            <div class="btn-group">
+              <button class="btn btn-crimson" id="t2-macro-6236">
+                🔥 Conflicto 6236+HP (DP vs QCF Priority)
+              </button>
+              <button class="btn btn-turf" id="t2-macro-41236">
+                🧲 41236+LP (HCF Tolerante sin diagonal 1: 4→2→3→6)
+              </button>
+              <button class="btn btn-gold" id="t2-macro-ult">
+                ⚡ 214214+HP+SK (Ultimate Nivel 3 - 26f Window)
+              </button>
+              <button class="btn btn-cyan" id="t2-macro-socd">
+                🛡️ Prueba SOCD (Izquierda + Derecha + Arriba + Abajo = 5 Neutro)
+              </button>
+            </div>
+          </div>
+
+          <!-- Pad Arcade Interactivo + Teclado -->
+          <div class="arcade-pad">
+            <div>
+              <div style="font-size:10px; color:var(--text-muted); margin-bottom:4px; text-align:center;">
+                DIRECCIONES (WASD / Flechas)
+              </div>
+              <div class="dpad-grid">
+                <button class="btn t2-dir-btn" data-dir="7">7 ↖</button>
+                <button class="btn t2-dir-btn" data-dir="8">8 ↑</button>
+                <button class="btn t2-dir-btn" data-dir="9">9 ↗</button>
+                <button class="btn t2-dir-btn" data-dir="4">4 ←</button>
+                <button class="btn btn-gold t2-dir-btn" data-dir="5">5 •</button>
+                <button class="btn t2-dir-btn" data-dir="6">6 →</button>
+                <button class="btn t2-dir-btn" data-dir="1">1 ↙</button>
+                <button class="btn t2-dir-btn" data-dir="2">2 ↓</button>
+                <button class="btn t2-dir-btn" data-dir="3">3 ↘</button>
+              </div>
+            </div>
+
+            <div>
+              <div style="font-size:10px; color:var(--text-muted); margin-bottom:4px; text-align:center;">
+                5 BOTONES DE ATAQUE (J, K, L, U, I)
+              </div>
+              <div class="attack-btns">
+                <button class="btn btn-cyan t2-atk-btn" data-btn="LP">LP</button>
+                <button class="btn btn-gold t2-atk-btn" data-btn="MP">MP</button>
+                <button class="btn btn-crimson t2-atk-btn" data-btn="HP">HP</button>
+                <button class="btn btn-turf t2-atk-btn" data-btn="SK">SK ⚽</button>
+                <button class="btn t2-atk-btn" style="border-color:var(--purple); color:var(--purple);" data-btn="GB">GB ⚡</button>
+                <button class="btn btn-gold t2-atk-btn" data-btn="HP+SK">HP+SK</button>
+              </div>
+            </div>
+
+            <div style="flex:1; min-width:220px;">
+              <div class="slot-card" style="background:#090e17;">
+                <div style="font-size:11px; color:var(--gold); font-weight:800;">RESULTADO DEL PARSER DETERMINISTA:</div>
+                <div style="font-size:15px; font-weight:900; color:var(--turf); font-family:var(--font-mono);" id="t2-parsed-result">
+                  [IDLE / NEUTRAL 5]
+                </div>
+                <div style="font-size:11px; color:var(--text-muted); font-family:var(--font-mono);" id="t2-parsed-reason">
+                  Jerarquía: 214214 (Ult) > 236236 (Sup) > 41236 (HCF) > 623 (DP) > 236 (QCF) > 214 (QCB)
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div style="display:flex; justify-content:space-between; align-items:center;">
+            <span style="font-size:11px; font-weight:700; color:var(--gold);">
+              HISTORIAL CIRCULAR DE 60 FRAMES (Frame 0 = Más Reciente):
+            </span>
+            <span style="font-size:11px; font-family:var(--font-mono); color:var(--cyan);" id="t2-socd-status">
+              SOCD Cleaner: ACTIVE (L+R=5, U+D=5)
+            </span>
+          </div>
+
+          <div class="ring-buffer-grid" id="t2-ring-grid">
+            <!-- 60 slots generados por JS -->
+          </div>
+        </div>
+
+        <!-- Derecha: Inspector Q32.32 de 64 bits y Checksum Fletcher-32 -->
+        <div class="panel">
+          <div class="panel-header">
+            <div>
+              <div class="panel-title">🔬 Inspector Matemático FFixedPoint (Q32.32) & Fletcher-32</div>
+              <div class="panel-subtitle">FixedPointTypes.h — Cero Float IEEE-754 en Simulación</div>
+            </div>
+            <span class="badge-engine">int64_t RawValue</span>
+          </div>
+
+          <!-- Controles de conversión Q32.32 -->
+          <div class="slot-card">
+            <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px;">
+              <div>
+                <label style="font-size:11px; color:var(--text-muted);">Posición X (Milímetros / Metros):</label>
+                <input type="range" id="t2-q-pos" min="-12500" max="12500" step="25" value="4500" />
+                <div style="font-family:var(--font-mono); font-size:11px; color:var(--cyan); margin-top:2px;" id="t2-q-pos-lbl">
+                  4500 mm (4.500 m)
+                </div>
+              </div>
+              <div>
+                <label style="font-size:11px; color:var(--text-muted);">Velocidad X por Frame (mm/frame):</label>
+                <input type="range" id="t2-q-vel" min="-1500" max="1500" step="5" value="340" />
+                <div style="font-family:var(--font-mono); font-size:11px; color:var(--gold); margin-top:2px;" id="t2-q-vel-lbl">
+                  340 mm/f (0.340 m/f)
+                </div>
+              </div>
+            </div>
+
+            <div class="kv-row" style="margin-top:6px;">
+              <span>Valor Entero 64-bit (`RawValue`):</span>
+              <span id="t2-q-raw">19327352832</span>
+            </div>
+            <div class="kv-row">
+              <span>Representación Hexadecimal (64-bit):</span>
+              <span id="t2-q-hex" style="color:var(--cyan);">0x00000004_80000000</span>
+            </div>
+            <div class="kv-row">
+              <span>Parte Entera Q32 (Bits 63..32) | Fracción (Bits 31..0):</span>
+              <span id="t2-q-parts">Int: 4 | Frac: 0x80000000 (0.500000)</span>
+            </div>
+          </div>
+
+          <div style="font-size:11px; font-weight:700; color:var(--text-muted);">
+            MAPA DE 64 BITS EN TIEMPO REAL (<span style="color:var(--cyan);">32 Bits Enteros Con Signo</span> + <span style="color:var(--gold);">32 Bits Fraccionarios</span>):
+          </div>
+          <div class="bit-grid" id="t2-bit-grid">
+            <!-- 64 celdas de bits -->
+          </div>
+
+          <!-- Simulador de Desincronización Float vs Q32.32 -->
+          <div class="panel-header" style="margin-top:4px;">
+            <div class="panel-title">🛡️ Verificador de Estado POD & Checksum Fletcher-32</div>
+            <label style="display:flex; align-items:center; gap:6px; cursor:pointer; font-size:11px; color:var(--crimson); font-weight:800;">
+              <input type="checkbox" id="t2-chk-float-error" />
+              Simular Error Float (x86 MSVC vs PS5 Clang)
+            </label>
+          </div>
+
+          <div class="desync-banner" id="t2-desync-banner">
+            <span id="t2-desync-title">✔ DETERMINISMO GARANTIZADO — PC (x86_64) == PS5 == XBOX SERIES X</span>
+            <span id="t2-desync-hash">0x8F4C21A9</span>
+          </div>
+
+          <div class="slot-card">
+            <div class="kv-row">
+              <span>Checksum Cliente A (PC Steam - MSVC `/fp:fast`):</span>
+              <span id="t2-hash-pc" style="color:var(--turf);">0x8F4C21A9</span>
+            </div>
+            <div class="kv-row">
+              <span>Checksum Cliente B (PS5 - Clang LLVM):</span>
+              <span id="t2-hash-ps5" style="color:var(--turf);">0x8F4C21A9</span>
+            </div>
+            <div class="kv-row">
+              <span>Tamaño `FFighterDeterministicStatePOD`:</span>
+              <span>64 Bytes (Serialización `memcpy` &lt; 0.015 ms)</span>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ======================================================================
+         TAB 3: EL POTRERO DE PRUEBAS, GGPO NETCODE & REPLAY TAKEOVER
+         ====================================================================== -->
+    <section class="tab-pane" id="tab3">
+      <div class="grid-layout grid-tab3">
+
+        <!-- Izquierda: Monitor de Red GGPO y Secuenciador Multi-Slot del Dummy -->
+        <div class="panel">
+          <div class="panel-header">
+            <div>
+              <div class="panel-title">🌐 Monitor GGPO Netcode & Telemetría</div>
+              <div class="panel-subtitle">Rollback Determinista + Snapshots L3/R3</div>
+            </div>
+            <span class="badge-engine" id="t3-net-type-badge">CABLE LAN</span>
+          </div>
+
+          <div class="slot-card">
+            <div style="display:flex; justify-content:space-between; align-items:center;">
+              <span style="font-size:11px;">Ping RTT: <strong id="t3-lbl-ping">42 ms</strong></span>
+              <label style="font-size:11px; cursor:pointer; display:flex; align-items:center; gap:5px;">
+                <input type="checkbox" id="t3-chk-wifi" /> Simular Wi-Fi (Packet Burst)
+              </label>
+            </div>
+            <input type="range" id="t3-rng-ping" min="8" max="240" value="42" />
+
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-top:4px;">
+              <span style="font-size:11px;">Network Jitter: <strong id="t3-lbl-jitter">4 ms</strong></span>
+              <span style="font-size:11px; color:var(--cyan);" id="t3-lbl-rb">Rollback: 1 Frame | Delay: 1 Frame</span>
+            </div>
+            <input type="range" id="t3-rng-jitter" min="0" max="65" value="4" />
+
+            <div class="btn-group" style="margin-top:6px;">
+              <button class="btn btn-gold btn-sm" id="t3-btn-save-state">💾 Save Snapshot (L3)</button>
+              <button class="btn btn-cyan btn-sm" id="t3-btn-load-state">📂 Load Snapshot (R3)</button>
+              <button class="btn btn-crimson btn-sm" id="t3-btn-force-rb">⚡ Spike Rollback (5f)</button>
+            </div>
+          </div>
+
+          <div class="panel-header">
+            <div>
+              <div class="panel-title">🤖 Secuenciador Multi-Slot del Dummy (4 Slots)</div>
+              <div class="panel-subtitle">Pesos Porcentuales Aleatorios + Wakeup Reversal F1</div>
+            </div>
+            <button class="btn btn-turf btn-sm" id="t3-btn-roll-dummy">🎲 Ejecutar Mix-up</button>
+          </div>
+
+          <div id="t3-slots-container" style="display:flex; flex-direction:column; gap:6px;">
+            <!-- 4 Ranuras del Dummy pobladas por JS -->
+          </div>
+
+          <div class="slot-card">
+            <div style="display:flex; justify-content:space-between; align-items:center;">
+              <span style="font-size:11px; font-weight:700; color:var(--gold);">REVERSAL AUTOMÁTICO AL FRAME 1:</span>
+              <select id="t3-sel-reversal">
+                <option value="NONE">Desactivado (Solo Bloquear)</option>
+                <option value="WAKEUP_DP">On-Wakeup: 623+HP (Despeje Invulnerable)</option>
+                <option value="BLOCK_PARRY">On-Block: 5GB (Gambeta Parry 2f)</option>
+                <option value="BLOCK_SUPER">On-Block: 236236+SK (Super Nivel 1)</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <!-- Centro: Simulador 2.5D de El Potrero, Cámara Dinámica, Wall Break & Replay Takeover -->
+        <div class="panel">
+          <div class="panel-header">
+            <div>
+              <div class="panel-title">🏟️ El Potrero & Replay Theater ("Live Takeover")</div>
+              <div class="panel-subtitle" id="t3-stage-subtitle">Estadio: Templo do Maracanã (Zona A: El Círculo Central Mítico)</div>
+            </div>
+            <select id="t3-sel-stage">
+              <!-- Poblado con los 10 estadios CONMEBOL -->
+            </select>
+          </div>
+
+          <div class="canvas-wrap">
+            <canvas id="t3-canvas" width="760" height="360"></canvas>
+          </div>
+
+          <!-- Controles de Replay Takeover, Wall Break y Boss VAR Rewind -->
+          <div class="slot-card">
+            <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px;">
+              <div style="font-family:var(--font-mono); font-size:11px;">
+                MODO: <strong id="t3-mode-badge" style="color:var(--cyan);">REPLAY THEATER (GRABACIÓN DETERMINISTA)</strong>
+                | FRAME: <strong id="t3-replay-frame">240 / 600</strong>
+              </div>
+              <div class="btn-group">
+                <button class="btn btn-turf" id="t3-btn-takeover">
+                  🎮 Tomar el Control en Vivo (Live Takeover)
+                </button>
+                <button class="btn btn-gold" id="t3-btn-wallbreak">
+                  💥 Disparar Wall Break (Transición Zona B)
+                </button>
+                <button class="btn btn-crimson" id="t3-btn-var-rewind">
+                  ⏪ Boss V.A.R. Rewind (-90 Frames)
+                </button>
+              </div>
+            </div>
+            <input type="range" id="t3-rng-timeline" min="1" max="600" value="240" />
+          </div>
+        </div>
+
+        <!-- Derecha: Director de Cámara 2.5D y Estado del Escenario / Juez Supremo -->
+        <div class="panel">
+          <div class="panel-header">
+            <div>
+              <div class="panel-title">🎥 Director de Cámara 2.5D & Escenario</div>
+              <div class="panel-subtitle">FOV Dinámico + SpringArm + Muros</div>
+            </div>
+          </div>
+
+          <div class="slot-card">
+            <div class="kv-row">
+              <span>Distancia Entre Jugadores (`|P1.X - P2.X|`):</span>
+              <span id="t3-cam-dist">4.20 m</span>
+            </div>
+            <div class="kv-row">
+              <span>FOV Dinámico Interpolado:</span>
+              <span id="t3-cam-fov">62.4°</span>
+            </div>
+            <div class="kv-row">
+              <span>Profundidad SpringArm (`Z-Offset`):</span>
+              <span id="t3-cam-z">-485.0 u</span>
+            </div>
+            <div class="kv-row">
+              <span>Salud del Muro / Red (`WallHealth`):</span>
+              <span id="t3-wall-hp">3 / 3 Impactos</span>
+            </div>
+            <div class="kv-row">
+              <span>Zona Activa del Estadio:</span>
+              <span id="t3-zone-name" style="color:var(--turf);">Zona A (Cancha Principal)</span>
+            </div>
+            <div class="kv-row">
+              <span>BPM Musical Wwise del Estadio:</span>
+              <span id="t3-stage-bpm">115.0 BPM</span>
+            </div>
+          </div>
+
+          <div class="panel-header">
+            <div>
+              <div class="panel-title">👁️ Boss Final: "El Juez Supremo" (V.A.R.-ZERO)</div>
+              <div class="panel-subtitle">Simulador de Mecánicas de Jefe Final</div>
+            </div>
+          </div>
+
+          <div class="slot-card">
+            <div style="font-size:11.5px; color:var(--text-main);">
+              <strong>Condición de Victoria:</strong> Conecta <strong>3 Gambetas Perfectas (Parry 2f)</strong> contra sus lásers de <em>Línea de Offside</em> para causar <code>SYSTEM OVERLOAD</code> y habilitar el Ultimate Cooperativo CONMEBOL.
+            </div>
+            <div class="kv-row" style="margin-top:4px;">
+              <span>Gambetas Perfectas Acumuladas:</span>
+              <span id="t3-boss-parries" style="color:var(--gold-bright);">0 / 3</span>
+            </div>
+            <div class="kv-row">
+              <span>Estado del Núcleo V.A.R.-ZERO:</span>
+              <span id="t3-boss-state" style="color:var(--crimson);">OPRESIVO (Offside Lasers ON)</span>
+            </div>
+            <div class="btn-group" style="margin-top:6px;">
+              <button class="btn btn-cyan btn-sm" id="t3-btn-boss-parry">⚡ Ejecutar Gambeta Perfecta (+1)</button>
+              <button class="btn btn-sm" id="t3-btn-boss-reset">Reiniciar Boss</button>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ======================================================================
+         TAB 4: ARTE TÉCNICO, COMMONUI, GATILLOS DUALSENSE & ESTUDIO WWISE
+         ====================================================================== -->
+    <section class="tab-pane" id="tab4">
+      <div class="grid-layout grid-tab4">
+
+        <!-- Izquierda: Simulador de Shaders (Impact Ink, Hitstop, Rim Light, Sudor/Barro) -->
+        <div class="panel">
+          <div class="panel-header">
+            <div>
+              <div class="panel-title">🎨 Laboratorio de Shaders, Hitstop & Post-Proceso "Impact Ink"</div>
+              <div class="panel-subtitle">Auras Competitivas Rim Light + Acumulación Dinámica de Sudor y Barro</div>
+            </div>
+            <div class="btn-group">
+              <button class="btn btn-gold btn-sm" id="t4-btn-impact">💥 Disparar Impact Ink (3 Frames)</button>
+            </div>
+          </div>
+
+          <div class="canvas-wrap">
+            <canvas id="t4-shader-canvas" width="700" height="300"></canvas>
+          </div>
+
+          <div class="slot-card">
+            <div style="display:grid; grid-template-columns: repeat(2, 1fr); gap:12px;">
+              <div>
+                <label style="font-size:11px; color:var(--text-muted);">Preset de Hitstop / Hitshake:</label>
+                <div class="btn-group" style="margin-top:4px;">
+                  <button class="btn btn-sm t4-hs-btn" data-hs="9">Ligero (9f)</button>
+                  <button class="btn btn-sm btn-gold t4-hs-btn" data-hs="12">Medio (12f)</button>
+                  <button class="btn btn-sm btn-crimson t4-hs-btn" data-hs="20">Crush / Poste (20f)</button>
+                </div>
+              </div>
+              <div>
+                <label style="font-size:11px; color:var(--text-muted);">Aura Rim Light Competitiva (Fresnel):</label>
+                <select id="t4-sel-aura" style="width:100%; margin-top:4px;">
+                  <option value="NONE">Sin Aura Especial (Neutro)</option>
+                  <option value="INVULN">Blanco Puro — Invulnerabilidad Total (Frame 1)</option>
+                  <option value="ARMOR">Oro Intenso — Super Armor (Arrancada / Bulldog)</option>
+                  <option value="CRUSH">Carmesí — Guard Crush / Peligro Tarjeta Roja</option>
+                  <option value="ALTIPLANO">Verde Esmeralda — Debuff Altura 3600m (La Paz)</option>
+                </select>
+              </div>
+            </div>
+
+            <div style="display:grid; grid-template-columns: repeat(2, 1fr); gap:12px; margin-top:6px;">
+              <div>
+                <label style="font-size:11px; color:var(--text-muted);">Acumulación de Sudor (Roughness Specular): <strong id="t4-lbl-sweat">35%</strong></label>
+                <input type="range" id="t4-rng-sweat" min="0" max="100" value="35" />
+              </div>
+              <div>
+                <label style="font-size:11px; color:var(--text-muted);">Desgaste de Cancha y Barro (Vertex Mask): <strong id="t4-lbl-mud">20%</strong></label>
+                <input type="range" id="t4-rng-mud" min="0" max="100" value="20" />
+              </div>
+            </div>
+          </div>
+
+          <!-- CommonUI & Gatillos Adaptativos DualSense / Xbox -->
+          <div class="panel-header">
+            <div>
+              <div class="panel-title">🎮 CommonUI Instant Glyph Switcher & Háptica DualSense / Xbox</div>
+              <div class="panel-subtitle">Detección en &lt;1ms sin recargar UMG + Curva de Fuerza L2/R2 + Modal EOS</div>
+            </div>
+            <div class="btn-group">
+              <button class="btn btn-cyan btn-sm" id="t4-btn-open-eos">📡 Simular Rival Encontrado (Modal EOS)</button>
+              <label style="display:flex; align-items:center; gap:6px; cursor:pointer; font-size:11px; color:var(--turf); font-weight:800;">
+                <input type="checkbox" id="t4-chk-tourney" />
+                Modo Torneo FGC (0% Resistencia)
+              </label>
+            </div>
+          </div>
+
+          <div style="display:grid; grid-template-columns: 1fr 1fr; gap:12px;">
+            <div class="slot-card">
+              <div style="font-size:11px; color:var(--text-muted); margin-bottom:4px;">Dispositivo Activo CommonUI:</div>
+              <div class="btn-group">
+                <button class="btn btn-sm btn-gold t4-pad-btn" data-pad="PS5">PS5 DualSense</button>
+                <button class="btn btn-sm t4-pad-btn" data-pad="XBOX">Xbox Series</button>
+                <button class="btn btn-sm t4-pad-btn" data-pad="STICK">Arcade Stick</button>
+                <button class="btn btn-sm t4-pad-btn" data-pad="KB">Teclado PC</button>
+              </div>
+              <div style="margin-top:10px; font-size:12px; display:flex; align-items:center; gap:6px; flex-wrap:wrap;" id="t4-glyph-preview">
+                <!-- Glifos dinámicos -->
+              </div>
+            </div>
+
+            <div class="canvas-wrap">
+              <canvas id="t4-trigger-canvas" width="320" height="130"></canvas>
+            </div>
+          </div>
+        </div>
+
+        <!-- Derecha: Consola Acústica Audiokinetic Wwise -->
+        <div class="panel">
+          <div class="panel-header">
+            <div>
+              <div class="panel-title">🎚️ Consola Interactiva Audiokinetic Wwise (2023.1+)</div>
+              <div class="panel-subtitle">RTPCs en Vivo + Tribuna Procedural CONMEBOL + Sidechain Auto-Ducking (-6.0 dB)</div>
+            </div>
+          </div>
+
+          <!-- Nuevo Sintetizador Rítmico de Hinchadas CONMEBOL -->
+          <div class="slot-card" style="border-color:var(--turf);">
+            <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:6px;">
+              <div>
+                <div style="font-size:11px; font-weight:800; color:var(--turf);">
+                  🥁 SINTETIZADOR RÍTMICO PROCEDURAL DE TRIBUNAS CONMEBOL (WEB AUDIO API):
+                </div>
+                <div style="font-size:10.5px; color:var(--text-muted);" id="t4-band-status">
+                  Filtro Low-Pass: 18,000 Hz | Tempo: 120 BPM | Auto-Ducking: Activo (-6.0 dB en Impactos)
+                </div>
+              </div>
+              <div class="btn-group">
+                <select id="t4-sel-chants">
+                  <option value="SAMBA">🇧🇷 Batucada de Samba (Surdo, Caixa & Agogô - 118 BPM)</option>
+                  <option value="BOMBO_AR">🇦🇷 Bombo con Platillo de Cancha (Murga & Hinchada - 128 BPM)</option>
+                  <option value="CANDOMBE_UY">🇺🇾 Cuerda de Candombe Charrúa (Chico, Repique & Piano - 122 BPM)</option>
+                  <option value="TAMBORA_CO">🇨🇴 Tambora Caribeña & Alegre (Carnaval - 132 BPM)</option>
+                  <option value="ANDINO_BO">🇧🇴🇵🇪🇪🇨 Bombo Legüero Andino & Chajchas (3600m - 112 BPM)</option>
+                </select>
+                <button class="btn btn-turf btn-sm" id="t4-btn-band-play">▶ Iniciar Banda en Vivo</button>
+              </div>
+            </div>
+          </div>
+
+          <div class="slot-card">
+            <div>
+              <div style="display:flex; justify-content:space-between; font-size:11px;">
+                <span><code>RTPC_Crowd_Momentum</code> (Hinchada Local vs Visitante):</span>
+                <strong id="t4-lbl-crowd" style="color:var(--gold);">+45 (Dominio Local)</strong>
+              </div>
+              <input type="range" id="t4-rng-crowd" min="-100" max="100" value="45" />
+            </div>
+
+            <div style="margin-top:6px;">
+              <div style="display:flex; justify-content:space-between; font-size:11px;">
+                <span><code>RTPC_Match_Excitement</code> (Tensión / Pixel Health):</span>
+                <strong id="t4-lbl-excite" style="color:var(--cyan);">78 / 100</strong>
+              </div>
+              <input type="range" id="t4-rng-excite" min="0" max="100" value="78" />
+            </div>
+          </div>
+
+          <div class="slot-card">
+            <div style="font-size:11px; font-weight:800; color:var(--gold);">
+              🎙️ SISTEMA DE RELATORES SUDAMERICANOS (PRIORITY QUEUE & INTERRUPT STINGERS):
+            </div>
+            <div style="font-size:11px; color:var(--text-muted);">
+              Un evento de mayor prioridad corta inmediatamente la línea inferior en &lt; 2ms con un Stinger de aire comprimido:
+            </div>
+            <div class="btn-group" style="margin-top:4px;">
+              <button class="btn btn-sm t4-comm-btn" data-prio="1">
+                Nv.1: Cháchara Neutro ("La toca en corto en la mitad...")
+              </button>
+              <button class="btn btn-sm btn-cyan t4-comm-btn" data-prio="2">
+                Nv.2: Falta Táctica ("¡Uy, le dejó los tapones marcados!")
+              </button>
+              <button class="btn btn-sm btn-gold t4-comm-btn" data-prio="3">
+                Nv.3: Parry / Escorpión ("¡NOOO! ¡QUÉ GAMBETA ENDIABLADA!")
+              </button>
+              <button class="btn btn-sm btn-crimson t4-comm-btn" data-prio="4">
+                Nv.4: Ultimate K.O. ("¡GOOOLAZO HISTÓRICO! ¡SE CAE EL ESTADIO!")
+              </button>
+            </div>
+
+            <div style="background:#080c13; border:1px solid var(--border-gold); border-radius:6px; padding:10px; margin-top:6px;">
+              <div style="display:flex; justify-content:space-between; font-size:10.5px; font-family:var(--font-mono); color:var(--cyan);">
+                <span id="t4-comm-prio-badge">PRIORIDAD ACTIVA: NIVEL 0 (SILENCIO)</span>
+                <span id="t4-comm-duck-badge">SIDECHAIN DUCKING: 0.0 dB</span>
+              </div>
+              <div style="font-size:13.5px; font-weight:800; color:var(--gold-bright); margin-top:4px;" id="t4-comm-line">
+                "Esperando jugada en el mediocampo..."
+              </div>
+            </div>
+          </div>
+
+          <div style="font-size:11px; font-weight:700; color:var(--text-muted);">
+            MEDIDORES DE BUSES WWISE EN TIEMPO REAL (SIDECHAIN AUTO-DUCKING):
+          </div>
+          <div class="canvas-wrap">
+            <canvas id="t4-wwise-canvas" width="580" height="210"></canvas>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ======================================================================
+         TAB 5: CENTRO DE ARBITRAJE ESPORTS (ANTI-CHEAT, .SAFREPLAY & GLICKO-2)
+         ====================================================================== -->
+    <section class="tab-pane" id="tab5">
+      <div class="grid-layout grid-tab5">
+
+        <!-- Izquierda: Auditor Heurístico Anti-Cheat -->
+        <div class="panel">
+          <div class="panel-header">
+            <div>
+              <div class="panel-title">🛡️ Auditor Heurístico Anti-Cheat (Server-Side Telemetry)</div>
+              <div class="panel-subtitle">Detección de Macros Cronus/Titan, Auto-Parry Bots y Lag-Switch Asimétrico</div>
+            </div>
+            <span class="badge-engine" id="t5-verdict-badge">VEREDICTO: LEGÍTIMO</span>
+          </div>
+
+          <div class="slot-card">
+            <div style="font-size:11px; color:var(--text-muted); font-weight:700;">
+              SELECCIONAR PERFIL DE TELEMETRÍA A AUDITAR:
+            </div>
+            <div class="btn-group">
+              <button class="btn btn-turf btn-sm t5-prof-btn" data-prof="HUMAN">
+                👤 Jugador Humano Pro (σ² = 2.15f)
+              </button>
+              <button class="btn btn-crimson btn-sm t5-prof-btn" data-prof="MACRO">
+                🤖 Hardware Macro Cronus (σ² = 0.00f)
+              </button>
+              <button class="btn btn-gold btn-sm t5-prof-btn" data-prof="PARRYBOT">
+                ⚡ Script Auto-Parry (98% Frame 1-2)
+              </button>
+              <button class="btn btn-cyan btn-sm t5-prof-btn" data-prof="LAGSWITCH">
+                📡 Lag-Switch Asimétrico (r = 0.94 en Hitstun)
+              </button>
+            </div>
+          </div>
+
+          <div class="canvas-wrap">
+            <canvas id="t5-cheat-canvas" width="680" height="250"></canvas>
+          </div>
+
+          <div class="slot-card">
+            <div class="kv-row">
+              <span>Varianza de Ejecución Comandos (`σ²` en transiciones 214214):</span>
+              <span id="t5-stat-var">2.15 frames² (Normal Humano)</span>
+            </div>
+            <div class="kv-row">
+              <span>Tasa de Gambeta Perfecta en Frame 1 de Startup:</span>
+              <span id="t5-stat-parry">14.2% (Lectura Humana)</span>
+            </div>
+            <div class="kv-row">
+              <span>Correlación Pérdida de Paquetes vs Estado `Hitstun` (`r`):</span>
+              <span id="t5-stat-lag">r = 0.06 (Ruido de Red Natural)</span>
+            </div>
+            <div class="kv-row">
+              <span>Acción del Servidor Arbitral EOS:</span>
+              <span id="t5-stat-action" style="color:var(--turf);">✔ Partida Validada para Ranking CONMEBOL</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Derecha: Compresor .safreplay (<50 KB) y Calculadora Glicko-2 -->
+        <div class="panel">
+          <div class="panel-header">
+            <div>
+              <div class="panel-title">📦 Compresor Binario Determinista `.safreplay` (RLE + Zstd)</div>
+              <div class="panel-subtitle">192 Bytes Header + Flujo uint16 Comprimido vs Video MP4</div>
+            </div>
+          </div>
+
+          <div class="slot-card">
+            <div style="display:flex; justify-content:space-between; font-size:11px;">
+              <span>Duración de la Partida Analizada: <strong id="t5-lbl-dur">99 Segundos (5,940 Frames)</strong></span>
+              <span style="color:var(--turf); font-weight:800;" id="t5-lbl-ratio">Ahorro: 99.97% vs MP4</span>
+            </div>
+            <input type="range" id="t5-rng-dur" min="30" max="180" value="99" />
+
+            <div class="kv-row" style="margin-top:4px;">
+              <span>Header Determinista (Semilla + Roster + Fletcher-32):</span>
+              <span>192 Bytes (0.19 KB)</span>
+            </div>
+            <div class="kv-row">
+              <span>Flujo de Inputs Crudo (2 Jugadores × 2 Bytes × 60 Hz):</span>
+              <span id="t5-rep-raw">23.76 KB</span>
+            </div>
+            <div class="kv-row">
+              <span>Archivo Final `.safreplay` (RLE + Zstandard Nivel 9):</span>
+              <span id="t5-rep-zstd" style="color:var(--turf); font-size:14px;">7.42 KB (&lt; 50 KB Target)</span>
+            </div>
+            <div class="kv-row">
+              <span>Equivalente en Video MP4 (1080p @ 60fps H.264):</span>
+              <span id="t5-rep-mp4" style="color:var(--crimson);">~148,500 KB (148.5 MB)</span>
+            </div>
+          </div>
+
+          <!-- Simulador de Matchmaking & Glicko-2 -->
+          <div class="panel-header" style="margin-top:4px;">
+            <div>
+              <div class="panel-title">🏆 Simulador de Ranking Competitivo Glicko-2</div>
+              <div class="panel-subtitle">De "Potrero de Tierra" a "Leyenda Eterna (Top 500 Sudamérica)"</div>
+            </div>
+          </div>
+
+          <div class="slot-card">
+            <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px;">
+              <div>
+                <label style="font-size:11px; color:var(--text-muted);">Tu Rating (`R`) y Desviación (`RD`):</label>
+                <div style="display:flex; gap:6px; margin-top:4px;">
+                  <input type="number" id="t5-g-r1" value="1850" style="width:60%;" title="Rating Jugador" />
+                  <input type="number" id="t5-g-rd1" value="65" style="width:40%;" title="RD Jugador" />
+                </div>
+              </div>
+              <div>
+                <label style="font-size:11px; color:var(--text-muted);">Rating Rival (`R_opp`) y Resultado:</label>
+                <div style="display:flex; gap:6px; margin-top:4px;">
+                  <input type="number" id="t5-g-r2" value="1980" style="width:50%;" title="Rating Rival" />
+                  <select id="t5-g-score" style="width:50%;">
+                    <option value="1">Victoria (1.0)</option>
+                    <option value="0.5">Empate (0.5)</option>
+                    <option value="0">Derrota (0.0)</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+
+            <div class="kv-row" style="margin-top:8px;">
+              <span>Probabilidad Esperada de Victoria `E(s|r, r_j, RD_j)`:</span>
+              <span id="t5-g-exp">32.4% (Underdog Match)</span>
+            </div>
+            <div class="kv-row">
+              <span>Nuevo Rating Actualizado (`R'`) y Nueva `RD'`:</span>
+              <span id="t5-g-new" style="color:var(--turf); font-size:14px;">1874 (+24 pts) | RD': 61.2</span>
+            </div>
+            <div class="kv-row">
+              <span>División CONMEBOL Asignada:</span>
+              <span id="t5-g-div" style="color:var(--gold-bright);">🌟 Primera División Profesional (1800 - 2099)</span>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ======================================================================
+         TAB 6: MODO VERSUS 1v1 JUGABLE EN TIEMPO REAL (60 FPS)
+         ====================================================================== -->
+    <section class="tab-pane" id="tab6">
+      <div class="grid-layout grid-tab6">
+
+        <!-- Columna Principal: Barra de Selección + Estadio jugable a 60 FPS + Controles Arcade -->
+        <div class="panel">
+          <div class="panel-header" style="flex-wrap:wrap; gap:10px;">
+            <div>
+              <div class="panel-title">⚽ LA COPA ETERNA — MODO VERSUS 1v1 EN VIVO (60 FPS DETERMINISTA)</div>
+              <div class="panel-subtitle" id="t6-match-subtitle">Selecciona Leyendas, Modo de IA y Estadio para disputar el partido en tiempo real</div>
+            </div>
+            <div class="btn-group" style="align-items:center;">
+              <label style="font-size:11px; color:var(--gold);">P1:</label>
+              <select id="t6-sel-p1"></select>
+              <label style="font-size:11px; color:var(--crimson);">P2:</label>
+              <select id="t6-sel-p2"></select>
+              <label style="font-size:11px; color:var(--cyan);">Modo P2:</label>
+              <select id="t6-sel-ai">
+                <option value="CPU_PRO">🤖 CPU Competitiva CONMEBOL</option>
+                <option value="BOSS_VAR">👁️ Boss Final: V.A.R.-ZERO (Fase 1 & 2 Rewind)</option>
+                <option value="DUMMY">🎯 Training Dummy (Práctica)</option>
+              </select>
+              <label style="font-size:11px; color:var(--turf);">Estadio:</label>
+              <select id="t6-sel-stage"></select>
+              <button class="btn btn-gold btn-sm" id="t6-btn-restart">🔄 ¡Pitazo Inicial! (Reset)</button>
+            </div>
+          </div>
+
+          <!-- Canvas Jugable 1v1 a 60 FPS -->
+          <div class="canvas-wrap" style="border-color:var(--gold);">
+            <canvas id="t6-canvas" width="1080" height="460"></canvas>
+          </div>
+
+          <!-- Controles Arcade Interactivos en Pantalla + Atajos Directos de Especiales y Supers -->
+          <div class="arcade-pad" style="justify-content:space-between; padding:10px 14px;">
+            <div style="display:flex; align-items:center; gap:12px; flex-wrap:wrap;">
+              <div>
+                <div style="font-size:10px; color:var(--text-muted); margin-bottom:4px; font-weight:700;">
+                  MOVIMIENTO P1 (Teclas A / D / W / S o Flechas)
+                </div>
+                <div class="btn-group">
+                  <button class="btn t6-move-btn" data-move="DASH_B">⏪ 44 Backdash</button>
+                  <button class="btn t6-move-btn" data-move="LEFT">◀ 4 Atrás / Bloq</button>
+                  <button class="btn t6-move-btn" data-move="CROUCH">▼ 2 Agacharse</button>
+                  <button class="btn t6-move-btn" data-move="JUMP">▲ 8 Saltar</button>
+                  <button class="btn t6-move-btn" data-move="RIGHT">▶ 6 Avanzar</button>
+                  <button class="btn btn-turf t6-move-btn" data-move="DASH_F">⏩ 66 Arrancada</button>
+                </div>
+              </div>
+
+              <div>
+                <div style="font-size:10px; color:var(--text-muted); margin-bottom:4px; font-weight:700;">
+                  5 BOTONES NORMALES (J, K, L, U, I)
+                </div>
+                <div class="btn-group">
+                  <button class="btn btn-cyan t6-act-btn" data-act="LP">J: 5LP (Jab 4f)</button>
+                  <button class="btn btn-gold t6-act-btn" data-act="MP">K: 5MP (Medio 7f)</button>
+                  <button class="btn btn-crimson t6-act-btn" data-act="HP">L: 5HP (Fuerte 11f)</button>
+                  <button class="btn btn-turf t6-act-btn" data-act="SK">U: 5SK (Balón ⚽)</button>
+                  <button class="btn t6-act-btn" style="border-color:var(--purple); color:var(--purple);" data-act="GB">I: 5GB (Gambeta / Parry 2f)</button>
+                </div>
+              </div>
+            </div>
+
+            <div>
+              <div style="font-size:10px; color:var(--gold-bright); margin-bottom:4px; font-weight:700;">
+                ESPECIALES Y SUPERS DIRECTOS (1-Click / Teclas 1, 2, 3, 4, 5)
+              </div>
+              <div class="btn-group">
+                <button class="btn btn-turf t6-act-btn" data-act="SP_236">1: 236+SK (Tiro Especial)</button>
+                <button class="btn btn-cyan t6-act-btn" data-act="SP_623">2: 623+HP (Anti-Aéreo DP)</button>
+                <button class="btn btn-gold t6-act-btn" data-act="SP_41236">3: 41236+LP (Agarre / Elástica)</button>
+                <button class="btn btn-crimson t6-act-btn" data-act="SUPER_1">4: 236236+SK (Super Nv.1)</button>
+                <button class="btn btn-gold t6-act-btn" style="box-shadow:0 0 12px rgba(245,196,81,0.5);" data-act="ULT_3">
+                  5: 🌟 214214+HP+SK (Grito Sagrado Nv.3)
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Columna Derecha: Telemetría del Partido en Vivo y Guía de Mecánicas -->
+        <div class="panel">
+          <div class="panel-header">
+            <div>
+              <div class="panel-title">📡 Telemetría en Vivo del Partido 1v1</div>
+              <div class="panel-subtitle">Estado Q32.32, Ventanas y Eventos</div>
+            </div>
+            <span class="badge-engine" id="t6-zone-badge">ZONA A</span>
+          </div>
+
+          <div class="slot-card">
+            <div class="kv-row">
+              <span>Estado Jugador 1 (P1):</span>
+              <span id="t6-st-p1" style="color:var(--turf);">IDLE (Neutro)</span>
+            </div>
+            <div class="kv-row">
+              <span>Estado Jugador 2 (P2 / CPU):</span>
+              <span id="t6-st-p2" style="color:var(--crimson);">IDLE (Neutro)</span>
+            </div>
+            <div class="kv-row">
+              <span>Combo Actual P1 / Daño Acumulado:</span>
+              <span id="t6-st-combo" style="color:var(--gold-bright);">0 Hits (0 DMG)</span>
+            </div>
+            <div class="kv-row">
+              <span>Salud Muro del Estadio (`WallHealth`):</span>
+              <span id="t6-st-wall">3 / 3 Impactos</span>
+            </div>
+            <div class="kv-row">
+              <span>Proyectiles Físicos en Cancha:</span>
+              <span id="t6-st-balls" style="color:var(--cyan);">0 Activos</span>
+            </div>
+          </div>
+
+          <div class="panel-header">
+            <div class="panel-title">🎙️ Relato Wwise en Vivo & Feed de Arbitraje</div>
+          </div>
+          <div class="slot-card" style="background:#080c14; border-color:var(--border-gold);">
+            <div style="font-size:12.5px; font-weight:800; color:var(--gold-bright);" id="t6-live-commentary">
+              "¡Señoras y señores, pita el árbitro y rueda la pelota en La Copa Eterna!"
+            </div>
+            <div style="font-size:11px; color:var(--text-muted); font-family:var(--font-mono); margin-top:4px;" id="t6-live-sub">
+              Presiona A/D para moverte, J/K/L/U/I para atacar o 1-5 para Especiales/Supers.
+            </div>
+          </div>
+
+          <div class="slot-card">
+            <div style="font-weight:800; color:var(--cyan); font-size:11.5px;">⌨️ MAPA DE TECLADO RÁPIDO (EN PESTAÑA 06):</div>
+            <div class="kv-row"><span>Caminar / Bloquear:</span><span>A / D o ◀ / ▶</span></div>
+            <div class="kv-row"><span>Saltar / Agacharse:</span><span>W / S o ▲ / ▼</span></div>
+            <div class="kv-row"><span>Dash Adelante / Atrás:</span><span>Doble toque D / A</span></div>
+            <div class="kv-row"><span>Golpes Normales (LP, MP, HP):</span><span>Teclas J, K, L</span></div>
+            <div class="kv-row"><span>Balón (SK) / Gambeta Parry (GB):</span><span>Teclas U / I</span></div>
+            <div class="kv-row"><span>Especiales y Ultimate Directos:</span><span>Teclas 1, 2, 3, 4, 5</span></div>
+            <div style="display:flex; gap:6px; margin-top:6px;">
+              <button class="btn btn-sm btn-gold" id="t6-btn-fill-meters" style="width:100%;">⚡ Llenar Barras Super & Gambeta al 100%</button>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ======================================================================
+         TAB 7: ESTUDIO 3D INTERACTIVO: RIGS, CHAOS CLOTH & VISOR glTF (60 FPS)
+         ====================================================================== -->
+    <section class="tab-pane" id="tab7">
+      <div class="grid-layout grid-tab7">
+
+        <!-- Columna Izquierda: Selector de Leyenda 3D, Modos de Render y Animación Stepped -->
+        <div class="panel">
+          <div class="panel-header">
+            <div>
+              <div class="panel-title">🧊 Estudio 3D & Rigging CONMEBOL</div>
+              <div class="panel-subtitle">Especificación Área 8 del GDD (UE 5.4 Skeletal & Chaos Cloth)</div>
+            </div>
+            <span class="badge-engine" id="t7-char-badge">FENOMENO_BR</span>
+          </div>
+
+          <div class="slot-card">
+            <label style="font-size:11px; color:var(--gold); font-weight:700;">1. SELECCIONAR LEYENDA CONMEBOL (COMPLEXIÓN, UNIFORME 90s Y HAIR CARDS):</label>
+            <select id="t7-sel-char" style="width:100%; margin-top:4px;"></select>
+
+            <div class="kv-row" style="margin-top:6px;">
+              <span>Estatura / Complexión 3D:</span>
+              <span id="t7-stat-height" style="color:var(--cyan);">1.83 m (Atlético Potente)</span>
+            </div>
+            <div class="kv-row">
+              <span>Peinado & Grooming (`M_FighterHairCards`):</span>
+              <span id="t7-stat-hair">Rapado Clásico 98 (0 Hair Chains)</span>
+            </div>
+            <div class="kv-row">
+              <span>Huesos Totales (`SK_SouthAmericaFighter_Master`):</span>
+              <span id="t7-stat-bones" style="color:var(--turf);">186 Huesos (pelvis_visual_offset ON)</span>
+            </div>
+          </div>
+
+          <div class="slot-card">
+            <label style="font-size:11px; color:var(--cyan); font-weight:700;">2. MODO DE VISUALIZACIÓN DEL VIEWPORT 3D ORBITAL:</label>
+            <div style="display:flex; flex-direction:column; gap:5px; margin-top:4px;">
+              <button class="btn btn-gold t7-mode-btn" data-mode="SHADED" style="justify-content:flex-start;">
+                🎨 Shaded PBR + Rim Light + Lighting Channel 1
+              </button>
+              <button class="btn t7-mode-btn" data-mode="SKELETON" style="justify-content:flex-start;">
+                🦴 Jerarquía Esqueleto UE5 (186 Huesos + Twist + Hair Chains)
+              </button>
+              <button class="btn t7-mode-btn" data-mode="CLOTH" style="justify-content:flex-start;">
+                👕 Mapa de Calor Chaos Cloth 5.4 (MaxDistance 0.5cm a 12.0cm)
+              </button>
+              <button class="btn t7-mode-btn" data-mode="SMEAR" style="justify-content:flex-start;">
+                ⚡ Stepped Anim 60 FPS + Control Rig Smear (1.25x) & AABB
+              </button>
+            </div>
+          </div>
+
+          <div class="slot-card">
+            <label style="font-size:11px; color:var(--turf); font-weight:700;">3. POSE / ANIMACIÓN STEPPED (SIN MOTION BLUR) Y FÍSICA DE VIENTO:</label>
+            <select id="t7-sel-pose" style="width:100%; margin-top:4px;">
+              <option value="IDLE">Pose 01: Guardia de Potrero (Idle Breathing + Ball Orbit)</option>
+              <option value="JAB_5LP">Pose 02: 5LP Toque Corto (Startup 4f — Twist Forearm)</option>
+              <option value="KICK_236SK">Pose 03: 236+SK Bati-Cañonazo (Smear Tibia/Botín 1.25x)</option>
+              <option value="CHILENA_623HP">Pose 04: 623+HP Chilena Acrobática (pelvis_visual_offset)</option>
+              <option value="ESCORPION_214SK">Pose 05: 214+SK El Escorpión (High-Crush Azul + Hair Physics)</option>
+            </select>
+
+            <div style="margin-top:8px;">
+              <div style="display:flex; justify-content:space-between; font-size:11px;">
+                <span>Turbulencia de Viento Chaos Cloth (`Drag 0.08 / Lift 0.04`):</span>
+                <strong id="t7-lbl-wind" style="color:var(--gold);">45%</strong>
+              </div>
+              <input type="range" id="t7-rng-wind" min="0" max="100" value="45" />
+            </div>
+
+            <div style="margin-top:6px;">
+              <div style="display:flex; justify-content:space-between; font-size:11px;">
+                <span>Escala de Smear Frame Control Rig (`calf_r` / `foot_r`):</span>
+                <strong id="t7-lbl-smear" style="color:var(--crimson);">1.25x (Activo)</strong>
+              </div>
+              <input type="range" id="t7-rng-smear" min="100" max="145" value="125" />
+            </div>
+          </div>
+        </div>
+
+        <!-- Columna Central: Viewport 3D Orbital 360° en Tiempo Real (60 FPS) -->
+        <div class="panel">
+          <div class="panel-header">
+            <div>
+              <div class="panel-title">🌐 Viewport 3D Orbital 360° (Arrastra con el Ratón para Rotar | Rueda = Zoom)</div>
+              <div class="panel-subtitle" id="t7-viewport-subtitle">Modo: Shaded PBR + Rim Light + Balón Geodésico de 32 Paneles</div>
+            </div>
+            <div class="btn-group">
+              <button class="btn btn-gold btn-sm" id="t7-btn-autorotate">🔄 Auto-Giro: ON</button>
+              <button class="btn btn-cyan btn-sm" id="t7-btn-reset-cam">🎯 Reset Cámara</button>
+              <button class="btn btn-turf btn-sm" id="t7-btn-kick-ball">⚽ Patear Balón 32-Paneles</button>
+            </div>
+          </div>
+
+          <div class="canvas-wrap" style="border-color:var(--purple); cursor:grab;" id="t7-canvas-wrap">
+            <canvas id="t7-canvas" width="760" height="440"></canvas>
+          </div>
+
+          <div class="box-legend">
+            <div class="legend-item"><span class="swatch" style="background:#00e5ff;"></span> Chaos Cloth Pin (0.5 cm Rígido)</div>
+            <div class="legend-item"><span class="swatch" style="background:#ff2a54;"></span> Chaos Cloth Libre (12.0 cm Faldón/Mangas)</div>
+            <div class="legend-item"><span class="swatch" style="background:#f5c451;"></span> Huesos Control Rig + Twist</div>
+            <div class="legend-item"><span class="swatch" style="background:#00e676;"></span> Hurtbox Matemática AABB (Sin alterar por Smear)</div>
+          </div>
+        </div>
+
+        <!-- Columna Derecha: Presupuesto GPU, LODs, 3 Materiales UDIM y Activos .glb/.png -->
+        <div class="panel">
+          <div class="panel-header">
+            <div>
+              <div class="panel-title">📊 Presupuesto GPU, LODs & Activos `.glb` / `.png`</div>
+              <div class="panel-subtitle">Sin Nanite en Skinned Meshes — GPUSkinCache ON</div>
+            </div>
+            <span class="badge-engine">~3.10 ms GPU</span>
+          </div>
+
+          <div class="slot-card">
+            <div style="font-weight:800; color:var(--gold); font-size:11.5px;">
+              CONTEO DE TRIÁNGULOS POR NIVEL DE DETALLE (LOD0 — LOD2):
+            </div>
+            <div class="kv-row">
+              <span>LOD0 (Primer Plano / Intro / Super Nivel 3):</span>
+              <span style="color:var(--turf);">94,200 Tris (Presupuesto: 85k-110k)</span>
+            </div>
+            <div class="kv-row">
+              <span>LOD1 (Cámara Versus Media Distancia):</span>
+              <span style="color:var(--cyan);">48,000 Tris (Reducción 50%)</span>
+            </div>
+            <div class="kv-row">
+              <span>LOD2 (Distancia Máxima 2600u / Sin Cloth):</span>
+              <span>22,000 Tris (Solo Huesos Primarios)</span>
+            </div>
+            <div class="kv-row">
+              <span>Balón Oficial (`SM_Ball_OfficialCONMEBOL`):</span>
+              <span style="color:var(--gold-bright);">4,800 Tris (Icoságono 32 Paneles)</span>
+            </div>
+          </div>
+
+          <div class="slot-card">
+            <div style="font-weight:800; color:var(--cyan); font-size:11.5px;">
+              LOS 3 MATERIALES MAESTROS (UDIMs 4K — MÁXIMO 3 DRAW CALLS):
+            </div>
+            <div class="kv-row">
+              <span>1. `M_FighterSkin_SSS` (Subsurface Profile):</span>
+              <span>Piel + Sudor Dinámico + Cicatrices</span>
+            </div>
+            <div class="kv-row">
+              <span>2. `M_FighterKit_Anisotropic` (Clear Coat):</span>
+              <span>Tela Retro 90s + Dorsal + Barro (`R/G/B`)</span>
+            </div>
+            <div class="kv-row">
+              <span>3. `M_FighterHairCards` (Alpha Dither):</span>
+              <span>Melenas (`El Pibe`, `El Loco`, `El Cañón`)</span>
+            </div>
+          </div>
+
+          <div class="slot-card">
+            <div style="font-weight:800; color:var(--purple); font-size:11.5px;">
+              📦 ACTIVOS 3D `.glb` Y TEXTURAS PBR GENERADAS EN EL REPOSITORIO:
+            </div>
+            <div style="font-size:11px; color:var(--text-muted); margin-bottom:4px;">
+              Archivos binarios glTF 2.0 y mapas PBR listos para importar en Unreal Engine 5.4 / Blender:
+            </div>
+            <div style="display:flex; flex-direction:column; gap:5px; font-family:var(--font-mono); font-size:10.5px;">
+              <a href="../Assets/Models3D/SK_SouthAmericaFighter_Dummy.glb" download class="btn btn-sm" style="justify-content:space-between;">
+                <span>📥 SK_SouthAmericaFighter_Dummy.glb</span>
+                <span style="color:var(--gold);">Maniquí + Rig</span>
+              </a>
+              <a href="../Assets/Models3D/SM_Ball_OfficialCONMEBOL.glb" download class="btn btn-sm" style="justify-content:space-between;">
+                <span>📥 SM_Ball_OfficialCONMEBOL.glb</span>
+                <span style="color:var(--cyan);">Balón 32-Paneles</span>
+              </a>
+              <a href="../Assets/Models3D/SM_StadiumGoalPost_Destructible.glb" download class="btn btn-sm" style="justify-content:space-between;">
+                <span>📥 SM_StadiumGoalPost_Destructible.glb</span>
+                <span style="color:var(--turf);">Arco Wall-Break</span>
+              </a>
+              <a href="../Assets/TexturesPBR/T_JerseyKit_BaseColor.png" target="_blank" class="btn btn-sm" style="justify-content:space-between;">
+                <span>🖼️ T_JerseyKit_BaseColor / Normal / ORM</span>
+                <span style="color:var(--purple);">Texturas PBR</span>
+              </a>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+  </main>
+
+  <!-- ========================================================================
+       MODAL INTERACTIVO COMMONUI: RIVAL ENCONTRADO EOS (PRE-MATCH FILTER)
+       ======================================================================== -->
+  <div class="eos-modal-backdrop" id="eos-modal-backdrop" style="display:none;">
+    <div class="eos-modal-card">
+      <div class="panel-header">
+        <div>
+          <div class="panel-title">📡 EPIC ONLINE SERVICES (EOS) — RIVAL CLASIFICATORIO ENCONTRADO</div>
+          <div class="panel-subtitle">CommonUI Pre-Match Connection & Jitter Inspector (Glicko-2 Ranked)</div>
+        </div>
+        <span class="badge-engine" id="eos-modal-region">SA-EAST (SÃO PAULO / BUENOS AIRES)</span>
+      </div>
+
+      <div class="slot-card" style="background:#080c14;">
+        <div class="kv-row">
+          <span>Plataforma Detectada (`CommonUI Icon`):</span>
+          <span id="eos-opp-platform" style="color:var(--cyan);">🎮 PlayStation 5 (Crossplay Activo)</span>
+        </div>
+        <div class="kv-row">
+          <span>Tipo de Interfaz de Red Física:</span>
+          <span id="eos-opp-nettype" style="color:var(--crimson);">📶 Wi-Fi Inalámbrico (Alerta de Packet Burst)</span>
+        </div>
+        <div class="kv-row">
+          <span>Latencia Media (`Ping RTT` últimos 5s):</span>
+          <span id="eos-opp-ping">118 ms</span>
+        </div>
+        <div class="kv-row">
+          <span>Fluctuación de Paquetes (`Network Jitter` 5s):</span>
+          <span id="eos-opp-jitter" style="color:var(--crimson);">±34.2 ms (Rollback Estimado: 4f - 6f)</span>
+        </div>
+        <div class="kv-row">
+          <span>Glicko-2 Rating en Juego:</span>
+          <span id="eos-opp-rating" style="color:var(--gold-bright);">1,945 MR (RD: 62.0) — Primera División</span>
+        </div>
+      </div>
+
+      <div style="font-size:11px; color:var(--text-muted);">
+        Selecciona otro perfil de red simulado o decide si aceptar el duelo competitivo:
+      </div>
+
+      <div class="btn-group">
+        <button class="btn btn-sm btn-turf" id="eos-sim-lan">🔌 Simular Rival Cable LAN (28ms / ±1.8ms)</button>
+        <button class="btn btn-sm btn-crimson" id="eos-sim-wifi">📶 Simular Rival Wi-Fi Inestable (135ms / ±38ms)</button>
+      </div>
+
+      <div class="btn-group" style="justify-content:flex-end; margin-top:8px; border-top:1px solid var(--border-dim); padding-top:10px;">
+        <button class="btn btn-crimson" id="eos-btn-reject">
+          ⛔ Rechazar Conexión Inestable (Sin Penalización de Puntos)
+        </button>
+        <button class="btn btn-turf" id="eos-btn-accept">
+          ⚽ ¡Aceptar Partido y Saltar a la Cancha (Tab 06)!
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>

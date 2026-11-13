@@ -1,0 +1,252 @@
+// ============================================================================
+// CombatHUDSDFBars.ush
+// Unreal Engine 5.4+ - GPU Signed Distance Field (SDF) Zero-GC Combat HUD Shader
+// ============================================================================
+// Uso en Material Graph (Domain: User Interface, Blend Mode: Translucent):
+//   Include File Path: /Project/CombatHUDSDFBars.ush
+//   Funciones Expuestas:
+//     1. EvaluateSDFHealthAndChipBar      (Barra de Vida 45° + Daño Recuperable + Danger <25%)
+//     2. EvaluateSDFGambetaStaminaBar     (Medidor de Gambeta Segmentado + Grietas Burnout / 3600m)
+//     3. EvaluateSDFRefereeCardAndSuper   (Tarjeta Amarilla->Roja Pulsante + Barra Hinchada 3 Niveles)
+// ============================================================================
+
+#pragma once
+
+/**
+ * Distancia con signo (SDF) a un paralelogramo biselado a 45 grados en espacio UV centrado.
+ */
+float SDF_BeveledParallelogram45(float2 UV, float2 HalfSize, float SkewFactor, float BevelRadius)
+{
+    float2 SkewedP = float2(UV.x - UV.y * SkewFactor, UV.y);
+    float2 Q = abs(SkewedP) - (HalfSize - BevelRadius);
+    return length(max(Q, 0.0f)) + min(max(Q.x, Q.y), 0.0f) - BevelRadius;
+}
+
+/**
+ * Ruido procedural rápido para grietas de Burnout y llamas de la Barra de Hinchada.
+ */
+float HUDSDFHashNoise(float2 P)
+{
+    float2 I = floor(P);
+    float2 F = frac(P);
+    F = F * F * (3.0f - 2.0f * F);
+    float N = I.x + I.y * 57.0f;
+    return lerp(
+        lerp(frac(sin(N) * 43758.5453f), frac(sin(N + 1.0f) * 43758.5453f), F.x),
+        lerp(frac(sin(N + 57.0f) * 43758.5453f), frac(sin(N + 58.0f) * 43758.5453f), F.x),
+        F.y);
+}
+
+// ============================================================================
+// 1. BARRA DE VIDA PRINCIPAL BISELADA A 45° + CHIP HEALTH + DANGER (<25% HP)
+// ============================================================================
+float4 EvaluateSDFHealthAndChipBar(
+    float2 UV,                // 0..1 (Izquierda a Derecha para P2, o espejado para P1)
+    bool   bMirrorForPlayer1, // true = drena hacia el centro (derecha), false = drena hacia la izquierda
+    float  HealthPercent,     // 0.0 a 1.0 (Parámetro inyectado por PushDeterministicHUDUpdate)
+    float  RedHealthPercent,  // 0.0 a 1.0 (Vida recuperable / Chip Damage en decaimiento)
+    float  TimeSeconds)
+{
+    float2 LocalUV = bMirrorForPlayer1 ? float2(1.0f - UV.x, UV.y) : UV;
+    float2 CenteredP = (LocalUV - 0.5f) * float2(2.0f, 2.0f);
+
+    // 1. Silueta SDF con inclinación de 45 grados (Skew = 0.14) y bisel competitivo
+    float DistOuter = SDF_BeveledParallelogram45(CenteredP, float2(0.94f, 0.68f), 0.14f, 0.04f);
+    float OuterAlpha = 1.0f - smoothstep(-0.015f, 0.015f, DistOuter);
+    if (OuterAlpha <= 0.001f)
+    {
+        return float4(0.0f, 0.0f, 0.0f, 0.0f);
+    }
+
+    float InnerMask = 1.0f - smoothstep(-0.09f, -0.05f, DistOuter);
+    float BorderMask = saturate(OuterAlpha - InnerMask);
+
+    // Coordenada longitudinal sesgada a 45° para el corte de llenado (0.0 -> 1.0)
+    float SlantedX = saturate((LocalUV.x - (LocalUV.y - 0.5f) * 0.14f - 0.04f) / 0.92f);
+
+    float ClampedHP    = saturate(HealthPercent);
+    float ClampedRedHP = max(ClampedHP, saturate(RedHealthPercent));
+
+    // Máscaras de llenado con antialiasing analítico (fwidth-free para determinismo visual)
+    float MainFillMask = 1.0f - smoothstep(ClampedHP - 0.006f, ClampedHP + 0.006f, SlantedX);
+    float ChipFillMask = (1.0f - smoothstep(ClampedRedHP - 0.006f, ClampedRedHP + 0.006f, SlantedX)) * (1.0f - MainFillMask);
+
+    // 2. Estado Crítico DANGER (< 25% HP): Parpadeo rojo/dorado de emergencia a 6Hz
+    bool  bIsDanger = (ClampedHP > 0.0f && ClampedHP < 0.25f);
+    float DangerPulse = bIsDanger ? (sin(TimeSeconds * 37.699f) * 0.5f + 0.5f) : 0.0f;
+
+    // Gradiente de color de Vida Principal (Verde/Oro Cancha -> Ámbar -> Carmesí Pulsante en Danger)
+    float3 HealthyColorTop = float3(0.18f, 0.94f, 0.42f);
+    float3 HealthyColorBot = float3(0.04f, 0.58f, 0.22f);
+    float3 BaseHealthGrad  = lerp(HealthyColorBot, HealthyColorTop, 1.0f - LocalUV.y);
+
+    float3 DangerColorA    = float3(0.98f, 0.06f, 0.10f);
+    float3 DangerColorB    = float3(1.00f, 0.72f, 0.08f);
+    float3 DangerGrad      = lerp(DangerColorA, DangerColorB, DangerPulse);
+
+    float3 ActiveHealthColor = bIsDanger ? DangerGrad : BaseHealthGrad;
+
+    // 3. Barra de Daño Gris / Carmesí Recuperable (Chip / Recoverable Health) con barrido animado
+    float ChipShimmer = sin((SlantedX * 45.0f) - (TimeSeconds * 12.0f)) * 0.5f + 0.5f;
+    float3 ChipDamageColor = lerp(float3(0.52f, 0.54f, 0.58f), float3(0.92f, 0.18f, 0.22f), ChipShimmer * 0.65f);
+
+    // Línea incandescente en el corte exacto de la vida actual
+    float CutEdgeGlow = exp(-abs(SlantedX - ClampedHP) * 140.0f) * step(0.01f, ClampedHP);
+
+    // Fondo oscuro del contenedor con trama diagonal sutil
+    float BgStripe = step(0.5f, frac((LocalUV.x + LocalUV.y * 0.5f) * 30.0f));
+    float3 BackgroundColor = lerp(float3(0.04f, 0.05f, 0.07f), float3(0.07f, 0.08f, 0.11f), BgStripe);
+    if (bIsDanger)
+    {
+        BackgroundColor += float3(0.28f, 0.02f, 0.03f) * DangerPulse;
+    }
+
+    // Composición final dentro de la silueta SDF
+    float3 InnerComposite = BackgroundColor;
+    InnerComposite = lerp(InnerComposite, ChipDamageColor, ChipFillMask);
+    InnerComposite = lerp(InnerComposite, ActiveHealthColor, MainFillMask);
+    InnerComposite += float3(1.0f, 0.95f, 0.80f) * CutEdgeGlow * 1.4f;
+
+    // Bisel metálico exterior (Dorado Copa o Rojo Alerta en Danger)
+    float3 FrameBorderColor = bIsDanger
+        ? lerp(float3(0.85f, 0.85f, 0.88f), float3(1.0f, 0.15f, 0.15f), DangerPulse)
+        : float3(0.82f, 0.76f, 0.58f);
+
+    float3 FinalRGB = lerp(InnerComposite, FrameBorderColor, BorderMask);
+    return float4(FinalRGB, OuterAlpha);
+}
+
+// ============================================================================
+// 2. MEDIDOR DE GAMBETA SEGMENTADO (4 BLOQUES + GRIETAS BURNOUT / 3600M)
+// ============================================================================
+float4 EvaluateSDFGambetaStaminaBar(
+    float2 UV,
+    float  GambetaPercent,     // 0.0 a 1.0 (0..1000 Stamina)
+    bool   bIsBurnoutState,    // true = Agotamiento total (barra desaturada y agrietada)
+    bool   bIsAltitudeHypoxia, // true = Penalización de 3600m en La Paz (tinte verde soroche)
+    float  TimeSeconds)
+{
+    float2 CenteredP = (UV - 0.5f) * 2.0f;
+    float DistOuter  = SDF_BeveledParallelogram45(CenteredP, float2(0.95f, 0.62f), 0.18f, 0.03f);
+    float OuterAlpha = 1.0f - smoothstep(-0.015f, 0.015f, DistOuter);
+    if (OuterAlpha <= 0.001f)
+    {
+        return float4(0.0f, 0.0f, 0.0f, 0.0f);
+    }
+
+    // 4 Segmentos separados por muescas diagonales SDF
+    float SlantedX = saturate((UV.x - (UV.y - 0.5f) * 0.18f - 0.03f) / 0.94f);
+    float SegmentCoord = SlantedX * 4.0f;
+    float SegmentFrac  = frac(SegmentCoord);
+    float DividerNotch = smoothstep(0.0f, 0.045f, SegmentFrac) * smoothstep(1.0f, 0.955f, SegmentFrac);
+
+    float FillMask = (1.0f - smoothstep(GambetaPercent - 0.005f, GambetaPercent + 0.005f, SlantedX)) * DividerNotch;
+
+    // Color nominal Azul Eléctrico / Cian de Gambeta
+    float3 BaseGambetaColor = lerp(float3(0.02f, 0.55f, 0.98f), float3(0.35f, 0.95f, 1.00f), SegmentFrac);
+
+    // Modulación por Falta de Aire a 3600m (La Paz)
+    if (bIsAltitudeHypoxia)
+    {
+        float HypoxiaWave = sin(TimeSeconds * 8.0f + SlantedX * 12.0f) * 0.5f + 0.5f;
+        BaseGambetaColor = lerp(BaseGambetaColor, float3(0.18f, 0.92f, 0.35f), 0.65f * HypoxiaWave);
+    }
+
+    // Grietas procedurales y desaturación en estado Burnout ("Ahogo")
+    float CrackNoise1 = HUDSDFHashNoise(UV * float2(38.0f, 14.0f));
+    float CrackNoise2 = HUDSDFHashNoise(UV * float2(76.0f, 28.0f) + 11.3f);
+    float FractureLine = step(0.47f, CrackNoise1) * step(CrackNoise1, 0.53f) + step(0.48f, CrackNoise2) * step(CrackNoise2, 0.52f);
+
+    if (bIsBurnoutState)
+    {
+        float GreyLum = dot(BaseGambetaColor, float3(0.299f, 0.587f, 0.114f));
+        BaseGambetaColor = lerp(float3(GreyLum, GreyLum, GreyLum) * 0.55f, float3(0.95f, 0.22f, 0.08f), saturate(FractureLine));
+    }
+
+    float3 EmptySlotColor = float3(0.05f, 0.06f, 0.09f) * DividerNotch;
+    if (bIsBurnoutState)
+    {
+        EmptySlotColor += float3(0.35f, 0.05f, 0.02f) * saturate(FractureLine);
+    }
+
+    float3 FinalColor = lerp(EmptySlotColor, BaseGambetaColor, FillMask);
+    return float4(FinalColor, OuterAlpha);
+}
+
+// ============================================================================
+// 3. MEDIDOR DE TARJETA DE ARBITRAJE + BARRA DE HINCHADA (3 NIVELES DE FUEGO)
+// ============================================================================
+float4 EvaluateSDFRefereeCardAndSuperMeter(
+    float2 UV,
+    bool   bIsRefereeCardMode, // true = Icono SDF de Tarjeta Amarilla/Roja, false = Barra de Hinchada 3 Stocks
+    float  YellowCardRisk,     // 0.0 a 1.0 (Al acercarse a 1.0 parpadea en Tarjeta Roja / Guard Crush)
+    float  SuperMeterPercent,  // 0.0 a 1.0 (0..3000 Grito Sagrado)
+    float  SuperStocksCount,   // 0, 1, 2 o 3 barras completas
+    float  TimeSeconds)
+{
+    if (bIsRefereeCardMode)
+    {
+        // Silueta SDF de Tarjeta de Árbitro inclinada 10 grados
+        float2 P = (UV - 0.5f) * 2.0f;
+        float2 RotP = float2(P.x * 0.9848f - P.y * 0.1736f, P.x * 0.1736f + P.y * 0.9848f);
+        float  CardSDF = SDF_BeveledParallelogram45(RotP, float2(0.56f, 0.80f), 0.0f, 0.08f);
+
+        float CardAlpha = 1.0f - smoothstep(-0.02f, 0.02f, CardSDF);
+        if (CardAlpha <= 0.001f)
+        {
+            return float4(0.0f, 0.0f, 0.0f, 0.0f);
+        }
+
+        float Risk = saturate(YellowCardRisk);
+        float CardFillY = 1.0f - (RotP.y * 0.5f + 0.5f);
+        float FillMask  = step(CardFillY, Risk);
+
+        // Transición de Tarjeta Amarilla a Tarjeta Roja Pulsante cuando Risk >= 0.80
+        float RedCardAlert = smoothstep(0.75f, 0.95f, Risk);
+        float Pulse = sin(TimeSeconds * 28.0f) * 0.5f + 0.5f;
+
+        float3 YellowCardRGB = float3(1.00f, 0.84f, 0.04f);
+        float3 RedCardRGB    = lerp(float3(0.92f, 0.03f, 0.06f), float3(1.00f, 0.35f, 0.15f), Pulse);
+        float3 ActiveCardRGB = lerp(YellowCardRGB, RedCardRGB, RedCardAlert);
+
+        float3 CardComposite = lerp(float3(0.10f, 0.11f, 0.14f), ActiveCardRGB, FillMask);
+        return float4(CardComposite, CardAlpha);
+    }
+
+    // Barra de Hinchada / Super Meter de 3 Niveles ("El Grito Sagrado") con ondas de fuego/energía
+    float2 CenteredP = (UV - 0.5f) * 2.0f;
+    float  BarSDF    = SDF_BeveledParallelogram45(CenteredP, float2(0.96f, 0.65f), -0.15f, 0.04f);
+    float  BarAlpha  = 1.0f - smoothstep(-0.015f, 0.015f, BarSDF);
+    if (BarAlpha <= 0.001f)
+    {
+        return float4(0.0f, 0.0f, 0.0f, 0.0f);
+    }
+
+    // 3 Niveles (Nivel 1: Bengalas Ámbar, Nivel 2: Fuego Solar, Nivel 3: Gloria Eterna Celeste/Oro HDR)
+    float SlantedX = saturate((UV.x + (UV.y - 0.5f) * 0.15f - 0.03f) / 0.94f);
+    float TierCoord = SlantedX * 3.0f;
+    float TierNotch = smoothstep(0.0f, 0.035f, frac(TierCoord)) * smoothstep(1.0f, 0.965f, frac(TierCoord));
+
+    float MeterFill = (1.0f - smoothstep(SuperMeterPercent - 0.005f, SuperMeterPercent + 0.005f, SlantedX)) * TierNotch;
+
+    // Ondas de fuego/plasma propagándose a lo largo de la barra
+    float FlameWave = HUDSDFHashNoise(float2(SlantedX * 18.0f - TimeSeconds * 4.5f, UV.y * 6.0f + TimeSeconds * 2.0f));
+
+    float3 Level1Color = float3(1.00f, 0.48f, 0.04f); // Bengala Naranja
+    float3 Level2Color = float3(1.00f, 0.82f, 0.08f); // Oro Copa
+    float3 Level3Color = lerp(float3(0.25f, 0.85f, 1.00f), float3(1.00f, 0.92f, 0.35f), FlameWave); // Nivel 3 Máximo
+
+    float3 ActiveFlameColor = Level1Color;
+    if (SuperStocksCount >= 2.9f)
+    {
+        ActiveFlameColor = Level3Color * 1.45f;
+    }
+    else if (SuperStocksCount >= 1.9f)
+    {
+        ActiveFlameColor = lerp(Level1Color, Level2Color, FlameWave) * 1.20f;
+    }
+
+    float3 BgColor = float3(0.04f, 0.04f, 0.06f) * TierNotch;
+    float3 FinalMeterRGB = lerp(BgColor, ActiveFlameColor, MeterFill);
+    return float4(FinalMeterRGB, BarAlpha);
+}

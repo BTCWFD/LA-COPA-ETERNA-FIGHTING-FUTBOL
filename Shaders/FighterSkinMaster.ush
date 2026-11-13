@@ -1,0 +1,284 @@
+// ============================================================================
+// FighterSkinMaster.ush
+// Unreal Engine 5.4+ - M_FighterSkin_Master (Skin Micro-Pores, Dynamic Sweat,
+// Spherical Pitch Dirt Projection & 1990s Retro Football Jersey Anisotropy)
+// ============================================================================
+// Uso en Material Graph (UE 5.4 Custom Material Expression):
+//   Include File Path: /Project/FighterSkinMaster.ush
+//   Funciones Expuestas:
+//     1. EvaluateFighterSkinMasterPBR
+//     2. EvaluateRetro90sJerseyAnisotropy
+//     3. ComputeSphericalPitchDirtMask
+// ============================================================================
+
+#pragma once
+
+struct FFighterSkinMasterOutput
+{
+    float3 BaseColor;
+    float3 WorldNormal;
+    float  Roughness;
+    float  Specular;
+    float  SubsurfaceOpacity;
+    float3 SubsurfaceColor;
+    float  Anisotropy;
+    float3 TangentDirection;
+};
+
+/**
+ * Hash pseudo-aleatorio determinista en espacio UV para micro-poros de piel y gotas de sudor.
+ */
+float2 Hash2D_SkinMicroDetail(float2 P)
+{
+    float3 P3 = frac(float3(P.xyx) * float3(0.1031f, 0.1030f, 0.0973f));
+    P3 += dot(P3, P3.yzx + 33.33f);
+    return frac((P3.xx + P3.yz) * P3.zy);
+}
+
+/**
+ * Calcula el mapa de micro-poros cutáneos y gotas dinámicas de sudor ("Sweat_Accumulation").
+ * Hace decaer la rugosidad desde 0.45 (piel seca al inicio del round) hasta 0.12 (empapado en sudor en clutch/tiempo extra).
+ */
+void EvaluateSkinMicroPoresAndSweat(
+    float2 UV,
+    float  SweatAccumulation, // 0.0 (Seco) -> 1.0 (Sudoración máxima)
+    float  TimeSeconds,
+    out float3 OutLocalNormalPerturbation,
+    out float  OutDynamicSkinRoughness,
+    out float  OutDynamicSpecular,
+    out float  OutPoreCavityMask)
+{
+    float ClampedSweat = saturate(SweatAccumulation);
+
+    // 1. Celda Voronoi de micro-poros cutáneos (escala 140x sobre UV de rostro/brazos/piernas)
+    float2 PoreGridUV = UV * 140.0f;
+    float2 GridId     = floor(PoreGridUV);
+    float2 GridFrac   = frac(PoreGridUV) - 0.5f;
+
+    float2 RandomOffset = Hash2D_SkinMicroDetail(GridId) * 0.65f - 0.325f;
+    float2 DeltaPore    = GridFrac - RandomOffset;
+    float  DistSq       = dot(DeltaPore, DeltaPore);
+
+    // Cavidad del poro: hunde ligeramente la normal y oscurece la micro-oclusión
+    float PoreDepth = exp(-DistSq * 22.0f);
+    OutPoreCavityMask = lerp(1.0f, 0.78f, PoreDepth * (1.0f - ClampedSweat * 0.4f));
+
+    // 2. Gotas de sudor ("Sweat Rivulets") que resbalan verticalmente cuando Sweat_Accumulation > 0.35
+    float2 SweatDropUV = float2(UV.x * 55.0f, UV.y * 28.0f + TimeSeconds * 0.45f * ClampedSweat);
+    float2 DropId      = floor(SweatDropUV);
+    float2 DropFrac    = frac(SweatDropUV) - 0.5f;
+    float2 DropRand    = Hash2D_SkinMicroDetail(DropId + 19.7f);
+
+    float2 DropDelta   = DropFrac - (DropRand * 0.5f - 0.25f);
+    DropDelta.y       *= 0.55f; // Elongación vertical por gravedad
+    float  DropRadius  = length(DropDelta);
+
+    float ActiveDropletMask = smoothstep(0.28f, 0.08f, DropRadius) * smoothstep(0.30f, 0.90f, ClampedSweat);
+
+    // Perturbación de normal en espacio tangente (poros cóncavos + gotas convexas brillantes)
+    float2 NormalXY = (DeltaPore * PoreDepth * 0.35f) - (DropDelta * ActiveDropletMask * 1.45f);
+    OutLocalNormalPerturbation = normalize(float3(NormalXY.x, NormalXY.y, 1.0f));
+
+    // Transición exacta de rugosidad pedida en especificación técnica: 0.45 (Seco) -> 0.12 (Sudor Máximo)
+    float BaseSweatRoughness = lerp(0.45f, 0.12f, ClampedSweat);
+    OutDynamicSkinRoughness  = clamp(BaseSweatRoughness - (ActiveDropletMask * 0.06f) + (PoreDepth * 0.05f), 0.08f, 0.85f);
+
+    // Incremento de índice especular por película salina sobre la epidermis
+    OutDynamicSpecular = lerp(0.42f, 0.88f, ClampedSweat) + ActiveDropletMask * 0.12f;
+}
+
+/**
+ * Proyección Esférica/Elipsoidal UV de manchas de barro y césped ("Pitch_Dirt_Mask").
+ * Acumula suciedad de cancha en rodillas, pantorrillas, codos y hombros tras barridas y Hard Knockdowns.
+ */
+float ComputeSphericalPitchDirtMask(
+    float3 LocalPositionCm,
+    float3 LocalNormal,
+    float2 BaseUV,
+    float  PitchDirtAccumulation, // 0.0 a 1.0 (CPD[6])
+    float4 PrimarySlideSphereLocalCm,   // xyz = Centro local (ej. rodilla/muslo), w = Radio en cm
+    float4 SecondaryFallSphereLocalCm)  // xyz = Centro local (ej. hombro/espalda), w = Radio en cm
+{
+    float ClampedDirt = saturate(PitchDirtAccumulation);
+    if (ClampedDirt <= 0.001f)
+    {
+        return 0.0f;
+    }
+
+    // 1. Proyección esférica sobre los puntos de contacto con el potrero/césped
+    float DistPrimary   = length(LocalPositionCm - PrimarySlideSphereLocalCm.xyz) / max(PrimarySlideSphereLocalCm.w, 1.0f);
+    float DistSecondary = length(LocalPositionCm - SecondaryFallSphereLocalCm.xyz) / max(SecondaryFallSphereLocalCm.w, 1.0f);
+
+    float SphericalFalloff = saturate(1.0f - min(DistPrimary, DistSecondary));
+
+    // Gradiente de altura desde los botines (Z=0cm) hasta el torso (Z=135cm)
+    float BootToKneeGradient = saturate(1.0f - (LocalPositionCm.z / 135.0f));
+    float CombinedCoverage   = max(SphericalFalloff, BootToKneeGradient * 0.85f) * ClampedDirt;
+
+    // 2. Coordenadas esféricas triplanares/azimutales para romper costuras UV del modelo
+    float3 NormPos = normalize(LocalPositionCm + float3(0.0f, 0.0f, 85.0f));
+    float2 SphericalUV = float2(
+        atan2(NormPos.y, NormPos.x) * 0.31830988f + 0.5f,
+        acos(clamp(NormPos.z, -1.0f, 1.0f)) * 0.31830988f);
+
+    // Fibra orgánica de barro salpicado y briznas de pasto adheridas
+    float2 SplatterUV = (SphericalUV * 32.0f) + (BaseUV * 18.0f);
+    float2 SplatterNoise = Hash2D_SkinMicroDetail(floor(SplatterUV));
+    float  HighFreqFleck = frac(sin(dot(SplatterUV, float2(12.9898f, 78.233f))) * 43758.5453f);
+
+    float OrganicDirtThreshold = smoothstep(0.68f - CombinedCoverage * 0.55f, 0.72f - CombinedCoverage * 0.55f, HighFreqFleck * 0.6f + SplatterNoise.x * 0.4f);
+
+    // Favorecer acumulación en caras orientadas hacia el suelo o laterales de deslizamiento
+    float DirectionalGraze = saturate(1.0f - LocalNormal.z * 0.35f);
+    return saturate(OrganicDirtThreshold * CombinedCoverage * DirectionalGraze * 1.35f);
+}
+
+/**
+ * Anisotropía Textil para Camisetas Retro de los Años 90 (Poliéster Jacquard Brillante / Tramado Clásico CONMEBOL).
+ * Reproduce el brillo sedoso característico de las casacas holgadas de 1990-1998 con marcas de agua geométricas en el tejido.
+ */
+void EvaluateRetro90sJerseyAnisotropy(
+    float2 JerseyUV,
+    float3 WorldNormal,
+    float3 WorldTangent,
+    float3 ViewDir,
+    float3 LightDir,
+    float3 TeamPrimaryColor,
+    float3 TeamSecondaryColor,
+    float  JacquardWatermarkMask, // Marca de agua tejida en la tela (escudos/rombos de los 90)
+    float  SweatWetness,
+    float  PitchDirtMask,
+    out float3 OutFabricAlbedo,
+    out float  OutFabricRoughness,
+    out float  OutFabricAnisotropy,
+    out float3 OutAnisotropicSpecularColor,
+    out float3 OutModifiedTangent)
+{
+    // 1. Micro-hilo de poliéster cruzado (Urdimbre y Trama 90s)
+    float2 ThreadUV = JerseyUV * 220.0f;
+    float  WarpWave = sin(ThreadUV.x * 6.28318f) * 0.5f + 0.5f;
+    float  WeftWave = cos(ThreadUV.y * 6.28318f) * 0.5f + 0.5f;
+
+    // Las marcas de agua Jacquard de los años 90 invierten el eje de tejido entre mate y satinado
+    float JacquardShift = lerp(-0.18f, 0.22f, JacquardWatermarkMask);
+    OutModifiedTangent = normalize(WorldTangent + WorldNormal * (WarpWave - 0.5f) * 0.08f);
+
+    // 2. Respuesta Anisotrópica Kajiya-Kay de doble lóbulo para poliéster retro
+    float3 H = normalize(LightDir + ViewDir);
+    float  TdotH = dot(OutModifiedTangent, H);
+    float  SinTH = sqrt(max(0.0f, 1.0f - TdotH * TdotH));
+    float  DirAtten = smoothstep(-1.0f, 0.0f, dot(OutModifiedTangent, LightDir));
+
+    // Lóbulo primario ancho (color del club) + Lóbulo secundario estrecho (brillo blanco sintético del poliéster)
+    float PrimarySheen   = pow(SinTH, lerp(12.0f, 28.0f, JacquardWatermarkMask)) * DirAtten;
+    float SecondarySheen = pow(SinTH, 64.0f) * DirAtten * (1.0f - SweatWetness * 0.5f);
+
+    // Cuando el jugador transpira, la camiseta se oscurece ligeramente y se pega al torso
+    float3 WetDarkenedPrimary = TeamPrimaryColor * lerp(1.0f, 0.68f, saturate(SweatWetness));
+    float3 BaseJerseyColor    = lerp(WetDarkenedPrimary, TeamSecondaryColor, WeftWave * 0.06f);
+
+    // Aplicar manchas de barro/césped sobre la tela
+    float3 MuddyGrassColor = float3(0.09f, 0.11f, 0.04f); // Mezcla de tierra y clorofila de pasto
+    OutFabricAlbedo = lerp(BaseJerseyColor, MuddyGrassColor, saturate(PitchDirtMask));
+
+    // Rugosidad diferenciada entre zonas mates y zonas Jacquard satinadas
+    float BaseFabricRoughness = lerp(0.52f, 0.26f, JacquardWatermarkMask);
+    OutFabricRoughness  = clamp(BaseFabricRoughness - SweatWetness * 0.14f + PitchDirtMask * 0.32f, 0.15f, 0.92f);
+    OutFabricAnisotropy = clamp((0.65f + JacquardShift) * (1.0f - PitchDirtMask * 0.8f), -1.0f, 1.0f);
+
+    OutAnisotropicSpecularColor = (TeamPrimaryColor * PrimarySheen * 0.35f) + (float3(1.0f, 0.98f, 0.95f) * SecondarySheen * 0.45f) * (1.0f - PitchDirtMask);
+}
+
+/**
+ * Nodo Maestro Unificado `M_FighterSkin_Master`:
+ * Evalúa simultáneamente piel sudamericana con Subsurface Scattering, sudor dinámico, barro esférico y textil 90s.
+ */
+FFighterSkinMasterOutput EvaluateFighterSkinMasterPBR(
+    bool   bIsFabricRegion,       // false = Piel (Rostro/Brazos/Piernas), true = Equipación Textil 90s
+    float2 BaseUV,
+    float3 LocalPositionCm,
+    float3 WorldNormal,
+    float3 WorldTangent,
+    float3 ViewDir,
+    float3 LightDir,
+    float3 AlbedoInput,
+    float3 SecondaryTeamColor,
+    float  JacquardPatternMask,
+    float  SweatAccumulation,     // CPD[5] (0.0 -> 1.0)
+    float  PitchDirtAccumulation, // CPD[6] (0.0 -> 1.0)
+    float  TimeSeconds,
+    float4 PrimarySlideSphereCm,
+    float4 SecondaryFallSphereCm)
+{
+    FFighterSkinMasterOutput Result;
+
+    // 1. Máscara esférica de barro y pasto compartida entre piel y equipación
+    float DirtMask = ComputeSphericalPitchDirtMask(
+        LocalPositionCm,
+        WorldNormal,
+        BaseUV,
+        PitchDirtAccumulation,
+        PrimarySlideSphereCm,
+        SecondaryFallSphereCm);
+
+    if (bIsFabricRegion)
+    {
+        float3 SpecSheen;
+        EvaluateRetro90sJerseyAnisotropy(
+            BaseUV,
+            WorldNormal,
+            WorldTangent,
+            ViewDir,
+            LightDir,
+            AlbedoInput,
+            SecondaryTeamColor,
+            JacquardPatternMask,
+            SweatAccumulation,
+            DirtMask,
+            Result.BaseColor,
+            Result.Roughness,
+            Result.Anisotropy,
+            SpecSheen,
+            Result.TangentDirection);
+
+        Result.BaseColor        += SpecSheen;
+        Result.WorldNormal       = normalize(WorldNormal);
+        Result.Specular          = 0.55f;
+        Result.SubsurfaceOpacity = 0.0f;
+        Result.SubsurfaceColor   = float3(0.0f, 0.0f, 0.0f);
+    }
+    else
+    {
+        float3 LocalPoreNormal;
+        float  SkinRoughness;
+        float  SkinSpecular;
+        float  PoreCavity;
+
+        EvaluateSkinMicroPoresAndSweat(
+            BaseUV,
+            SweatAccumulation,
+            TimeSeconds,
+            LocalPoreNormal,
+            SkinRoughness,
+            SkinSpecular,
+            PoreCavity);
+
+        // Construir marco TBN para aplicar micro-poros y gotas de sudor a la normal del mundo
+        float3 N = normalize(WorldNormal);
+        float3 T = normalize(WorldTangent - N * dot(WorldTangent, N));
+        float3 B = cross(N, T);
+        Result.WorldNormal = normalize(T * LocalPoreNormal.x + B * LocalPoreNormal.y + N * LocalPoreNormal.z);
+
+        // Mezcla de barro de potrero sobre la piel con caída de dispersión subsuperficial (SSS)
+        float3 PitchMudSkinTint = float3(0.10f, 0.07f, 0.04f);
+        Result.BaseColor         = lerp(AlbedoInput * PoreCavity, PitchMudSkinTint, DirtMask * 0.88f);
+        Result.Roughness         = lerp(SkinRoughness, 0.78f, DirtMask);
+        Result.Specular          = lerp(SkinSpecular, 0.25f, DirtMask);
+        Result.SubsurfaceOpacity = saturate(0.85f * (1.0f - DirtMask));
+        Result.SubsurfaceColor   = float3(0.82f, 0.22f, 0.14f); // Dermis cálida bajo el sol sudamericano
+        Result.Anisotropy        = 0.0f;
+        Result.TangentDirection  = T;
+    }
+
+    return Result;
+}

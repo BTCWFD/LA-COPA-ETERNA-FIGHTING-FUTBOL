@@ -1,0 +1,181 @@
+// ============================================================================
+// CompetitiveRimAndInkOutline.ush
+// Unreal Engine 5.4+ - Street-Ink Hybrid PBR + Stylized Muralismo Sudamericano
+// ============================================================================
+// Uso en Material Graph (UE 5.4 Custom Material Expression):
+//   Include File Path: /Project/CompetitiveRimAndInkOutline.ush
+//   Main Function:     EvaluateCompetitiveStreetInkCharacter
+//   Post-Process:      EvaluatePPStreetInkImpact3Frame
+//
+// Mapa de Custom Primitive Data (CPD) inyectado por UFighterVisualFeedbackComponent:
+//   CPD[0..2] : Competitive Rim Color RGB (Blanco=Invuln, Oro=Armor, Carmesí=GuardCrush, Verde=Soroche)
+//   CPD[3]    : Competitive Rim Intensity HDR (0.0 = Neutral, >1.5 = Estado Activo)
+//   CPD[4]    : Ink Outline Thickness Scale (1.0 = Base, 1.45 = Counter-Hit / Impacto)
+//   CPD[5]    : Sweat Accumulation (0.0..1.0 -> Reduce Roughness y añade micro-gotas especulares)
+//   CPD[6]    : Pitch Mud & Grass Stain (0.0..1.0 -> Máscara procedural de barro de potrero en tren inferior)
+// ============================================================================
+
+#pragma once
+
+struct FStreetInkMaterialOutput
+{
+    float3 BaseColor;
+    float3 EmissiveColor;
+    float  Roughness;
+    float  Specular;
+    float  InkOutlineMask;
+};
+
+/**
+ * Generador procedural de trama de tinta ("Hatching" de mural callejero) sin texturas adicionales.
+ */
+float ComputeProceduralStreetHatching(float2 ScreenUV, float NdotL, float InkScale)
+{
+    float2 RotatedUV = float2(
+        ScreenUV.x * 0.8660254f - ScreenUV.y * 0.5f,
+        ScreenUV.x * 0.5f + ScreenUV.y * 0.8660254f);
+
+    float PrimaryStroke = sin(RotatedUV.x * 380.0f / max(InkScale, 0.5f)) * 0.5f + 0.5f;
+    float CrossStroke   = sin(RotatedUV.y * 260.0f / max(InkScale, 0.5f)) * 0.5f + 0.5f;
+
+    float ShadowTerminator = saturate(1.0f - smoothstep(0.12f, 0.42f, NdotL));
+    float DeepShadow       = saturate(1.0f - smoothstep(-0.15f, 0.10f, NdotL));
+
+    float HatchingPattern = lerp(1.0f, step(0.35f, PrimaryStroke), ShadowTerminator * 0.65f);
+    HatchingPattern       = lerp(HatchingPattern, step(0.55f, PrimaryStroke * CrossStroke), DeepShadow * 0.85f);
+
+    return HatchingPattern;
+}
+
+/**
+ * Función principal para el Custom Node de personajes (SkeletalMesh).
+ * Combina PBR de piel/tela sudamericana, sombreado entintado por bandas, barro de cancha y Rim Light competitivo.
+ */
+FStreetInkMaterialOutput EvaluateCompetitiveStreetInkCharacter(
+    float3 AlbedoPBR,
+    float3 WorldNormal,
+    float3 CameraVector,
+    float3 LightVector,
+    float2 ScreenAlignedUV,
+    float  VertexHeightNormalized, // 0.0 en botines, 1.0 en cabeza
+    float  BaseRoughness,
+    float3 CPD_RimColorRGB,        // CustomPrimitiveData[0..2]
+    float  CPD_RimIntensity,       // CustomPrimitiveData[3]
+    float  CPD_InkThicknessScale,  // CustomPrimitiveData[4]
+    float  CPD_SweatAmount,        // CustomPrimitiveData[5]
+    float  CPD_MudAmount)          // CustomPrimitiveData[6]
+{
+    FStreetInkMaterialOutput Out;
+
+    float3 N = normalize(WorldNormal);
+    float3 V = normalize(CameraVector);
+    float3 L = normalize(LightVector);
+
+    float NdotV = saturate(dot(N, V));
+    float NdotL = dot(N, L);
+
+    // 1. Contorno interior de Tinta China (Ink Fresnel con modulación por grosor CPD[4])
+    float FresnelTerm = 1.0f - NdotV;
+    float InkEdgeThreshold = lerp(0.76f, 0.64f, saturate((CPD_InkThicknessScale - 1.0f) * 1.5f));
+    float InkOutline = smoothstep(InkEdgeThreshold, InkEdgeThreshold + 0.04f, FresnelTerm);
+
+    // 2. Cuantización Cel-PBR Híbrida (2 bandas cálidas + trama de tinta en penumbra)
+    float CelSteppedLight = smoothstep(-0.05f, 0.08f, NdotL) * 0.55f + smoothstep(0.45f, 0.58f, NdotL) * 0.45f;
+    float HatchingMask = ComputeProceduralStreetHatching(ScreenAlignedUV, NdotL, CPD_InkThicknessScale);
+
+    // 3. Aplicación de Barro de Potrero y Manchas de Césped (concentrado en botines, medias y pantorrillas)
+    float HeightGradient = saturate(1.0f - (VertexHeightNormalized * 1.35f));
+    float MudNoise = frac(sin(dot(ScreenAlignedUV * 95.0f, float2(12.9898f, 78.233f))) * 43758.5453f);
+    float EffectiveMudMask = saturate(CPD_MudAmount * HeightGradient * smoothstep(0.22f, 0.78f, MudNoise + CPD_MudAmount * 0.4f));
+
+    float3 PitchMudColor = float3(0.11f, 0.08f, 0.05f); // Tierra húmeda sudamericana
+    float3 CompositeAlbedo = lerp(AlbedoPBR, PitchMudColor, EffectiveMudMask * 0.82f);
+
+    // Oscurecer con trazo de tinta negra en el borde de silueta y el entramado de sombra
+    float3 InkBlackColor = float3(0.015f, 0.012f, 0.018f);
+    CompositeAlbedo = CompositeAlbedo * lerp(0.42f, 1.0f, CelSteppedLight * HatchingMask);
+    Out.BaseColor   = lerp(CompositeAlbedo, InkBlackColor, InkOutline);
+
+    // 4. Respuesta Especular de Sudor Dinámico (CPD[5]) y Humedad del Barro
+    float SweatRoughnessDrop = saturate(CPD_SweatAmount) * 0.42f;
+    float MudRoughnessMod    = EffectiveMudMask * 0.15f;
+    Out.Roughness = clamp(BaseRoughness - SweatRoughnessDrop + MudRoughnessMod, 0.12f, 0.95f);
+    Out.Specular  = clamp(0.50f + saturate(CPD_SweatAmount) * 0.40f, 0.0f, 1.0f);
+
+    // 5. Rim Light Competitivo de Lectura en <16ms (Prioridad sobre la iluminación ambiental del estadio)
+    // Se activa nítidamente en el borde expuesto al jugador sin lavar los colores internos del personaje
+    float CompetitiveRimBand = smoothstep(0.58f, 0.72f, FresnelTerm) * (1.0f - InkOutline * 0.65f);
+    float RimLightDirectionalBoost = lerp(0.70f, 1.25f, saturate(NdotL * 0.5f + 0.5f));
+
+    Out.EmissiveColor  = CPD_RimColorRGB * (CPD_RimIntensity * CompetitiveRimBand * RimLightDirectionalBoost * 3.5f);
+    Out.InkOutlineMask = InkOutline;
+
+    return Out;
+}
+
+// ============================================================================
+// PP_StreetInk_Impact (Post-Process de 3 Frames para Counter-Hits / Wall Break)
+// ============================================================================
+// Guía de Integración en Post-Process Material (Domain: Post Process, Blendable Location: Before Tonemapping):
+//   - Se activa exactamente durante 3 frames (50ms) en el instante de un Heavy Counter-Hit, Guard Crush o Wall Break.
+//   - Aplica un filtro Kuwahara direccional de 4 cuadrantes (efecto brochazo de pintura mural) en la periferia,
+//     preservando nitidez 100% en el centro focal de impacto (Radius < 0.28) y remarcando bordes con operador Sobel.
+// ============================================================================
+
+float4 EvaluatePPStreetInkImpact3Frame(
+    float2 ScreenUV,
+    float2 InvViewSize,
+    float2 ImpactCenterUV,
+    float  ImpactNormalizedFrame, // 1.0 en Frame 1, 0.66 en Frame 2, 0.33 en Frame 3, 0.0 Inactivo
+    float3 CenterSceneColor,
+    float3 SampleNW,
+    float3 SampleNE,
+    float3 SampleSW,
+    float3 SampleSE,
+    float  DepthGradientSobel)
+{
+    if (ImpactNormalizedFrame <= 0.001f)
+    {
+        return float4(CenterSceneColor, 1.0f);
+    }
+
+    // Vector radial desde el punto exacto del trancazo / impacto
+    float2 RadialDelta = ScreenUV - ImpactCenterUV;
+    float  RadialDist  = length(RadialDelta);
+
+    // Zona central de lectura competitiva intacta; efecto pictórico en el anillo exterior
+    float PeripheralMask = smoothstep(0.18f, 0.62f, RadialDist) * saturate(ImpactNormalizedFrame);
+
+    // Selección del cuadrante de menor varianza cromática (Kuwahara Simplificado 2x2 de 1 ciclo)
+    float LumNW = dot(SampleNW, float3(0.299f, 0.587f, 0.114f));
+    float LumNE = dot(SampleNE, float3(0.299f, 0.587f, 0.114f));
+    float LumSW = dot(SampleSW, float3(0.299f, 0.587f, 0.114f));
+    float LumSE = dot(SampleSE, float3(0.299f, 0.587f, 0.114f));
+    float LumCenter = dot(CenterSceneColor, float3(0.299f, 0.587f, 0.114f));
+
+    float DiffNW = abs(LumNW - LumCenter);
+    float DiffNE = abs(LumNE - LumCenter);
+    float DiffSW = abs(LumSW - LumCenter);
+    float DiffSE = abs(LumSE - LumCenter);
+
+    float3 KuwaharaBrushColor = SampleNW;
+    float  MinDiff = DiffNW;
+
+    if (DiffNE < MinDiff) { MinDiff = DiffNE; KuwaharaBrushColor = SampleNE; }
+    if (DiffSW < MinDiff) { MinDiff = DiffSW; KuwaharaBrushColor = SampleSW; }
+    if (DiffSE < MinDiff) { MinDiff = DiffSE; KuwaharaBrushColor = SampleSE; }
+
+    float3 StylizedScene = lerp(CenterSceneColor, KuwaharaBrushColor, PeripheralMask * 0.85f);
+
+    // Trazo Sobel de Tinta de Impacto + Flash de Alto Contraste en el Frame 1
+    float SobelInkStroke = step(0.45f, DepthGradientSobel * (1.0f + PeripheralMask * 1.5f));
+    float3 ImpactInkColor = float3(0.02f, 0.01f, 0.03f);
+
+    float3 FinalColor = lerp(StylizedScene, ImpactInkColor, SobelInkStroke * saturate(ImpactNormalizedFrame));
+
+    // Realce de saturación muralista durante los 3 frames del impacto
+    float FinalLum = dot(FinalColor, float3(0.299f, 0.587f, 0.114f));
+    FinalColor = lerp(float3(FinalLum, FinalLum, FinalLum), FinalColor, 1.0f + 0.35f * ImpactNormalizedFrame);
+
+    return float4(FinalColor, 1.0f);
+}

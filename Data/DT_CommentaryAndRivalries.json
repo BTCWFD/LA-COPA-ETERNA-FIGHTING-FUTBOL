@@ -1,0 +1,484 @@
+{
+  "SchemaVersion": "1.0.0-CONMEBOL-AUDIO",
+  "CommentaryBoothSystem": {
+    "PriorityTiers": [
+      {
+        "TierLevel": 1,
+        "EnumName": "NeutralChatter",
+        "PriorityScore": 20,
+        "QueueTTLMilliseconds": 300,
+        "SidechainDuckingdB": -2.5,
+        "Description": "Datos históricos, análisis táctico en neutro y ambiente de estadio."
+      },
+      {
+        "TierLevel": 2,
+        "EnumName": "ComboAction",
+        "PriorityScore": 50,
+        "QueueTTLMilliseconds": 150,
+        "SidechainDuckingdB": -4.5,
+        "Description": "Secuencias de presión, Gambeta Cancels, el coro de ¡OLÉ! y confirmaciones de combo."
+      },
+      {
+        "TierLevel": 3,
+        "EnumName": "CriticalMoment",
+        "PriorityScore": 80,
+        "QueueTTLMilliseconds": 50,
+        "SidechainDuckingdB": -6.0,
+        "Description": "Counter-Hits pesados, Guard Crush (Tarjeta Roja), Wall Break y paradas imposibles."
+      },
+      {
+        "TierLevel": 4,
+        "EnumName": "UltimateGoalKO",
+        "PriorityScore": 100,
+        "QueueTTLMilliseconds": 0,
+        "SidechainDuckingdB": -9.0,
+        "Description": "Activación de Grito Sagrado Nivel 3, V.A.R. Rewind del Jefe y el Grito de Gol de KO."
+      }
+    ],
+    "InterruptStingers": [
+      {
+        "StingerID": "STG_INT_01",
+        "WwiseEvent": "Play_VO_Relator_Interrupt_01",
+        "Speaker": "Relator_PlayByPlay",
+        "DurationFrames": 24,
+        "TextES": "¡Perdón que te corte, mira qué jugada!"
+      },
+      {
+        "StingerID": "STG_INT_02",
+        "WwiseEvent": "Play_VO_Relator_Interrupt_02",
+        "Speaker": "Relator_PlayByPlay",
+        "DurationFrames": 20,
+        "TextES": "¡Atención que se viene en el área!"
+      },
+      {
+        "StingerID": "STG_INT_03",
+        "WwiseEvent": "Play_VO_Relator_Interrupt_03",
+        "Speaker": "Relator_PlayByPlay",
+        "DurationFrames": 22,
+        "TextES": "¡Pero cuidado, que quedó pagando la defensa!"
+      },
+      {
+        "StingerID": "STG_INT_04",
+        "WwiseEvent": "Play_VO_Comentarista_Interrupt_04",
+        "Speaker": "Comentarista_Tactico",
+        "DurationFrames": 21,
+        "TextES": "¡Pará, pará, pará! ¡Viste lo que acaba de inventar!"
+      }
+    ],
+    "GeneralCommentaryLines": [
+      {
+        "LineID": "COM_L1_NEUTRAL_01",
+        "WwiseEvent": "Play_VO_Neutral_MidfieldStudy",
+        "Priority": "NeutralChatter",
+        "PriorityScore": 20,
+        "TTLMs": 300,
+        "Speaker": "Comentarista_Tactico",
+        "DurationFrames": 135,
+        "TextES": "Se estudian en la mitad de la cancha. Nadie quiere regalar ni medio centímetro de potrero en esta final."
+      },
+      {
+        "LineID": "COM_L1_NEUTRAL_02",
+        "WwiseEvent": "Play_VO_Neutral_AltitudeLaPaz",
+        "Priority": "NeutralChatter",
+        "PriorityScore": 20,
+        "TTLMs": 300,
+        "Speaker": "Comentarista_Tactico",
+        "DurationFrames": 140,
+        "TextES": "A tres mil seiscientos metros la pelota no dobla y el aire quema los pulmones; acá cada gambeta cuesta el doble."
+      },
+      {
+        "LineID": "COM_L1_NEUTRAL_03",
+        "WwiseEvent": "Play_VO_Neutral_CrowdBoiling",
+        "Priority": "NeutralChatter",
+        "PriorityScore": 20,
+        "TTLMs": 300,
+        "Speaker": "Relator_PlayByPlay",
+        "DurationFrames": 120,
+        "TextES": "¡Late el cemento, tiemblan las populares! ¡Esto no es un partido, es la historia viva del continente!"
+      },
+      {
+        "LineID": "COM_L2_COMBO_01",
+        "WwiseEvent": "Play_VO_Combo_TikiTakaPotrero",
+        "Priority": "ComboAction",
+        "PriorityScore": 50,
+        "TTLMs": 150,
+        "Speaker": "Relator_PlayByPlay",
+        "DurationFrames": 95,
+        "TextES": "¡Toque, toque y pared! ¡Lo tiene acorralado contra las cuerdas del área chica!"
+      },
+      {
+        "LineID": "COM_L2_COMBO_02",
+        "WwiseEvent": "Play_VO_Combo_GambetaOle",
+        "Priority": "ComboAction",
+        "PriorityScore": 50,
+        "TTLMs": 150,
+        "Speaker": "Comentarista_Tactico",
+        "DurationFrames": 100,
+        "TextES": "¡Qué cintura, por favor! Lo dejó buscando el número de matrícula con esa gambeta en una baldosa."
+      },
+      {
+        "LineID": "COM_L3_CRITICAL_COUNTER",
+        "WwiseEvent": "Play_VO_Critical_CounterHit",
+        "Priority": "CriticalMoment",
+        "PriorityScore": 80,
+        "TTLMs": 50,
+        "Speaker": "Relator_PlayByPlay",
+        "DurationFrames": 85,
+        "TextES": "¡CRUCE DEMOLEDOR A CONTRAPIÉ! ¡Lo agarró saliendo y le rompió todo el esquema!"
+      },
+      {
+        "LineID": "COM_L3_CRITICAL_WALLBREAK",
+        "WwiseEvent": "Play_VO_Critical_WallBreak",
+        "Priority": "CriticalMoment",
+        "PriorityScore": 80,
+        "TTLMs": 50,
+        "Speaker": "Relator_PlayByPlay",
+        "DurationFrames": 110,
+        "TextES": "¡REVENTÓ EL ALAMBRADO! ¡Lo mandó directo de la cancha a los adoquines del barrio!"
+      },
+      {
+        "LineID": "COM_L3_CRITICAL_RED_CARD_CRUSH",
+        "WwiseEvent": "Play_VO_Critical_GuardCrush",
+        "Priority": "CriticalMoment",
+        "PriorityScore": 80,
+        "TTLMs": 50,
+        "Speaker": "Comentarista_Tactico",
+        "DurationFrames": 90,
+        "TextES": "¡Guardia rota! ¡Eso era tarjeta roja directa en cualquier reglamento del mundo!"
+      },
+      {
+        "LineID": "COM_L4_ULTIMATE_GOAL_KO",
+        "WwiseEvent": "Play_VO_Ultimate_GoalScreamKO",
+        "Priority": "UltimateGoalKO",
+        "PriorityScore": 100,
+        "TTLMs": 0,
+        "Speaker": "Relator_PlayByPlay",
+        "DurationFrames": 180,
+        "TextES": "¡GOOOOOOOOLAZO HISTÓRICO! ¡CIERREN EL ESTADIO, APAGUEN LAS LUCES, QUE ACABA DE CAER UN RAYO EN LA RED!"
+      }
+    ],
+    "SignatureMoveTriggers": [
+      {
+        "TriggerID": "TRIG_LOCO_ESCORPION",
+        "FighterID": "LOCO_CO",
+        "MoveID": "LOCO_ESCORPION",
+        "WwiseEvent": "Play_VO_Sig_Loco_Escorpion",
+        "Priority": "CriticalMoment",
+        "PriorityScore": 80,
+        "TTLMs": 50,
+        "Speaker": "Relator_PlayByPlay",
+        "TextES": "¡EL ESCORPIÓN! ¡Está completamente demente, la sacó de taco en el aire como en el noventa y cinco!"
+      },
+      {
+        "TriggerID": "TRIG_PULGA_CORONACION",
+        "FighterID": "PULGA_AR",
+        "MoveID": "PULGA_CORONACION",
+        "WwiseEvent": "Play_VO_Sig_Pulga_Coronacion",
+        "Priority": "UltimateGoalKO",
+        "PriorityScore": 100,
+        "TTLMs": 0,
+        "Speaker": "Relator_PlayByPlay",
+        "TextES": "¡ARRANCA POR LA DERECHA EL GENIO DEL FÚTBOL MUNDIAL! ¡CORONACIÓN ETERNA PARA SIEMPRE!"
+      },
+      {
+        "TriggerID": "TRIG_PISTOLERO_MANOSALVADORA",
+        "FighterID": "PISTOLERO_UY",
+        "MoveID": "PISTOLERO_MANOSALVADORA",
+        "WwiseEvent": "Play_VO_Sig_Pistolero_ManoSalvadora",
+        "Priority": "CriticalMoment",
+        "PriorityScore": 80,
+        "TTLMs": 50,
+        "Speaker": "Comentarista_Tactico",
+        "TextES": "¡LA MANO SALVADORA EN LA LÍNEA! ¡Se sacrificó por el escudo con pura garra charrúa!"
+      },
+      {
+        "TriggerID": "TRIG_CANON_BATI_CHARGED",
+        "FighterID": "CANON_AR",
+        "MoveID": "CANON_BATI_CHARGED",
+        "WwiseEvent": "Play_VO_Sig_Canon_BatiCanonazo",
+        "Priority": "CriticalMoment",
+        "PriorityScore": 80,
+        "TTLMs": 50,
+        "Speaker": "Relator_PlayByPlay",
+        "TextES": "¡SUELTA EL BATI-CAÑONAZO! ¡Si te agarra ese misil te mete con pelota y todo adentro del arco!"
+      },
+      {
+        "TriggerID": "TRIG_MAESTRO_TRES_DEDOS",
+        "FighterID": "MAESTRO_PE",
+        "MoveID": "MAESTRO_TRES_DEDOS_ALTO",
+        "WwiseEvent": "Play_VO_Sig_Maestro_TresDedos",
+        "Priority": "ComboAction",
+        "PriorityScore": 50,
+        "TTLMs": 150,
+        "Speaker": "Comentarista_Tactico",
+        "TextES": "¡Acarició el cuero con tres dedos! Poesía pura, un guante de seda en el botín peruano."
+      },
+      {
+        "TriggerID": "TRIG_FENOMENO_PEDALADA",
+        "FighterID": "FENOMENO_BR",
+        "MoveID": "FEN_ULTIMATE",
+        "WwiseEvent": "Play_VO_Sig_Fenomeno_Ultimate",
+        "Priority": "UltimateGoalKO",
+        "PriorityScore": 100,
+        "TTLMs": 0,
+        "Speaker": "Relator_PlayByPlay",
+        "TextES": "¡IMPACTO FENOMENAL! ¡Bicicleta, recorte al arquero y definición de otro planeta!"
+      },
+      {
+        "TriggerID": "TRIG_BOSS_VAR_REWIND",
+        "FighterID": "BOSS_VAR_ZERO",
+        "MoveID": "VAR_REWIND_90F",
+        "WwiseEvent": "Play_VO_Boss_VAR_Rewind",
+        "Priority": "UltimateGoalKO",
+        "PriorityScore": 100,
+        "TTLMs": 0,
+        "Speaker": "Relator_PlayByPlay",
+        "TextES": "¡NO ME LO DIGAS! ¡EL JUEZ SUPREMO HIZO EL GESTO DE LA PANTALLA Y REBOBINÓ EL TIEMPO!"
+      }
+    ]
+  },
+  "ClassicRivalriesClashIntros": [
+    {
+      "RivalryID": "RIVALRY_01_CLASICO_SUDAMERICANO",
+      "Title": "El Clásico de los Siglos: Brasil vs Argentina",
+      "FighterA": "FENOMENO_BR",
+      "FighterB": "CANON_AR",
+      "StageRecommendation": "STAGE_MARACANA",
+      "DialogueSequence": [
+        {
+          "Speaker": "FENOMENO_BR",
+          "WwiseEvent": "Play_Intro_Fenomeno_vs_Canon_1",
+          "TextES": "Dos rodillas rotas no alcanzaron para frenarme. ¿Crees que tus redes van a aguantar mi bicicleta?"
+        },
+        {
+          "Speaker": "CANON_AR",
+          "WwiseEvent": "Play_Intro_Canon_vs_Fenomeno_2",
+          "TextES": "Yo no hago malabares, Fenómeno. Cuando pateo al arco, hasta los postes piden cambio."
+        },
+        {
+          "Speaker": "FENOMENO_BR",
+          "WwiseEvent": "Play_Intro_Fenomeno_vs_Canon_3",
+          "TextES": "Entonces sonríe para la foto... porque hoy bailamos en el Maracanã."
+        }
+      ]
+    },
+    {
+      "RivalryID": "RIVALRY_02_CLASICO_RIO_DE_LA_PLATA",
+      "Title": "Sangre del Río de la Plata: Argentina vs Uruguay",
+      "FighterA": "PULGA_AR",
+      "FighterB": "PISTOLERO_UY",
+      "StageRecommendation": "STAGE_CENTENARIO",
+      "DialogueSequence": [
+        {
+          "Speaker": "PISTOLERO_UY",
+          "WwiseEvent": "Play_Intro_Pistolero_vs_Pulga_1",
+          "TextES": "Tomamos mate juntos toda la vida, hermano... pero cuando suena el silbato no conozco amigos."
+        },
+        {
+          "Speaker": "PULGA_AR",
+          "WwiseEvent": "Play_Intro_Pulga_vs_Pistolero_2",
+          "TextES": "Ya te conozco las mañas, Lucho. No pestañees, que por donde ves hueco ya pasé dos veces."
+        },
+        {
+          "Speaker": "PISTOLERO_UY",
+          "WwiseEvent": "Play_Intro_Pistolero_vs_Pulga_3",
+          "TextES": "¡Que se pique ese potrero entonces! ¡El que pierde paga el asado!"
+        }
+      ]
+    },
+    {
+      "RivalryID": "RIVALRY_03_MAGIA_Y_FANTASIA",
+      "Title": "Cumbre de Magos: O Bruxo vs El Pibe",
+      "FighterA": "BRUXO_BR",
+      "FighterB": "PIBE_CO",
+      "StageRecommendation": "STAGE_METROPOLITANO",
+      "DialogueSequence": [
+        {
+          "Speaker": "PIBE_CO",
+          "WwiseEvent": "Play_Intro_Pibe_vs_Bruxo_1",
+          "TextES": "Todo bien con las sonrisas y el carnaval, compadre, pero en mi cancha el ritmo lo marco yo al primer toque."
+        },
+        {
+          "Speaker": "BRUXO_BR",
+          "WwiseEvent": "Play_Intro_Bruxo_vs_Pibe_2",
+          "TextES": "¡Joga bonito, maestro! Mira para allá... porque la pelota ya te pasó por entre las piernas."
+        },
+        {
+          "Speaker": "PIBE_CO",
+          "WwiseEvent": "Play_Intro_Pibe_vs_Bruxo_3",
+          "TextES": "Todo bien, todo bien... ¡vamos a ver quién es el dueño de la diez!"
+        }
+      ]
+    },
+    {
+      "RivalryID": "RIVALRY_04_DUELO_DE_ARQUEROS",
+      "Title": "Rebeldes del Arco: El Loco vs El Bulldog",
+      "FighterA": "LOCO_CO",
+      "FighterB": "BULLDOG_PY",
+      "StageRecommendation": "STAGE_DEFENSORES",
+      "DialogueSequence": [
+        {
+          "Speaker": "BULLDOG_PY",
+          "WwiseEvent": "Play_Intro_Bulldog_vs_Loco_1",
+          "TextES": "Ya dibujé el bulldog en mi buzo y clavé la pelota en el punto de tiro libre. Salí del área si te animás."
+        },
+        {
+          "Speaker": "LOCO_CO",
+          "WwiseEvent": "Play_Intro_Loco_vs_Bulldog_2",
+          "TextES": "¿El área? ¡Mi área empieza en la mitad de la cancha, paraguayo! ¡Tírala que te la devuelvo de escorpión!"
+        },
+        {
+          "Speaker": "BULLDOG_PY",
+          "WwiseEvent": "Play_Intro_Bulldog_vs_Loco_3",
+          "TextES": "¡Hoy van a volar chispas en los tres palos!"
+        }
+      ]
+    },
+    {
+      "RivalryID": "RIVALRY_05_CLASICO_DEL_PACIFICO",
+      "Title": "El Clásico del Pacífico: Chile vs Perú",
+      "FighterA": "REY_CL",
+      "FighterB": "MAESTRO_PE",
+      "StageRecommendation": "STAGE_NACIONAL_LIMA",
+      "DialogueSequence": [
+        {
+          "Speaker": "REY_CL",
+          "WwiseEvent": "Play_Intro_Rey_vs_Maestro_1",
+          "TextES": "Acá llegó el Rey a trancar con la cabeza si hace falta. Tu fútbol de salón no aguanta mi presión."
+        },
+        {
+          "Speaker": "MAESTRO_PE",
+          "WwiseEvent": "Play_Intro_Maestro_vs_Rey_2",
+          "TextES": "La fuerza bruta corre detrás de la pelota, muchacho. La elegancia hace que la pelota corra por ti."
+        },
+        {
+          "Speaker": "REY_CL",
+          "WwiseEvent": "Play_Intro_Rey_vs_Maestro_3",
+          "TextES": "¡Eso quiero verlo cuando sientas el primer trancazo!"
+        }
+      ]
+    }
+  ],
+  "StoryModeChapters": [
+    {
+      "ChapterNumber": 1,
+      "ChapterID": "CH01_EL_APAGON_DE_LOS_POTREROS",
+      "Title": "Capítulo 1: El Apagón de los Potreros",
+      "StageID": "STAGE_BOMBONERA",
+      "PlayableFighter": "PULGA_AR",
+      "OpponentFighter": "CANON_AR",
+      "Synopsis": "El conglomerado arbitral sintético V.A.R. - ZERO clausura las canchas de barrio de Sudamérica imponiendo drones de geometría perfecta. En La Boca, La Pulga debe despertar el espíritu combativo de El Cañón para encender la rebelión.",
+      "KeyDialogue": "¡Si nos quitan el barro y la gambeta, nos quitan el alma! ¡Pateá como en los noventa, Bati, que todavía hay partido!"
+    },
+    {
+      "ChapterNumber": 2,
+      "ChapterID": "CH02_SAMBA_BAJO_VIGILANCIA",
+      "Title": "Capítulo 2: Samba Bajo Vigilancia",
+      "StageID": "STAGE_MARACANA",
+      "PlayableFighter": "FENOMENO_BR",
+      "OpponentFighter": "BRUXO_BR",
+      "Synopsis": "En un Maracanã sitiado por sensores láser de fuera de juego, O Fenômeno y O Bruxo cruzan botines en un duelo clandestino para romper el bloqueo acústico a punta de batucada y elásticas.",
+      "KeyDialogue": "Ellos calculan probabilidades con algoritmos... nosotros inventamos donde no existe ángulo."
+    },
+    {
+      "ChapterNumber": 3,
+      "ChapterID": "CH03_GARRA_EN_EL_CENTENARIO",
+      "Title": "Capítulo 3: Garra en el Centenario",
+      "StageID": "STAGE_CENTENARIO",
+      "PlayableFighter": "PISTOLERO_UY",
+      "OpponentFighter": "MATADOR_UY",
+      "Synopsis": "Bajo la neblina helada del Río de la Plata, El Pistolero y El Matador defienden las reliquias de 1930 frente al escuadrón automatizado que intenta borrar los registros de las primeras gestas mundiales.",
+      "KeyDialogue": "Acá nacieron las copas cuando se jugaba con tiento de cuero. ¡Por encima de nuestro cadáver se llevan la historia!"
+    },
+    {
+      "ChapterNumber": 4,
+      "ChapterID": "CH04_EL_HORNO_DE_BARRANQUILLA",
+      "Title": "Capítulo 4: El Horno de Barranquilla",
+      "StageID": "STAGE_METROPOLITANO",
+      "PlayableFighter": "PIBE_CO",
+      "OpponentFighter": "LOCO_CO",
+      "Synopsis": "A 40 grados bajo el sol caribeño, El Pibe y El Loco demuestran que ningún sistema predictivo puede anticipar a un arquero que sale jugando de escorpión hasta el círculo central.",
+      "KeyDialogue": "La máquina dice que salir del arco tiene 99% de riesgo... ¡por eso mismo es que sale tan sabroso!"
+    },
+    {
+      "ChapterNumber": 5,
+      "ChapterID": "CH05_TORMENTA_SOBRE_LOS_ANDES",
+      "Title": "Capítulo 5: Tormenta sobre los Andes",
+      "StageID": "STAGE_NUNOA",
+      "PlayableFighter": "BAMBAM_CL",
+      "OpponentFighter": "REY_CL",
+      "Synopsis": "Frente a la cordillera nevada de Santiago, el dominio aéreo clásico de Bam-Bam choca con la furia incansable de El Rey para forjar la alianza trasandina.",
+      "KeyDialogue": "Por arriba mando yo y por abajo trancás vos. ¡Que vengan esos jueces de lata!"
+    },
+    {
+      "ChapterNumber": 6,
+      "ChapterID": "CH06_LAS_TRINCHERAS_DE_SAJONIA",
+      "Title": "Capítulo 6: Las Trincheras de Sajonia",
+      "StageID": "STAGE_DEFENSORES",
+      "PlayableFighter": "BULLDOG_PY",
+      "OpponentFighter": "CANON_AR",
+      "Synopsis": "En medio de una tormenta eléctrica en Asunción, El Bulldog convierte el área grande en un fortín inexpugnable y reta a El Cañón a un duelo de artillería pesada que derriba los muros del estadio.",
+      "KeyDialogue": "¡Pateá todo lo fuerte que quieras! ¡De Sajonia no sale nadie con los tres puntos!"
+    },
+    {
+      "ChapterNumber": 7,
+      "ChapterID": "CH07_POESIA_EN_LA_GARUA",
+      "Title": "Capítulo 7: Poesía en la Garúa",
+      "StageID": "STAGE_NACIONAL_LIMA",
+      "PlayableFighter": "MAESTRO_PE",
+      "OpponentFighter": "BRUXO_BR",
+      "Synopsis": "Envueltos en la niebla limeña, El Maestro y O Bruxo ejecutan una cátedra de paredes cortas, caños y tiros de tres dedos que sobrecargan los sensores ópticos de V.A.R. - ZERO.",
+      "KeyDialogue": "Cuando la pelota se trata con cariño, la niebla se abre sola."
+    },
+    {
+      "ChapterNumber": 8,
+      "ChapterID": "CH08_EXPRESO_DE_LA_MITAD_DEL_MUNDO",
+      "Title": "Capítulo 8: Expreso de la Mitad del Mundo",
+      "StageID": "STAGE_ATAHUALPA",
+      "PlayableFighter": "TREN_EC",
+      "OpponentFighter": "LOCO_CO",
+      "Synopsis": "Bajo la lluvia de ceniza volcánica en Quito, El Tren Amazónico rompe la barrera de velocidad en la banda derecha para interceptar el convoy central del Tribunal Sintético.",
+      "KeyDialogue": "¡En la línea ecuatorial no hay sombra ni freno que alcance al Tren!"
+    },
+    {
+      "ChapterNumber": 9,
+      "ChapterID": "CH09_FRANCOTIRADOR_DEL_AVILA",
+      "Title": "Capítulo 9: Francotirador del Ávila",
+      "StageID": "STAGE_AVILA",
+      "PlayableFighter": "HURACAN_VE",
+      "OpponentFighter": "BULLDOG_PY",
+      "Synopsis": "Al caer la noche neón sobre Caracas, la Zurda de Oro de El Huracán Vinotinto derriba los drones de vigilancia con tiros libres de efecto Folha Seca imposibles de calcular.",
+      "KeyDialogue": "Donde pongo el ojo a cuarenta metros, cae la pelota como una piedra."
+    },
+    {
+      "ChapterNumber": 10,
+      "ChapterID": "CH10_DONDE_MUERE_EL_OXIGENO",
+      "Title": "Capítulo 10: Donde Muere el Oxígeno (3600m)",
+      "StageID": "STAGE_HERNANDO_SILES",
+      "PlayableFighter": "DIABLO_BO",
+      "OpponentFighter": "GENERAL_FR",
+      "Synopsis": "El emisario europeo invitado, Le Général, sube al Hernando Siles de La Paz para probar a los campeones sudamericanos, enfrentándose al soroche implacable de El Diablo Andino.",
+      "KeyDialogue": "Tu elegancia táctica es sublime en el llano, Général... pero acá arriba mandan las nubes."
+    },
+    {
+      "ChapterNumber": 11,
+      "ChapterID": "CH11_LA_ LEY_DE_HIERRO_DEL_VAR",
+      "Title": "Capítulo 11: La Ley de Hierro del V.A.R.",
+      "StageID": "STAGE_MARACANA",
+      "PlayableFighter": "FENOMENO_BR",
+      "OpponentFighter": "BOSS_VAR_ZERO",
+      "Synopsis": "V.A.R. - ZERO desciende sobre la cancha proyectando láseres milimétricos de fuera de juego y anulando cada ataque predecible. Las leyendas descubren que solo el caos improvisado del potrero puede quebrar su lectura.",
+      "KeyDialogue": "INFRACCIÓN DETECTADA: EXCESO DE PASIÓN SUDAMERICANA. INICIANDO PURGA REGLAMENTARIA."
+    },
+    {
+      "ChapterNumber": 12,
+      "ChapterID": "CH12_TIEMPO_DE_DESCUENTO_INFINITO",
+      "Title": "Capítulo 12: Tiempo de Descuento Infinito (La Copa Eterna)",
+      "StageID": "STAGE_BOMBONERA",
+      "PlayableFighter": "PULGA_AR",
+      "OpponentFighter": "BOSS_VAR_ZERO",
+      "Synopsis": "En Fase 2, V.A.R. - ZERO rebobina el tiempo 90 frames para borrar la derrota. Tras encadenar tres Gambetas Perfectas de puro potrero, el sistema entra en cortocircuito y las 10 naciones CONMEBOL se unen en el Grito Sagrado definitivo.",
+      "KeyDialogue": "¡Rebobiná todas las veces que quieras, máquina! ¡En el potrero te vamos a volver a gambetear!"
+    }
+  ]
+}

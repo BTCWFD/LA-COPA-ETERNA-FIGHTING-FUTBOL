@@ -1,0 +1,19 @@
+# Unreal Engine 5.4+ Ignore Rules (while keeping our generated Assets/Data/Shaders/Audio/Source)
+Binaries/
+DerivedDataCache/
+Intermediate/
+Saved/
+Build/
+.vs/
+.vscode/
+*.VC.db
+*.opensdf
+*.opendb
+*.sdf
+*.sln
+*.suo
+*.xcodeproj
+*.xcworkspace
+__pycache__/
+*.pyc
+.DS_Store

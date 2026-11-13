@@ -1,0 +1,112 @@
+[
+  {
+    "StageID": "STAGE_MARACANA",
+    "DisplayName": "Templo do Maracanã (Río de Janeiro)",
+    "Country": "Brazil",
+    "ZoneAWidth": 2500,
+    "WallHealth": 3,
+    "ClimateLighting": "Noche despejada a fuegos artificiales",
+    "BPM": 115.0,
+    "ZoneAName": "El Círculo Central Mítico",
+    "ZoneBName": "Explanada de Samba y Vestuarios Históricos"
+  },
+  {
+    "StageID": "STAGE_BOMBONERA",
+    "DisplayName": "La Caldera de La Boca (Buenos Aires)",
+    "Country": "Argentina",
+    "ZoneAWidth": 2200,
+    "WallHealth": 4,
+    "ClimateLighting": "Tarde dorada a tormenta de papelitos",
+    "BPM": 128.0,
+    "ZoneAName": "El Área Chica Vibrante",
+    "ZoneBName": "Calle Caminito Nocturna"
+  },
+  {
+    "StageID": "STAGE_CENTENARIO",
+    "DisplayName": "Monumento Centenario (Montevideo)",
+    "Country": "Uruguay",
+    "ZoneAWidth": 2400,
+    "WallHealth": 3,
+    "ClimateLighting": "Neblina del Río de la Plata a lluvia",
+    "BPM": 120.0,
+    "ZoneAName": "Frente a la Torre de los Homenajes",
+    "ZoneBName": "Museo del Fútbol y Túnel Subterráneo"
+  },
+  {
+    "StageID": "STAGE_METROPOLITANO",
+    "DisplayName": "Coloso de Barranquilla (Metropolitano)",
+    "Country": "Colombia",
+    "ZoneAWidth": 2500,
+    "WallHealth": 3,
+    "ClimateLighting": "Sol caribeño abrasador (40°C) a aguacero",
+    "BPM": 130.0,
+    "ZoneAName": "El Horno Caribeño",
+    "ZoneBName": "Carnaval Exterior del Estadio"
+  },
+  {
+    "StageID": "STAGE_NUNOA",
+    "DisplayName": "Coliseo de Ñuñoa (Santiago)",
+    "Country": "Chile",
+    "ZoneAWidth": 2400,
+    "WallHealth": 3,
+    "ClimateLighting": "Atardecer cordillerano a noche fría",
+    "BPM": 125.0,
+    "ZoneAName": "Bajo la Cordillera Nevada",
+    "ZoneBName": "El Memorial y Pista Atlética Exterior"
+  },
+  {
+    "StageID": "STAGE_DEFENSORES",
+    "DisplayName": "El Fortín de Sajonia (Defensores del Chaco - Asunción)",
+    "Country": "Paraguay",
+    "ZoneAWidth": 2300,
+    "WallHealth": 4,
+    "ClimateLighting": "Noche húmeda a tormenta eléctrica",
+    "BPM": 120.0,
+    "ZoneAName": "Las Trincheras Guaraníes",
+    "ZoneBName": "Sala de Prensa y Pasillo de Honor"
+  },
+  {
+    "StageID": "STAGE_NACIONAL_LIMA",
+    "DisplayName": "Templo José Díaz (Estadio Nacional de Lima)",
+    "Country": "Peru",
+    "ZoneAWidth": 2400,
+    "WallHealth": 3,
+    "ClimateLighting": "Niebla costera (Garúa) a noche estrellada",
+    "BPM": 118.0,
+    "ZoneAName": "La Joya Iluminada",
+    "ZoneBName": "Paseo de los Héroes y Explanada Exterior"
+  },
+  {
+    "StageID": "STAGE_ATAHUALPA",
+    "DisplayName": "El Volcán de Quito (Atahualpa / Casa Blanca)",
+    "Country": "Ecuador",
+    "ZoneAWidth": 2450,
+    "WallHealth": 3,
+    "ClimateLighting": "Cielo ecuatorial a lluvia con ceniza",
+    "BPM": 135.0,
+    "ZoneAName": "En la Línea Ecuatorial",
+    "ZoneBName": "Mirador Andino del Teleférico"
+  },
+  {
+    "StageID": "STAGE_AVILA",
+    "DisplayName": "El Monumental del Ávila (Caracas)",
+    "Country": "Venezuela",
+    "ZoneAWidth": 2400,
+    "WallHealth": 3,
+    "ClimateLighting": "Crepúsculo caribeño a noche neón",
+    "BPM": 170.0,
+    "ZoneAName": "Frente al Cerro El Ávila",
+    "ZoneBName": "Terraza VIP y Helipuerto del Estadio"
+  },
+  {
+    "StageID": "STAGE_HERNANDO_SILES",
+    "DisplayName": "El Nido del Cóndor - 3600m (Hernando Siles - La Paz)",
+    "Country": "Bolivia",
+    "ZoneAWidth": 2600,
+    "WallHealth": 2,
+    "ClimateLighting": "Cielo rarificado a tormenta de granizo",
+    "BPM": 110.0,
+    "ZoneAName": "La Cancha sobre las Nubes",
+    "ZoneBName": "Plaza del Monolito Andino"
+  }
+]

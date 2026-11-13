@@ -1,0 +1,52 @@
+{
+	"FileVersion": 3,
+	"EngineAssociation": "5.4",
+	"Category": "Fighting",
+	"Description": "La Copa Eterna: Sangre y Potrero - AAA Deterministic 2.5D South American Football Fighting Game (60Hz Q32.32 Fixed-Point + EOS GGPO Rollback)",
+	"Modules": [
+		{
+			"Name": "SouthAmericaFightersCore",
+			"Type": "Runtime",
+			"LoadingPhase": "Default",
+			"AdditionalDependencies": [
+				"Engine",
+				"CoreUObject",
+				"AIModule",
+				"EnhancedInput",
+				"CommonUI",
+				"UMG"
+			]
+		}
+	],
+	"Plugins": [
+		{
+			"Name": "EnhancedInput",
+			"Enabled": true
+		},
+		{
+			"Name": "CommonUI",
+			"Enabled": true
+		},
+		{
+			"Name": "Niagara",
+			"Enabled": true
+		},
+		{
+			"Name": "ChaosCloth",
+			"Enabled": true
+		},
+		{
+			"Name": "ChaosClothAssetEngine",
+			"Enabled": true
+		},
+		{
+			"Name": "OnlineSubsystemEOS",
+			"Enabled": true
+		}
+	],
+	"TargetPlatforms": [
+		"Win64",
+		"PS5",
+		"XSX"
+	]
+}

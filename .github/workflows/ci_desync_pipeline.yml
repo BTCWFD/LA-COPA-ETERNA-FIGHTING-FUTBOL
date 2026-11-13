@@ -1,0 +1,110 @@
+name: SAF Deterministic Rollback & Anti-Desync CI/CD
+
+on:
+  push:
+    branches: [ "main", "develop", "release/*" ]
+    paths:
+      - "Source/SouthAmericaFightersCore/**"
+      - "Data/**"
+      - "Scripts/**"
+      - ".github/workflows/ci_desync_pipeline.yml"
+  pull_request:
+    branches: [ "main", "develop" ]
+
+permissions:
+  contents: read
+
+jobs:
+  # ============================================================================
+  # STAGE 1: Auditoría Estática de Determinismo y Compilación Cruzada C++20
+  # ============================================================================
+  stage1-deterministic-audit:
+    name: "Stage 1: Determinism & Cross-Platform Audit (No Fast-Math)"
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Verify Zero Floating-Point Physics in Core Simulation Headers
+        run: |
+          echo "Verificando que FFighterDeterministicStatePOD utilice exclusivamente FFixedPoint Q48.16..."
+          if grep -rnE "float |double " Source/SouthAmericaFightersCore/Public/FixedPointTypes.h Source/SouthAmericaFightersCore/Public/DeterministicFighterStateMachine.h | grep -v "FromFloat"; then
+            echo "ERROR: Se detectaron variables de punto flotante nativo en el estado determinista."
+            exit 1
+          fi
+          echo "Auditoría de cabeceras de punto fijo superada."
+
+      - name: Validate JSON DataTables Integrity (Frame Data, Roster & CONMEBOL Stages)
+        run: |
+          python3 -c "
+          import json, sys
+          for path in ['Data/DT_FrameDataUniversal.json', 'Data/DT_SouthAmericaRoster.json', 'Data/DT_StagesCONMEBOL.json']:
+              with open(path, 'r', encoding='utf-8') as f:
+                  data = json.load(f)
+              assert len(data) > 0, f'{path} está vacío'
+              print(f'[OK] {path}: {len(data)} registros validados.')
+          "
+
+  # ============================================================================
+  # STAGE 2: Suite de Regresión de Replays Deterministas por Lotes
+  # ============================================================================
+  stage2-replay-regression:
+    name: "Stage 2: Deterministic Replay Batch Regression"
+    needs: stage1-deterministic-audit
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Execute Golden Seed Replay Regression (Cross-Verification)
+        run: |
+          python3 Scripts/headless_desync_stress_test.py \
+            --matches 15 \
+            --frames 1200 \
+            --packet-loss 0.0 \
+            --seed 19860622 \
+            --export-sample-replay Saved/Replays/golden_regression.safreplay
+
+      - name: Upload Golden Replay Sample
+        uses: actions/upload-artifact@v4
+        with:
+          name: golden-safreplay-sample
+          path: Saved/Replays/golden_regression.safreplay
+          retention-days: 14
+
+  # ============================================================================
+  # STAGE 3: Pruebas de Estrés de Red Headless (GGPO Chaos Testing 25% Loss)
+  # ============================================================================
+  stage3-ggpo-chaos-stress:
+    name: "Stage 3: Headless GGPO Network Chaos (25% Packet Loss / 8f Rollback)"
+    needs: stage2-replay-regression
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Run 25-Match Headless GGPO Chaos Stress Test
+        shell: bash
+        run: |
+          python Scripts/headless_desync_stress_test.py \
+            --matches 25 \
+            --frames 1800 \
+            --packet-loss 0.25 \
+            --max-rollback 8 \
+            --seed 20261113
+
+      # ========================================================================
+      # STAGE 4: Volcado Forense de Artefactos (.safreplay) en caso de Desync
+      # ========================================================================
+      - name: "Stage 4: Upload Forensic Desync Artifacts (.safreplay) on Failure"
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: desync-forensic-dumps-${{ matrix.os }}
+          path: Saved/DesyncDumps/*.safreplay
+          if-no-files-found: ignore
+          retention-days: 30

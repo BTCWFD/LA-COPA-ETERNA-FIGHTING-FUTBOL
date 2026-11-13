@@ -1,0 +1,421 @@
+{
+  "SchemaVersion": "1.0.0-UE5.4-GLTF2",
+  "TargetEngine": "Unreal Engine 5.4+ (Nanite & Skinned Cloth Pipeline)",
+  "SkeletonStandard": {
+    "TotalBones": 38,
+    "RootAndHitstopBones": [
+      "root",
+      "pelvis",
+      "pelvis_visual_offset"
+    ],
+    "SecondaryChainBones": [
+      "hair_chain_01..06",
+      "kit_hem_01..04"
+    ],
+    "AnimationSampleRateHz": 60,
+    "InterpolationMode": "STEP (Pure Stepped Keyframes)"
+  },
+  "ChaosCloth54Specification": {
+    "VertexColorAttribute": "COLOR_0.r",
+    "MinMaxDistanceCm": 0.5,
+    "MaxHemAndSleevesDistanceCm": 12.0,
+    "AerodynamicDrag": 0.08,
+    "AerodynamicLift": 0.04,
+    "RollbackTeleportThresholdCm": 15.0
+  },
+  "GPUBudgetAndLODTargets": {
+    "LOD0_CloseUpAndGameplay": {
+      "TargetTriangles": 65000,
+      "MaxMorphTargets": 32,
+      "ClothSimulation": true
+    },
+    "LOD1_MidRange": {
+      "TargetTriangles": 32000,
+      "MaxMorphTargets": 16,
+      "ClothSimulation": true
+    },
+    "LOD2_WideCamera": {
+      "TargetTriangles": 16000,
+      "MaxMorphTargets": 0,
+      "ClothSimulation": false
+    },
+    "LOD3_LowSpecFallback": {
+      "TargetTriangles": 8000,
+      "MaxMorphTargets": 0,
+      "ClothSimulation": false
+    },
+    "UVChannels": {
+      "UV0": "Primary PBR/Street-Ink BaseColor, Normal & ORM",
+      "UV1": "Dynamic Jersey Numbers, National Crest & Pitch Mud Mask"
+    }
+  },
+  "GeneratedFighters": [
+    {
+      "FighterID": "FENOMENO_BR",
+      "DisplayName": "O Fenômeno",
+      "File": "SK_FENOMENO_BR.glb",
+      "HeightMeters": 1.83,
+      "SkeletonJoints": 38,
+      "Vertices": 432,
+      "Triangles": 216,
+      "MaterialSlots": [
+        "M_FighterSkin_SSS",
+        "M_FighterKit_Retro90s_Cloth",
+        "M_FighterHairCards_And_Eyes"
+      ],
+      "SteppedAnimations60Hz": [
+        "Anim_Idle",
+        "Anim_5LP_Jab4f",
+        "Anim_236SK_Shot",
+        "Anim_623HP_BicycleKick",
+        "Anim_214SK_Scorpion"
+      ]
+    },
+    {
+      "FighterID": "BRUXO_BR",
+      "DisplayName": "O Bruxo",
+      "File": "SK_BRUXO_BR.glb",
+      "HeightMeters": 1.82,
+      "SkeletonJoints": 38,
+      "Vertices": 432,
+      "Triangles": 216,
+      "MaterialSlots": [
+        "M_FighterSkin_SSS",
+        "M_FighterKit_Retro90s_Cloth",
+        "M_FighterHairCards_And_Eyes"
+      ],
+      "SteppedAnimations60Hz": [
+        "Anim_Idle",
+        "Anim_5LP_Jab4f",
+        "Anim_236SK_Shot",
+        "Anim_623HP_BicycleKick",
+        "Anim_214SK_Scorpion"
+      ]
+    },
+    {
+      "FighterID": "CANON_AR",
+      "DisplayName": "El Cañón",
+      "File": "SK_CANON_AR.glb",
+      "HeightMeters": 1.85,
+      "SkeletonJoints": 38,
+      "Vertices": 432,
+      "Triangles": 216,
+      "MaterialSlots": [
+        "M_FighterSkin_SSS",
+        "M_FighterKit_Retro90s_Cloth",
+        "M_FighterHairCards_And_Eyes"
+      ],
+      "SteppedAnimations60Hz": [
+        "Anim_Idle",
+        "Anim_5LP_Jab4f",
+        "Anim_236SK_Shot",
+        "Anim_623HP_BicycleKick",
+        "Anim_214SK_Scorpion"
+      ]
+    },
+    {
+      "FighterID": "PULGA_AR",
+      "DisplayName": "La Pulga",
+      "File": "SK_PULGA_AR.glb",
+      "HeightMeters": 1.7,
+      "SkeletonJoints": 38,
+      "Vertices": 432,
+      "Triangles": 216,
+      "MaterialSlots": [
+        "M_FighterSkin_SSS",
+        "M_FighterKit_Retro90s_Cloth",
+        "M_FighterHairCards_And_Eyes"
+      ],
+      "SteppedAnimations60Hz": [
+        "Anim_Idle",
+        "Anim_5LP_Jab4f",
+        "Anim_236SK_Shot",
+        "Anim_623HP_BicycleKick",
+        "Anim_214SK_Scorpion"
+      ]
+    },
+    {
+      "FighterID": "PIBE_CO",
+      "DisplayName": "El Pibe",
+      "File": "SK_PIBE_CO.glb",
+      "HeightMeters": 1.76,
+      "SkeletonJoints": 38,
+      "Vertices": 528,
+      "Triangles": 264,
+      "MaterialSlots": [
+        "M_FighterSkin_SSS",
+        "M_FighterKit_Retro90s_Cloth",
+        "M_FighterHairCards_And_Eyes"
+      ],
+      "SteppedAnimations60Hz": [
+        "Anim_Idle",
+        "Anim_5LP_Jab4f",
+        "Anim_236SK_Shot",
+        "Anim_623HP_BicycleKick",
+        "Anim_214SK_Scorpion"
+      ]
+    },
+    {
+      "FighterID": "LOCO_CO",
+      "DisplayName": "El Loco",
+      "File": "SK_LOCO_CO.glb",
+      "HeightMeters": 1.76,
+      "SkeletonJoints": 38,
+      "Vertices": 528,
+      "Triangles": 264,
+      "MaterialSlots": [
+        "M_FighterSkin_SSS",
+        "M_FighterKit_Retro90s_Cloth",
+        "M_FighterHairCards_And_Eyes"
+      ],
+      "SteppedAnimations60Hz": [
+        "Anim_Idle",
+        "Anim_5LP_Jab4f",
+        "Anim_236SK_Shot",
+        "Anim_623HP_BicycleKick",
+        "Anim_214SK_Scorpion"
+      ]
+    },
+    {
+      "FighterID": "PISTOLERO_UY",
+      "DisplayName": "El Pistolero",
+      "File": "SK_PISTOLERO_UY.glb",
+      "HeightMeters": 1.82,
+      "SkeletonJoints": 38,
+      "Vertices": 432,
+      "Triangles": 216,
+      "MaterialSlots": [
+        "M_FighterSkin_SSS",
+        "M_FighterKit_Retro90s_Cloth",
+        "M_FighterHairCards_And_Eyes"
+      ],
+      "SteppedAnimations60Hz": [
+        "Anim_Idle",
+        "Anim_5LP_Jab4f",
+        "Anim_236SK_Shot",
+        "Anim_623HP_BicycleKick",
+        "Anim_214SK_Scorpion"
+      ]
+    },
+    {
+      "FighterID": "MATADOR_UY",
+      "DisplayName": "El Matador",
+      "File": "SK_MATADOR_UY.glb",
+      "HeightMeters": 1.8,
+      "SkeletonJoints": 38,
+      "Vertices": 432,
+      "Triangles": 216,
+      "MaterialSlots": [
+        "M_FighterSkin_SSS",
+        "M_FighterKit_Retro90s_Cloth",
+        "M_FighterHairCards_And_Eyes"
+      ],
+      "SteppedAnimations60Hz": [
+        "Anim_Idle",
+        "Anim_5LP_Jab4f",
+        "Anim_236SK_Shot",
+        "Anim_623HP_BicycleKick",
+        "Anim_214SK_Scorpion"
+      ]
+    },
+    {
+      "FighterID": "BAMBAM_CL",
+      "DisplayName": "Bam-Bam",
+      "File": "SK_BAMBAM_CL.glb",
+      "HeightMeters": 1.78,
+      "SkeletonJoints": 38,
+      "Vertices": 432,
+      "Triangles": 216,
+      "MaterialSlots": [
+        "M_FighterSkin_SSS",
+        "M_FighterKit_Retro90s_Cloth",
+        "M_FighterHairCards_And_Eyes"
+      ],
+      "SteppedAnimations60Hz": [
+        "Anim_Idle",
+        "Anim_5LP_Jab4f",
+        "Anim_236SK_Shot",
+        "Anim_623HP_BicycleKick",
+        "Anim_214SK_Scorpion"
+      ]
+    },
+    {
+      "FighterID": "REY_CL",
+      "DisplayName": "El Rey",
+      "File": "SK_REY_CL.glb",
+      "HeightMeters": 1.8,
+      "SkeletonJoints": 38,
+      "Vertices": 408,
+      "Triangles": 204,
+      "MaterialSlots": [
+        "M_FighterSkin_SSS",
+        "M_FighterKit_Retro90s_Cloth",
+        "M_FighterHairCards_And_Eyes"
+      ],
+      "SteppedAnimations60Hz": [
+        "Anim_Idle",
+        "Anim_5LP_Jab4f",
+        "Anim_236SK_Shot",
+        "Anim_623HP_BicycleKick",
+        "Anim_214SK_Scorpion"
+      ]
+    },
+    {
+      "FighterID": "BULLDOG_PY",
+      "DisplayName": "El Bulldog",
+      "File": "SK_BULLDOG_PY.glb",
+      "HeightMeters": 1.92,
+      "SkeletonJoints": 38,
+      "Vertices": 432,
+      "Triangles": 216,
+      "MaterialSlots": [
+        "M_FighterSkin_SSS",
+        "M_FighterKit_Retro90s_Cloth",
+        "M_FighterHairCards_And_Eyes"
+      ],
+      "SteppedAnimations60Hz": [
+        "Anim_Idle",
+        "Anim_5LP_Jab4f",
+        "Anim_236SK_Shot",
+        "Anim_623HP_BicycleKick",
+        "Anim_214SK_Scorpion"
+      ]
+    },
+    {
+      "FighterID": "MAESTRO_PE",
+      "DisplayName": "El Maestro",
+      "File": "SK_MAESTRO_PE.glb",
+      "HeightMeters": 1.77,
+      "SkeletonJoints": 38,
+      "Vertices": 432,
+      "Triangles": 216,
+      "MaterialSlots": [
+        "M_FighterSkin_SSS",
+        "M_FighterKit_Retro90s_Cloth",
+        "M_FighterHairCards_And_Eyes"
+      ],
+      "SteppedAnimations60Hz": [
+        "Anim_Idle",
+        "Anim_5LP_Jab4f",
+        "Anim_236SK_Shot",
+        "Anim_623HP_BicycleKick",
+        "Anim_214SK_Scorpion"
+      ]
+    },
+    {
+      "FighterID": "TREN_EC",
+      "DisplayName": "El Tren Amazónico",
+      "File": "SK_TREN_EC.glb",
+      "HeightMeters": 1.79,
+      "SkeletonJoints": 38,
+      "Vertices": 432,
+      "Triangles": 216,
+      "MaterialSlots": [
+        "M_FighterSkin_SSS",
+        "M_FighterKit_Retro90s_Cloth",
+        "M_FighterHairCards_And_Eyes"
+      ],
+      "SteppedAnimations60Hz": [
+        "Anim_Idle",
+        "Anim_5LP_Jab4f",
+        "Anim_236SK_Shot",
+        "Anim_623HP_BicycleKick",
+        "Anim_214SK_Scorpion"
+      ]
+    },
+    {
+      "FighterID": "HURACAN_VE",
+      "DisplayName": "El Huracán Vinotinto",
+      "File": "SK_HURACAN_VE.glb",
+      "HeightMeters": 1.8,
+      "SkeletonJoints": 38,
+      "Vertices": 432,
+      "Triangles": 216,
+      "MaterialSlots": [
+        "M_FighterSkin_SSS",
+        "M_FighterKit_Retro90s_Cloth",
+        "M_FighterHairCards_And_Eyes"
+      ],
+      "SteppedAnimations60Hz": [
+        "Anim_Idle",
+        "Anim_5LP_Jab4f",
+        "Anim_236SK_Shot",
+        "Anim_623HP_BicycleKick",
+        "Anim_214SK_Scorpion"
+      ]
+    },
+    {
+      "FighterID": "DIABLO_BO",
+      "DisplayName": "El Diablo Andino",
+      "File": "SK_DIABLO_BO.glb",
+      "HeightMeters": 1.76,
+      "SkeletonJoints": 38,
+      "Vertices": 432,
+      "Triangles": 216,
+      "MaterialSlots": [
+        "M_FighterSkin_SSS",
+        "M_FighterKit_Retro90s_Cloth",
+        "M_FighterHairCards_And_Eyes"
+      ],
+      "SteppedAnimations60Hz": [
+        "Anim_Idle",
+        "Anim_5LP_Jab4f",
+        "Anim_236SK_Shot",
+        "Anim_623HP_BicycleKick",
+        "Anim_214SK_Scorpion"
+      ]
+    },
+    {
+      "FighterID": "GENERAL_FR",
+      "DisplayName": "Le Général",
+      "File": "SK_GENERAL_FR.glb",
+      "HeightMeters": 1.85,
+      "SkeletonJoints": 38,
+      "Vertices": 432,
+      "Triangles": 216,
+      "MaterialSlots": [
+        "M_FighterSkin_SSS",
+        "M_FighterKit_Retro90s_Cloth",
+        "M_FighterHairCards_And_Eyes"
+      ],
+      "SteppedAnimations60Hz": [
+        "Anim_Idle",
+        "Anim_5LP_Jab4f",
+        "Anim_236SK_Shot",
+        "Anim_623HP_BicycleKick",
+        "Anim_214SK_Scorpion"
+      ]
+    },
+    {
+      "FighterID": "SUPREME_JUDGE_BOSS",
+      "DisplayName": "El Juez Supremo (V.A.R. - ZERO)",
+      "File": "SK_SUPREME_JUDGE_BOSS.glb",
+      "HeightMeters": 2.15,
+      "SkeletonJoints": 38,
+      "Vertices": 432,
+      "Triangles": 216,
+      "MaterialSlots": [
+        "M_FighterSkin_SSS",
+        "M_FighterKit_Retro90s_Cloth",
+        "M_FighterHairCards_And_Eyes"
+      ],
+      "SteppedAnimations60Hz": [
+        "Anim_Idle",
+        "Anim_5LP_Jab4f",
+        "Anim_236SK_Shot",
+        "Anim_623HP_BicycleKick",
+        "Anim_214SK_Scorpion"
+      ]
+    }
+  ],
+  "GeneratedPropsAndStages": {
+    "OfficialBall32Panels": {
+      "Vertices": 561,
+      "Triangles": 1024
+    },
+    "StagePitchAndDestructibleWalls": {
+      "Vertices": 216,
+      "Triangles": 108
+    }
+  }
+}

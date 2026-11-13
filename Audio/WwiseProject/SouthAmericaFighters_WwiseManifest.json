@@ -1,0 +1,173 @@
+{
+  "WwiseProjectVersion": "2023.1.4.8496",
+  "ProjectName": "SouthAmericaFighters_WwiseProject",
+  "LoudnessTargetStandard": {
+    "IntegratedLUFS": -14.0,
+    "TruePeakCeilingdBFS": -1.0,
+    "MasterLimiterPlugin": "Wwise Peak Limiter",
+    "SampleRateHz": 48000
+  },
+  "MasterBusHierarchy": {
+    "RootBus": "Master_Audio_Bus",
+    "ChildBuses": [
+      {
+        "BusName": "BUS_COMBAT_CRITICAL",
+        "VoicePriority": 100,
+        "ChannelConfig": "Stereo_2_0",
+        "MaxVoices": 32,
+        "Purpose": "Golpes (LP/MP/HP), Blockstuns, Whiffs, Silbato Arbitral, Travesaño Metálico y Parries de Gambeta.",
+        "AutoDuckingTargets": [
+          {
+            "TargetBus": "BUS_INTERACTIVE_MUSIC",
+            "AttenuationdB": -6.0,
+            "AttackMs": 5,
+            "ReleaseMs": 180,
+            "HoldMs": 40,
+            "CurveShape": "Log3"
+          },
+          {
+            "TargetBus": "BUS_STADIUM_CROWD_3D",
+            "AttenuationdB": -6.0,
+            "AttackMs": 5,
+            "ReleaseMs": 180,
+            "HoldMs": 40,
+            "CurveShape": "Log3"
+          }
+        ]
+      },
+      {
+        "BusName": "BUS_COMMENTARY_BOOTH",
+        "VoicePriority": 85,
+        "ChannelConfig": "Center_Weighted_Stereo",
+        "MaxVoices": 4,
+        "Purpose": "Relator Play-by-Play, Comentarista Táctico e Interrupt Stingers.",
+        "AutoDuckingTargets": [
+          {
+            "TargetBus": "BUS_INTERACTIVE_MUSIC",
+            "AttenuationdB": -4.5,
+            "AttackMs": 20,
+            "ReleaseMs": 350,
+            "HoldMs": 80,
+            "CurveShape": "S_Curve"
+          },
+          {
+            "TargetBus": "BUS_STADIUM_CROWD_3D",
+            "AttenuationdB": -4.5,
+            "AttackMs": 20,
+            "ReleaseMs": 350,
+            "HoldMs": 80,
+            "CurveShape": "S_Curve"
+          }
+        ]
+      },
+      {
+        "BusName": "BUS_STADIUM_CROWD_3D",
+        "VoicePriority": 60,
+        "ChannelConfig": "Ambisonics_3rd_Order_16ch",
+        "MaxVoices": 24,
+        "Purpose": "Hinchadas 3D envolventes, cánticos por selección, avalanchas de gol y coro reactivo ¡OOOO-LÉ!."
+      },
+      {
+        "BusName": "BUS_INTERACTIVE_MUSIC",
+        "VoicePriority": 50,
+        "ChannelConfig": "Stereo_2_0",
+        "MaxVoices": 16,
+        "Purpose": "Stems musicales interactivos por estadio y percusión sudamericana sincronizada a BPM."
+      },
+      {
+        "BusName": "BUS_HARDWARE_AUX",
+        "VoicePriority": 95,
+        "ChannelConfig": "Wwise_Motion_And_PadSpeaker",
+        "MaxVoices": 8,
+        "BandpassFilterHz": [30, 180],
+        "Purpose": "Sub-bus dedicado a DualSense Haptics (30-180Hz) y altavoz integrado del control (silbatos, tarjetas y raspones de césped)."
+      }
+    ]
+  },
+  "SwitchContainersAndMusic": {
+    "MusicSwitchContainer": {
+      "Name": "MSC_Stadium_Music_And_Crowd",
+      "SwitchGroup": "SWG_Stage_MusicZone",
+      "TransitionRule": "Next_Grid_Bar_Quantized",
+      "CrossfadeDurationMs": 250,
+      "States": ["ZoneA_Pitch", "ZoneB_Exterior", "FinalRound_Climax"]
+    },
+    "CrowdSwitchContainer": {
+      "Name": "SC_National_Crowd_Performer",
+      "SwitchGroup": "SWG_National_Team_Chant",
+      "TransitionRule": "Next_Bar_With_Percussion_Fill",
+      "NationalTeams": [
+        {"SwitchState": "Brazil", "PrimaryPercussion": "Surdo & Repinique Batucada", "BaseBPM": 115.0, "StemFile": "Stem_Crowd_Brazil_Batucada_115BPM.wav"},
+        {"SwitchState": "Argentina", "PrimaryPercussion": "Bombo con Platillo de Murga", "BaseBPM": 128.0, "StemFile": "Stem_Crowd_Argentina_BomboMurga_128BPM.wav"},
+        {"SwitchState": "Uruguay", "PrimaryPercussion": "Cuerda de Tambores Candombe (Chico, Repique, Piano)", "BaseBPM": 120.0, "StemFile": "Stem_Crowd_Uruguay_Candombe_120BPM.wav"},
+        {"SwitchState": "Colombia", "PrimaryPercussion": "Tambora Caribeña, Alegre y Maracón", "BaseBPM": 130.0, "StemFile": "Stem_Crowd_Colombia_CumbiaTambora_130BPM.wav"},
+        {"SwitchState": "Chile", "PrimaryPercussion": "Bombo de Estadio y Trompetas Cordilleranas", "BaseBPM": 125.0, "StemFile": "Stem_Crowd_Andes_BomboLeguero_110BPM.wav"},
+        {"SwitchState": "Paraguay", "PrimaryPercussion": "Polka Guaraní de Bronces y Redoblante", "BaseBPM": 120.0, "StemFile": "Stem_Crowd_Argentina_BomboMurga_128BPM.wav"},
+        {"SwitchState": "Peru", "PrimaryPercussion": "Cajón Peruano Afro-Costeño y Quijada", "BaseBPM": 118.0, "StemFile": "Stem_Crowd_Colombia_CumbiaTambora_130BPM.wav"},
+        {"SwitchState": "Ecuador", "PrimaryPercussion": "Marimba Esmeraldeña y Bombo Andino", "BaseBPM": 135.0, "StemFile": "Stem_Crowd_Colombia_CumbiaTambora_130BPM.wav"},
+        {"SwitchState": "Venezuela", "PrimaryPercussion": "Cumaco, Tambor Urbano y Charrasca", "BaseBPM": 170.0, "StemFile": "Stem_Crowd_Brazil_Batucada_115BPM.wav"},
+        {"SwitchState": "Bolivia", "PrimaryPercussion": "Bombo Legüero, Zampoñas (Sikus) y Tarka", "BaseBPM": 110.0, "StemFile": "Stem_Crowd_Andes_BomboLeguero_110BPM.wav"}
+      ]
+    }
+  },
+  "RTPCCurves": [
+    {
+      "RTPCName": "RTPC_Match_Excitement",
+      "Range": [0.0, 100.0],
+      "DefaultValue": 15.0,
+      "MappedProperties": [
+        {
+          "Target": "MSC_Stadium_Music_And_Crowd",
+          "Property": "PercussionLayerVolume_dB",
+          "Points": [[0.0, -18.0], [35.0, -6.0], [75.0, 0.0], [100.0, 3.0]]
+        },
+        {
+          "Target": "BUS_STADIUM_CROWD_3D",
+          "Property": "RoarDensityLayer_dB",
+          "Points": [[0.0, -12.0], [50.0, -3.0], [85.0, 1.5], [100.0, 4.0]]
+        }
+      ]
+    },
+    {
+      "RTPCName": "RTPC_Crowd_Momentum",
+      "Range": [-100.0, 100.0],
+      "DefaultValue": 0.0,
+      "MappedProperties": [
+        {
+          "Target": "SC_National_Crowd_Performer_P1",
+          "Property": "VoiceVolume_dB",
+          "Points": [[-100.0, -14.0], [0.0, -2.0], [100.0, 3.5]]
+        },
+        {
+          "Target": "SC_National_Crowd_Performer_P2",
+          "Property": "VoiceVolume_dB",
+          "Points": [[-100.0, 3.5], [0.0, -2.0], [100.0, -14.0]]
+        }
+      ]
+    },
+    {
+      "RTPCName": "RTPC_Ole_Combo_Pitch",
+      "Range": [0.0, 1200.0],
+      "DefaultValue": 0.0,
+      "MappedProperties": [
+        {
+          "Target": "SFX_Crowd_Ole_Chant",
+          "Property": "Pitch_Cents",
+          "Points": [[0.0, 0.0], [100.0, 100.0], [500.0, 500.0], [1200.0, 1200.0]]
+        }
+      ]
+    },
+    {
+      "RTPCName": "RTPC_Stage_Altitude_Meters",
+      "Range": [0.0, 4000.0],
+      "DefaultValue": 0.0,
+      "MappedProperties": [
+        {
+          "Target": "BUS_STADIUM_CROWD_3D",
+          "Property": "HighPassFilter_ThinAir",
+          "Points": [[0.0, 0.0], [2500.0, 18.0], [3640.0, 42.0], [4000.0, 50.0]]
+        }
+      ]
+    }
+  ]
+}

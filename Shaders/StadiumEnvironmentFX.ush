@@ -1,0 +1,223 @@
+// ============================================================================
+// StadiumEnvironmentFX.ush
+// Unreal Engine 5.4+ - South American Stadium Environmental Shaders
+//   1. Barranquilla 40°C Thermal Refraction ("Heat Haze")
+//   2. Reflective Pitch Puddles & Dash Impact Waves ("Wetness Ripple")
+//   3. Lima Coastal Mist Volumetric Carving ("La Garúa" Fireball Dissipation)
+// ============================================================================
+// Uso en Material Graph (UE 5.4 Custom Material Expression):
+//   Include File Path: /Project/StadiumEnvironmentFX.ush
+// ============================================================================
+
+#pragma once
+
+/**
+ * Ruido gradiente 2D continuo sin texturas para columnas convectivas de calor y niebla.
+ */
+float StadiumSimplexNoise2D(float2 P)
+{
+    const float K1 = 0.366025404f; // (sqrt(3)-1)/2
+    const float K2 = 0.211324865f; // (3-sqrt(3))/6
+
+    float2 I = floor(P + (P.x + P.y) * K1);
+    float2 A = P - I + (I.x + I.y) * K2;
+    float  M = step(A.y, A.x);
+    float2 O = float2(M, 1.0f - M);
+    float2 B = A - O + K2;
+    float2 C = A - 1.0f + 2.0f * K2;
+
+    float3 H = max(0.5f - float3(dot(A, A), dot(B, B), dot(C, C)), 0.0f);
+    float3 N = H * H * H * H * float3(
+        dot(A, frac(sin(I * float2(127.1f, 311.7f)) * 43758.5453f) * 2.0f - 1.0f),
+        dot(B, frac(sin((I + O) * float2(127.1f, 311.7f)) * 43758.5453f) * 2.0f - 1.0f),
+        dot(C, frac(sin((I + 1.0f) * float2(127.1f, 311.7f)) * 43758.5453f) * 2.0f - 1.0f));
+
+    return dot(N, float3(70.0f, 70.0f, 70.0f));
+}
+
+// ============================================================================
+// 1. BARRANQUILLA 40°C HEAT HAZE (Refracción Térmica Competitiva)
+// ============================================================================
+/**
+ * Calcula el vector de distorsión UV de refracción térmica a 40°C sobre el asfalto/césped de Barranquilla.
+ * Enmascara estrictamente el plano de combate (SceneDepthCm <= FighterPlaneDepthCm + 85cm)
+ * para garantizar 0 distorsión sobre las siluetas y hitboxes de los luchadores.
+ */
+float2 EvaluateBarranquillaHeatHaze(
+    float2 ScreenUV,
+    float  SceneDepthCm,
+    float  FighterPlaneDepthCm, // Distancia de cámara al plano Y=0 (ej. 480cm)
+    float  AmbientCelsius,      // Ej. 40.0f en Barranquilla mediodía
+    float  TimeSeconds,
+    out float OutMirageShimmerMask)
+{
+    // Solo se activa por encima de 28°C y escala hasta 42°C
+    float ThermalIntensity = saturate((AmbientCelsius - 28.0f) / 14.0f);
+
+    // Protección competitiva: sólo distorsiona el fondo detrás del plano de los peleadores
+    float BackgroundDepthMask = smoothstep(FighterPlaneDepthCm + 60.0f, FighterPlaneDepthCm + 280.0f, SceneDepthCm);
+
+    // Mayor reverberación cerca del ras del césped (tercio inferior/medio de la pantalla)
+    float GroundProximityMask = smoothstep(0.15f, 0.78f, ScreenUV.y);
+
+    // Columnas ascendentes de aire caliente con doble octava
+    float2 PlumeUV1 = float2(ScreenUV.x * 24.0f, ScreenUV.y * 10.0f + TimeSeconds * 1.85f);
+    float2 PlumeUV2 = float2(ScreenUV.x * 48.0f - TimeSeconds * 0.45f, ScreenUV.y * 22.0f + TimeSeconds * 3.10f);
+
+    float NoiseX = StadiumSimplexNoise2D(PlumeUV1) * 0.65f + StadiumSimplexNoise2D(PlumeUV2) * 0.35f;
+    float NoiseY = StadiumSimplexNoise2D(PlumeUV1 + float2(17.3f, 9.1f)) * 0.65f + StadiumSimplexNoise2D(PlumeUV2 + float2(5.4f, 23.8f)) * 0.35f;
+
+    float EffectiveMask = ThermalIntensity * BackgroundDepthMask * GroundProximityMask;
+    OutMirageShimmerMask = saturate(EffectiveMask * abs(NoiseX));
+
+    // Amplitud máxima de refracción limitada a 0.0045 en UV para evitar fatiga visual en sets FT3
+    float2 RefractedUVOffset = float2(NoiseX, NoiseY * 1.4f) * (0.0042f * EffectiveMask);
+    return ScreenUV + RefractedUVOffset;
+}
+
+// ============================================================================
+// 2. WETNESS RIPPLE (Charcos Reflectantes y Ondas de Impacto de Dash/Caída)
+// ============================================================================
+/**
+ * Evalúa una onda concéntrica amortiguada generada por un Dash, Gambeta o Hard Knockdown sobre un charco.
+ */
+float3 ComputeSingleImpactRippleNormal(
+    float2 WorldPosXYCm,
+    float2 ImpactCenterXYCm,
+    float  ImpactAgeSeconds,  // Tiempo desde que ocurrió el paso/impacto (0.0 -> 1.5s)
+    float  ImpactStrength)    // 0.5 = Dash, 1.0 = Hard Knockdown / Super Landing
+{
+    if (ImpactAgeSeconds <= 0.0f || ImpactAgeSeconds >= 1.6f || ImpactStrength <= 0.001f)
+    {
+        return float3(0.0f, 0.0f, 1.0f);
+    }
+
+    float2 DeltaXY = WorldPosXYCm - ImpactCenterXYCm;
+    float  DistCm  = length(DeltaXY);
+
+    // Velocidad de fase de onda capilar en agua poco profunda: ~165 cm/s
+    float WaveRadiusCm = ImpactAgeSeconds * 165.0f;
+    float RingWidthCm  = 42.0f + ImpactAgeSeconds * 25.0f;
+
+    float RadialEnvelope = saturate(1.0f - abs(DistCm - WaveRadiusCm) / RingWidthCm);
+    float TimeDecay      = saturate(1.0f - (ImpactAgeSeconds / 1.5f));
+    TimeDecay *= TimeDecay;
+
+    float Phase = (DistCm - WaveRadiusCm) * 0.32f;
+    float WaveDerivative = cos(Phase) * RadialEnvelope * TimeDecay * ImpactStrength;
+
+    float2 DirXY = (DistCm > 0.01f) ? (DeltaXY / DistCm) : float2(0.0f, 0.0f);
+    return normalize(float3(-DirXY.x * WaveDerivative * 0.45f, -DirXY.y * WaveDerivative * 0.45f, 1.0f));
+}
+
+/**
+ * Superficie híbrida de Césped Húmedo + Charcos de Barro Reflectantes ("Wetness Ripple") para estadios lluviosos.
+ */
+void EvaluatePitchWetnessAndDashRipple(
+    float3 WorldPositionCm,
+    float3 BasePitchNormal,
+    float3 BaseGrassAlbedo,
+    float  BaseGrassRoughness,
+    float  PuddleDistributionMask, // 0.0 = Césped elevado, 1.0 = Hondonada inundada / Charco
+    float4 P1DashImpactData,       // xy = WorldXYCm, z = ElapsedSeconds, w = Strength
+    float4 P2DashImpactData,       // xy = WorldXYCm, z = ElapsedSeconds, w = Strength
+    float  RainIntensity,          // 0.0 a 1.0 (Gotas de lluvia ambientales)
+    float  TimeSeconds,
+    out float3 OutCompositeAlbedo,
+    out float3 OutCompositeWorldNormal,
+    out float  OutCompositeRoughness,
+    out float  OutPlanarReflectionWeight)
+{
+    float PuddleWeight = smoothstep(0.38f, 0.68f, PuddleDistributionMask);
+
+    // 1. Superposición de ondas de Dash/Impacto de Jugador 1 y Jugador 2
+    float3 RippleP1 = ComputeSingleImpactRippleNormal(WorldPositionCm.xy, P1DashImpactData.xy, P1DashImpactData.z, P1DashImpactData.w);
+    float3 RippleP2 = ComputeSingleImpactRippleNormal(WorldPositionCm.xy, P2DashImpactData.xy, P2DashImpactData.z, P2DashImpactData.w);
+
+    // 2. Micro-anillos de lluvia cayendo sobre el charco
+    float2 RainCellUV = WorldPositionCm.xy * 0.08f;
+    float2 RainCellId = floor(RainCellUV);
+    float2 RainLocal  = frac(RainCellUV) - 0.5f;
+    float  RainPhase  = frac(TimeSeconds * 2.2f + frac(sin(dot(RainCellId, float2(12.9898f, 78.233f))) * 43758.5453f));
+    float  RainRing   = smoothstep(0.06f, 0.0f, abs(length(RainLocal) - RainPhase * 0.45f)) * (1.0f - RainPhase) * saturate(RainIntensity);
+
+    float2 RainGradient = (length(RainLocal) > 0.001f) ? normalize(RainLocal) * RainRing * 0.22f : float2(0.0f, 0.0f);
+    float3 CombinedWaterNormal = normalize(float3(
+        RippleP1.x + RippleP2.x + RainGradient.x,
+        RippleP1.y + RippleP2.y + RainGradient.y,
+        1.0f));
+
+    // En zonas de charco la normal se aplana hacia el espejo de agua perturbado por las ondas
+    OutCompositeWorldNormal = normalize(lerp(BasePitchNormal, CombinedWaterNormal, PuddleWeight));
+
+    // Oscurecimiento por saturación de agua y absorción por barro en suspensión
+    float3 WetGrassColor = BaseGrassAlbedo * 0.55f;
+    float3 MuddyWaterTint = float3(0.05f, 0.045f, 0.035f);
+    OutCompositeAlbedo = lerp(BaseGrassAlbedo, lerp(WetGrassColor, MuddyWaterTint, PuddleWeight * 0.65f), saturate(PuddleWeight + RainIntensity * 0.4f));
+
+    // Los charcos tienen rugosidad espejo (0.04) para reflejar los reflectores del estadio y las auras de los personajes
+    OutCompositeRoughness = lerp(BaseGrassRoughness * (1.0f - RainIntensity * 0.35f), 0.04f, PuddleWeight);
+    OutPlanarReflectionWeight = PuddleWeight;
+}
+
+// ============================================================================
+// 3. LA GARÚA DE LIMA (Disipación Volumétrica Local al Paso del Balón de Fuego)
+// ============================================================================
+/**
+ * Material Volumétrico (Domain: Volume / Heterogeneous Fog) para la niebla costera "La Garúa" en Lima.
+ * Abre un túnel cilíndrico-cónico de vacío térmico al paso del proyectil/balón de fuego (`BallPositionWS` -> `BallPrevPositionWS`)
+ * e ilumina las paredes de vapor con incandescencia naranja/celeste según la velocidad del disparo.
+ */
+void EvaluateLimaGaruaFogDissipation(
+    float3 VoxelWorldPositionCm,
+    float3 BallPositionWSCm,
+    float3 BallPrevPositionWSCm,
+    float  BallCavityRadiusCm,     // Ej. 145.0f cm para el balón envuelto en plasma
+    float  BallTrailFadeFactor,    // 0.0 (Balón en reposo) -> 1.0 (Tiro Especial / Super Activo)
+    float3 BallElementalGlowColor, // Color HDR de la estela (ej. Celeste Solar o Fuego Carmesí)
+    float  BaseGaruaDensity,
+    float  TimeSeconds,
+    out float  OutFinalExtinction,
+    out float3 OutEmissiveScattering)
+{
+    // 1. Densidad base turbulenta de La Garúa a ras de cancha
+    float HeightAttenuation = saturate(1.0f - (VoxelWorldPositionCm.z / 320.0f));
+    float2 DriftUV1 = VoxelWorldPositionCm.xy * 0.0025f + float2(TimeSeconds * 0.08f, -TimeSeconds * 0.03f);
+    float2 DriftUV2 = VoxelWorldPositionCm.yz * 0.0045f - float2(TimeSeconds * 0.12f, 0.0f);
+
+    float FogNoise = (StadiumSimplexNoise2D(DriftUV1) * 0.6f + StadiumSimplexNoise2D(DriftUV2) * 0.4f) * 0.5f + 0.5f;
+    float RawFogDensity = BaseGaruaDensity * HeightAttenuation * lerp(0.55f, 1.25f, FogNoise);
+
+    if (BallTrailFadeFactor <= 0.001f || BallCavityRadiusCm <= 1.0f)
+    {
+        OutFinalExtinction    = RawFogDensity;
+        OutEmissiveScattering = float3(0.0f, 0.0f, 0.0f);
+        return;
+    }
+
+    // 2. Distancia del Voxel al segmento de cápsula barrido por el balón (BallPrevPosition -> BallPosition)
+    float3 SegmentVec = BallPositionWSCm - BallPrevPositionWSCm;
+    float  SegLenSq   = dot(SegmentVec, SegmentVec);
+    float  ProjT      = (SegLenSq > 0.01f) ? saturate(dot(VoxelWorldPositionCm - BallPrevPositionWSCm, SegmentVec) / SegLenSq) : 1.0f;
+
+    float3 ClosestPointOnWake = BallPrevPositionWSCm + SegmentVec * ProjT;
+
+    // La estela se ensancha ligeramente detrás del balón por turbulencia de vórtice (Kármán)
+    float WakeRadiusAtPoint = BallCavityRadiusCm * lerp(1.35f, 0.90f, ProjT);
+    float DistToWakeAxisCm  = length(VoxelWorldPositionCm - ClosestPointOnWake);
+
+    // Perturbación del borde del túnel con ruido para que el vapor parezca hervir y arremolinarse
+    float SwirlPerturbation = FogNoise * 28.0f;
+    float NormalizedWakeDist = (DistToWakeAxisCm + SwirlPerturbation * (1.0f - ProjT)) / max(WakeRadiusAtPoint, 1.0f);
+
+    // 3. Disipación total en el núcleo (NormalizedWakeDist < 0.75) y compresión de vapor en el borde (0.85..1.15)
+    float CavityCarveMask = smoothstep(0.55f, 1.10f, NormalizedWakeDist);
+    float EffectiveCarve  = lerp(1.0f, CavityCarveMask, saturate(BallTrailFadeFactor));
+
+    // Anillo de vapor sobrecalentado en la pared interna del túnel tallado en la niebla
+    float RimCompressionRing = smoothstep(0.50f, 0.92f, NormalizedWakeDist) * (1.0f - smoothstep(0.92f, 1.35f, NormalizedWakeDist));
+    float ThermalWallGlow    = RimCompressionRing * saturate(BallTrailFadeFactor) * lerp(0.45f, 1.0f, ProjT);
+
+    OutFinalExtinction    = RawFogDensity * EffectiveCarve * (1.0f + RimCompressionRing * 0.45f);
+    OutEmissiveScattering = BallElementalGlowColor * (ThermalWallGlow * RawFogDensity * 6.5f);
+}
