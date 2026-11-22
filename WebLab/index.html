@@ -1151,45 +1151,76 @@
     <section class="tab-pane" id="tab7">
       <div class="grid-layout grid-tab7">
 
-        <!-- Columna Izquierda: Selector de Leyenda 3D, Modos de Render y Animación Stepped -->
+        <!-- Columna Izquierda: Selector de Categoría 3D, Activos .glb, 10 Clips glTF 2.0 y Modos -->
         <div class="panel">
           <div class="panel-header">
             <div>
-              <div class="panel-title">🧊 Estudio 3D & Rigging CONMEBOL</div>
-              <div class="panel-subtitle">Especificación Área 8 del GDD (UE 5.4 Skeletal & Chaos Cloth)</div>
+              <div class="panel-title">🧊 Estudio 3D & Visor glTF 2.0 CONMEBOL</div>
+              <div class="panel-subtitle">17 Luchadores Animados + 10 Estadios 3D + 2 Props (.glb)</div>
             </div>
-            <span class="badge-engine" id="t7-char-badge">FENOMENO_BR</span>
+            <span class="badge-engine" id="t7-char-badge">SK_PIBE_CO.glb</span>
           </div>
 
+          <!-- 1. Selector de Categoría y Activo .glb -->
           <div class="slot-card">
-            <label style="font-size:11px; color:var(--gold); font-weight:700;">1. SELECCIONAR LEYENDA CONMEBOL (COMPLEXIÓN, UNIFORME 90s Y HAIR CARDS):</label>
-            <select id="t7-sel-char" style="width:100%; margin-top:4px;"></select>
+            <label style="font-size:11px; color:var(--gold); font-weight:700;">1. CATEGORÍA Y ACTIVO BINARIO glTF 2.0 (`.glb`):</label>
+            <select id="t7-sel-category" style="width:100%; margin-top:4px; border-color:var(--gold);">
+              <option value="FIGHTERS">🥊 Luchadores 3D (17 SK_*.glb con 10 Animaciones)</option>
+              <option value="STAGES">🏟️ Estadios CONMEBOL 3D (10 SM_Stage_*.glb)</option>
+              <option value="PROPS">⚽ Props & Arena Base (2 .glb Oficiales)</option>
+            </select>
+
+            <div id="t7-wrap-char" style="margin-top:6px;">
+              <label style="font-size:10.5px; color:var(--text-muted);">Seleccionar Luchador (`../Assets/Models3D/Fighters/`):</label>
+              <select id="t7-sel-char" style="width:100%; margin-top:2px;"></select>
+            </div>
+
+            <div id="t7-wrap-stage" style="margin-top:6px; display:none;">
+              <label style="font-size:10.5px; color:var(--text-muted);">Seleccionar Estadio 3D (`../Assets/Models3D/Stages/`):</label>
+              <select id="t7-sel-stage3d" style="width:100%; margin-top:2px;"></select>
+            </div>
+
+            <div id="t7-wrap-prop" style="margin-top:6px; display:none;">
+              <label style="font-size:10.5px; color:var(--text-muted);">Seleccionar Prop 3D (`../Assets/Models3D/`):</label>
+              <select id="t7-sel-prop3d" style="width:100%; margin-top:2px;">
+                <option value="BALL_32">⚽ SM_Ball_TruncatedIcosahedron_32Panels.glb (Icoságono 32 Paneles)</option>
+                <option value="ARENA_WALLS">🥅 SM_Stage_PitchAndDestructibleWalls.glb (Cancha Base + Muros Wall-Break)</option>
+              </select>
+            </div>
 
             <div class="kv-row" style="margin-top:6px;">
-              <span>Estatura / Complexión 3D:</span>
-              <span id="t7-stat-height" style="color:var(--cyan);">1.83 m (Atlético Potente)</span>
+              <span>Dimensiones / Complexión 3D:</span>
+              <span id="t7-stat-height" style="color:var(--cyan);">1.76 m (Escala 1.00x)</span>
             </div>
             <div class="kv-row">
-              <span>Peinado & Grooming (`M_FighterHairCards`):</span>
-              <span id="t7-stat-hair">Rapado Clásico 98 (0 Hair Chains)</span>
+              <span>Grooming / Arquitectura:</span>
+              <span id="t7-stat-hair">Melena Afro Dorada (24 Spring Bones)</span>
             </div>
             <div class="kv-row">
-              <span>Huesos Totales (`SK_SouthAmericaFighter_Master`):</span>
-              <span id="t7-stat-bones" style="color:var(--turf);">186 Huesos (pelvis_visual_offset ON)</span>
+              <span>Esqueleto / Primitivas glTF:</span>
+              <span id="t7-stat-bones" style="color:var(--turf);">38 Joints + 186 Virtual Bones</span>
             </div>
           </div>
 
+          <!-- 2. Modo de Visualización e Iluminación 3D -->
           <div class="slot-card">
-            <label style="font-size:11px; color:var(--cyan); font-weight:700;">2. MODO DE VISUALIZACIÓN DEL VIEWPORT 3D ORBITAL:</label>
-            <div style="display:flex; flex-direction:column; gap:5px; margin-top:4px;">
+            <div style="display:flex; justify-content:space-between; align-items:center;">
+              <label style="font-size:11px; color:var(--cyan); font-weight:700;">2. MODO DE RENDER & PRESET DE LUZ:</label>
+            </div>
+            <select id="t7-sel-lighting" style="width:100%; margin-top:4px; border-color:var(--gold-bright);">
+              <option value="SFUMATO" selected>🖼️ Iluminación: Renacimiento Sfumato (Claroscuro Dorado)</option>
+              <option value="STREET_INK">⚡ Iluminación: Estadio Nocturno (Street-Ink Neón)</option>
+            </select>
+
+            <div style="display:flex; flex-direction:column; gap:5px; margin-top:6px;">
               <button class="btn btn-gold t7-mode-btn" data-mode="SHADED" style="justify-content:flex-start;">
                 🎨 Shaded PBR + Rim Light + Lighting Channel 1
               </button>
               <button class="btn t7-mode-btn" data-mode="SKELETON" style="justify-content:flex-start;">
-                🦴 Jerarquía Esqueleto UE5 (186 Huesos + Twist + Hair Chains)
+                🦴 Jerarquía Esqueleto / Wireframe Estructural
               </button>
               <button class="btn t7-mode-btn" data-mode="CLOTH" style="justify-content:flex-start;">
-                👕 Mapa de Calor Chaos Cloth 5.4 (MaxDistance 0.5cm a 12.0cm)
+                👕 Mapa de Calor Chaos Cloth 5.4 / Zonas Wall-Break
               </button>
               <button class="btn t7-mode-btn" data-mode="SMEAR" style="justify-content:flex-start;">
                 ⚡ Stepped Anim 60 FPS + Control Rig Smear (1.25x) & AABB
@@ -1197,15 +1228,35 @@
             </div>
           </div>
 
+          <!-- 3. Selector de los 10 Clips de Animación glTF 2.0 + Controles de Reproducción -->
           <div class="slot-card">
-            <label style="font-size:11px; color:var(--turf); font-weight:700;">3. POSE / ANIMACIÓN STEPPED (SIN MOTION BLUR) Y FÍSICA DE VIENTO:</label>
+            <label style="font-size:11px; color:var(--turf); font-weight:700;">3. CLIPS DE ANIMACIÓN glTF 2.0 (10 CLIPS @ 60 FPS):</label>
             <select id="t7-sel-pose" style="width:100%; margin-top:4px;">
-              <option value="IDLE">Pose 01: Guardia de Potrero (Idle Breathing + Ball Orbit)</option>
-              <option value="JAB_5LP">Pose 02: 5LP Toque Corto (Startup 4f — Twist Forearm)</option>
-              <option value="KICK_236SK">Pose 03: 236+SK Bati-Cañonazo (Smear Tibia/Botín 1.25x)</option>
-              <option value="CHILENA_623HP">Pose 04: 623+HP Chilena Acrobática (pelvis_visual_offset)</option>
-              <option value="ESCORPION_214SK">Pose 05: 214+SK El Escorpión (High-Crush Azul + Hair Physics)</option>
+              <optgroup label="🌟 Clips 60 FPS Full-Body (Upgraded LINEAR)">
+                <option value="Idle_Breath" selected>01. Idle_Breath (2.0s • 121 Keyframes • Looping Guard)</option>
+                <option value="Dash_Forward">02. Dash_Forward (0.6s • 37 Keyframes • Sprint Burst)</option>
+                <option value="Kick_High">03. Kick_High (0.8s • 49 Keyframes • 1.18x Shin Smear)</option>
+                <option value="Special_Chilena">04. Special_Chilena (1.2s • 73 Keyframes • 360° Bicycle Kick)</option>
+                <option value="Victory_Pose">05. Victory_Pose (1.5s • 91 Keyframes • Saludo Campeón / Halo)</option>
+              </optgroup>
+              <optgroup label="⚡ Clips Stepped FGC (60Hz Pure STEP)">
+                <option value="Anim_Idle">06. Anim_Idle (Guardia de Potrero Stepped)</option>
+                <option value="Anim_5LP_Jab4f">07. Anim_5LP_Jab4f (Startup 4f — Twist Forearm)</option>
+                <option value="Anim_236SK_Shot">08. Anim_236SK_Shot (Bati-Cañonazo — Smear 1.25x)</option>
+                <option value="Anim_623HP_BicycleKick">09. Anim_623HP_BicycleKick (Chilena pelvis_visual_offset)</option>
+                <option value="Anim_214SK_Scorpion">10. Anim_214SK_Scorpion (El Escorpión High-Crush Azul)</option>
+              </optgroup>
             </select>
+
+            <div style="display:flex; justify-content:space-between; align-items:center; gap:6px; margin-top:7px;">
+              <button class="btn btn-turf btn-sm" id="t7-btn-anim-play">⏸ Pause Clip</button>
+              <div class="btn-group">
+                <button class="btn btn-sm t7-spd-btn" data-spd="0.25">0.25x</button>
+                <button class="btn btn-sm t7-spd-btn" data-spd="0.5">0.5x</button>
+                <button class="btn btn-sm btn-gold t7-spd-btn" data-spd="1">1.0x</button>
+              </div>
+              <span style="font-family:var(--font-mono); font-size:10.5px; color:var(--gold-bright);" id="t7-clip-kf-lbl">KF: 001 / 121</span>
+            </div>
 
             <div style="margin-top:8px;">
               <div style="display:flex; justify-content:space-between; font-size:11px;">
@@ -1245,89 +1296,94 @@
 
           <div class="box-legend">
             <div class="legend-item"><span class="swatch" style="background:#00e5ff;"></span> Chaos Cloth Pin (0.5 cm Rígido)</div>
-            <div class="legend-item"><span class="swatch" style="background:#ff2a54;"></span> Chaos Cloth Libre (12.0 cm Faldón/Mangas)</div>
-            <div class="legend-item"><span class="swatch" style="background:#f5c451;"></span> Huesos Control Rig + Twist</div>
-            <div class="legend-item"><span class="swatch" style="background:#00e676;"></span> Hurtbox Matemática AABB (Sin alterar por Smear)</div>
+            <div class="legend-item"><span class="swatch" style="background:#ff2a54;"></span> Chaos Cloth Libre (12.0 cm) / Wall-Break</div>
+            <div class="legend-item"><span class="swatch" style="background:#f5c451;"></span> Huesos Control Rig / Landmarks 3D</div>
+            <div class="legend-item"><span class="swatch" style="background:#00e676;"></span> Hurtbox Matemática AABB / Zona A</div>
           </div>
         </div>
 
-        <!-- Columna Derecha: Presupuesto GPU, LODs, 3 Materiales UDIM y Activos .glb/.png -->
+        <!-- Columna Derecha: Inspector Técnico en Vivo del Manifiesto glTF 2.0 + Descarga Directa .glb -->
         <div class="panel">
           <div class="panel-header">
             <div>
-              <div class="panel-title">📊 Presupuesto GPU, LODs & Activos `.glb` / `.png`</div>
-              <div class="panel-subtitle">Sin Nanite en Skinned Meshes — GPUSkinCache ON</div>
+              <div class="panel-title">🔬 Inspector Técnico glTF 2.0 & Pipeline UE 5.4+</div>
+              <div class="panel-subtitle" id="t7-manifest-source">Animations3D_TechnicalManifest.json • Validated</div>
             </div>
-            <span class="badge-engine">~3.10 ms GPU</span>
+            <span class="badge-engine" id="t7-insp-size">155.9 KB</span>
           </div>
 
-          <div class="slot-card">
-            <div style="font-weight:800; color:var(--gold); font-size:11.5px;">
-              CONTEO DE TRIÁNGULOS POR NIVEL DE DETALLE (LOD0 — LOD2):
+          <!-- Inspector en Vivo de Geometría, Bounds, Clips y Flags UE 5.4 -->
+          <div class="slot-card" style="border-color:var(--gold);">
+            <div style="font-weight:800; color:var(--gold-bright); font-size:11.5px;" id="t7-insp-header">
+              TELEMETRÍA EN VIVO DEL ACTIVO SELECCIONADO:
             </div>
             <div class="kv-row">
-              <span>LOD0 (Primer Plano / Intro / Super Nivel 3):</span>
-              <span style="color:var(--turf);">94,200 Tris (Presupuesto: 85k-110k)</span>
+              <span>Archivo Binario (`.glb`):</span>
+              <span id="t7-insp-file" style="color:var(--cyan);">SK_PIBE_CO.glb</span>
             </div>
             <div class="kv-row">
-              <span>LOD1 (Cámara Versus Media Distancia):</span>
-              <span style="color:var(--cyan);">48,000 Tris (Reducción 50%)</span>
+              <span>Geometría Base glTF (Vértices / Triángulos):</span>
+              <span id="t7-insp-geo" style="color:var(--turf);">528 Verts / 264 Tris (LOD0 Target: 65k)</span>
             </div>
             <div class="kv-row">
-              <span>LOD2 (Distancia Máxima 2600u / Sin Cloth):</span>
-              <span>22,000 Tris (Solo Huesos Primarios)</span>
+              <span>Dimensiones / Bounding Box (Metros):</span>
+              <span id="t7-insp-bounds">Altura: 1.76m • 38 Joints</span>
             </div>
             <div class="kv-row">
-              <span>Balón Oficial (`SM_Ball_OfficialCONMEBOL`):</span>
-              <span style="color:var(--gold-bright);">4,800 Tris (Icoságono 32 Paneles)</span>
+              <span>Clips Embebidos / Materiales PBR:</span>
+              <span id="t7-insp-clips" style="color:var(--gold-bright);">10 Clips @ 60 FPS (3 Materiales)</span>
+            </div>
+            <div class="kv-row">
+              <span>Pipeline Flags Unreal Engine 5.4+:</span>
+              <span id="t7-insp-flags" style="color:var(--purple);">GPUSkinCache: ON | Chaos Cloth: ON | Lumen: ON</span>
+            </div>
+            <div style="margin-top:4px; font-size:10.5px; color:var(--text-muted); border-top:1px dashed rgba(255,255,255,0.1); padding-top:5px;" id="t7-insp-landmarks">
+              <strong>Detalle / Landmarks:</strong> Full-body 60 FPS keyframe animation con interpolación LINEAR/STEP y huesos de melena física.
             </div>
           </div>
 
           <div class="slot-card">
             <div style="font-weight:800; color:var(--cyan); font-size:11.5px;">
-              LOS 3 MATERIALES MAESTROS (UDIMs 4K — MÁXIMO 3 DRAW CALLS):
+              PRESUPUESTO GPU & 3 MATERIALES MAESTROS (UDIMs 4K):
             </div>
             <div class="kv-row">
-              <span>1. `M_FighterSkin_SSS` (Subsurface Profile):</span>
-              <span>Piel + Sudor Dinámico + Cicatrices</span>
+              <span>LOD0 Gameplay / Intro (`M_FighterSkin_SSS`):</span>
+              <span style="color:var(--turf);">65,000 - 94,200 Tris (~3.10 ms)</span>
             </div>
             <div class="kv-row">
-              <span>2. `M_FighterKit_Anisotropic` (Clear Coat):</span>
-              <span>Tela Retro 90s + Dorsal + Barro (`R/G/B`)</span>
+              <span>LOD1 Media Distancia (`M_FighterKit_Retro90s`):</span>
+              <span style="color:var(--cyan);">32,000 - 48,000 Tris (Cloth ON)</span>
             </div>
             <div class="kv-row">
-              <span>3. `M_FighterHairCards` (Alpha Dither):</span>
-              <span>Melenas (`El Pibe`, `El Loco`, `El Cañón`)</span>
+              <span>LOD2 Cámara Lejana (`M_FighterHairCards`):</span>
+              <span>16,000 - 22,000 Tris (Cloth OFF)</span>
             </div>
           </div>
 
           <div class="slot-card">
             <div style="font-weight:800; color:var(--purple); font-size:11.5px;">
-              📦 ACTIVOS 3D `.glb` Y TEXTURAS PBR GENERADAS EN EL REPOSITORIO:
+              📦 DESCARGA DIRECTA DEL ACTIVO `.glb` SELECCIONADO Y MANIFIESTOS:
             </div>
-            <div style="font-size:11px; color:var(--text-muted); margin-bottom:4px;">
-              Archivos binarios glTF 2.0 y mapas PBR listos para importar en Unreal Engine 5.4 / Blender:
-            </div>
-            <div style="display:flex; flex-direction:column; gap:5px; font-family:var(--font-mono); font-size:10.5px;">
-              <a href="art-gallery.html" class="btn btn-sm btn-gold" style="justify-content:space-between;">
-                <span>🖼️ Abrir Galería de Arte Renacimiento Sfumato & Street-Ink</span>
-                <span>Ver Láminas ▶</span>
+            <div style="display:flex; flex-direction:column; gap:5px; font-family:var(--font-mono); font-size:10.5px; margin-top:2px;">
+              <a href="../Assets/Models3D/Fighters/SK_PIBE_CO.glb" download id="t7-btn-download-active" class="btn btn-sm btn-gold" style="justify-content:space-between;">
+                <span id="t7-lbl-download-active">📥 Descargar SK_PIBE_CO.glb</span>
+                <span>glTF 2.0 Binary ▶</span>
               </a>
-              <a href="../Assets/Models3D/Fighters/SK_FENOMENO_BR.glb" download class="btn btn-sm" style="justify-content:space-between;">
-                <span>📥 SK_FENOMENO_BR.glb (+17 Roster .glb)</span>
-                <span style="color:var(--gold);">Maniquí + Rig</span>
+              <a href="../Assets/Models3D/Fighters/Animations3D_TechnicalManifest.json" target="_blank" class="btn btn-sm" style="justify-content:space-between;">
+                <span>📄 Animations3D_TechnicalManifest.json</span>
+                <span style="color:var(--turf);">17 Fighters (10 Clips)</span>
+              </a>
+              <a href="../Assets/Models3D/Stages/Stages3D_TechnicalManifest.json" target="_blank" class="btn btn-sm" style="justify-content:space-between;">
+                <span>🏟️ Stages3D_TechnicalManifest.json</span>
+                <span style="color:var(--cyan);">10 Estadios CONMEBOL</span>
               </a>
               <a href="../Assets/Models3D/Props/SM_Ball_TruncatedIcosahedron_32Panels.glb" download class="btn btn-sm" style="justify-content:space-between;">
-                <span>📥 SM_Ball_TruncatedIcosahedron_32Panels.glb</span>
-                <span style="color:var(--cyan);">Balón 32-Paneles</span>
+                <span>⚽ SM_Ball_TruncatedIcosahedron_32Panels.glb</span>
+                <span style="color:var(--gold);">561 Verts / 1,024 Tris</span>
               </a>
-              <a href="../Assets/Models3D/Stages/SM_Stage_PitchAndDestructibleWalls.glb" download class="btn btn-sm" style="justify-content:space-between;">
-                <span>📥 SM_Stage_PitchAndDestructibleWalls.glb</span>
-                <span style="color:var(--turf);">Arco Wall-Break</span>
-              </a>
-              <a href="../Assets/TexturesPBR/T_Kit_Brazil_Albedo.png" target="_blank" class="btn btn-sm" style="justify-content:space-between;">
-                <span>🖼️ T_Kit_*_Albedo / Normal / ORM</span>
-                <span style="color:var(--purple);">Texturas PBR</span>
+              <a href="art-gallery.html" class="btn btn-sm" style="justify-content:space-between;">
+                <span>🖼️ Galería de Arte Renacimiento Sfumato & Street-Ink</span>
+                <span style="color:var(--purple);">Ver Láminas ▶</span>
               </a>
             </div>
           </div>
