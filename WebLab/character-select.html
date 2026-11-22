@@ -1,0 +1,1084 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>LA COPA ETERNA — Selección de Leyendas CONMEBOL & Estadios (16+1)</title>
+  <link rel="stylesheet" href="styles.css" />
+  <style>
+    :root {
+      --sfumato-gold: #d4a347;
+      --sfumato-gold-bright: #ffe299;
+      --sfumato-crimson: #9e2222;
+      --sfumato-emerald: #00c864;
+      --sfumato-azure: #38b6ff;
+      --sfumato-panel: rgba(20, 14, 9, 0.9);
+      --sfumato-border: rgba(212, 163, 71, 0.55);
+      --font-display: 'Georgia', 'Times New Roman', serif;
+    }
+
+    body.theme-street-ink {
+      --sfumato-gold: #00e5ff;
+      --sfumato-gold-bright: #00e676;
+      --sfumato-crimson: #ff2a54;
+      --sfumato-panel: rgba(10, 15, 25, 0.92);
+      --sfumato-border: rgba(0, 229, 255, 0.55);
+      --font-display: 'Segoe UI', system-ui, sans-serif;
+    }
+
+    body {
+      margin: 0;
+      padding: 0;
+      min-height: 100vh;
+      background-color: #0b0704;
+      color: #f5ebd7;
+      font-family: var(--font-ui);
+      overflow-x: hidden;
+      user-select: none;
+    }
+
+    .bg-backdrop {
+      position: fixed;
+      inset: 0;
+      background-image: url('../Assets/ConceptArt/Stage_MaracanaBombonera_Concept.jpg');
+      background-size: cover;
+      background-position: center;
+      filter: sepia(0.45) contrast(1.15) brightness(0.28);
+      z-index: 0;
+      transition: filter 0.4s ease;
+    }
+
+    body.theme-street-ink .bg-backdrop {
+      filter: saturate(1.3) contrast(1.2) brightness(0.25);
+    }
+
+    .chiaroscuro-overlay {
+      position: fixed;
+      inset: 0;
+      background:
+        radial-gradient(circle at 50% 35%, rgba(212, 163, 71, 0.14) 0%, rgba(10, 6, 3, 0.92) 75%),
+        repeating-linear-gradient(0deg, rgba(255, 225, 160, 0.015) 0px, rgba(255, 225, 160, 0.015) 1px, transparent 1px, transparent 3px);
+      pointer-events: none;
+      z-index: 1;
+    }
+
+    /* Top Header */
+    .cs-topbar {
+      position: relative;
+      z-index: 10;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 12px 26px;
+      background: linear-gradient(180deg, rgba(16, 10, 6, 0.96) 0%, rgba(16, 10, 6, 0.65) 100%);
+      border-bottom: 1px solid var(--sfumato-border);
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+
+    .phase-banner {
+      background: linear-gradient(90deg, rgba(212, 163, 71, 0.2), rgba(158, 34, 34, 0.25));
+      border: 1px solid var(--sfumato-gold-bright);
+      padding: 6px 16px;
+      border-radius: 20px;
+      font-family: var(--font-display);
+      font-weight: 800;
+      font-size: 13px;
+      color: var(--sfumato-gold-bright);
+      letter-spacing: 0.8px;
+      box-shadow: 0 0 16px rgba(212, 163, 71, 0.3);
+    }
+
+    /* Layout Principal 3 Columnas: P1 | Roster Grid + Stages | P2 */
+    .cs-workspace {
+      position: relative;
+      z-index: 10;
+      max-width: 1780px;
+      margin: 0 auto;
+      padding: 16px 22px 28px;
+      display: grid;
+      grid-template-columns: 370px 1fr 370px;
+      gap: 18px;
+      align-items: start;
+    }
+
+    @media (max-width: 1360px) {
+      .cs-workspace {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    /* Paneles Laterales P1 y P2 */
+    .fighter-showcase {
+      background: var(--sfumato-panel);
+      border: 2px solid var(--sfumato-border);
+      border-radius: 12px;
+      padding: 14px;
+      box-shadow: 0 16px 42px rgba(0, 0, 0, 0.85);
+      display: flex;
+      flex-direction: column;
+      gap: 11px;
+      position: relative;
+    }
+
+    .fighter-showcase.p1-side {
+      border-color: #d4a347;
+      box-shadow: 0 14px 40px rgba(0, 0, 0, 0.85), inset 0 0 24px rgba(0, 200, 100, 0.12);
+    }
+
+    .fighter-showcase.p2-side {
+      border-color: #ff4769;
+      box-shadow: 0 14px 40px rgba(0, 0, 0, 0.85), inset 0 0 24px rgba(56, 182, 255, 0.14);
+    }
+
+    .side-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-family: var(--font-mono);
+      font-size: 11px;
+      font-weight: 800;
+      padding-bottom: 6px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    /* Marco de Retrato Renacentista con Recorte CSS (background-position crop) */
+    .portrait-frame {
+      position: relative;
+      width: 100%;
+      height: 255px;
+      border-radius: 8px;
+      border: 2px solid var(--sfumato-gold-bright);
+      overflow: hidden;
+      background-color: #120b06;
+      background-repeat: no-repeat;
+      box-shadow: inset 0 0 30px rgba(0, 0, 0, 0.85);
+      transition: background-position 0.35s cubic-bezier(0.16, 1, 0.3, 1), background-image 0.25s ease;
+    }
+
+    .portrait-frame::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background:
+        radial-gradient(circle at 50% 45%, transparent 50%, rgba(12, 7, 3, 0.78) 100%),
+        linear-gradient(180deg, transparent 60%, rgba(12, 7, 3, 0.94) 100%);
+      pointer-events: none;
+    }
+
+    .portrait-country-pill {
+      position: absolute;
+      top: 10px;
+      left: 10px;
+      z-index: 3;
+      background: rgba(12, 8, 4, 0.88);
+      border: 1px solid var(--sfumato-gold);
+      color: var(--sfumato-gold-bright);
+      padding: 3px 9px;
+      border-radius: 4px;
+      font-family: var(--font-mono);
+      font-size: 10.5px;
+      font-weight: 800;
+    }
+
+    .portrait-era-pill {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      z-index: 3;
+      background: rgba(12, 8, 4, 0.88);
+      border: 1px solid rgba(255, 255, 255, 0.25);
+      color: #dfd0b8;
+      padding: 3px 8px;
+      border-radius: 4px;
+      font-family: var(--font-mono);
+      font-size: 10px;
+    }
+
+    .portrait-name-overlay {
+      position: absolute;
+      bottom: 10px;
+      left: 12px;
+      right: 12px;
+      z-index: 3;
+    }
+
+    .portrait-name-overlay h2 {
+      font-family: var(--font-display);
+      font-size: 1.55rem;
+      font-weight: 900;
+      color: #fff6e0;
+      text-shadow: 0 2px 10px rgba(0, 0, 0, 0.95);
+      margin: 0;
+    }
+
+    .portrait-name-overlay .arch-tag {
+      font-size: 11px;
+      color: var(--sfumato-gold-bright);
+      font-family: var(--font-mono);
+      font-weight: 700;
+    }
+
+    /* Barras de Estadísticas Animadas */
+    .stat-bars-box {
+      display: flex;
+      flex-direction: column;
+      gap: 7px;
+      background: rgba(10, 7, 4, 0.65);
+      border: 1px solid rgba(212, 163, 71, 0.22);
+      border-radius: 7px;
+      padding: 10px 12px;
+    }
+
+    .sbar-row {
+      display: flex;
+      flex-direction: column;
+      gap: 3px;
+    }
+
+    .sbar-head {
+      display: flex;
+      justify-content: space-between;
+      font-size: 10.5px;
+      font-family: var(--font-mono);
+      color: #d6c6b0;
+    }
+
+    .sbar-track {
+      height: 8px;
+      background: #1a130d;
+      border-radius: 4px;
+      overflow: hidden;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+    }
+
+    .sbar-fill {
+      height: 100%;
+      background: linear-gradient(90deg, var(--sfumato-emerald), var(--sfumato-gold-bright));
+      transition: width 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    .p2-side .sbar-fill {
+      background: linear-gradient(90deg, var(--sfumato-azure), #ff4769);
+    }
+
+    .passive-scroll {
+      background: linear-gradient(90deg, rgba(212, 163, 71, 0.14), rgba(0, 0, 0, 0.4));
+      border-left: 3px solid var(--sfumato-gold-bright);
+      padding: 8px 10px;
+      border-radius: 5px;
+      font-size: 11px;
+      line-height: 1.4;
+    }
+
+    /* Panel Central: Grilla 16+1 Leyendas + Tira de 10 Estadios */
+    .center-board {
+      background: var(--sfumato-panel);
+      border: 2px solid var(--sfumato-border);
+      border-radius: 12px;
+      padding: 14px 16px;
+      box-shadow: 0 18px 50px rgba(0, 0, 0, 0.9);
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+
+    .roster-select-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 9px;
+    }
+
+    @media (max-width: 780px) {
+      .roster-select-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+
+    .char-tile {
+      position: relative;
+      background: #140d08;
+      border: 1px solid rgba(212, 163, 71, 0.3);
+      border-radius: 8px;
+      padding: 8px;
+      cursor: pointer;
+      transition: all 0.16s ease;
+      display: flex;
+      align-items: center;
+      gap: 9px;
+      overflow: hidden;
+    }
+
+    .char-tile:hover {
+      border-color: var(--sfumato-gold-bright);
+      transform: translateY(-2px);
+      background: #1f140c;
+    }
+
+    .char-tile.p1-selected {
+      border: 2px solid var(--sfumato-emerald);
+      box-shadow: 0 0 16px rgba(0, 200, 100, 0.45);
+      background: linear-gradient(135deg, rgba(0, 200, 100, 0.18), rgba(20, 13, 8, 0.95));
+    }
+
+    .char-tile.p2-selected {
+      border: 2px solid #ff4769;
+      box-shadow: 0 0 16px rgba(255, 71, 105, 0.45);
+      background: linear-gradient(135deg, rgba(255, 71, 105, 0.18), rgba(20, 13, 8, 0.95));
+    }
+
+    .char-tile.boss-tile {
+      grid-column: span 4;
+      justify-content: center;
+      border-color: rgba(255, 71, 105, 0.65);
+      background: linear-gradient(90deg, rgba(158, 34, 34, 0.25), rgba(20, 13, 8, 0.95), rgba(158, 34, 34, 0.25));
+    }
+
+    @media (max-width: 780px) {
+      .char-tile.boss-tile {
+        grid-column: span 2;
+      }
+    }
+
+    .tile-avatar {
+      width: 48px;
+      height: 48px;
+      border-radius: 6px;
+      border: 1px solid var(--sfumato-gold);
+      background-repeat: no-repeat;
+      flex-shrink: 0;
+    }
+
+    .tile-info {
+      display: flex;
+      flex-direction: column;
+      min-width: 0;
+    }
+
+    .tile-name {
+      font-family: var(--font-display);
+      font-weight: 800;
+      font-size: 12.5px;
+      color: #fff6e0;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .tile-sub {
+      font-family: var(--font-mono);
+      font-size: 10px;
+      color: #bda98e;
+    }
+
+    .tile-badge {
+      position: absolute;
+      top: 4px;
+      right: 5px;
+      font-family: var(--font-mono);
+      font-size: 9.5px;
+      font-weight: 900;
+      padding: 1px 5px;
+      border-radius: 3px;
+    }
+
+    .badge-p1 {
+      background: var(--sfumato-emerald);
+      color: #04140a;
+    }
+
+    .badge-p2 {
+      background: #ff4769;
+      color: #ffffff;
+    }
+
+    /* Selector de los 10 Estadios CONMEBOL */
+    .stage-strip {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 7px;
+    }
+
+    @media (max-width: 900px) {
+      .stage-strip {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+
+    .stage-pill {
+      background: #140d08;
+      border: 1px solid rgba(212, 163, 71, 0.28);
+      border-radius: 6px;
+      padding: 7px 9px;
+      cursor: pointer;
+      transition: all 0.15s ease;
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+
+    .stage-pill:hover {
+      border-color: var(--sfumato-gold-bright);
+    }
+
+    .stage-pill.active {
+      border: 2px solid var(--sfumato-gold-bright);
+      background: linear-gradient(135deg, rgba(212, 163, 71, 0.24), rgba(20, 13, 8, 0.95));
+      box-shadow: 0 0 12px rgba(212, 163, 71, 0.35);
+    }
+
+    .st-name {
+      font-weight: 800;
+      font-size: 11px;
+      color: #fff6e0;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .st-meta {
+      font-family: var(--font-mono);
+      font-size: 9.5px;
+      color: var(--sfumato-gold-bright);
+    }
+
+    /* Botón Gigante "¡A LA CANCHA!" */
+    .launch-match-btn {
+      background: linear-gradient(135deg, #d4a347 0%, #9e2222 100%);
+      color: #ffffff;
+      border: 2px solid #ffe299;
+      border-radius: 10px;
+      padding: 13px 24px;
+      font-family: var(--font-display);
+      font-size: 1.25rem;
+      font-weight: 900;
+      letter-spacing: 1.2px;
+      cursor: pointer;
+      box-shadow: 0 0 26px rgba(212, 163, 71, 0.55);
+      transition: all 0.18s ease;
+      width: 100%;
+      text-transform: uppercase;
+    }
+
+    .launch-match-btn:hover {
+      transform: scale(1.015);
+      box-shadow: 0 0 38px rgba(255, 226, 153, 0.85);
+    }
+
+    /* Overlay Transición VS Clash de 1.2s */
+    .clash-transition {
+      position: fixed;
+      inset: 0;
+      background: rgba(6, 4, 2, 0.96);
+      backdrop-filter: blur(8px);
+      z-index: 999;
+      display: none;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 16px;
+      animation: fadeIn 0.2s ease-out;
+    }
+
+    .clash-transition.active {
+      display: flex;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="bg-backdrop"></div>
+  <div class="chiaroscuro-overlay"></div>
+
+  <!-- ========================================================================
+       BARRA SUPERIOR DE NAVEGACIÓN Y FASE DE SELECCIÓN
+       ======================================================================== -->
+  <header class="cs-topbar">
+    <div style="display:flex; align-items:center; gap:12px;">
+      <a href="main-menu.html" class="btn btn-gold btn-sm" style="text-decoration:none;">
+        🏛️ Menú Principal
+      </a>
+      <div>
+        <div style="font-family:var(--font-display); font-weight:900; font-size:15px; color:var(--sfumato-gold-bright);">
+          LA COPA ETERNA — CÁMARA DE LEYENDAS CONMEBOL (16 + JUEZ SUPREMO)
+        </div>
+        <div style="font-family:var(--font-mono); font-size:10.5px; color:#bda98e;">
+          Selecciona Combatiente P1, Rival P2 y Estadio Mítico para el Modo Versus a 60 FPS
+        </div>
+      </div>
+    </div>
+
+    <div class="phase-banner" id="cs-phase-banner">
+      PASO 1: ELIGE LEYENDA JUGADOR 1 (P1)
+    </div>
+
+    <div class="btn-group">
+      <button class="btn btn-turf btn-sm" id="btn-random-select">🎲 Aleatorio</button>
+      <button class="btn btn-cyan btn-sm" id="btn-swap-sides">🔄 Cambiar Turno (P1/P2)</button>
+      <button class="btn btn-gold btn-sm" id="btn-theme-toggle">🖼️ Arte: Renacimiento Sfumato</button>
+      <button class="btn btn-sm" id="btn-sfx-toggle">🔊 SFX: ON</button>
+    </div>
+  </header>
+
+  <!-- ========================================================================
+       WORKSPACE DE 3 COLUMNAS: P1 | ROSTER GRID & ESTADIOS | P2
+       ======================================================================== -->
+  <main class="cs-workspace">
+
+    <!-- Columna Izquierda: Jugador 1 (P1 - Oro / Esmeralda) -->
+    <aside class="fighter-showcase p1-side">
+      <div class="side-header">
+        <span style="color:var(--sfumato-emerald);">🟢 JUGADOR 1 (LOCAL)</span>
+        <span id="p1-code-lbl" style="color:var(--sfumato-gold-bright);">FENOMENO_BR</span>
+      </div>
+
+      <div class="portrait-frame" id="p1-portrait">
+        <span class="portrait-country-pill" id="p1-country">Brasil 🇧🇷</span>
+        <span class="portrait-era-pill" id="p1-era">1994-2006</span>
+        <div class="portrait-name-overlay">
+          <div class="arch-tag" id="p1-arch">RUSHDOWN EXPLOSIVO</div>
+          <h2 id="p1-name">O Fenômeno</h2>
+        </div>
+      </div>
+
+      <div class="stat-bars-box">
+        <div class="sbar-row">
+          <div class="sbar-head"><span>Vitalidad Máxima (HP)</span><strong id="p1-hp-txt">10,000 HP</strong></div>
+          <div class="sbar-track"><div class="sbar-fill" id="p1-hp-bar" style="width:86%;"></div></div>
+        </div>
+        <div class="sbar-row">
+          <div class="sbar-head"><span>Potencia de Remate / Stun</span><strong id="p1-pow-txt">92 / 100</strong></div>
+          <div class="sbar-track"><div class="sbar-fill" id="p1-pow-bar" style="width:92%;"></div></div>
+        </div>
+        <div class="sbar-row">
+          <div class="sbar-head"><span>Velocidad de Arrancada (Dash)</span><strong id="p1-spd-txt">15 Frames</strong></div>
+          <div class="sbar-track"><div class="sbar-fill" id="p1-spd-bar" style="width:88%;"></div></div>
+        </div>
+        <div class="sbar-row">
+          <div class="sbar-head"><span>Técnica de Gambeta & Footsies</span><strong id="p1-tec-txt">95 / 100</strong></div>
+          <div class="sbar-track"><div class="sbar-fill" id="p1-tec-bar" style="width:95%;"></div></div>
+        </div>
+      </div>
+
+      <div class="passive-scroll">
+        <div style="font-weight:800; color:var(--sfumato-gold-bright); margin-bottom:2px;" id="p1-pas-title">
+          Pasiva: Arrancada Imparable (Super Armor)
+        </div>
+        <div style="color:#e9dcc9;" id="p1-pas-desc">
+          Los primeros 4 frames de su Forward Dash absorben 1 impacto ligero o proyectil sin detener su carrera.
+        </div>
+      </div>
+    </aside>
+
+    <!-- Columna Central: Grilla 16+1 Leyendas + 10 Estadios CONMEBOL + Botón A LA CANCHA -->
+    <section class="center-board">
+      <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px;">
+        <div style="font-family:var(--font-display); font-weight:800; font-size:14px; color:var(--sfumato-gold-bright);">
+          ⚽ SELECCIONA TU LEYENDA SUDAMERICANA (CLIC O FLECHAS + ENTER)
+        </div>
+        <div style="font-family:var(--font-mono); font-size:11px; color:#c8b69c;">
+          Turno Activo: <strong id="active-slot-indicator" style="color:var(--sfumato-emerald);">JUGADOR 1 (P1)</strong>
+        </div>
+      </div>
+
+      <div class="roster-select-grid" id="cs-roster-grid">
+        <!-- 17 Tarjetas generadas dinámicamente -->
+      </div>
+
+      <div style="border-top:1px solid rgba(212, 163, 71, 0.25); padding-top:10px;">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:7px;">
+          <span style="font-family:var(--font-display); font-weight:800; font-size:13px; color:var(--sfumato-gold-bright);">
+            🏟️ SEDE DEL PARTIDO (10 ESTADIOS MÍTICOS CONMEBOL CON WALL BREAK):
+          </span>
+          <span style="font-family:var(--font-mono); font-size:11px; color:var(--sfumato-emerald);" id="selected-stage-banner">
+            Templo do Maracanã (Brasil) • 115.0 BPM • Muro: 3 Hits
+          </span>
+        </div>
+
+        <div class="stage-strip" id="cs-stage-strip">
+          <!-- 10 Estadios generados dinámicamente -->
+        </div>
+      </div>
+
+      <button class="launch-match-btn" id="btn-launch-match">
+        ⚔️ ¡A LA CANCHA! — INICIAR SUPERCLÁSICO EN VIVO (60 FPS)
+      </button>
+    </section>
+
+    <!-- Columna Derecha: Jugador 2 / Rival (P2 - Celeste / Carmesí) -->
+    <aside class="fighter-showcase p2-side">
+      <div class="side-header">
+        <span style="color:#ff4769;">🔴 JUGADOR 2 (RIVAL / CPU)</span>
+        <span id="p2-code-lbl" style="color:var(--sfumato-azure);">PULGA_AR</span>
+      </div>
+
+      <div class="portrait-frame" id="p2-portrait">
+        <span class="portrait-country-pill" id="p2-country">Argentina 🇦🇷</span>
+        <span class="portrait-era-pill" id="p2-era">2005-Presente</span>
+        <div class="portrait-name-overlay">
+          <div class="arch-tag" id="p2-arch">PIXIE / FOOTSIES</div>
+          <h2 id="p2-name">La Pulga</h2>
+        </div>
+      </div>
+
+      <div class="stat-bars-box">
+        <div class="sbar-row">
+          <div class="sbar-head"><span>Vitalidad Máxima (HP)</span><strong id="p2-hp-txt">9,000 HP</strong></div>
+          <div class="sbar-track"><div class="sbar-fill" id="p2-hp-bar" style="width:76%;"></div></div>
+        </div>
+        <div class="sbar-row">
+          <div class="sbar-head"><span>Potencia de Remate / Stun</span><strong id="p2-pow-txt">88 / 100</strong></div>
+          <div class="sbar-track"><div class="sbar-fill" id="p2-pow-bar" style="width:88%;"></div></div>
+        </div>
+        <div class="sbar-row">
+          <div class="sbar-head"><span>Velocidad de Arrancada (Dash)</span><strong id="p2-spd-txt">14 Frames</strong></div>
+          <div class="sbar-track"><div class="sbar-fill" id="p2-spd-bar" style="width:94%;"></div></div>
+        </div>
+        <div class="sbar-row">
+          <div class="sbar-head"><span>Técnica de Gambeta & Footsies</span><strong id="p2-tec-txt">99 / 100</strong></div>
+          <div class="sbar-track"><div class="sbar-fill" id="p2-tec-bar" style="width:99%;"></div></div>
+        </div>
+      </div>
+
+      <div class="passive-scroll" style="border-left-color:#ff4769;">
+        <div style="font-weight:800; color:#ff8da1; margin-bottom:2px;" id="p2-pas-title">
+          Pasiva: Pelota Pegada al Pie (Micro-Hurtbox)
+        </div>
+        <div style="color:#e9dcc9;" id="p2-pas-desc">
+          Su Hurtbox superior es 18% más baja durante desplazamientos y sus cambios de dirección no tienen fricción.
+        </div>
+      </div>
+    </aside>
+
+  </main>
+
+  <!-- Overlay Dramático de 1.2s al Lanzar el Combate -->
+  <div class="clash-transition" id="clash-transition">
+    <div style="font-family:var(--font-mono); font-size:12px; color:var(--sfumato-gold-bright); letter-spacing:1.5px;">
+      ⚡ INICIALIZANDO KERNEL DETERMINISTA Q32.32 & AUDIO WWISE...
+    </div>
+    <div style="font-family:var(--font-display); font-size:2.4rem; font-weight:900; color:#ffffff; text-align:center;" id="clash-names">
+      O FENÔMENO vs LA PULGA
+    </div>
+    <div style="font-family:var(--font-mono); font-size:13px; color:var(--sfumato-emerald);" id="clash-stage">
+      Sede: Templo do Maracanã (Brasil)
+    </div>
+  </div>
+
+  <script>
+    (() => {
+      'use strict';
+
+      // 1. Catálogo Exacto 16+1 Leyendas (Índices 0..16 idénticos a ROSTER_DATA en WebLab/app.js)
+      // Con coordenadas de recorte CSS (background-image, background-size y background-position) sobre los 4 lienzos verificados
+      const CS_ROSTER = [
+        {
+          idx: 0, Name: 'FENOMENO_BR', DisplayName: 'O Fenômeno', Country: 'Brasil 🇧🇷', Era: '1994-2006',
+          Archetype: 'Rushdown Explosivo', MaxHealth: 10000, ForwardDashFrames: 15, Power: 92, Tech: 95,
+          PassiveTitle: 'Pasiva: Arrancada Imparable (Super Armor)',
+          PassiveDesc: 'Los primeros 4 frames de su Forward Dash absorben 1 impacto ligero o proyectil sin detener su carrera.',
+          ArtSheet: '../Assets/ConceptArt/VSScreen_Brasil_vs_Argentina_Renaissance.jpg', BgSize: '210% auto', BgPos: '12% 24%'
+        },
+        {
+          idx: 1, Name: 'BRUXO_BR', DisplayName: 'O Bruxo', Country: 'Brasil 🇧🇷', Era: '2000-2010',
+          Archetype: 'Trickster / Mix-up', MaxHealth: 9500, ForwardDashFrames: 17, Power: 85, Tech: 99,
+          PassiveTitle: 'Pasiva: Sonrisa de Carnaval (Ritmo de Samba)',
+          PassiveDesc: 'Cada finta exitosa con Gambeta incrementa +15% la ganancia de Super Meter durante 6 segundos.',
+          ArtSheet: '../Assets/ConceptArt/LaCopaEterna_KeyArt_RosterClash.jpg', BgSize: '220% auto', BgPos: '24% 25%'
+        },
+        {
+          idx: 2, Name: 'CANON_AR', DisplayName: 'El Cañón', Country: 'Argentina 🇦🇷', Era: '1990-2002',
+          Archetype: 'Power Shoto', MaxHealth: 10500, ForwardDashFrames: 19, Power: 98, Tech: 86,
+          PassiveTitle: 'Pasiva: Artillería Pesada (Chip Damage +25%)',
+          PassiveDesc: 'Sus disparos de balón causan 25% más daño gris en bloqueo y empujan el doble hacia la red.',
+          ArtSheet: '../Assets/ConceptArt/CharacterSelect_PortraitSheet_CONMEBOL.jpg', BgSize: '310% auto', BgPos: '84% 22%'
+        },
+        {
+          idx: 3, Name: 'PULGA_AR', DisplayName: 'La Pulga', Country: 'Argentina 🇦🇷', Era: '2005-Presente',
+          Archetype: 'Pixie / Footsies', MaxHealth: 9000, ForwardDashFrames: 14, Power: 88, Tech: 99,
+          PassiveTitle: 'Pasiva: Pelota Pegada al Pie (Micro-Hurtbox)',
+          PassiveDesc: 'Su Hurtbox superior es 18% más baja durante desplazamientos y sus cambios de dirección no tienen fricción.',
+          ArtSheet: '../Assets/ConceptArt/VSScreen_Brasil_vs_Argentina_Renaissance.jpg', BgSize: '210% auto', BgPos: '88% 24%'
+        },
+        {
+          idx: 4, Name: 'PIBE_CO', DisplayName: 'El Pibe', Country: 'Colombia 🇨🇴', Era: '1990-2000',
+          Archetype: 'Setplay Zoner', MaxHealth: 10000, ForwardDashFrames: 21, Power: 84, Tech: 97,
+          PassiveTitle: 'Pasiva: Visión Periférica Total (Trampas de Balón)',
+          PassiveDesc: 'Puede mantener hasta 2 balones flotando en cancha que detonan al contacto o mediante comando 22+SK.',
+          ArtSheet: '../Assets/ConceptArt/CharacterSelect_PortraitSheet_CONMEBOL.jpg', BgSize: '310% auto', BgPos: '14% 22%'
+        },
+        {
+          idx: 5, Name: 'LOCO_CO', DisplayName: 'El Loco', Country: 'Colombia 🇨🇴', Era: '1990-2000',
+          Archetype: 'Counter-Acrobat', MaxHealth: 10200, ForwardDashFrames: 18, Power: 89, Tech: 94,
+          PassiveTitle: 'Pasiva: Arquero Líbero (Furia Fuera del Área)',
+          PassiveDesc: 'Mientras está de la mitad de la cancha hacia adelante gana +12% velocidad y daño en saltos acrobáticos.',
+          ArtSheet: '../Assets/ConceptArt/CharacterSelect_PortraitSheet_CONMEBOL.jpg', BgSize: '310% auto', BgPos: '48% 22%'
+        },
+        {
+          idx: 6, Name: 'PISTOLERO_UY', DisplayName: 'El Pistolero', Country: 'Uruguay 🇺🇾', Era: '2007-Presente',
+          Archetype: 'Hybrid Grappler', MaxHealth: 10800, ForwardDashFrames: 20, Power: 95, Tech: 88,
+          PassiveTitle: 'Pasiva: Garra Charrúa (Desperation Boost)',
+          PassiveDesc: 'Al bajar del 30% de vida sus Command Grabs ganan alcance extra y su daño base sube un 15%.',
+          ArtSheet: '../Assets/ConceptArt/CharacterSelect_PortraitSheet_CONMEBOL.jpg', BgSize: '310% auto', BgPos: '25% 78%'
+        },
+        {
+          idx: 7, Name: 'MATADOR_UY', DisplayName: 'El Matador', Country: 'Uruguay 🇺🇾', Era: '2000-2018',
+          Archetype: 'Long-Range Hybrid', MaxHealth: 10000, ForwardDashFrames: 18, Power: 93, Tech: 91,
+          PassiveTitle: 'Pasiva: Francotirador Ambidiestro',
+          PassiveDesc: 'Puede cancelar cualquier tiro de balón en otro disparo con pierna opuesta consumiendo 250 de Gambeta.',
+          ArtSheet: '../Assets/ConceptArt/LaCopaEterna_KeyArt_RosterClash.jpg', BgSize: '220% auto', BgPos: '78% 28%'
+        },
+        // Índices 8..15: Lámina 4x2 Renacentista (CharacterSelect_RosterWave2_Renaissance.jpg)
+        {
+          idx: 8, Name: 'BAMBAM_CL', DisplayName: 'Bam-Bam', Country: 'Chile 🇨🇱', Era: '1990-2002',
+          Archetype: 'Air-Dominance', MaxHealth: 10000, ForwardDashFrames: 17, Power: 91, Tech: 89,
+          PassiveTitle: 'Pasiva: El Helicóptero (Suspend Air-Stall)',
+          PassiveDesc: 'Puede suspenderse 18 frames en el punto máximo de su salto para alterar el timing de sus Divekicks.',
+          ArtSheet: '../Assets/ConceptArt/CharacterSelect_RosterWave2_Renaissance.jpg', BgSize: '400% auto', BgPos: '6% 14%'
+        },
+        {
+          idx: 9, Name: 'REY_CL', DisplayName: 'El Rey', Country: 'Chile 🇨🇱', Era: '2007-Presente',
+          Archetype: 'Berserker Rekka', MaxHealth: 10400, ForwardDashFrames: 16, Power: 93, Tech: 88,
+          PassiveTitle: 'Pasiva: Pulmón de Acero (Gambeta Cost -20%)',
+          PassiveDesc: 'Sus cancelaciones de barrida y Rekkas consumen 20% menos barra de Gambeta.',
+          ArtSheet: '../Assets/ConceptArt/CharacterSelect_RosterWave2_Renaissance.jpg', BgSize: '400% auto', BgPos: '36% 14%'
+        },
+        {
+          idx: 10, Name: 'BULLDOG_PY', DisplayName: 'El Bulldog', Country: 'Paraguay 🇵🇾', Era: '1990-2003',
+          Archetype: 'Big-Body Grappler / Zoner', MaxHealth: 11500, ForwardDashFrames: 23, Power: 99, Tech: 84,
+          PassiveTitle: 'Pasiva: Intimidación Guaraní (11,500 HP + Hyper Armor)',
+          PassiveDesc: 'Mayor vitalidad del juego. Sus tiros libres convocan una barrera espectral que absorbe 1 ataque.',
+          ArtSheet: '../Assets/ConceptArt/CharacterSelect_RosterWave2_Renaissance.jpg', BgSize: '400% auto', BgPos: '66% 14%'
+        },
+        {
+          idx: 11, Name: 'MAESTRO_PE', DisplayName: 'El Maestro', Country: 'Perú 🇵🇪', Era: 'Clásico-Moderno',
+          Archetype: 'Technical Footsies', MaxHealth: 9800, ForwardDashFrames: 17, Power: 86, Tech: 96,
+          PassiveTitle: 'Pasiva: Toque de Seda Peruano',
+          PassiveDesc: 'Sus ataques normales medios tienen +2 frames adicionales de ventana de cancelación a Especiales.',
+          ArtSheet: '../Assets/ConceptArt/CharacterSelect_RosterWave2_Renaissance.jpg', BgSize: '400% auto', BgPos: '95% 14%'
+        },
+        {
+          idx: 12, Name: 'TREN_EC', DisplayName: 'El Tren Amazónico', Country: 'Ecuador 🇪🇨', Era: '2002-2020',
+          Archetype: 'Speedster / Run-Cancel', MaxHealth: 9600, ForwardDashFrames: 13, Power: 87, Tech: 93,
+          PassiveTitle: 'Pasiva: Locomotora por la Banda (Dash 13f)',
+          PassiveDesc: 'El Forward Dash más veloz del roster (13 frames); permite Run-Cancel dejando sus presiones en +3 on block.',
+          ArtSheet: '../Assets/ConceptArt/CharacterSelect_RosterWave2_Renaissance.jpg', BgSize: '400% auto', BgPos: '6% 86%'
+        },
+        {
+          idx: 13, Name: 'HURACAN_VE', DisplayName: 'El Huracán Vinotinto', Country: 'Venezuela 🇻🇪', Era: '2000-Presente',
+          Archetype: 'Dead-Ball Sniper', MaxHealth: 10200, ForwardDashFrames: 19, Power: 94, Tech: 92,
+          PassiveTitle: 'Pasiva: Zurda de Oro (Sin Escalado a Distancia)',
+          PassiveDesc: 'Sus proyectiles de balón no sufren reducción de daño por distancia y caen en picada (Folha Seca).',
+          ArtSheet: '../Assets/ConceptArt/CharacterSelect_RosterWave2_Renaissance.jpg', BgSize: '400% auto', BgPos: '36% 86%'
+        },
+        {
+          idx: 14, Name: 'DIABLO_BO', DisplayName: 'El Diablo Andino', Country: 'Bolivia 🇧🇴', Era: '1990-2000',
+          Archetype: 'Stamina Debuffer', MaxHealth: 9800, ForwardDashFrames: 18, Power: 88, Tech: 94,
+          PassiveTitle: 'Pasiva: Mal de Altura (3,600m Debuff)',
+          PassiveDesc: 'Sus impactos especiales aplican "Falta de Aire", reduciendo la regeneración de Gambeta del rival en 30%.',
+          ArtSheet: '../Assets/ConceptArt/CharacterSelect_RosterWave2_Renaissance.jpg', BgSize: '400% auto', BgPos: '66% 86%'
+        },
+        {
+          idx: 15, Name: 'GENERAL_FR', DisplayName: 'Le Général (Invitado)', Country: 'Francia 🇫🇷', Era: '1996-2006',
+          Archetype: 'Tactical Stance', MaxHealth: 10000, ForwardDashFrames: 17, Power: 91, Tech: 98,
+          PassiveTitle: 'Pasiva: Maestro de la Orquesta',
+          PassiveDesc: 'La Roulette de Marseille atraviesa ataques de golpe alto y deja al rival de espaldas.',
+          ArtSheet: '../Assets/ConceptArt/CharacterSelect_RosterWave2_Renaissance.jpg', BgSize: '400% auto', BgPos: '95% 86%'
+        },
+        // Índice 16: Jefe Final V.A.R.-ZERO
+        {
+          idx: 16, Name: 'VAR_ZERO_BOSS', DisplayName: 'Juez Supremo (V.A.R.-ZERO)', Country: 'BOSS FINAL ⚠️', Era: 'Atemporal',
+          Archetype: 'Boss Zoner / Time Rewinder', MaxHealth: 14000, ForwardDashFrames: 12, Power: 100, Tech: 100,
+          PassiveTitle: 'Pasiva Boss: Revisión de Cuadro (V.A.R. Rewind 90f)',
+          PassiveDesc: 'Rebobina 90 frames del Ring Buffer GGPO. Vulnerable a System Overload tras 3 Gambetas Perfectas.',
+          ArtSheet: '../Assets/ConceptArt/Boss_VAR_ZERO_Renaissance.jpg', BgSize: '135% auto', BgPos: '50% 22%'
+        }
+      ];
+
+      // 2. Catálogo Exacto de los 10 Estadios CONMEBOL (Índices 0..9 idénticos a STAGES_DATA)
+      const CS_STAGES = [
+        { idx: 0, Name: 'Templo do Maracanã', Country: 'Brasil 🇧🇷', BPM: 115.0, WallHP: 3 },
+        { idx: 1, Name: 'La Caldera de La Boca', Country: 'Argentina 🇦🇷', BPM: 128.0, WallHP: 4 },
+        { idx: 2, Name: 'Monumento Centenario', Country: 'Uruguay 🇺🇾', BPM: 120.0, WallHP: 3 },
+        { idx: 3, Name: 'Coloso de Barranquilla', Country: 'Colombia 🇨🇴', BPM: 130.0, WallHP: 3 },
+        { idx: 4, Name: 'Coliseo de Ñuñoa', Country: 'Chile 🇨🇱', BPM: 125.0, WallHP: 3 },
+        { idx: 5, Name: 'El Fortín de Sajonia', Country: 'Paraguay 🇵🇾', BPM: 120.0, WallHP: 4 },
+        { idx: 6, Name: 'Templo José Díaz (Lima)', Country: 'Perú 🇵🇪', BPM: 118.0, WallHP: 3 },
+        { idx: 7, Name: 'El Volcán de Quito', Country: 'Ecuador 🇪🇨', BPM: 135.0, WallHP: 3 },
+        { idx: 8, Name: 'Monumental del Ávila', Country: 'Venezuela 🇻🇪', BPM: 170.0, WallHP: 3 },
+        { idx: 9, Name: 'Nido del Cóndor (3600m)', Country: 'Bolivia 🇧🇴', BPM: 110.0, WallHP: 2 }
+      ];
+
+      let p1Idx = 0;
+      let p2Idx = 3;
+      let stageIdx = 0;
+      let selectingSlot = 'P1'; // 'P1' -> 'P2'
+      let artMode = 'SFUMATO'; // 'SFUMATO' | 'STREET_INK'
+      let sfxEnabled = true;
+      let audioCtx = null;
+
+      function playCsSfx(type) {
+        if (!sfxEnabled) return;
+        const AudioCtx = window.AudioContext || window.webkitAudioContext;
+        if (!AudioCtx) return;
+        if (!audioCtx) audioCtx = new AudioCtx();
+        if (audioCtx.state === 'suspended') audioCtx.resume();
+
+        const now = audioCtx.currentTime;
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+
+        if (type === 'hover') {
+          osc.type = 'triangle';
+          osc.frequency.setValueAtTime(480, now);
+          osc.frequency.exponentialRampToValueAtTime(680, now + 0.04);
+          gain.gain.setValueAtTime(0.06, now);
+          gain.gain.exponentialRampToValueAtTime(0.001, now + 0.045);
+          osc.connect(gain).connect(audioCtx.destination);
+          osc.start(now);
+          osc.stop(now + 0.05);
+        } else if (type === 'lock') {
+          osc.type = 'sine';
+          osc.frequency.setValueAtTime(520, now);
+          osc.frequency.setValueAtTime(780, now + 0.055);
+          gain.gain.setValueAtTime(0.14, now);
+          gain.gain.exponentialRampToValueAtTime(0.001, now + 0.18);
+          osc.connect(gain).connect(audioCtx.destination);
+          osc.start(now);
+          osc.stop(now + 0.19);
+        } else if (type === 'launch') {
+          osc.type = 'sawtooth';
+          osc.frequency.setValueAtTime(220, now);
+          osc.frequency.setValueAtTime(440, now + 0.08);
+          osc.frequency.setValueAtTime(660, now + 0.16);
+          gain.gain.setValueAtTime(0.18, now);
+          gain.gain.exponentialRampToValueAtTime(0.001, now + 0.35);
+          osc.connect(gain).connect(audioCtx.destination);
+          osc.start(now);
+          osc.stop(now + 0.36);
+        }
+      }
+
+      function updateSidePanel(side, charObj) {
+        const prefix = side === 'P1' ? 'p1' : 'p2';
+        document.getElementById(`${prefix}-code-lbl`).textContent = charObj.Name;
+        document.getElementById(`${prefix}-country`).textContent = charObj.Country;
+        document.getElementById(`${prefix}-era`).textContent = charObj.Era;
+        document.getElementById(`${prefix}-arch`).textContent = charObj.Archetype.toUpperCase();
+        document.getElementById(`${prefix}-name`).textContent = charObj.DisplayName;
+
+        const portEl = document.getElementById(`${prefix}-portrait`);
+        portEl.style.backgroundImage = `url('${charObj.ArtSheet}')`;
+        portEl.style.backgroundSize = charObj.BgSize;
+        portEl.style.backgroundPosition = charObj.BgPos;
+
+        const hpPct = Math.min(100, Math.round((charObj.MaxHealth / 14000) * 100));
+        const spdPct = Math.min(100, Math.round(((26 - charObj.ForwardDashFrames) / 14) * 100));
+
+        document.getElementById(`${prefix}-hp-txt`).textContent = `${charObj.MaxHealth.toLocaleString()} HP`;
+        document.getElementById(`${prefix}-hp-bar`).style.width = `${hpPct}%`;
+
+        document.getElementById(`${prefix}-pow-txt`).textContent = `${charObj.Power} / 100`;
+        document.getElementById(`${prefix}-pow-bar`).style.width = `${charObj.Power}%`;
+
+        document.getElementById(`${prefix}-spd-txt`).textContent = `${charObj.ForwardDashFrames} Frames`;
+        document.getElementById(`${prefix}-spd-bar`).style.width = `${spdPct}%`;
+
+        document.getElementById(`${prefix}-tec-txt`).textContent = `${charObj.Tech} / 100`;
+        document.getElementById(`${prefix}-tec-bar`).style.width = `${charObj.Tech}%`;
+
+        document.getElementById(`${prefix}-pas-title`).textContent = charObj.PassiveTitle;
+        document.getElementById(`${prefix}-pas-desc`).textContent = charObj.PassiveDesc;
+      }
+
+      function refreshRosterGridState() {
+        document.querySelectorAll('.char-tile').forEach((tile) => {
+          const idx = parseInt(tile.dataset.idx, 10);
+          tile.classList.toggle('p1-selected', idx === p1Idx);
+          tile.classList.toggle('p2-selected', idx === p2Idx);
+
+          const badgeEl = tile.querySelector('.tile-badge');
+          if (idx === p1Idx && idx === p2Idx) {
+            badgeEl.textContent = 'P1 & P2';
+            badgeEl.className = 'tile-badge badge-p1';
+            badgeEl.style.display = 'block';
+          } else if (idx === p1Idx) {
+            badgeEl.textContent = 'P1';
+            badgeEl.className = 'tile-badge badge-p1';
+            badgeEl.style.display = 'block';
+          } else if (idx === p2Idx) {
+            badgeEl.textContent = 'P2';
+            badgeEl.className = 'tile-badge badge-p2';
+            badgeEl.style.display = 'block';
+          } else {
+            badgeEl.style.display = 'none';
+          }
+        });
+
+        updateSidePanel('P1', CS_ROSTER[p1Idx]);
+        updateSidePanel('P2', CS_ROSTER[p2Idx]);
+
+        const phaseEl = document.getElementById('cs-phase-banner');
+        const slotEl = document.getElementById('active-slot-indicator');
+        if (selectingSlot === 'P1') {
+          phaseEl.textContent = `PASO 1: ELIGE LEYENDA JUGADOR 1 (${CS_ROSTER[p1Idx].DisplayName})`;
+          slotEl.textContent = 'JUGADOR 1 (P1)';
+          slotEl.style.color = '#00c864';
+        } else {
+          phaseEl.textContent = `PASO 2: ELIGE RIVAL JUGADOR 2 (${CS_ROSTER[p2Idx].DisplayName}) — ¡LISTO PARA COMBATE!`;
+          slotEl.textContent = 'JUGADOR 2 (P2 / CPU)';
+          slotEl.style.color = '#ff4769';
+        }
+      }
+
+      // Poblar las 17 tarjetas de Leyendas
+      const rosterGrid = document.getElementById('cs-roster-grid');
+      CS_ROSTER.forEach((ch) => {
+        const tile = document.createElement('div');
+        tile.className = 'char-tile' + (ch.idx === 16 ? ' boss-tile' : '');
+        tile.dataset.idx = ch.idx;
+
+        tile.innerHTML = `
+          <div class="tile-avatar" style="background-image:url('${ch.ArtSheet}'); background-size:${ch.BgSize}; background-position:${ch.BgPos};"></div>
+          <div class="tile-info">
+            <div class="tile-name">${ch.DisplayName}</div>
+            <div class="tile-sub">${ch.Country} • ${ch.Archetype}</div>
+          </div>
+          <span class="tile-badge" style="display:none;">P1</span>
+        `;
+
+        tile.addEventListener('mouseenter', () => {
+          playCsSfx('hover');
+          updateSidePanel(selectingSlot, ch);
+        });
+
+        tile.addEventListener('mouseleave', () => {
+          updateSidePanel('P1', CS_ROSTER[p1Idx]);
+          updateSidePanel('P2', CS_ROSTER[p2Idx]);
+        });
+
+        tile.addEventListener('click', () => {
+          playCsSfx('lock');
+          if (selectingSlot === 'P1') {
+            p1Idx = ch.idx;
+            selectingSlot = 'P2';
+          } else {
+            p2Idx = ch.idx;
+            selectingSlot = 'P1';
+          }
+          refreshRosterGridState();
+        });
+
+        rosterGrid.appendChild(tile);
+      });
+
+      // Poblar los 10 Estadios CONMEBOL
+      const stageStrip = document.getElementById('cs-stage-strip');
+      function refreshStageStrip() {
+        document.querySelectorAll('.stage-pill').forEach((pill, i) => {
+          pill.classList.toggle('active', i === stageIdx);
+        });
+        const st = CS_STAGES[stageIdx];
+        document.getElementById('selected-stage-banner').textContent =
+          `${st.Name} (${st.Country}) • ${st.BPM.toFixed(1)} BPM • Muro: ${st.WallHP} Hits`;
+      }
+
+      CS_STAGES.forEach((st) => {
+        const pill = document.createElement('div');
+        pill.className = 'stage-pill';
+        pill.innerHTML = `
+          <div class="st-name">${st.Name}</div>
+          <div class="st-meta">${st.Country} • ${st.BPM} BPM</div>
+        `;
+        pill.addEventListener('click', () => {
+          stageIdx = st.idx;
+          playCsSfx('lock');
+          refreshStageStrip();
+        });
+        stageStrip.appendChild(pill);
+      });
+
+      // Botones Rápidos: Aleatorio, Cambiar Turno, Tema y Audio
+      document.getElementById('btn-random-select').addEventListener('click', () => {
+        p1Idx = Math.floor(Math.random() * 16);
+        p2Idx = Math.floor(Math.random() * 17);
+        stageIdx = Math.floor(Math.random() * CS_STAGES.length);
+        playCsSfx('lock');
+        refreshRosterGridState();
+        refreshStageStrip();
+      });
+
+      document.getElementById('btn-swap-sides').addEventListener('click', () => {
+        selectingSlot = selectingSlot === 'P1' ? 'P2' : 'P1';
+        playCsSfx('hover');
+        refreshRosterGridState();
+      });
+
+      document.getElementById('btn-theme-toggle').addEventListener('click', (e) => {
+        const isStreet = artMode === 'SFUMATO';
+        artMode = isStreet ? 'STREET_INK' : 'SFUMATO';
+        document.body.classList.toggle('theme-street-ink', isStreet);
+        e.currentTarget.textContent = isStreet
+          ? '⚡ Arte: Street-Ink AAA'
+          : '🖼️ Arte: Renacimiento Sfumato';
+        playCsSfx('lock');
+      });
+
+      document.getElementById('btn-sfx-toggle').addEventListener('click', (e) => {
+        sfxEnabled = !sfxEnabled;
+        e.currentTarget.textContent = sfxEnabled ? '🔊 SFX: ON' : '🔇 SFX: OFF';
+      });
+
+      // Lanzar Combate con Transición VS Clash de 1.2s hacia index.html#tab-6&p1=...&p2=...&stage=...&art=...
+      function launchSelectedMatch() {
+        playCsSfx('launch');
+        const p1Obj = CS_ROSTER[p1Idx];
+        const p2Obj = CS_ROSTER[p2Idx];
+        const stObj = CS_STAGES[stageIdx];
+
+        document.getElementById('clash-names').textContent =
+          `${p1Obj.DisplayName.toUpperCase()} vs ${p2Obj.DisplayName.toUpperCase()}`;
+        document.getElementById('clash-stage').textContent =
+          `Sede: ${stObj.Name} (${stObj.Country}) • Estilo: ${artMode}`;
+        document.getElementById('clash-transition').classList.add('active');
+
+        const bossFlag = p2Idx === 16 ? '&boss=1' : '';
+        const targetUrl = `index.html#tab-6&p1=${p1Idx}&p2=${p2Idx}&stage=${stageIdx}&art=${artMode}${bossFlag}`;
+        setTimeout(() => {
+          window.location.href = targetUrl;
+        }, 1200);
+      }
+
+      document.getElementById('btn-launch-match').addEventListener('click', launchSelectedMatch);
+
+      // Navegación por Teclado (Flechas + Enter)
+      window.addEventListener('keydown', (e) => {
+        if (e.code === 'Enter' || e.code === 'Space') {
+          e.preventDefault();
+          launchSelectedMatch();
+        } else if (e.code === 'ArrowRight' || e.code === 'KeyD') {
+          e.preventDefault();
+          if (selectingSlot === 'P1') p1Idx = (p1Idx + 1) % CS_ROSTER.length;
+          else p2Idx = (p2Idx + 1) % CS_ROSTER.length;
+          playCsSfx('hover');
+          refreshRosterGridState();
+        } else if (e.code === 'ArrowLeft' || e.code === 'KeyA') {
+          e.preventDefault();
+          if (selectingSlot === 'P1') p1Idx = (p1Idx - 1 + CS_ROSTER.length) % CS_ROSTER.length;
+          else p2Idx = (p2Idx - 1 + CS_ROSTER.length) % CS_ROSTER.length;
+          playCsSfx('hover');
+          refreshRosterGridState();
+        } else if (e.code === 'Tab') {
+          e.preventDefault();
+          selectingSlot = selectingSlot === 'P1' ? 'P2' : 'P1';
+          playCsSfx('hover');
+          refreshRosterGridState();
+        }
+      });
+
+      refreshRosterGridState();
+      refreshStageStrip();
+    })();
+  </script>
+</body>
+</html>

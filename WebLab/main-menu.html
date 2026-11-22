@@ -1,0 +1,913 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>LA COPA ETERNA: SANGRE Y POTRERO — Menú Principal AAA & VS Screen</title>
+  <link rel="stylesheet" href="styles.css" />
+  <style>
+    :root {
+      --sfumato-gold: #d4a347;
+      --sfumato-gold-bright: #ffe299;
+      --sfumato-crimson: #9e2222;
+      --sfumato-wood: #1c120a;
+      --sfumato-panel: rgba(20, 14, 9, 0.88);
+      --sfumato-border: rgba(212, 163, 71, 0.55);
+      --menu-font-display: 'Georgia', 'Times New Roman', serif;
+    }
+
+    body.theme-street-ink {
+      --sfumato-gold: #00e5ff;
+      --sfumato-gold-bright: #00e676;
+      --sfumato-crimson: #ff2a54;
+      --sfumato-wood: #060911;
+      --sfumato-panel: rgba(11, 16, 26, 0.9);
+      --sfumato-border: rgba(0, 229, 255, 0.55);
+      --menu-font-display: 'Segoe UI', system-ui, sans-serif;
+    }
+
+    body {
+      margin: 0;
+      padding: 0;
+      min-height: 100vh;
+      overflow-x: hidden;
+      background-color: #0d0805;
+      color: #f4e8d1;
+      font-family: var(--font-ui);
+      position: relative;
+      user-select: none;
+    }
+
+    /* Fondo heroico con Key Art y viñeta Chiaroscuro Da Vinci */
+    .hero-bg {
+      position: fixed;
+      inset: 0;
+      background-image: url('../Assets/ConceptArt/LaCopaEterna_KeyArt_RosterClash.jpg');
+      background-size: cover;
+      background-position: center;
+      filter: sepia(0.38) contrast(1.12) brightness(0.45);
+      transform: scale(1.03);
+      transition: filter 0.5s ease, background-image 0.4s ease;
+      z-index: 0;
+    }
+
+    body.theme-street-ink .hero-bg {
+      filter: saturate(1.3) contrast(1.18) brightness(0.42);
+    }
+
+    .chiaroscuro-vignette {
+      position: fixed;
+      inset: 0;
+      background:
+        radial-gradient(circle at 72% 45%, rgba(212, 163, 71, 0.12) 0%, rgba(16, 10, 5, 0.82) 65%, rgba(6, 4, 2, 0.96) 100%),
+        linear-gradient(90deg, rgba(12, 8, 4, 0.95) 0%, rgba(18, 12, 6, 0.72) 45%, rgba(12, 8, 4, 0.88) 100%);
+      pointer-events: none;
+      z-index: 1;
+    }
+
+    /* Textura sutil de craquelado / lienzo al óleo */
+    .canvas-grain {
+      position: fixed;
+      inset: 0;
+      background-image:
+        repeating-linear-gradient(0deg, rgba(255, 225, 160, 0.018) 0px, rgba(255, 225, 160, 0.018) 1px, transparent 1px, transparent 3px),
+        repeating-linear-gradient(90deg, rgba(255, 225, 160, 0.015) 0px, rgba(255, 225, 160, 0.015) 1px, transparent 1px, transparent 4px);
+      pointer-events: none;
+      z-index: 2;
+    }
+
+    #embers-canvas {
+      position: fixed;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: 3;
+    }
+
+    /* Barra Superior del Menú Principal */
+    .menu-topbar {
+      position: relative;
+      z-index: 10;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 14px 32px;
+      background: linear-gradient(180deg, rgba(15, 10, 6, 0.95) 0%, rgba(15, 10, 6, 0.4) 100%);
+      border-bottom: 1px solid var(--sfumato-border);
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+
+    .crest-badge {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .crest-medallion {
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      background: radial-gradient(circle, #ffe299 0%, #b8860b 70%, #4a3000 100%);
+      border: 2px solid #fff0c2;
+      box-shadow: 0 0 18px rgba(212, 163, 71, 0.65);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: var(--menu-font-display);
+      font-weight: 900;
+      font-size: 18px;
+      color: #1a0f05;
+    }
+
+    /* Contenedor Principal Izquierda (Menú) + Derecha (Escaparate / Códice de Arte) */
+    .menu-stage {
+      position: relative;
+      z-index: 10;
+      max-width: 1560px;
+      margin: 0 auto;
+      padding: 28px 36px 40px;
+      display: grid;
+      grid-template-columns: 540px 1fr;
+      gap: 36px;
+      align-items: center;
+      min-height: calc(100vh - 135px);
+    }
+
+    @media (max-width: 1120px) {
+      .menu-stage {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .title-monument h1 {
+      font-family: var(--menu-font-display);
+      font-size: 2.55rem;
+      font-weight: 900;
+      letter-spacing: 2px;
+      line-height: 1.08;
+      text-transform: uppercase;
+      color: var(--sfumato-gold-bright);
+      text-shadow: 0 4px 24px rgba(0, 0, 0, 0.9), 0 0 22px rgba(212, 163, 71, 0.35);
+      margin-bottom: 6px;
+    }
+
+    .title-monument .subtitle-latin {
+      font-family: var(--menu-font-display);
+      font-style: italic;
+      font-size: 1.02rem;
+      color: #d6bfa0;
+      letter-spacing: 0.8px;
+      margin-bottom: 20px;
+    }
+
+    /* Lista de Opciones Interactivas con Marco de Tabla de Álamo Renacentista */
+    .menu-list {
+      display: flex;
+      flex-direction: column;
+      gap: 11px;
+    }
+
+    .menu-item {
+      position: relative;
+      background: var(--sfumato-panel);
+      border: 1px solid rgba(212, 163, 71, 0.32);
+      border-left: 5px solid var(--sfumato-gold);
+      border-radius: 8px;
+      padding: 14px 18px;
+      cursor: pointer;
+      transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.65);
+      overflow: hidden;
+    }
+
+    .menu-item::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(90deg, rgba(212, 163, 71, 0.22) 0%, transparent 75%);
+      opacity: 0;
+      transition: opacity 0.2s ease;
+    }
+
+    .menu-item:hover,
+    .menu-item.focused {
+      transform: translateX(10px) scale(1.01);
+      border-color: var(--sfumato-gold-bright);
+      border-left-width: 8px;
+      border-left-color: var(--sfumato-crimson);
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.85), 0 0 22px rgba(212, 163, 71, 0.32);
+    }
+
+    .menu-item:hover::before,
+    .menu-item.focused::before {
+      opacity: 1;
+    }
+
+    .mi-left {
+      position: relative;
+      z-index: 2;
+      display: flex;
+      flex-direction: column;
+      gap: 3px;
+    }
+
+    .mi-title {
+      font-family: var(--menu-font-display);
+      font-size: 1.15rem;
+      font-weight: 800;
+      color: #fff6e0;
+      letter-spacing: 0.7px;
+      display: flex;
+      align-items: center;
+      gap: 9px;
+    }
+
+    .mi-desc {
+      font-size: 0.8rem;
+      color: #bcae96;
+      font-family: var(--font-ui);
+    }
+
+    .mi-arrow {
+      position: relative;
+      z-index: 2;
+      font-family: var(--font-mono);
+      font-size: 0.85rem;
+      color: var(--sfumato-gold-bright);
+      background: rgba(0, 0, 0, 0.45);
+      border: 1px solid var(--sfumato-border);
+      padding: 4px 10px;
+      border-radius: 4px;
+    }
+
+    /* Panel Derecho: Marco Renacentista de Vista Previa Dinámica */
+    .showcase-frame {
+      background: var(--sfumato-panel);
+      border: 2px solid var(--sfumato-border);
+      border-radius: 12px;
+      padding: 16px;
+      box-shadow: 0 22px 60px rgba(0, 0, 0, 0.85), inset 0 0 30px rgba(212, 163, 71, 0.14);
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+      position: relative;
+    }
+
+    .showcase-art-wrap {
+      position: relative;
+      width: 100%;
+      height: 430px;
+      border-radius: 8px;
+      overflow: hidden;
+      border: 1px solid rgba(255, 226, 153, 0.35);
+      background: #090604;
+    }
+
+    .showcase-art-wrap img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transition: transform 0.6s ease, opacity 0.25s ease;
+    }
+
+    .showcase-art-wrap:hover img {
+      transform: scale(1.03);
+    }
+
+    .showcase-overlay-tag {
+      position: absolute;
+      top: 14px;
+      left: 14px;
+      background: rgba(15, 10, 5, 0.88);
+      border: 1px solid var(--sfumato-gold);
+      color: var(--sfumato-gold-bright);
+      font-family: var(--font-mono);
+      font-size: 11px;
+      font-weight: 800;
+      padding: 5px 11px;
+      border-radius: 4px;
+      letter-spacing: 0.8px;
+    }
+
+    .showcase-caption {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 14px;
+      flex-wrap: wrap;
+    }
+
+    .showcase-caption h2 {
+      font-family: var(--menu-font-display);
+      font-size: 1.3rem;
+      color: var(--sfumato-gold-bright);
+      margin-bottom: 3px;
+    }
+
+    .showcase-caption p {
+      font-size: 0.88rem;
+      color: #cbbba2;
+    }
+
+    /* Mini tira de miniaturas de las 6 obras verificadas */
+    .thumb-strip {
+      display: grid;
+      grid-template-columns: repeat(6, 1fr);
+      gap: 8px;
+    }
+
+    .thumb-card {
+      height: 56px;
+      border-radius: 6px;
+      overflow: hidden;
+      border: 1px solid rgba(212, 163, 71, 0.3);
+      cursor: pointer;
+      opacity: 0.65;
+      transition: all 0.18s ease;
+    }
+
+    .thumb-card.active,
+    .thumb-card:hover {
+      opacity: 1;
+      border-color: var(--sfumato-gold-bright);
+      transform: translateY(-2px);
+      box-shadow: 0 0 12px rgba(212, 163, 71, 0.55);
+    }
+
+    .thumb-card img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    /* ========================================================================
+       OVERLAY ANIMADO DE PANTALLA "VS SCREEN" Y "BOSS INTRO"
+       ======================================================================== */
+    .vs-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(6, 4, 2, 0.96);
+      backdrop-filter: blur(8px);
+      z-index: 999;
+      display: none;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+      animation: fadeIn 0.25s ease-out;
+    }
+
+    .vs-overlay.active {
+      display: flex;
+    }
+
+    .vs-stage-card {
+      position: relative;
+      width: 100%;
+      max-width: 1180px;
+      border: 3px solid var(--sfumato-gold-bright);
+      border-radius: 14px;
+      overflow: hidden;
+      background: #0c0805;
+      box-shadow: 0 0 70px rgba(212, 163, 71, 0.45), 0 25px 70px rgba(0, 0, 0, 0.95);
+    }
+
+    .vs-image-container {
+      position: relative;
+      width: 100%;
+      height: 540px;
+      overflow: hidden;
+    }
+
+    .vs-image-container img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      animation: vsZoomSlow 6s ease-out forwards;
+    }
+
+    @keyframes vsZoomSlow {
+      from { transform: scale(1.08); }
+      to { transform: scale(1.0); }
+    }
+
+    /* Barrido de luz dorada animada sobre el cuadro VS */
+    .vs-light-sweep {
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(115deg, transparent 20%, rgba(255, 230, 155, 0.34) 48%, transparent 75%);
+      transform: translateX(-100%);
+      animation: lightSweep 2.4s infinite ease-in-out;
+      pointer-events: none;
+    }
+
+    @keyframes lightSweep {
+      0% { transform: translateX(-110%); }
+      100% { transform: translateX(110%); }
+    }
+
+    .vs-fighters-banner {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      padding: 22px 32px;
+      background: linear-gradient(180deg, transparent 0%, rgba(10, 6, 3, 0.92) 45%, rgba(10, 6, 3, 0.98) 100%);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 16px;
+    }
+
+    .vs-nameplate {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .vs-nameplate .country-tag {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      color: var(--sfumato-gold-bright);
+      letter-spacing: 1px;
+      text-transform: uppercase;
+    }
+
+    .vs-nameplate .fighter-name {
+      font-family: var(--menu-font-display);
+      font-size: 2rem;
+      font-weight: 900;
+      color: #ffffff;
+      text-shadow: 0 2px 14px rgba(0, 0, 0, 0.9);
+    }
+
+    .vs-emblem-center {
+      font-family: var(--menu-font-display);
+      font-size: 2.6rem;
+      font-weight: 900;
+      color: var(--sfumato-gold-bright);
+      text-shadow: 0 0 24px rgba(255, 196, 60, 0.9);
+      padding: 0 18px;
+    }
+
+    .vs-footer-bar {
+      padding: 16px 28px;
+      background: #120c07;
+      border-top: 1px solid var(--sfumato-border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="hero-bg" id="hero-bg"></div>
+  <div class="chiaroscuro-vignette"></div>
+  <div class="canvas-grain"></div>
+  <canvas id="embers-canvas"></canvas>
+
+  <!-- ========================================================================
+       BARRA SUPERIOR CON CONMUTADOR DE TEMA Y AUDIO
+       ======================================================================== -->
+  <header class="menu-topbar">
+    <div class="crest-badge">
+      <div class="crest-medallion">CE</div>
+      <div>
+        <div style="font-family:var(--menu-font-display); font-weight:800; font-size:14px; color:var(--sfumato-gold-bright); letter-spacing:1px;">
+          CONMEBOL FIGHTING CHAMPIONSHIP • UE 5.4+
+        </div>
+        <div style="font-family:var(--font-mono); font-size:11px; color:#b8a68e;">
+          Kernel Determinista Q32.32 • GGPO Rollback 60 Hz • Audiokinetic Wwise
+        </div>
+      </div>
+    </div>
+
+    <div class="btn-group" style="align-items:center;">
+      <button class="btn btn-gold btn-sm" id="btn-theme-toggle">
+        🖼️ Estilo Activo: Renacimiento Sfumato (Da Vinci)
+      </button>
+      <button class="btn btn-turf btn-sm" id="btn-sfx-toggle">
+        🔊 Audio SFX: ON
+      </button>
+      <a href="index.html" class="btn btn-cyan btn-sm" style="text-decoration:none;">
+        ⚙️ Ir Directo al Command Center (7 Tabs)
+      </a>
+    </div>
+  </header>
+
+  <!-- ========================================================================
+       ESCENARIO PRINCIPAL DEL MENÚ (IZQUIERDA: OPCIONES | DERECHA: CÓDICE DE ARTE)
+       ======================================================================== -->
+  <main class="menu-stage">
+
+    <!-- Columna Izquierda: Monumento de Título y Opciones Navegables con Teclado/Ratón -->
+    <div>
+      <div class="title-monument">
+        <h1>LA COPA ETERNA<br />SANGRE Y POTRERO</h1>
+        <div class="subtitle-latin">
+          "Códice del Potrero Sudamericano — Claroscuro, Gambeta y Gloria a 60 Cuadros por Segundo"
+        </div>
+      </div>
+
+      <div class="menu-list" id="menu-list">
+
+        <div class="menu-item focused" data-idx="0" data-action="VS_MATCH"
+             data-art="../Assets/ConceptArt/VSScreen_Brasil_vs_Argentina_Renaissance.jpg"
+             data-tag="MODO VERSUS 1v1 (60 FPS EN VIVO)"
+             data-title="Superclásico Renacentista: O Fenômeno vs La Pulga"
+             data-caption="Abre la pantalla oficial de Versus en óleo Sfumato y salta al campo de juego interactivo a 60 FPS.">
+          <div class="mi-left">
+            <div class="mi-title">⚔️ VERSUS 1v1 — JUGAR AHORA</div>
+            <div class="mi-desc">Pantalla VS Animada (Brasil vs Argentina) + Combate en Tiempo Real (TAB 06)</div>
+          </div>
+          <span class="mi-arrow">ENTER ▶</span>
+        </div>
+
+        <div class="menu-item" data-idx="1" data-action="BOSS_MATCH"
+             data-art="../Assets/ConceptArt/Boss_VAR_ZERO_Renaissance.jpg"
+             data-tag="JEFE FINAL: EL JUEZ SUPREMO (V.A.R.-ZERO)"
+             data-title="Desafío Boss Final: El Juez Supremo (V.A.R.-ZERO)"
+             data-caption="Árbitro biomecánico en bronce y obsidiana con V.A.R. Rewind (-90 frames GGPO) y lásers de Offside.">
+          <div class="mi-left">
+            <div class="mi-title">👑 DESAFÍO JEFE FINAL: V.A.R.-ZERO</div>
+            <div class="mi-desc">Cinemática de Intro del Juez Supremo + Duelo Directo Fase 1 & 2 (TAB 06 Boss)</div>
+          </div>
+          <span class="mi-arrow">BOSS ▶</span>
+        </div>
+
+        <div class="menu-item" data-idx="2" data-action="ROSTER_LAB"
+             data-art="../Assets/ConceptArt/CharacterSelect_RosterWave2_Renaissance.jpg"
+             data-tag="SELECCIÓN DE LEYENDAS & ESTADIOS (16+1)"
+             data-title="Cámara de Selección de Leyendas CONMEBOL & 10 Estadios"
+             data-caption="Elige tu Leyenda P1, Rival P2, Sede del Partido y Estilo de Arte (Renacimiento Sfumato o Street-Ink).">
+          <div class="mi-left">
+            <div class="mi-title">👥 SELECCIÓN DE LEYENDAS (ROSTER 16+1)</div>
+            <div class="mi-desc">Pantalla Interactiva de Selección P1 vs P2 + 10 Estadios Míticos</div>
+          </div>
+          <span class="mi-arrow">ROSTER ▶</span>
+        </div>
+
+        <div class="menu-item" data-idx="3" data-action="ART_GALLERY"
+             data-art="../Assets/ConceptArt/LaCopaEterna_KeyArt_RosterClash.jpg"
+             data-tag="GALERÍA DE ARTE CONCEPTUAL AAA"
+             data-title="Colección Maestra: Renacimiento Sfumato & Street-Ink"
+             data-caption="Explora en alta resolución los óleos renacentistas, retratos CONMEBOL, estadios 2.5D y el Atlas SVG.">
+          <div class="mi-left">
+            <div class="mi-title">🎨 GALERÍA DE ARTE AAA</div>
+            <div class="mi-desc">Exposición Completa de Lienzos Sfumato, Key Art y Glifos CommonUI</div>
+          </div>
+          <span class="mi-arrow">GALERÍA ▶</span>
+        </div>
+
+        <div class="menu-item" data-idx="4" data-action="ENGINE_LAB"
+             data-art="../Assets/ConceptArt/Stage_MaracanaBombonera_Concept.jpg"
+             data-tag="SUITE DE INGENIERÍA UE 5.4+ (7 LABORATORIOS)"
+             data-title="Command Center: Q32.32, GGPO, Wwise, Anti-Cheat & Visor 3D"
+             data-caption="Accede al Ring Buffer de 60f, Replay Takeover, Consola Wwise y Estudio 3D Chaos Cloth (.glb).">
+          <div class="mi-left">
+            <div class="mi-title">⚙️ LABORATORIO UE 5.4+ (FRAME DATA / GGPO / 3D)</div>
+            <div class="mi-desc">Suite Técnica Completa de 7 Pestañas para Ingeniería y Diseño FGC</div>
+          </div>
+          <span class="mi-arrow">SUITE ▶</span>
+        </div>
+
+      </div>
+
+      <div style="margin-top:14px; font-family:var(--font-mono); font-size:11px; color:#a89882;">
+        💡 Controles del Menú: Usa <strong style="color:var(--sfumato-gold-bright);">Flechas ▲ / ▼</strong> y <strong style="color:var(--sfumato-gold-bright);">ENTER</strong> o haz clic directo en cualquier modo.
+      </div>
+    </div>
+
+    <!-- Columna Derecha: Escaparate Visual Dinámico con las 6 Obras Verificadas -->
+    <div class="showcase-frame">
+      <div class="showcase-art-wrap">
+        <span class="showcase-overlay-tag" id="preview-tag">MODO VERSUS 1v1 (60 FPS EN VIVO)</span>
+        <img id="preview-img" src="../Assets/ConceptArt/VSScreen_Brasil_vs_Argentina_Renaissance.jpg" alt="Vista Previa Modo" />
+      </div>
+
+      <div class="showcase-caption">
+        <div>
+          <h2 id="preview-title">Superclásico Renacentista: O Fenômeno vs La Pulga</h2>
+          <p id="preview-desc">Abre la pantalla oficial de Versus en óleo Sfumato y salta al campo de juego interactivo a 60 FPS.</p>
+        </div>
+        <button class="btn btn-gold" id="btn-launch-focused">
+          ⚡ Lanzar Modo Seleccionado
+        </button>
+      </div>
+
+      <!-- Miniaturas Interactivas de las 6 Obras de Assets/ConceptArt/ -->
+      <div class="thumb-strip" id="thumb-strip">
+        <div class="thumb-card active" data-src="../Assets/ConceptArt/VSScreen_Brasil_vs_Argentina_Renaissance.jpg" title="VS Screen: Brasil vs Argentina (Renacimiento Sfumato)">
+          <img src="../Assets/ConceptArt/VSScreen_Brasil_vs_Argentina_Renaissance.jpg" alt="VS Screen" />
+        </div>
+        <div class="thumb-card" data-src="../Assets/ConceptArt/Boss_VAR_ZERO_Renaissance.jpg" title="Jefe Final: El Juez Supremo (V.A.R.-ZERO)">
+          <img src="../Assets/ConceptArt/Boss_VAR_ZERO_Renaissance.jpg" alt="Boss VAR-ZERO" />
+        </div>
+        <div class="thumb-card" data-src="../Assets/ConceptArt/CharacterSelect_RosterWave2_Renaissance.jpg" title="Roster Wave 2 (Renacimiento Sfumato)">
+          <img src="../Assets/ConceptArt/CharacterSelect_RosterWave2_Renaissance.jpg" alt="Roster Wave 2" />
+        </div>
+        <div class="thumb-card" data-src="../Assets/ConceptArt/LaCopaEterna_KeyArt_RosterClash.jpg" title="Key Art Oficial: Superclásico de las Américas">
+          <img src="../Assets/ConceptArt/LaCopaEterna_KeyArt_RosterClash.jpg" alt="Key Art" />
+        </div>
+        <div class="thumb-card" data-src="../Assets/ConceptArt/CharacterSelect_PortraitSheet_CONMEBOL.jpg" title="Lámina de Retratos CONMEBOL Wave 1">
+          <img src="../Assets/ConceptArt/CharacterSelect_PortraitSheet_CONMEBOL.jpg" alt="Portraits Wave 1" />
+        </div>
+        <div class="thumb-card" data-src="../Assets/ConceptArt/Stage_MaracanaBombonera_Concept.jpg" title="Concepto de Escenario 2.5D: Maracanã / La Bombonera">
+          <img src="../Assets/ConceptArt/Stage_MaracanaBombonera_Concept.jpg" alt="Stage Concept" />
+        </div>
+      </div>
+    </div>
+
+  </main>
+
+  <!-- ========================================================================
+       OVERLAY PANTALLA "VS SCREEN" / "BOSS INTRO" A PANTALLA COMPLETA
+       ======================================================================== -->
+  <div class="vs-overlay" id="vs-overlay">
+    <div class="vs-stage-card">
+      <div class="vs-image-container">
+        <img id="vs-overlay-img" src="../Assets/ConceptArt/VSScreen_Brasil_vs_Argentina_Renaissance.jpg" alt="VS Screen Artwork" />
+        <div class="vs-light-sweep"></div>
+
+        <div class="vs-fighters-banner">
+          <div class="vs-nameplate">
+            <span class="country-tag" id="vs-p1-country">🇧🇷 BRASIL • RUSHDOWN EXPLOSIVO</span>
+            <span class="fighter-name" id="vs-p1-name">O FENÔMENO</span>
+          </div>
+
+          <div class="vs-emblem-center" id="vs-center-badge">VS</div>
+
+          <div class="vs-nameplate" style="text-align:right;">
+            <span class="country-tag" id="vs-p2-country">🇦🇷 ARGENTINA • PIXIE FOOTSIES</span>
+            <span class="fighter-name" id="vs-p2-name">LA PULGA</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="vs-footer-bar">
+        <div style="font-family:var(--font-mono); font-size:12px; color:var(--sfumato-gold-bright);" id="vs-countdown-text">
+          ⏳ Sincronizando Semilla Determinista Q32.32... Entrada automática a la cancha en 4s
+        </div>
+        <div class="btn-group">
+          <button class="btn btn-crimson" id="vs-btn-cancel">✖ Cancelar</button>
+          <button class="btn btn-gold" id="vs-btn-start-now" style="font-size:13px; padding:8px 18px;">
+            ⚽ ¡INICIAR COMBATE AHORA (60 FPS)!
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    (() => {
+      'use strict';
+
+      // 1. Sintetizador Web Audio API para Hover y Confirmación del Menú
+      let sfxOn = true;
+      let audioCtx = null;
+
+      function playMenuSfx(type) {
+        if (!sfxOn) return;
+        const AudioCtx = window.AudioContext || window.webkitAudioContext;
+        if (!AudioCtx) return;
+        if (!audioCtx) audioCtx = new AudioCtx();
+        if (audioCtx.state === 'suspended') audioCtx.resume();
+
+        const now = audioCtx.currentTime;
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+
+        if (type === 'hover') {
+          osc.type = 'triangle';
+          osc.frequency.setValueAtTime(420, now);
+          osc.frequency.exponentialRampToValueAtTime(640, now + 0.045);
+          gain.gain.setValueAtTime(0.07, now);
+          gain.gain.exponentialRampToValueAtTime(0.001, now + 0.05);
+          osc.connect(gain).connect(audioCtx.destination);
+          osc.start(now);
+          osc.stop(now + 0.055);
+        } else if (type === 'confirm') {
+          osc.type = 'sawtooth';
+          osc.frequency.setValueAtTime(330, now);
+          osc.frequency.setValueAtTime(495, now + 0.06);
+          osc.frequency.setValueAtTime(660, now + 0.12);
+          gain.gain.setValueAtTime(0.16, now);
+          gain.gain.exponentialRampToValueAtTime(0.001, now + 0.28);
+          osc.connect(gain).connect(audioCtx.destination);
+          osc.start(now);
+          osc.stop(now + 0.3);
+        }
+      }
+
+      document.getElementById('btn-sfx-toggle').addEventListener('click', (e) => {
+        sfxOn = !sfxOn;
+        e.currentTarget.textContent = sfxOn ? '🔊 Audio SFX: ON' : '🔇 Audio SFX: OFF';
+        if (sfxOn) playMenuSfx('hover');
+      });
+
+      // 2. Conmutador de Tema en Vivo: Renacimiento Sfumato vs Street-Ink AAA
+      let isStreetInk = false;
+      document.getElementById('btn-theme-toggle').addEventListener('click', (e) => {
+        isStreetInk = !isStreetInk;
+        document.body.classList.toggle('theme-street-ink', isStreetInk);
+        e.currentTarget.textContent = isStreetInk
+          ? '⚡ Estilo Activo: Street-Ink AAA (Neón & Tinta)'
+          : '🖼️ Estilo Activo: Renacimiento Sfumato (Da Vinci)';
+        playMenuSfx('confirm');
+      });
+
+      // 3. Navegación del Menú Principal (Ratón + Teclado ArrowUp/ArrowDown + Enter)
+      const menuItems = Array.from(document.querySelectorAll('.menu-item'));
+      let focusedIdx = 0;
+
+      function setFocusItem(idx) {
+        focusedIdx = (idx + menuItems.length) % menuItems.length;
+        menuItems.forEach((item, i) => item.classList.toggle('focused', i === focusedIdx));
+
+        const activeItem = menuItems[focusedIdx];
+        const artSrc = activeItem.dataset.art;
+        document.getElementById('preview-img').src = artSrc;
+        document.getElementById('preview-tag').textContent = activeItem.dataset.tag;
+        document.getElementById('preview-title').textContent = activeItem.dataset.title;
+        document.getElementById('preview-desc').textContent = activeItem.dataset.caption;
+
+        document.querySelectorAll('.thumb-card').forEach((tc) => {
+          tc.classList.toggle('active', tc.dataset.src === artSrc);
+        });
+      }
+
+      menuItems.forEach((item, idx) => {
+        item.addEventListener('mouseenter', () => {
+          if (focusedIdx !== idx) {
+            setFocusItem(idx);
+            playMenuSfx('hover');
+          }
+        });
+        item.addEventListener('click', () => {
+          setFocusItem(idx);
+          executeMenuAction(item.dataset.action);
+        });
+      });
+
+      document.getElementById('btn-launch-focused').addEventListener('click', () => {
+        executeMenuAction(menuItems[focusedIdx].dataset.action);
+      });
+
+      document.querySelectorAll('.thumb-card').forEach((tc) => {
+        tc.addEventListener('click', () => {
+          document.getElementById('preview-img').src = tc.dataset.src;
+          document.querySelectorAll('.thumb-card').forEach((c) => c.classList.remove('active'));
+          tc.classList.add('active');
+          playMenuSfx('hover');
+        });
+      });
+
+      // 4. Pantalla Interactiva VS Screen / Boss Intro con Cuenta Regresiva
+      const vsOverlay = document.getElementById('vs-overlay');
+      let countdownTimer = null;
+      let targetRedirectUrl = 'index.html#tab-6';
+
+      function openVsOverlay(isBoss) {
+        playMenuSfx('confirm');
+        const imgEl = document.getElementById('vs-overlay-img');
+        if (isBoss) {
+          imgEl.src = '../Assets/ConceptArt/Boss_VAR_ZERO_Renaissance.jpg';
+          document.getElementById('vs-p1-country').textContent = '🌎 SELECCIÓN CONMEBOL • RETADOR';
+          document.getElementById('vs-p1-name').textContent = 'O FENÔMENO';
+          document.getElementById('vs-center-badge').textContent = '⚡ BOSS';
+          document.getElementById('vs-p2-country').textContent = '⚠️ ÁRBITRO SUPREMO • V.A.R. REWIND 90F';
+          document.getElementById('vs-p2-name').textContent = 'EL JUEZ SUPREMO (V.A.R.-ZERO)';
+          targetRedirectUrl = 'index.html#tab-6&boss=1';
+        } else {
+          imgEl.src = '../Assets/ConceptArt/VSScreen_Brasil_vs_Argentina_Renaissance.jpg';
+          document.getElementById('vs-p1-country').textContent = '🇧🇷 BRASIL • RUSHDOWN EXPLOSIVO';
+          document.getElementById('vs-p1-name').textContent = 'O FENÔMENO';
+          document.getElementById('vs-center-badge').textContent = 'VS';
+          document.getElementById('vs-p2-country').textContent = '🇦🇷 ARGENTINA • PIXIE FOOTSIES';
+          document.getElementById('vs-p2-name').textContent = 'LA PULGA';
+          targetRedirectUrl = 'index.html#tab-6';
+        }
+
+        vsOverlay.classList.add('active');
+        let secondsLeft = 4;
+        const countEl = document.getElementById('vs-countdown-text');
+        countEl.textContent = `⏳ Sincronizando Semilla Determinista Q32.32... Entrada automática a la cancha en ${secondsLeft}s`;
+
+        if (countdownTimer) clearInterval(countdownTimer);
+        countdownTimer = setInterval(() => {
+          secondsLeft--;
+          if (secondsLeft <= 0) {
+            clearInterval(countdownTimer);
+            window.location.href = targetRedirectUrl;
+          } else {
+            countEl.textContent = `⏳ Sincronizando Semilla Determinista Q32.32... Entrada automática a la cancha en ${secondsLeft}s`;
+          }
+        }, 950);
+      }
+
+      function closeVsOverlay() {
+        if (countdownTimer) clearInterval(countdownTimer);
+        vsOverlay.classList.remove('active');
+        playMenuSfx('hover');
+      }
+
+      document.getElementById('vs-btn-cancel').addEventListener('click', closeVsOverlay);
+      document.getElementById('vs-btn-start-now').addEventListener('click', () => {
+        if (countdownTimer) clearInterval(countdownTimer);
+        window.location.href = targetRedirectUrl;
+      });
+
+      function executeMenuAction(action) {
+        playMenuSfx('confirm');
+        if (action === 'VS_MATCH') {
+          openVsOverlay(false);
+        } else if (action === 'BOSS_MATCH') {
+          openVsOverlay(true);
+        } else if (action === 'ROSTER_LAB') {
+          window.location.href = 'character-select.html';
+        } else if (action === 'ART_GALLERY') {
+          window.location.href = 'art-gallery.html';
+        } else if (action === 'ENGINE_LAB') {
+          window.location.href = 'index.html';
+        }
+      }
+
+      window.addEventListener('keydown', (e) => {
+        if (vsOverlay.classList.contains('active')) {
+          if (e.code === 'Escape') {
+            e.preventDefault();
+            closeVsOverlay();
+          } else if (e.code === 'Enter' || e.code === 'Space') {
+            e.preventDefault();
+            if (countdownTimer) clearInterval(countdownTimer);
+            window.location.href = targetRedirectUrl;
+          }
+          return;
+        }
+
+        if (e.code === 'ArrowDown' || e.code === 'KeyS') {
+          e.preventDefault();
+          setFocusItem(focusedIdx + 1);
+          playMenuSfx('hover');
+        } else if (e.code === 'ArrowUp' || e.code === 'KeyW') {
+          e.preventDefault();
+          setFocusItem(focusedIdx - 1);
+          playMenuSfx('hover');
+        } else if (e.code === 'Enter' || e.code === 'Space') {
+          e.preventDefault();
+          executeMenuAction(menuItems[focusedIdx].dataset.action);
+        }
+      });
+
+      // 5. Partículas Flotantes Doradas (Chispas de Óleo & Brasas de Estadio a 60 FPS)
+      const canvas = document.getElementById('embers-canvas');
+      const ctx = canvas.getContext('2d');
+      let cw = (canvas.width = window.innerWidth);
+      let ch = (canvas.height = window.innerHeight);
+
+      window.addEventListener('resize', () => {
+        cw = canvas.width = window.innerWidth;
+        ch = canvas.height = window.innerHeight;
+      });
+
+      const embers = Array.from({ length: 45 }, () => ({
+        x: Math.random() * cw,
+        y: Math.random() * ch,
+        r: 1.2 + Math.random() * 2.6,
+        vx: (Math.random() - 0.5) * 0.45,
+        vy: -0.35 - Math.random() * 0.75,
+        alpha: 0.2 + Math.random() * 0.55
+      }));
+
+      function renderEmbers() {
+        ctx.clearRect(0, 0, cw, ch);
+        embers.forEach((em) => {
+          em.x += em.vx;
+          em.y += em.vy;
+          if (em.y < -10) {
+            em.y = ch + 10;
+            em.x = Math.random() * cw;
+          }
+          ctx.fillStyle = isStreetInk
+            ? `rgba(0, 229, 255, ${em.alpha})`
+            : `rgba(245, 196, 81, ${em.alpha})`;
+          ctx.beginPath();
+          ctx.arc(em.x, em.y, em.r, 0, Math.PI * 2);
+          ctx.fill();
+        });
+        requestAnimationFrame(renderEmbers);
+      }
+
+      requestAnimationFrame(renderEmbers);
+    })();
+  </script>
+</body>
+</html>

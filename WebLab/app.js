@@ -3652,7 +3652,62 @@
   updateTab7CharUI();
 
   // ==========================================================================
-  // 11. BUCLE MAESTRO DETERMINISTA A 60 FPS (requestAnimationFrame)
+  // 11. DEEP-LINKING POR URL HASH (#tab-1..#tab-7 & p1/p2/stage/art/boss)
+  // ==========================================================================
+  function applyUrlHashDeepLink() {
+    const rawHash = (window.location.hash || '').replace(/^#/, '');
+    if (!rawHash) return;
+
+    const parts = rawHash.split('&');
+    const tabPart = parts[0].replace('tab-', 'tab'); // soporta #tab-6 o #tab6
+    const params = {};
+    parts.slice(1).forEach((kv) => {
+      const [k, v] = kv.split('=');
+      if (k && v !== undefined) params[k] = decodeURIComponent(v);
+    });
+
+    const isBossChallenge = params.boss === '1';
+
+    const targetTabBtn = document.querySelector(`#main-tabs .tab-btn[data-tab="${tabPart}"]`);
+    if (targetTabBtn) {
+      targetTabBtn.click();
+    }
+
+    if (tabPart === 'tab6') {
+      if (params.p1 !== undefined) {
+        const p1Val = Math.max(0, Math.min(ROSTER_DATA.length - 1, parseInt(params.p1, 10) || 0));
+        t6SelP1.value = p1Val;
+      }
+      if (params.p2 !== undefined) {
+        const p2Val = Math.max(0, Math.min(ROSTER_DATA.length - 1, parseInt(params.p2, 10) || 3));
+        t6SelP2.value = p2Val;
+      }
+      if (params.stage !== undefined) {
+        const stVal = Math.max(0, Math.min(STAGES_DATA.length - 1, parseInt(params.stage, 10) || 0));
+        t6SelStage.value = stVal;
+      }
+      if (params.art && t6SelArtStyle) {
+        if (params.art === 'SFUMATO' || params.art === 'STREET_INK') {
+          t6SelArtStyle.value = params.art;
+          t6State.artStyle = params.art;
+        }
+      }
+
+      if (isBossChallenge || parseInt(t6SelP2.value, 10) === ROSTER_DATA.length - 1) {
+        t6SelAI.value = 'BOSS_VAR';
+        t6SelP2.value = ROSTER_DATA.length - 1;
+      } else {
+        t6SelAI.value = 'CPU_PRO';
+      }
+      resetTab6Match();
+    }
+  }
+
+  window.addEventListener('hashchange', applyUrlHashDeepLink);
+  applyUrlHashDeepLink();
+
+  // ==========================================================================
+  // 12. BUCLE MAESTRO DETERMINISTA A 60 FPS (requestAnimationFrame)
   // ==========================================================================
   let lastTime = performance.now();
   let frameCounter = 0;
