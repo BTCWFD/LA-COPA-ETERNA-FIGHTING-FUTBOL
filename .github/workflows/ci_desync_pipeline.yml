@@ -25,14 +25,23 @@ jobs:
       - name: Checkout Repository
         uses: actions/checkout@v4
 
-      - name: Verify Zero Floating-Point Physics in Core Simulation Headers
+      - name: Verify Zero Floating-Point Physics in Core Simulation & Arcade Ladder
         run: |
-          echo "Verificando que FFighterDeterministicStatePOD utilice exclusivamente FFixedPoint Q48.16..."
-          if grep -rnE "float |double " Source/SouthAmericaFightersCore/Public/FixedPointTypes.h Source/SouthAmericaFightersCore/Public/DeterministicFighterStateMachine.h | grep -v "FromFloat"; then
-            echo "ERROR: Se detectaron variables de punto flotante nativo en el estado determinista."
+          echo "Verificando que FFighterDeterministicStatePOD y CopaEternaArcadeLadder utilicen exclusivamente FFixedPoint y Xorshift32..."
+          if grep -rnE "float |double " \
+            Source/SouthAmericaFightersCore/Public/FixedPointTypes.h \
+            Source/SouthAmericaFightersCore/Public/DeterministicFighterStateMachine.h \
+            Source/SouthAmericaFightersCore/Public/CopaEternaArcadeLadder.h \
+            Source/SouthAmericaFightersCore/Private/CopaEternaArcadeLadder.cpp | grep -v "FromFloat"; then
+            echo "ERROR: Se detectaron variables de punto flotante nativo en el estado determinista o escalera Arcade."
             exit 1
           fi
-          echo "Auditoría de cabeceras de punto fijo superada."
+          echo "Auditoría de cabeceras de punto fijo y Xorshift32 superada."
+
+      - name: Run Backend eSports Go Unit Tests (Glicko-2, .safreplay, Fletcher-32 & Anti-Cheat)
+        run: |
+          cd Backend
+          go test -v ./...
 
       - name: Validate JSON DataTables Integrity (Frame Data, Roster & CONMEBOL Stages)
         run: |
