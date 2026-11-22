@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>LA COPA ETERNA — Galería de Arte AAA</title>
+  <link rel="stylesheet" href="styles.css" />
+  <style>
+    .gallery-container { max-width: 1440px; margin: 0 auto; padding: 24px; }
+    .gallery-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; border-bottom: 1px solid rgba(245, 196, 81, 0.25); padding-bottom: 16px; }
+    .gallery-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(460px, 1fr)); gap: 24px; }
+    .art-card { background: rgba(16, 22, 34, 0.92); border: 1px solid rgba(245, 196, 81, 0.3); border-radius: 14px; overflow: hidden; box-shadow: 0 12px 32px rgba(0, 0, 0, 0.45); }
+    .art-card img { width: 100%; height: auto; display: block; object-fit: cover; border-bottom: 1px solid rgba(255, 255, 255, 0.08); }
+    .art-card-body { padding: 16px 20px; }
+    .art-card-title { color: #f5c451; font-size: 1.15rem; font-weight: 700; margin: 0 0 6px 0; }
+    .art-card-desc { color: #b8c4d9; font-size: 0.9rem; line-height: 1.45; margin: 0; }
+    .back-btn { background: linear-gradient(135deg, #f5c451, #e09f24); color: #0a0f18; font-weight: 800; padding: 10px 18px; border-radius: 8px; text-decoration: none; font-size: 0.9rem; }
+  </style>
+</head>
+<body style="background:#080c14; color:#e9eff8; font-family: system-ui, -apple-system, sans-serif;">
+  <div class="gallery-container">
+    <div class="gallery-header">
+      <div>
+        <h1 style="margin:0; color:#f5c451; font-size:1.6rem;">🎨 LA COPA ETERNA: SANGRE Y POTRERO — Galería de Arte AAA</h1>
+        <p style="margin:6px 0 0 0; color:#8ca0bd;">Colección Renacimiento Sfumato (Estilo Mona Lisa / Da Vinci) + Arte Conceptual Street-Ink y Atlas Vectorial</p>
+      </div>
+      <a href="index.html" class="back-btn">⚽ Volver al Juego (WebLab)</a>
+    </div>
+
+    <div class="gallery-grid">
+      <div class="art-card" style="border-color: rgba(212, 163, 71, 0.7);">
+        <img src="../Assets/ConceptArt/Boss_VAR_ZERO_Renaissance.jpg" alt="Boss V.A.R.-ZERO Renacimiento Sfumato" />
+        <div class="art-card-body">
+          <h2 class="art-card-title">🖼️ [RENACIMIENTO SFUMATO] Jefe Final — Juez Supremo (V.A.R.-ZERO)</h2>
+          <p class="art-card-desc">Óleo sobre tabla de álamo al estilo Mona Lisa / Códice de Da Vinci: árbitro biomecánico en bronce y obsidiana con halo astrolabio y tarjetas de juicio en claroscuro dorado.</p>
+        </div>
+      </div>
+
+      <div class="art-card" style="border-color: rgba(212, 163, 71, 0.7);">
+        <img src="../Assets/ConceptArt/CharacterSelect_RosterWave2_Renaissance.jpg" alt="Roster Wave 2 Renacimiento Sfumato" />
+        <div class="art-card-body">
+          <h2 class="art-card-title">🖼️ [RENACIMIENTO SFUMATO] Roster Wave 2 — Retratos de Leyendas (4x2)</h2>
+          <p class="art-card-desc">8 retratos de tres cuartos con técnica sfumato, barniz envejecido y craquelado: Bam-Bam, El Rey, El Bulldog, El Maestro, El Tren Amazónico, El Huracán Vinotinto, El Diablo Andino y Le Général.</p>
+        </div>
+      </div>
+
+      <div class="art-card">
+        <img src="../Assets/ConceptArt/LaCopaEterna_KeyArt_RosterClash.jpg" alt="Key Art Roster Clash" />
+        <div class="art-card-body">
+          <h2 class="art-card-title">1. Key Art Oficial — Superclásico de las Américas</h2>
+          <p class="art-card-desc">Estética Street-Ink PBR: Chilena dorada con cintas de samba vs. Cañonazo supersónico de fuego celeste en estadio nocturno.</p>
+        </div>
+      </div>
+
+      <div class="art-card">
+        <img src="../Assets/ConceptArt/CharacterSelect_PortraitSheet_CONMEBOL.jpg" alt="Character Select Portraits" />
+        <div class="art-card-body">
+          <h2 class="art-card-title">2. Lámina de Selección de Leyendas CONMEBOL</h2>
+          <p class="art-card-desc">Retratos estilizados con Rim Light competitivo: El Pibe, El Loco, El Pistolero, El Batigol y El Juez Supremo (V.A.R. - ZERO).</p>
+        </div>
+      </div>
+
+      <div class="art-card">
+        <img src="../Assets/ConceptArt/Stage_MaracanaBombonera_Concept.jpg" alt="Stage Concept Art" />
+        <div class="art-card-body">
+          <h2 class="art-card-title">3. Escenario 2.5D — Templo do Maracanã / La Bombonera</h2>
+          <p class="art-card-desc">Cancha nocturna iluminada desde cámara lateral 2.5D con vallas LED destructibles (Wall Break), bengalas y lluvia de papelitos.</p>
+        </div>
+      </div>
+
+      <div class="art-card">
+        <img src="../Assets/UI/SVG/InputGlyphs_And_Badges_Master.svg" alt="SVG Glyphs and Badges" style="background:#0d1320; padding:12px;" />
+        <div class="art-card-body">
+          <h2 class="art-card-title">4. Atlas Vectorial SVG — Glifos CommonUI & Escudos CONMEBOL</h2>
+          <p class="art-card-desc">Glifos PS5 DualSense, Xbox Series X|S, botones FGC (LP/MP/HP/SK/GB), comandos Numpad y los 10 escudos sudamericanos.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

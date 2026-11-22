@@ -956,6 +956,11 @@
               </select>
               <label style="font-size:11px; color:var(--turf);">Estadio:</label>
               <select id="t6-sel-stage"></select>
+              <label style="font-size:11px; color:var(--gold-bright);">Dirección de Arte:</label>
+              <select id="t6-sel-artstyle" title="Conmutar entre Renacimiento Sfumato (Da Vinci) y Street-Ink AAA">
+                <option value="SFUMATO" selected>🖼️ Renacimiento Sfumato (Da Vinci / Mona Lisa)</option>
+                <option value="STREET_INK">⚡ Street-Ink AAA (Neón & Tinta)</option>
+              </select>
               <button class="btn btn-gold btn-sm" id="t6-btn-restart">🔄 ¡Pitazo Inicial! (Reset)</button>
             </div>
           </div>
@@ -1239,20 +1244,24 @@
               Archivos binarios glTF 2.0 y mapas PBR listos para importar en Unreal Engine 5.4 / Blender:
             </div>
             <div style="display:flex; flex-direction:column; gap:5px; font-family:var(--font-mono); font-size:10.5px;">
-              <a href="../Assets/Models3D/SK_SouthAmericaFighter_Dummy.glb" download class="btn btn-sm" style="justify-content:space-between;">
-                <span>📥 SK_SouthAmericaFighter_Dummy.glb</span>
+              <a href="art-gallery.html" class="btn btn-sm btn-gold" style="justify-content:space-between;">
+                <span>🖼️ Abrir Galería de Arte Renacimiento Sfumato & Street-Ink</span>
+                <span>Ver Láminas ▶</span>
+              </a>
+              <a href="../Assets/Models3D/Fighters/SK_FENOMENO_BR.glb" download class="btn btn-sm" style="justify-content:space-between;">
+                <span>📥 SK_FENOMENO_BR.glb (+17 Roster .glb)</span>
                 <span style="color:var(--gold);">Maniquí + Rig</span>
               </a>
-              <a href="../Assets/Models3D/SM_Ball_OfficialCONMEBOL.glb" download class="btn btn-sm" style="justify-content:space-between;">
-                <span>📥 SM_Ball_OfficialCONMEBOL.glb</span>
+              <a href="../Assets/Models3D/Props/SM_Ball_TruncatedIcosahedron_32Panels.glb" download class="btn btn-sm" style="justify-content:space-between;">
+                <span>📥 SM_Ball_TruncatedIcosahedron_32Panels.glb</span>
                 <span style="color:var(--cyan);">Balón 32-Paneles</span>
               </a>
-              <a href="../Assets/Models3D/SM_StadiumGoalPost_Destructible.glb" download class="btn btn-sm" style="justify-content:space-between;">
-                <span>📥 SM_StadiumGoalPost_Destructible.glb</span>
+              <a href="../Assets/Models3D/Stages/SM_Stage_PitchAndDestructibleWalls.glb" download class="btn btn-sm" style="justify-content:space-between;">
+                <span>📥 SM_Stage_PitchAndDestructibleWalls.glb</span>
                 <span style="color:var(--turf);">Arco Wall-Break</span>
               </a>
-              <a href="../Assets/TexturesPBR/T_JerseyKit_BaseColor.png" target="_blank" class="btn btn-sm" style="justify-content:space-between;">
-                <span>🖼️ T_JerseyKit_BaseColor / Normal / ORM</span>
+              <a href="../Assets/TexturesPBR/T_Kit_Brazil_Albedo.png" target="_blank" class="btn btn-sm" style="justify-content:space-between;">
+                <span>🖼️ T_Kit_*_Albedo / Normal / ORM</span>
                 <span style="color:var(--purple);">Texturas PBR</span>
               </a>
             </div>

@@ -24,6 +24,17 @@ enum class EVisualCombatAura : uint8
 };
 
 /**
+ * Selector de Dirección de Arte en Tiempo Real (Toggle `ArtStyleMode`: 0 = Street-Ink, 1 = Renaissance Sfumato).
+ * Alimenta CustomPrimitiveData[7] y el Post-Process `M_PP_SfumatoChiaroscuro`.
+ */
+UENUM(BlueprintType)
+enum class ECombatArtStyleMode : uint8
+{
+    StreetInk           = 0 UMETA(DisplayName = "0: Street-Ink Muralismo Sudamericano"),
+    RenaissanceSfumato  = 1 UMETA(DisplayName = "1: Renacimiento Sfumato (Mona Lisa / Da Vinci)")
+};
+
+/**
  * Snapshot visual determinista sincronizado con el bucle de Rollback (GGPO).
  * Permite restaurar hitstop, fase de vibración y acumuladores de barro/sudor tras un rollback.
  */
@@ -118,6 +129,16 @@ public:
     void RestoreVisualSnapshot(const FFighterVisualStateSnapshot& InSnapshot);
 
     /**
+     * Conmuta en tiempo real entre Street-Ink (0) y Renacimiento Sfumato / Chiaroscuro Da Vinci (1).
+     * Inyecta el valor en CustomPrimitiveData[7] (CPD[7]) sin coste de CPU ni recreación de MIDs.
+     */
+    UFUNCTION(BlueprintCallable, Category = "Combat|TechArt")
+    void SetArtStyleMode(ECombatArtStyleMode NewArtStyleMode);
+
+    UFUNCTION(BlueprintPure, Category = "Combat|TechArt")
+    ECombatArtStyleMode GetArtStyleMode() const { return CurrentArtStyleMode; }
+
+    /**
      * Asigna explícitamente el SkeletalMesh principal e indumentaria secundaria (camiseta holgada/bandana con Chaos Cloth).
      */
     UFUNCTION(BlueprintCallable, Category = "Combat|TechArt")
@@ -141,8 +162,9 @@ protected:
     /** Contador de frames de estabilización de Chaos Cloth tras un Rollback o Teleport */
     int32 ClothTeleportStabilizationFrames = 0;
 
-    /** Estado actual de Aura y Desgaste */
+    /** Estado actual de Aura, Desgaste y Estilo Artístico */
     EVisualCombatAura CurrentAura = EVisualCombatAura::None;
+    ECombatArtStyleMode CurrentArtStyleMode = ECombatArtStyleMode::StreetInk;
     float CurrentAuraIntensity = 0.0f;
     float CurrentInkThicknessScale = 1.0f;
     float CurrentSweatAmount = 0.0f;

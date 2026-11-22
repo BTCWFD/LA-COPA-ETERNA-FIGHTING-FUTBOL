@@ -2011,6 +2011,20 @@
     t6SelStage.appendChild(os);
   });
 
+  const t6SelArtStyle = document.getElementById('t6-sel-artstyle');
+  if (t6SelArtStyle) {
+    t6SelArtStyle.addEventListener('change', (e) => {
+      t6State.artStyle = e.target.value;
+      const isSfumato = t6State.artStyle === 'SFUMATO';
+      announceT6(
+        isSfumato ? '🖼️ DIRECCIÓN DE ARTE: RENACIMIENTO SFUMATO (DA VINCI)' : '⚡ DIRECCIÓN DE ARTE: STREET-INK AAA',
+        isSfumato ? '#e5b95c' : '#00e5ff',
+        55
+      );
+      playSynthSound('parry');
+    });
+  }
+
   // Catálogo de Movimientos de Combate en Vivo para Tab 6
   const T6_MOVES = {
     LP: { name: '5LP (Jab Rápido)', startup: 4, active: 4, recovery: 7, dmg: 450, hitstun: 14, blockstun: 9, push: 18, meter: 90, range: 95, type: 'HIGH' },
@@ -2055,6 +2069,7 @@
     p1: createMatchFighter(0, 280, true),
     p2: createMatchFighter(3, 800, false),
     stageIdx: 0,
+    artStyle: 'SFUMATO', // 'SFUMATO' (Renacimiento Da Vinci) o 'STREET_INK' (Neón & Tinta)
     wallHp: 3,
     maxWallHp: 3,
     inZoneB: false,
@@ -2101,6 +2116,7 @@
     t6State.p1 = createMatchFighter(p1Idx, 270, true);
     t6State.p2 = createMatchFighter(p2Idx, 810, false);
     t6State.stageIdx = stIdx;
+    if (t6SelArtStyle) t6State.artStyle = t6SelArtStyle.value;
     t6State.wallHp = st.WallHP;
     t6State.maxWallHp = st.WallHP;
     t6State.inZoneB = false;
@@ -2141,16 +2157,19 @@
   });
 
   function spawnParticles(x, y, color, count = 14) {
+    const isSfumato = t6State.artStyle === 'SFUMATO';
+    const sfumatoPalette = ['#f5c451', '#d4882a', '#ffe599', '#87b8d4', '#c95b3c'];
     for (let i = 0; i < count; i++) {
       const ang = Math.random() * Math.PI * 2;
       const spd = 2 + Math.random() * 7;
+      const ptColor = isSfumato ? sfumatoPalette[i % sfumatoPalette.length] : color;
       t6State.particles.push({
         x,
         y,
         vx: Math.cos(ang) * spd,
         vy: Math.sin(ang) * spd - 2,
         life: 16 + Math.floor(Math.random() * 14),
-        color
+        color: ptColor
       });
     }
   }
@@ -2708,53 +2727,126 @@
   }
 
   function drawFighterOnT6Canvas(ctx, f, groundY) {
+    const isSfumato = t6State.artStyle === 'SFUMATO';
     const x = f.x;
     const y = groundY + f.y;
     const w = f.data.Name === 'BULLDOG_PY' ? 74 : 60;
     const h = f.state === 'CROUCH' ? 92 : (f.data.Name === 'PULGA_AR' ? 124 : 142);
 
     // Sombra en el césped
-    ctx.fillStyle = 'rgba(0, 0, 0, 0.45)';
+    ctx.fillStyle = isSfumato ? 'rgba(22, 14, 6, 0.65)' : 'rgba(0, 0, 0, 0.45)';
     ctx.beginPath();
-    ctx.ellipse(x, groundY + 4, w * 0.55, 8, 0, 0, Math.PI * 2);
+    ctx.ellipse(x, groundY + 4, w * 0.62, 9, 0, 0, Math.PI * 2);
     ctx.fill();
 
     // Aura según estado
     if (f.state === 'PARRY') {
-      ctx.shadowColor = '#00e5ff';
-      ctx.shadowBlur = 22;
+      ctx.shadowColor = isSfumato ? '#ffe07d' : '#00e5ff';
+      ctx.shadowBlur = 24;
     } else if (f.activeMoveKey && T6_MOVES[f.activeMoveKey]?.invuln) {
-      ctx.shadowColor = '#ffffff';
-      ctx.shadowBlur = 20;
+      ctx.shadowColor = isSfumato ? '#fff2b2' : '#ffffff';
+      ctx.shadowBlur = 22;
     } else if (f.superMeter >= 3000) {
       ctx.shadowColor = '#f5c451';
-      ctx.shadowBlur = 14;
+      ctx.shadowBlur = 16;
     }
 
-    // Cuerpo / Camiseta de Selección
-    ctx.fillStyle = f.state === 'HITSTUN' ? '#ff2a54' : (f.state === 'BLOCKSTUN' ? '#f5c451' : f.data.ColorPrimary);
-    ctx.strokeStyle = f.data.ColorSecondary || '#ffffff';
-    ctx.lineWidth = 3;
-    ctx.fillRect(x - w / 2, y - h, w, h);
-    ctx.strokeRect(x - w / 2, y - h, w, h);
-    ctx.shadowBlur = 0;
+    if (isSfumato) {
+      // Silueta Anatómica y Túnica / Camiseta Drapeada Renacentista (Chiaroscuro Ocre, Celeste y Oro)
+      const dir = f.facingRight ? 1 : -1;
 
-    // Franja deportiva de la camiseta
-    ctx.fillStyle = f.data.ColorSecondary || '#06080d';
-    ctx.fillRect(x - w / 2 + 6, y - h + 34, w - 12, 22);
+      // Piernas anatómicas con sombreado de óleo
+      ctx.fillStyle = '#8c5e3c';
+      ctx.fillRect(x - w * 0.34, y - h * 0.36, w * 0.26, h * 0.36);
+      ctx.fillRect(x + w * 0.08, y - h * 0.36, w * 0.26, h * 0.36);
+
+      // Torso con gradiente Chiaroscuro (Luz dorada frontal -> Sombra sepia profunda trasera)
+      const torsoGrad = ctx.createLinearGradient(x - dir * (w / 2), y - h, x + dir * (w / 2), y - h * 0.3);
+      if (f.state === 'HITSTUN') {
+        torsoGrad.addColorStop(0, '#7a1c1c');
+        torsoGrad.addColorStop(1, '#e06641');
+      } else if (f.state === 'BLOCKSTUN') {
+        torsoGrad.addColorStop(0, '#594214');
+        torsoGrad.addColorStop(1, '#f5c451');
+      } else {
+        torsoGrad.addColorStop(0, '#1f160d');
+        torsoGrad.addColorStop(0.45, f.data.ColorPrimary || '#c99738');
+        torsoGrad.addColorStop(1, '#ffe599');
+      }
+
+      ctx.fillStyle = torsoGrad;
+      ctx.beginPath();
+      ctx.moveTo(x - w * 0.48, y - h * 0.96);
+      ctx.lineTo(x + w * 0.48, y - h * 0.96);
+      ctx.lineTo(x + w * 0.40, y - h * 0.34);
+      ctx.lineTo(x - w * 0.40, y - h * 0.34);
+      ctx.closePath();
+      ctx.fill();
+      ctx.strokeStyle = '#d4af37';
+      ctx.lineWidth = 2;
+      ctx.stroke();
+      ctx.shadowBlur = 0;
+
+      // Pliegues de tela renacentista (Drapery folds) y banda heráldica celeste/ocre
+      ctx.fillStyle = f.data.ColorSecondary || '#6ba4c8';
+      ctx.beginPath();
+      ctx.moveTo(x - w * 0.42, y - h * 0.76);
+      ctx.lineTo(x + w * 0.42, y - h * 0.66);
+      ctx.lineTo(x + w * 0.40, y - h * 0.52);
+      ctx.lineTo(x - w * 0.40, y - h * 0.62);
+      ctx.closePath();
+      ctx.fill();
+
+      ctx.strokeStyle = 'rgba(28, 18, 8, 0.55)';
+      ctx.lineWidth = 1.5;
+      for (let fl = -1; fl <= 1; fl++) {
+        ctx.beginPath();
+        ctx.moveTo(x + fl * 12, y - h * 0.92);
+        ctx.quadraticCurveTo(x + fl * 16 + dir * 5, y - h * 0.62, x + fl * 10, y - h * 0.36);
+        ctx.stroke();
+      }
+    } else {
+      // Modo Street-Ink AAA: Contornos de tinta negra nítidos y colores saturados
+      ctx.fillStyle = f.state === 'HITSTUN' ? '#ff2a54' : (f.state === 'BLOCKSTUN' ? '#f5c451' : f.data.ColorPrimary);
+      ctx.strokeStyle = '#05070b';
+      ctx.lineWidth = 4;
+      ctx.fillRect(x - w / 2, y - h, w, h);
+      ctx.strokeRect(x - w / 2, y - h, w, h);
+      ctx.shadowBlur = 0;
+
+      // Rim light neón interior
+      ctx.strokeStyle = f.data.ColorSecondary || '#00e5ff';
+      ctx.lineWidth = 2;
+      ctx.strokeRect(x - w / 2 + 2, y - h + 2, w - 4, h - 4);
+
+      // Franja deportiva de la camiseta
+      ctx.fillStyle = f.data.ColorSecondary || '#06080d';
+      ctx.fillRect(x - w / 2 + 6, y - h + 34, w - 12, 22);
+    }
 
     // Cabeza e indicador de mirada
     const headR = 16;
     const lookOffset = f.facingRight ? 8 : -8;
-    ctx.fillStyle = '#f5d0b5';
+    if (isSfumato) {
+      const headGrad = ctx.createRadialGradient(
+        x + lookOffset * 0.6, y - h - headR + 2, 2,
+        x + lookOffset * 0.3, y - h - headR + 4, headR * 1.2
+      );
+      headGrad.addColorStop(0, '#ffe4b8');
+      headGrad.addColorStop(0.65, '#c68b59');
+      headGrad.addColorStop(1, '#3b2313');
+      ctx.fillStyle = headGrad;
+    } else {
+      ctx.fillStyle = '#f5d0b5';
+    }
     ctx.beginPath();
     ctx.arc(x + lookOffset * 0.4, y - h - headR + 4, headR, 0, Math.PI * 2);
     ctx.fill();
-    ctx.strokeStyle = '#06080d';
-    ctx.lineWidth = 2;
+    ctx.strokeStyle = isSfumato ? '#2b190c' : '#06080d';
+    ctx.lineWidth = 2.2;
     ctx.stroke();
 
-    // Caja de Daño (Hitbox Roja) cuando está en fase ACTIVE
+    // Caja de Daño (Hitbox) cuando está en fase ACTIVE
     if (f.state === 'ACTIVE' && f.activeMoveKey) {
       const mv = T6_MOVES[f.activeMoveKey];
       if (mv && mv.range > 0 && mv.type !== 'PROJ') {
@@ -2764,8 +2856,8 @@
         const hbY = y - h * 0.78;
         const hbH = 54;
 
-        ctx.fillStyle = 'rgba(255, 42, 84, 0.42)';
-        ctx.strokeStyle = '#ff2a54';
+        ctx.fillStyle = isSfumato ? 'rgba(245, 196, 81, 0.38)' : 'rgba(255, 42, 84, 0.42)';
+        ctx.strokeStyle = isSfumato ? '#ffe07d' : '#ff2a54';
         ctx.lineWidth = 2.5;
         ctx.fillRect(hbX, hbY, hbW, hbH);
         ctx.strokeRect(hbX, hbY, hbW, hbH);
@@ -2773,8 +2865,8 @@
     }
 
     // Etiqueta sobre el jugador
-    ctx.fillStyle = '#ffffff';
-    ctx.font = 'bold 11px Consolas, monospace';
+    ctx.fillStyle = isSfumato ? '#ffe599' : '#ffffff';
+    ctx.font = isSfumato ? 'bold 11.5px Georgia, serif' : 'bold 11px Consolas, monospace';
     ctx.textAlign = 'center';
     ctx.fillText(`${f.isP1 ? 'P1' : 'P2'}: ${f.data.DisplayName}`, x, y - h - 28);
     ctx.textAlign = 'left';
@@ -2788,6 +2880,7 @@
     const st = STAGES_DATA[t6State.stageIdx];
     const p1 = t6State.p1;
     const p2 = t6State.p2;
+    const isSfumato = t6State.artStyle === 'SFUMATO';
 
     let shakeX = 0;
     let shakeY = 0;
@@ -2799,11 +2892,61 @@
     t6Ctx.save();
     t6Ctx.translate(shakeX, shakeY);
 
-    // 1. Fondo del Estadio o Filtro Post-Proceso Impact Ink (3f)
+    const groundY = 390;
+
+    // 1. Fondo del Estadio según Dirección de Arte (Renacimiento Sfumato vs Street-Ink AAA) o Impact Ink (3f)
     if (t6State.impactInkFrames > 0) {
-      t6Ctx.fillStyle = t6State.impactInkFrames % 2 === 0 ? '#ffffff' : '#06080d';
+      t6Ctx.fillStyle = t6State.impactInkFrames % 2 === 0 ? (isSfumato ? '#f5e1a4' : '#ffffff') : '#06080d';
       t6Ctx.fillRect(0, 0, w, h);
+    } else if (isSfumato) {
+      // Cielo Renacentista Sfumato (Da Vinci / Mona Lisa: Ocre cálido, ámbar dorado, verde oliva umbrío y bruma lejana)
+      const sfumatoSky = t6Ctx.createLinearGradient(0, 0, 0, groundY);
+      if (t6State.inZoneB) {
+        sfumatoSky.addColorStop(0, '#1e110a');
+        sfumatoSky.addColorStop(0.5, '#4d2b16');
+        sfumatoSky.addColorStop(1, '#8c5828');
+      } else {
+        sfumatoSky.addColorStop(0, '#18221f');
+        sfumatoSky.addColorStop(0.42, '#3d4a35');
+        sfumatoSky.addColorStop(0.78, '#8a6b38');
+        sfumatoSky.addColorStop(1, '#c89d54');
+      }
+      t6Ctx.fillStyle = sfumatoSky;
+      t6Ctx.fillRect(0, 0, w, h);
+
+      // Cordillera y Paisaje Toscano/Andino en Sfumato (Perspectiva atmosférica difuminada)
+      t6Ctx.fillStyle = 'rgba(32, 38, 28, 0.55)';
+      t6Ctx.beginPath();
+      t6Ctx.moveTo(0, groundY - 75);
+      for (let mx = 0; mx <= w; mx += 120) {
+        const peakY = groundY - 115 - Math.sin(mx * 0.012) * 42 - Math.cos(mx * 0.025) * 24;
+        t6Ctx.lineTo(mx, peakY);
+      }
+      t6Ctx.lineTo(w, groundY);
+      t6Ctx.lineTo(0, groundY);
+      t6Ctx.closePath();
+      t6Ctx.fill();
+
+      // Arcos de Coliseo / Estadio Renacentista en Chiaroscuro
+      t6Ctx.fillStyle = 'rgba(24, 16, 9, 0.72)';
+      t6Ctx.strokeStyle = 'rgba(212, 175, 55, 0.35)';
+      t6Ctx.lineWidth = 2;
+      for (let ax = 75; ax < w - 90; ax += 115) {
+        t6Ctx.fillRect(ax, groundY - 105, 18, 105);
+        t6Ctx.beginPath();
+        t6Ctx.arc(ax + 57, groundY - 105, 39, Math.PI, 0, false);
+        t6Ctx.stroke();
+      }
+
+      // Neblina Sfumato dorada sobre el horizonte de la cancha
+      const mistGrad = t6Ctx.createLinearGradient(0, groundY - 70, 0, groundY + 15);
+      mistGrad.addColorStop(0, 'rgba(235, 195, 115, 0.0)');
+      mistGrad.addColorStop(0.6, 'rgba(225, 180, 95, 0.32)');
+      mistGrad.addColorStop(1, 'rgba(45, 32, 15, 0.45)');
+      t6Ctx.fillStyle = mistGrad;
+      t6Ctx.fillRect(0, groundY - 70, w, 85);
     } else {
+      // Modo Street-Ink AAA: Reflectores nocturnos de estadio y trazos de tinta neón
       const skyGrad = t6Ctx.createLinearGradient(0, 0, 0, h);
       if (t6State.inZoneB) {
         skyGrad.addColorStop(0, '#220b1e');
@@ -2814,22 +2957,41 @@
       }
       t6Ctx.fillStyle = skyGrad;
       t6Ctx.fillRect(0, 0, w, h);
+
+      // Reflectores LED de estadio (Floodlights)
+      for (let lx = 140; lx <= w - 140; lx += 260) {
+        const beam = t6Ctx.createLinearGradient(lx, 55, lx, groundY);
+        beam.addColorStop(0, 'rgba(0, 229, 255, 0.22)');
+        beam.addColorStop(1, 'rgba(0, 229, 255, 0.0)');
+        t6Ctx.fillStyle = beam;
+        t6Ctx.beginPath();
+        t6Ctx.moveTo(lx - 15, 55);
+        t6Ctx.lineTo(lx + 15, 55);
+        t6Ctx.lineTo(lx + 95, groundY);
+        t6Ctx.lineTo(lx - 95, groundY);
+        t6Ctx.closePath();
+        t6Ctx.fill();
+      }
     }
 
-    // Luces de tribuna y letrero del Estadio
-    const groundY = 390;
-    t6Ctx.strokeStyle = 'rgba(245, 196, 81, 0.25)';
+    // Marco de la cancha
+    t6Ctx.strokeStyle = isSfumato ? 'rgba(212, 175, 55, 0.45)' : 'rgba(245, 196, 81, 0.25)';
     t6Ctx.lineWidth = 2;
     t6Ctx.strokeRect(45, 95, w - 90, groundY - 95);
 
-    // Césped con franjas deportivas
+    // Césped con franjas deportivas (Ocre/Oliva al óleo en Sfumato vs Verde Cancha Neón en Street-Ink)
     for (let sx = 45; sx < w - 45; sx += 90) {
-      t6Ctx.fillStyle = (Math.floor(sx / 90) % 2 === 0)
-        ? (t6State.inZoneB ? 'rgba(255, 145, 0, 0.14)' : 'rgba(0, 230, 118, 0.16)')
-        : (t6State.inZoneB ? 'rgba(255, 145, 0, 0.08)' : 'rgba(0, 230, 118, 0.10)');
+      const even = Math.floor(sx / 90) % 2 === 0;
+      if (isSfumato) {
+        t6Ctx.fillStyle = even ? 'rgba(68, 78, 36, 0.75)' : 'rgba(52, 62, 28, 0.75)';
+      } else {
+        t6Ctx.fillStyle = even
+          ? (t6State.inZoneB ? 'rgba(255, 145, 0, 0.14)' : 'rgba(0, 230, 118, 0.16)')
+          : (t6State.inZoneB ? 'rgba(255, 145, 0, 0.08)' : 'rgba(0, 230, 118, 0.10)');
+      }
       t6Ctx.fillRect(sx, groundY, 90, h - groundY);
     }
-    t6Ctx.strokeStyle = t6State.inZoneB ? '#ff9100' : '#00e676';
+    t6Ctx.strokeStyle = isSfumato ? '#d4af37' : (t6State.inZoneB ? '#ff9100' : '#00e676');
     t6Ctx.lineWidth = 3;
     t6Ctx.beginPath();
     t6Ctx.moveTo(0, groundY);
@@ -2842,28 +3004,55 @@
 
     // 3. Dibujar Proyectiles de Balón con Estela Elemental
     t6State.projectiles.forEach((pr) => {
-      t6Ctx.shadowColor = pr.color;
+      const trailCol = isSfumato ? '#e5b95c' : pr.color;
+      t6Ctx.shadowColor = trailCol;
       t6Ctx.shadowBlur = 18;
-      t6Ctx.fillStyle = pr.color;
+      t6Ctx.fillStyle = trailCol;
       t6Ctx.beginPath();
       t6Ctx.arc(pr.x - pr.vx * 1.4, pr.y, 11, 0, Math.PI * 2);
       t6Ctx.fill();
 
-      t6Ctx.fillStyle = '#ffffff';
+      t6Ctx.fillStyle = isSfumato ? '#f5deb3' : '#ffffff';
       t6Ctx.beginPath();
       t6Ctx.arc(pr.x, pr.y, 15, 0, Math.PI * 2);
       t6Ctx.fill();
-      t6Ctx.strokeStyle = '#06080d';
+      t6Ctx.strokeStyle = isSfumato ? '#3b2313' : '#06080d';
       t6Ctx.lineWidth = 2.5;
       t6Ctx.stroke();
       t6Ctx.shadowBlur = 0;
     });
 
-    // 4. Dibujar Partículas de Impacto
+    // 4. Dibujar Partículas de Impacto (Chispas Ámbar/Oro al óleo en Sfumato vs Salpicaduras Neón en Street-Ink)
     t6State.particles.forEach((pt) => {
       t6Ctx.fillStyle = pt.color;
-      t6Ctx.fillRect(pt.x - 3, pt.y - 3, 6, 6);
+      if (isSfumato) {
+        t6Ctx.beginPath();
+        t6Ctx.arc(pt.x, pt.y, 3.8, 0, Math.PI * 2);
+        t6Ctx.fill();
+      } else {
+        t6Ctx.fillRect(pt.x - 3.5, pt.y - 3.5, 7, 7);
+      }
     });
+
+    // 4.5. Viñeta de Óleo Chiaroscuro y Craquelado Sutil de Lienzo en modo Renacimiento Sfumato
+    if (isSfumato) {
+      const vig = t6Ctx.createRadialGradient(w / 2, h / 2, w * 0.28, w / 2, h / 2, w * 0.62);
+      vig.addColorStop(0, 'rgba(0, 0, 0, 0.0)');
+      vig.addColorStop(1, 'rgba(18, 10, 4, 0.58)');
+      t6Ctx.fillStyle = vig;
+      t6Ctx.fillRect(0, 0, w, h);
+
+      // Sutil malla de craquelado de barniz antiguo (Craquelure)
+      t6Ctx.strokeStyle = 'rgba(245, 215, 150, 0.055)';
+      t6Ctx.lineWidth = 1;
+      for (let cxLine = 120; cxLine < w; cxLine += 180) {
+        t6Ctx.beginPath();
+        t6Ctx.moveTo(cxLine, 60);
+        t6Ctx.lineTo(cxLine + 35, 190);
+        t6Ctx.lineTo(cxLine - 15, 340);
+        t6Ctx.stroke();
+      }
+    }
 
     // ========================================================================
     // 5. HUD TELEVISIVO CONMEBOL (Barras de Vida, Gambeta, Reloj y Super)

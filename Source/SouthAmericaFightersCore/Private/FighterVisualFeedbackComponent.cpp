@@ -275,6 +275,24 @@ void UFighterVisualFeedbackComponent::RestoreVisualSnapshot(const FFighterVisual
     }
 }
 
+void UFighterVisualFeedbackComponent::SetArtStyleMode(ECombatArtStyleMode NewArtStyleMode)
+{
+    CurrentArtStyleMode = NewArtStyleMode;
+    const float StyleValue = (CurrentArtStyleMode == ECombatArtStyleMode::RenaissanceSfumato) ? 1.0f : 0.0f;
+
+    if (IsValid(MainBodyMesh))
+    {
+        MainBodyMesh->SetCustomPrimitiveDataFloat(7, StyleValue);
+    }
+    for (const TObjectPtr<USkeletalMeshComponent>& ClothMesh : ClothApparelMeshes)
+    {
+        if (IsValid(ClothMesh))
+        {
+            ClothMesh->SetCustomPrimitiveDataFloat(7, StyleValue);
+        }
+    }
+}
+
 void UFighterVisualFeedbackComponent::ApplyCustomPrimitiveDataToMeshes(
     const FLinearColor& RimColor,
     float RimIntensity,
@@ -289,9 +307,11 @@ void UFighterVisualFeedbackComponent::ApplyCustomPrimitiveDataToMeshes(
         // Índices 0, 1, 2: Color RGB del Rim Competitivo
         // Índice 3: Intensidad del Rim Competitivo
         // Índice 4: Escala dinámica de grosor de tinta (Ink Outline Multiplier)
+        // Índice 7: ArtStyleMode (0.0 = Street-Ink, 1.0 = Renaissance Sfumato Da Vinci)
         MeshComp->SetCustomPrimitiveDataVector3(0, FVector(RimColor.R, RimColor.G, RimColor.B));
         MeshComp->SetCustomPrimitiveDataFloat(3, RimIntensity);
         MeshComp->SetCustomPrimitiveDataFloat(4, InkScale);
+        MeshComp->SetCustomPrimitiveDataFloat(7, (CurrentArtStyleMode == ECombatArtStyleMode::RenaissanceSfumato) ? 1.0f : 0.0f);
     };
 
     WriteShaderCPD(MainBodyMesh);

@@ -1,0 +1,18 @@
+// ============================================================================
+// Source/TechArt/M_PP_SfumatoChiaroscuro.ush
+// Unreal Engine 5.4+ - Production Post-Process & Material Custom Node Shader
+// Forwarder & Self-Contained Specification for `M_PP_SfumatoChiaroscuro`
+// ("Renacimiento Sfumato - Mona Lisa / Leonardo da Vinci")
+// ============================================================================
+// Custom Primitive Data (CPD) & MPC Mapping:
+//   CPD[0..2] : Competitive Rim Color RGB
+//   CPD[3]    : Competitive Rim Intensity HDR
+//   CPD[4]    : Ink Outline / Sfumato Edge Scale
+//   CPD[5]    : Sweat Accumulation (0.0..1.0)
+//   CPD[6]    : Pitch Mud & Grass Stain (0.0..1.0)
+//   CPD[7]    : ArtStyleMode (0.0 = Street-Ink Muralismo, 1.0 = Renaissance Sfumato)
+// ============================================================================
+
+#pragma once
+
+#include "../../Shaders/SfumatoChiaroscuroPostProcess.ush"

@@ -1,0 +1,457 @@
+// ============================================================================
+// SfumatoChiaroscuroPostProcess.ush (M_PP_SfumatoChiaroscuro)
+// Unreal Engine 5.4+ - "Renacimiento Sfumato (Mona Lisa / Da Vinci)" Visual Pipeline
+// ============================================================================
+// Material Specification:
+//   Material Name:      M_PP_SfumatoChiaroscuro
+//   Material Domain:    Post Process (Before Tonemapping) & Character Custom Node
+//   Include File Path:  /Project/SfumatoChiaroscuroPostProcess.ush
+//   Toggle Parameter:   ArtStyleMode (0 = Street-Ink Muralismo, 1 = Renaissance Sfumato)
+//
+// Core Features Implemented:
+//   1. Sfumato Soft-Edge Bilateral Blur & Painterly Glaze Transition ("Senza Linee"):
+//      Smoothes harsh geometric edges into smoky, imperceptible Da Vinci transitions
+//      while preserving facial/hitbox micro-contrast and competitive Rim readability.
+//   2. Golden-Amber Chiaroscuro Tone-Mapping & Aged Pine-Resin Varnish LUT Curve:
+//      Models multi-layered oil glazing (velaturas), deep umber/bitumen shadows,
+//      warm ochre midtones, and luminous lead-white/naples-yellow highlights.
+//   3. Procedural Aged Oil-on-Poplar-Wood Craquelure Overlay & Gallery Vignette:
+//      Dual-scale Voronoi cracking network with micro-normal specular glint along crack
+//      ridges and subtle horizontal poplar wood-grain undertone.
+//   4. Leonardo's Aerial Perspective ("Prospettiva Aerea" Blue-Green Depth Fog):
+//      Desaturates and shifts distant stadium architecture toward Arno Valley
+//      blue-green sfumato mist while keeping the foreground fighting plane (Y=0) crisp.
+//   5. Unified ArtStyleMode Toggle (0 = Street-Ink, 1 = Renaissance Sfumato).
+// ============================================================================
+
+#pragma once
+
+#include "CompetitiveRimAndInkOutline.ush"
+
+#define ART_STYLE_STREET_INK          0
+#define ART_STYLE_RENAISSANCE_SFUMATO 1
+
+struct FSfumatoChiaroscuroParams
+{
+    int    ArtStyleMode;           // 0 = Street-Ink, 1 = Renaissance Sfumato (Da Vinci)
+    float  StyleBlendAlpha;        // 0.0 (Pure Street-Ink) .. 1.0 (Pure Sfumato) for smooth transitions
+    float  SfumatoBlurRadiusPx;    // Default: 2.25f (Soft edge transition width)
+    float  ChiaroscuroContrast;    // Default: 1.32f (Tenebrism shadow depth)
+    float  VarnishAmberWarmth;     // Default: 0.78f (Aged Louvre/Florence amber patina)
+    float  CraquelureIntensity;    // Default: 0.42f (Oil-on-poplar cracking visibility)
+    float  AerialPerspectiveScale; // Default: 1.00f (Blue-green Arno background mist)
+    float  FighterPlaneDepthCm;    // Default: 480.0f (Distance to 2.5D combat plane)
+};
+
+// ============================================================================
+// 1. DETERMINISTIC VORONOI CRAQUELURE & POPLAR WOOD PANEL GRAIN
+// ============================================================================
+
+float2 SfumatoHash2D(float2 P)
+{
+    float3 P3 = frac(float3(P.xyx) * float3(0.1031f, 0.1030f, 0.0973f));
+    P3 += dot(P3, P3.yzx + 33.33f);
+    return frac((P3.xx + P3.yz) * P3.zy);
+}
+
+/**
+ * Evaluates a 2-octave Voronoi distance-to-border network simulating 16th-century
+ * oil-on-poplar craquelure (crackle network) plus horizontal wood panel grain.
+ * Returns:
+ *   x = Crack trench mask (0.0 inside paint island, 1.0 inside crack fissure)
+ *   y = Crack ridge highlight (for micro-specular varnish reflection)
+ *   z = Poplar panel wood-grain modulation
+ */
+float3 EvaluateDaVinciCraquelureAndPoplarGrain(float2 ScreenUV, float AspectRatio)
+{
+    float2 AspectUV = float2(ScreenUV.x * AspectRatio, ScreenUV.y);
+
+    // Primary Macro-Craquelure Network (Poplar wood expansion stress)
+    float2 MacroUV = AspectUV * 46.0f;
+    // Slight directional warping following canvas/wood tension
+    MacroUV.x += sin(AspectUV.y * 14.0f) * 0.18f;
+    MacroUV.y += cos(AspectUV.x * 11.0f) * 0.14f;
+
+    float2 MacroCell = floor(MacroUV);
+    float2 MacroFrac = frac(MacroUV);
+
+    float MinDist1 = 8.0f;
+    float MinDist2 = 8.0f;
+
+    [unroll]
+    for (int j = -1; j <= 1; ++j)
+    {
+        [unroll]
+        for (int i = -1; i <= 1; ++i)
+        {
+            float2 Neighbor = float2((float)i, (float)j);
+            float2 PointOffset = SfumatoHash2D(MacroCell + Neighbor);
+            // Rectangular distortion characteristic of poplar panel craquelure
+            PointOffset = 0.15f + 0.70f * PointOffset;
+            float2 Diff = Neighbor + PointOffset - MacroFrac;
+            float Dist = length(Diff * float2(1.0f, 1.18f));
+
+            if (Dist < MinDist1)
+            {
+                MinDist2 = MinDist1;
+                MinDist1 = Dist;
+            }
+            else if (Dist < MinDist2)
+            {
+                MinDist2 = Dist;
+            }
+        }
+    }
+
+    float MacroEdgeDist = MinDist2 - MinDist1;
+
+    // Secondary Micro-Craquelure (Fine pigment drying fractures)
+    float2 MicroUV = AspectUV * 128.0f;
+    float2 MicroCell = floor(MicroUV);
+    float2 MicroFrac = frac(MicroUV);
+    float2 MicroRand = SfumatoHash2D(MicroCell + 71.3f);
+    float  MicroEdge = abs(MicroFrac.x - MicroRand.x) * abs(MicroFrac.y - MicroRand.y);
+
+    // Crack Trench (darkened bitumen/gesso in fissure) & Ridge Highlight (cupped paint edge)
+    float PrimaryCrack   = 1.0f - smoothstep(0.008f, 0.042f, MacroEdgeDist);
+    float SecondaryCrack = (1.0f - smoothstep(0.002f, 0.014f, MicroEdge)) * 0.45f;
+    float CrackTrench    = saturate(PrimaryCrack + SecondaryCrack);
+
+    float CrackRidgeHighlight = smoothstep(0.025f, 0.055f, MacroEdgeDist) *
+                                (1.0f - smoothstep(0.055f, 0.095f, MacroEdgeDist));
+
+    // Subtle horizontal poplar panel grain (Tavola di Pioppo)
+    float PoplarWave = sin(AspectUV.y * 320.0f + sin(AspectUV.x * 18.0f) * 3.5f) * 0.5f + 0.5f;
+
+    return float3(CrackTrench, CrackRidgeHighlight, PoplarWave);
+}
+
+// ============================================================================
+// 2. GOLDEN-AMBER CHIAROSCURO & AGED VARNISH LUT CURVE
+// ============================================================================
+
+/**
+ * Applies Leonardo's Chiaroscuro tone curve & multi-layer oil glaze (Velatura):
+ *   - Deep shadows: Raw Umber / Burnt Sienna / Bitumen (warm, velvety darks)
+ *   - Midtones: Yellow Ochre / Verdaccio underpainting (subtle olive-gold flesh transition)
+ *   - Highlights: Naples Yellow / Lead White warmed by aged dammar/mastic resin varnish
+ */
+float3 ApplyRenaissanceChiaroscuroAndVarnishLUT(
+    float3 LinearColor,
+    float  ChiaroscuroContrast,
+    float  VarnishAmberWarmth)
+{
+    // Perceptual luminance
+    float Lum = dot(LinearColor, float3(0.2126f, 0.7152f, 0.0722f));
+
+    // S-curve Tenebrism / Chiaroscuro contrast compression in shadows
+    float ContrastedLum = pow(max(Lum, 0.0001f), ChiaroscuroContrast);
+    float SCurveLum = smoothstep(0.0f, 1.0f, ContrastedLum);
+
+    // Pigments of the Florentine High Renaissance Palette (Linear RGB)
+    const float3 BitumenUmberShadow = float3(0.045f, 0.028f, 0.016f); // Deep warm gallery shadow
+    const float3 VerdaccioUnderpaint = float3(0.240f, 0.235f, 0.145f); // Da Vinci's greenish-ochre transition tone
+    const float3 GoldenOchreMidtone  = float3(0.680f, 0.490f, 0.240f); // Warm sienna/ochre glaze
+    const float3 NaplesYellowLight   = float3(0.980f, 0.870f, 0.580f); // Luminous glazed highlight
+
+    // Zone weights (Shadows / Half-tones / Highlights)
+    float ShadowWeight    = saturate(1.0f - smoothstep(0.0f, 0.38f, Lum));
+    float VerdaccioWeight = smoothstep(0.12f, 0.35f, Lum) * (1.0f - smoothstep(0.35f, 0.62f, Lum));
+    float MidtoneWeight   = smoothstep(0.25f, 0.60f, Lum) * (1.0f - smoothstep(0.60f, 0.88f, Lum));
+    float HighlightWeight = smoothstep(0.55f, 0.95f, Lum);
+
+    // Preserve local chromatic identity while subduing neon/synthetic modern primaries
+    float3 DesaturatedBase = lerp(float3(Lum, Lum, Lum), LinearColor, 0.68f);
+    float3 ReconstructedBase = DesaturatedBase * (SCurveLum / max(Lum, 0.001f));
+
+    // Glaze layering (Velatura)
+    float3 GlazedColor = ReconstructedBase;
+    GlazedColor = lerp(GlazedColor, BitumenUmberShadow + GlazedColor * 0.45f, ShadowWeight * 0.75f);
+    GlazedColor = lerp(GlazedColor, GlazedColor * 0.70f + VerdaccioUnderpaint * 0.45f, VerdaccioWeight * 0.42f);
+    GlazedColor = lerp(GlazedColor, GlazedColor * GoldenOchreMidtone * 1.45f, MidtoneWeight * VarnishAmberWarmth * 0.55f);
+    GlazedColor = lerp(GlazedColor, GlazedColor * 0.65f + NaplesYellowLight * 0.45f, HighlightWeight * VarnishAmberWarmth * 0.48f);
+
+    // Aged Pine-Resin Varnish Transmittance Filter (absorbs short blue wavelengths)
+    float3 VarnishTransmittance = lerp(float3(1.0f, 1.0f, 1.0f), float3(1.06f, 0.96f, 0.74f), saturate(VarnishAmberWarmth));
+    return max(GlazedColor * VarnishTransmittance, 0.0f);
+}
+
+// ============================================================================
+// 3. LEONARDO'S AERIAL PERSPECTIVE ("PROSPETTIVA AEREA" DEPTH FOG)
+// ============================================================================
+
+/**
+ * Simulates the hazy blue-green background landscapes of the Mona Lisa (Val d'Arno / Dolomite crags).
+ * Strictly protects the foreground combat plane (SceneDepthCm <= FighterPlaneDepthCm + 90cm)
+ * so competitive fighter silhouettes, hitboxes, and auras remain 100% crisp.
+ */
+float3 ApplyLeonardoAerialPerspectiveFog(
+    float3 GlazedSceneColor,
+    float2 ScreenUV,
+    float  SceneDepthCm,
+    float  FighterPlaneDepthCm,
+    float  AerialPerspectiveScale)
+{
+    if (AerialPerspectiveScale <= 0.001f)
+    {
+        return GlazedSceneColor;
+    }
+
+    // Combat Plane Protection: 0.0 on fighters and immediate pitch, ramping up across distant stadium tiers & sky
+    float DepthDistancePastFightersCm = max(0.0f, SceneDepthCm - (FighterPlaneDepthCm + 90.0f));
+    float AerialDepthFactor = 1.0f - exp(-DepthDistancePastFightersCm * 0.00045f);
+    AerialDepthFactor = saturate(AerialDepthFactor * AerialPerspectiveScale);
+
+    // Horizon gradient matching Mona Lisa's background (warm ochre-olive lower valley -> smoky blue-teal upper peaks)
+    const float3 ArnoValleyLowMist  = float3(0.32f, 0.36f, 0.27f);
+    const float3 AlpineCragHighMist = float3(0.28f, 0.42f, 0.44f);
+    float HorizonFactor = saturate(1.0f - ScreenUV.y * 1.15f);
+    float3 LeonardoAtmosphereColor = lerp(ArnoValleyLowMist, AlpineCragHighMist, HorizonFactor);
+
+    // Progressive desaturation with distance ("Sfumato Atmospheric Scattering")
+    float BgLum = dot(GlazedSceneColor, float3(0.2126f, 0.7152f, 0.0722f));
+    float3 SoftenedDistantScene = lerp(GlazedSceneColor, float3(BgLum, BgLum, BgLum), AerialDepthFactor * 0.65f);
+
+    return lerp(SoftenedDistantScene, LeonardoAtmosphereColor, AerialDepthFactor * 0.58f);
+}
+
+// ============================================================================
+// 4. SFUMATO SOFT-EDGE BILATERAL BLUR & PAINTERLY BRUSHSTROKE TRANSITION
+// ============================================================================
+
+/**
+ * Computes the Sfumato bilateral soft-edge blend ("like smoke, without lines or borders").
+ * Softens high-frequency luminance/normal transitions while preserving competitive silhouette separation.
+ */
+float3 ComputeSfumatoBilateralBrushBlend(
+    float3 CenterColor,
+    float3 SampleNW,
+    float3 SampleNE,
+    float3 SampleSW,
+    float3 SampleSE,
+    float  CenterDepthCm,
+    float4 NeighborDepthsCm, // x=NW, y=NE, z=SW, w=SE
+    float  DepthGradientSobel,
+    float  SfumatoBlurStrength)
+{
+    // Bilateral depth weights prevent background colors from bleeding across foreground fighter silhouettes
+    const float DepthSigmaCm = 45.0f;
+    float4 DepthDiff = abs(NeighborDepthsCm - CenterDepthCm);
+    float4 BilateralWeights = exp(-(DepthDiff * DepthDiff) / (2.0f * DepthSigmaCm * DepthSigmaCm));
+
+    // Directional Kuwahara / Sfumato oil-blending weight
+    float3 WeightedSum = CenterColor * 1.25f
+        + SampleNW * BilateralWeights.x
+        + SampleNE * BilateralWeights.y
+        + SampleSW * BilateralWeights.z
+        + SampleSE * BilateralWeights.w;
+
+    float TotalWeight = 1.25f + dot(BilateralWeights, float4(1.0f, 1.0f, 1.0f, 1.0f));
+    float3 BilateralSoftColor = WeightedSum / max(TotalWeight, 0.001f);
+
+    // In Sfumato mode, internal shadow edges and cloth folds receive smoky gradation instead of hard ink lines
+    float SmokyTerminatorMask = saturate(SfumatoBlurStrength * (1.0f - saturate(DepthGradientSobel * 0.8f)));
+    return lerp(CenterColor, BilateralSoftColor, SmokyTerminatorMask * 0.78f);
+}
+
+// ============================================================================
+// 5. CHARACTER MATERIAL NODE: DUAL-MODE (STREET-INK vs RENAISSANCE SFUMATO)
+// ============================================================================
+
+/**
+ * Character Material Custom Node that supports seamless switching via `ArtStyleMode`:
+ *   - ArtStyleMode == 0 (Street-Ink): Bold black ink outlines, 2-band cel hatching, vibrant mural saturation.
+ *   - ArtStyleMode == 1 (Renaissance Sfumato): Imperceptible smoky shadow transitions (Senza Linee),
+ *     Verdaccio skin underpainting, golden-amber chiaroscuro rim, and zero hard black ink outlines.
+ */
+FStreetInkMaterialOutput EvaluateCharacterDualArtStyle(
+    int    ArtStyleMode,          // 0 = Street-Ink, 1 = Renaissance Sfumato
+    float  StyleBlendAlpha,       // 0.0 -> 1.0 continuous blend
+    float3 AlbedoPBR,
+    float3 WorldNormal,
+    float3 CameraVector,
+    float3 LightVector,
+    float2 ScreenAlignedUV,
+    float  VertexHeightNormalized,
+    float  BaseRoughness,
+    float3 CPD_RimColorRGB,       // CustomPrimitiveData[0..2]
+    float  CPD_RimIntensity,      // CustomPrimitiveData[3]
+    float  CPD_InkThicknessScale, // CustomPrimitiveData[4]
+    float  CPD_SweatAmount,       // CustomPrimitiveData[5]
+    float  CPD_MudAmount)         // CustomPrimitiveData[6]
+{
+    // 1. Evaluate existing Street-Ink baseline
+    FStreetInkMaterialOutput StreetInkOut = EvaluateCompetitiveStreetInkCharacter(
+        AlbedoPBR,
+        WorldNormal,
+        CameraVector,
+        LightVector,
+        ScreenAlignedUV,
+        VertexHeightNormalized,
+        BaseRoughness,
+        CPD_RimColorRGB,
+        CPD_RimIntensity,
+        CPD_InkThicknessScale,
+        CPD_SweatAmount,
+        CPD_MudAmount);
+
+    float SfumatoWeight = (ArtStyleMode == ART_STYLE_RENAISSANCE_SFUMATO) ? 1.0f : saturate(StyleBlendAlpha);
+    if (SfumatoWeight <= 0.001f)
+    {
+        return StreetInkOut;
+    }
+
+    // 2. Evaluate Renaissance Sfumato Character Glazing ("Senza Linee")
+    float3 N = normalize(WorldNormal);
+    float3 V = normalize(CameraVector);
+    float3 L = normalize(LightVector);
+
+    float NdotV = saturate(dot(N, V));
+    float NdotL = dot(N, L);
+
+    // Smooth smoky Lambert-Wrapped Sfumato lighting instead of hard stepped cel bands
+    float WrappedDiffuse = saturate((NdotL + 0.35f) / 1.35f);
+    float SfumatoPenumbra = smoothstep(0.0f, 1.0f, WrappedDiffuse);
+
+    // Verdaccio olive-ochre core shadow transition (classic Da Vinci flesh & drapery technique)
+    float TerminatorZone = smoothstep(0.15f, 0.48f, WrappedDiffuse) * (1.0f - smoothstep(0.48f, 0.78f, WrappedDiffuse));
+    float3 VerdaccioTint = float3(0.28f, 0.27f, 0.16f);
+
+    // Soft smoky umber edge vignette instead of hard black ink outline
+    float FresnelTerm = 1.0f - NdotV;
+    float SmokyEdgeGlaze = smoothstep(0.45f, 0.92f, FresnelTerm);
+    float3 UmberGlazeColor = float3(0.055f, 0.032f, 0.018f);
+
+    float3 SfumatoAlbedo = ApplyRenaissanceChiaroscuroAndVarnishLUT(AlbedoPBR, 1.25f, 0.75f);
+    SfumatoAlbedo = lerp(SfumatoAlbedo, SfumatoAlbedo * 0.65f + VerdaccioTint * 0.35f, TerminatorZone * 0.55f);
+    SfumatoAlbedo = lerp(UmberGlazeColor, SfumatoAlbedo, lerp(0.22f, 1.0f, SfumatoPenumbra));
+    SfumatoAlbedo = lerp(SfumatoAlbedo, UmberGlazeColor, SmokyEdgeGlaze * 0.62f);
+
+    // Competitive Rim Aura in Sfumato Mode: Candlelit golden-infused aura preserving <16ms state recognition
+    float SfumatoRimFalloff = smoothstep(0.42f, 0.85f, FresnelTerm);
+    float3 WarmedAuraColor = lerp(CPD_RimColorRGB, CPD_RimColorRGB * float3(1.08f, 0.94f, 0.72f), 0.35f);
+    float3 SfumatoEmissive = WarmedAuraColor * (CPD_RimIntensity * SfumatoRimFalloff * 2.85f);
+
+    // Oil-varnish sheen modulation
+    float SfumatoRoughness = clamp(StreetInkOut.Roughness * 0.88f + 0.06f, 0.14f, 0.88f);
+
+    // 3. Blend between Street-Ink (0) and Renaissance Sfumato (1)
+    FStreetInkMaterialOutput FinalOut;
+    FinalOut.BaseColor      = lerp(StreetInkOut.BaseColor, SfumatoAlbedo, SfumatoWeight);
+    FinalOut.EmissiveColor  = lerp(StreetInkOut.EmissiveColor, SfumatoEmissive, SfumatoWeight);
+    FinalOut.Roughness      = lerp(StreetInkOut.Roughness, SfumatoRoughness, SfumatoWeight);
+    FinalOut.Specular       = lerp(StreetInkOut.Specular, 0.62f, SfumatoWeight);
+    FinalOut.InkOutlineMask = lerp(StreetInkOut.InkOutlineMask, SmokyEdgeGlaze * 0.35f, SfumatoWeight);
+
+    return FinalOut;
+}
+
+// ============================================================================
+// 6. MASTER POST-PROCESS ENTRY POINT: M_PP_SfumatoChiaroscuro
+// ============================================================================
+
+/**
+ * Main Post-Process Shader Entry Point for `M_PP_SfumatoChiaroscuro`.
+ * Supports runtime toggling via `ArtStyleMode` (0 = Street-Ink, 1 = Renaissance Sfumato).
+ */
+float4 EvaluateM_PP_SfumatoChiaroscuro(
+    int    ArtStyleMode,             // 0 = Street-Ink, 1 = Renaissance Sfumato (Mona Lisa / Da Vinci)
+    float  StyleBlendAlpha,          // 0.0 -> 1.0 override blend
+    float2 ScreenUV,
+    float2 InvViewSize,
+    float  AspectRatio,
+    float  SceneDepthCm,
+    float4 NeighborDepthsCm,         // x=NW, y=NE, z=SW, w=SE
+    float  FighterPlaneDepthCm,      // Default: 480.0f cm
+    float3 CenterSceneColor,
+    float3 SampleNW,
+    float3 SampleNE,
+    float3 SampleSW,
+    float3 SampleSE,
+    float  DepthGradientSobel,
+    float2 ImpactCenterUV,
+    float  ImpactNormalizedFrame,    // 3-frame impact pulse (1.0, 0.66, 0.33, 0.0)
+    float  ChiaroscuroContrast,      // Default: 1.32f
+    float  VarnishAmberWarmth,       // Default: 0.78f
+    float  CraquelureIntensity)      // Default: 0.42f
+{
+    // Evaluate Street-Ink 3-Frame Impact Pass baseline
+    float4 StreetInkPP = EvaluatePPStreetInkImpact3Frame(
+        ScreenUV,
+        InvViewSize,
+        ImpactCenterUV,
+        ImpactNormalizedFrame,
+        CenterSceneColor,
+        SampleNW,
+        SampleNE,
+        SampleSW,
+        SampleSE,
+        DepthGradientSobel);
+
+    float SfumatoWeight = (ArtStyleMode == ART_STYLE_RENAISSANCE_SFUMATO) ? 1.0f : saturate(StyleBlendAlpha);
+    if (SfumatoWeight <= 0.001f)
+    {
+        return StreetInkPP;
+    }
+
+    // 1. Sfumato Soft-Edge Bilateral Blur & Painterly Glaze Transition
+    // Boosted slightly during 3-frame heavy impacts for an oil-impasto shockwave feel
+    float EffectiveSfumatoBlur = saturate(0.72f + ImpactNormalizedFrame * 0.28f);
+    float3 SfumatoSoftScene = ComputeSfumatoBilateralBrushBlend(
+        CenterSceneColor,
+        SampleNW,
+        SampleNE,
+        SampleSW,
+        SampleSE,
+        SceneDepthCm,
+        NeighborDepthsCm,
+        DepthGradientSobel,
+        EffectiveSfumatoBlur);
+
+    // 2. Golden-Amber Chiaroscuro Tone-Mapping & Aged Pine-Resin Varnish LUT
+    float3 ChiaroscuroColor = ApplyRenaissanceChiaroscuroAndVarnishLUT(
+        SfumatoSoftScene,
+        max(ChiaroscuroContrast, 1.0f),
+        saturate(VarnishAmberWarmth));
+
+    // 3. Leonardo's Aerial Perspective ("Prospettiva Aerea" Blue-Green Depth Fog)
+    float3 AerialComposite = ApplyLeonardoAerialPerspectiveFog(
+        ChiaroscuroColor,
+        ScreenUV,
+        SceneDepthCm,
+        FighterPlaneDepthCm,
+        1.0f);
+
+    // 4. Procedural Aged Oil-on-Wood Craquelure Overlay & Louvre Gallery Vignette
+    float3 CraquelureData = EvaluateDaVinciCraquelureAndPoplarGrain(ScreenUV, max(AspectRatio, 1.0f));
+    float  CrackTrench    = CraquelureData.x;
+    float  CrackRidge     = CraquelureData.y;
+    float  PoplarGrain    = CraquelureData.z;
+
+    // Subtle attenuation of craquelure over active fighter faces/center so frame-data clarity stays pristine
+    float2 CenteredUV = (ScreenUV - 0.5f) * 2.0f;
+    float  RadialDistSq = dot(CenteredUV, CenteredUV);
+    float  PeripheralCraquelureWeight = lerp(0.45f, 1.0f, saturate(RadialDistSq * 0.75f)) * saturate(CraquelureIntensity);
+
+    // Apply dark bitumen in crack trenches, warm specular glint on crack ridges, and subtle wood grain
+    float3 BitumenCrackColor = float3(0.035f, 0.020f, 0.010f);
+    float3 RidgeGlintColor   = float3(1.000f, 0.890f, 0.640f);
+
+    float3 TexturedPainting = lerp(AerialComposite, BitumenCrackColor, CrackTrench * PeripheralCraquelureWeight * 0.68f);
+    TexturedPainting += RidgeGlintColor * (CrackRidge * PeripheralCraquelureWeight * 0.09f);
+    TexturedPainting *= lerp(0.975f, 1.025f, PoplarGrain * PeripheralCraquelureWeight);
+
+    // 5. Classical Chiaroscuro Oval Gallery Vignette (Louvre Poplar Panel Framing)
+    float VignetteMask = smoothstep(0.45f, 1.55f, RadialDistSq);
+    float3 VignetteUmber = float3(0.032f, 0.018f, 0.009f);
+    float3 FinalSfumatoRGB = lerp(TexturedPainting, VignetteUmber, VignetteMask * 0.62f);
+
+    // During a 3-frame Counter-Hit / Wall Break in Sfumato mode, add a Da Vinci gold-leaf / chiaroscuro flash
+    if (ImpactNormalizedFrame > 0.001f)
+    {
+        float ImpactRing = smoothstep(0.15f, 0.55f, length(ScreenUV - ImpactCenterUV));
+        FinalSfumatoRGB *= (1.0f + ImpactNormalizedFrame * ImpactRing * 0.25f);
+    }
+
+    return float4(lerp(StreetInkPP.rgb, FinalSfumatoRGB, SfumatoWeight), 1.0f);
+}
