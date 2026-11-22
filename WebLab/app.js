@@ -2084,8 +2084,114 @@
     bannerColor: '#ffe07d',
     keysDown: {},
     lastTapDir: 0,
-    lastTapTime: 0
+    lastTapTime: 0,
+    matchEnded: false,
+    stats: {
+      p1DamageDealt: 0,
+      p2DamageDealt: 0,
+      p1MaxCombo: 0,
+      p2MaxCombo: 0,
+      p1Blocks: 0,
+      p2Blocks: 0,
+      wallBreaks: 0
+    }
   };
+
+  // Recortes de Retratos Verificados + Frases de Victoria por Leyenda (0..16)
+  const T6_VICTORY_PORTRAITS = [
+    { sheet: '../Assets/ConceptArt/VSScreen_Brasil_vs_Argentina_Renaissance.jpg', size: '210% auto', pos: '12% 24%', quote: '"¡Con una pedalada de otro planeta dejó pagando a toda la defensa y clavó el gol de la gloria eterna!"' },
+    { sheet: '../Assets/ConceptArt/LaCopaEterna_KeyArt_RosterClash.jpg', size: '220% auto', pos: '24% 25%', quote: '"¡Sonríe la pelota! Magia, samba y elástica sin mirar para levantar a todo el estadio."' },
+    { sheet: '../Assets/ConceptArt/CharacterSelect_PortraitSheet_CONMEBOL.jpg', size: '310% auto', pos: '84% 22%', quote: '"¡Rompió la red de un cañonazo inatajable desde treinta metros! ¡Pura dinamita albiceleste!"' },
+    { sheet: '../Assets/ConceptArt/VSScreen_Brasil_vs_Argentina_Renaissance.jpg', size: '210% auto', pos: '88% 24%', quote: '"¡La pelota siempre pegada al botín izquierdo! Gambeta imposible y coronación histórica en la final."' },
+    { sheet: '../Assets/ConceptArt/CharacterSelect_PortraitSheet_CONMEBOL.jpg', size: '310% auto', pos: '14% 22%', quote: '"¡Todo bien, todo bien! Pases filtrados con ojos en la nuca y control absoluto del mediocampo."' },
+    { sheet: '../Assets/ConceptArt/CharacterSelect_PortraitSheet_CONMEBOL.jpg', size: '310% auto', pos: '48% 22%', quote: '"¡Un Escorpión inmortal sobre la línea de sentencia para humillar el ataque rival!"' },
+    { sheet: '../Assets/ConceptArt/CharacterSelect_PortraitSheet_CONMEBOL.jpg', size: '310% auto', pos: '25% 78%', quote: '"¡Garra Charrúa hasta el último aliento! Presión asfixiante y victoria en área chica."' },
+    { sheet: '../Assets/ConceptArt/LaCopaEterna_KeyArt_RosterClash.jpg', size: '220% auto', pos: '78% 28%', quote: '"¡Efecto Jabulani con ambas piernas! Un francotirador implacable desde cualquier rincón."' },
+    { sheet: '../Assets/ConceptArt/CharacterSelect_RosterWave2_Renaissance.jpg', size: '400% auto', pos: '6% 14%', quote: '"¡Suspendido en el cielo como un helicóptero, conectó el cabezazo definitivo!"' },
+    { sheet: '../Assets/ConceptArt/CharacterSelect_RosterWave2_Renaissance.jpg', size: '400% auto', pos: '36% 14%', quote: '"¡Trancazo real con pulmón de acero! Nadie le gana una pelota dividida en el barro."' },
+    { sheet: '../Assets/ConceptArt/CharacterSelect_RosterWave2_Renaissance.jpg', size: '400% auto', pos: '66% 14%', quote: '"¡Intimidación guaraní de tiro libre! Ni la barrera ni el arquero pudieron resistir."' },
+    { sheet: '../Assets/ConceptArt/CharacterSelect_RosterWave2_Renaissance.jpg', size: '400% auto', pos: '95% 14%', quote: '"¡Elegancia de tres dedos y caño de colección para firmar una obra de arte!"' },
+    { sheet: '../Assets/ConceptArt/CharacterSelect_RosterWave2_Renaissance.jpg', size: '400% auto', pos: '6% 86%', quote: '"¡A toda máquina por la banda derecha! Velocidad supersónica de trece cuadros."' },
+    { sheet: '../Assets/ConceptArt/CharacterSelect_RosterWave2_Renaissance.jpg', size: '400% auto', pos: '36% 86%', quote: '"¡Zurda de oro en Folha Seca! El balón cayó como un misil en el ángulo superior."' },
+    { sheet: '../Assets/ConceptArt/CharacterSelect_RosterWave2_Renaissance.jpg', size: '400% auto', pos: '66% 86%', quote: '"¡A 3.600 metros la pelota no dobla y el rival se quedó sin aire en el segundo tiempo!"' },
+    { sheet: '../Assets/ConceptArt/CharacterSelect_RosterWave2_Renaissance.jpg', size: '400% auto', pos: '95% 86%', quote: '"¡Roulette de Marseille y clase magistral para dominar el tempo del encuentro!"' },
+    { sheet: '../Assets/ConceptArt/Boss_VAR_ZERO_Renaissance.jpg', size: '135% auto', pos: '50% 22%', quote: '"¡REVISIÓN DE CUADRO COMPLETADA! El Juez Supremo decreta fuera de juego y anula tu existencia."' }
+  ];
+
+  function playVictoryFanfare() {
+    const ctx = ensureAudio();
+    if (!ctx) return;
+    const now = ctx.currentTime;
+    const notes = [261.63, 329.63, 392.00, 523.25]; // Acorde Mayor Triunfal C4-E4-G4-C5
+    notes.forEach((freq, i) => {
+      const osc = ctx.createOscillator();
+      const g = ctx.createGain();
+      osc.type = 'triangle';
+      osc.frequency.setValueAtTime(freq, now + i * 0.09);
+      g.gain.setValueAtTime(0.16, now + i * 0.09);
+      g.gain.exponentialRampToValueAtTime(0.001, now + i * 0.09 + 0.55);
+      osc.connect(g).connect(ctx.destination);
+      osc.start(now + i * 0.09);
+      osc.stop(now + i * 0.09 + 0.58);
+    });
+  }
+
+  function showTab6VictoryOverlay(winnerFighter, reasonType = 'KO') {
+    if (t6State.matchEnded) return;
+    t6State.matchEnded = true;
+
+    const overlayEl = document.getElementById('t6-victory-overlay');
+    const cardEl = document.getElementById('t6-victory-card');
+    if (!overlayEl || !cardEl) return;
+
+    cardEl.classList.toggle('street-ink-mode', t6State.artStyle === 'STREET_INK');
+
+    const isBossWin = winnerFighter.data.Name === 'VAR_ZERO_BOSS';
+    const bannerEl = document.getElementById('t6-vic-banner');
+    if (reasonType === 'TIME') {
+      bannerEl.textContent = `⏱️ ¡TIEMPO CUMPLIDO! — VICTORIA POR PUNTOS (${winnerFighter.isP1 ? 'P1' : 'P2'})`;
+    } else if (isBossWin) {
+      bannerEl.textContent = '⚖️ VEREDICTO V.A.R.-ZERO — ¡EL JUEZ SUPREMO DOMINA LA CANCHA!';
+    } else {
+      bannerEl.textContent = `🏆 ¡CAMPEÓN DE LA CANCHA! — VICTORIA DE ${winnerFighter.isP1 ? 'JUGADOR 1' : 'JUGADOR 2'}`;
+    }
+
+    const artInfo = T6_VICTORY_PORTRAITS[winnerFighter.charIdx] || T6_VICTORY_PORTRAITS[0];
+    const portEl = document.getElementById('t6-vic-portrait');
+    portEl.style.backgroundImage = `url('${artInfo.sheet}')`;
+    portEl.style.backgroundSize = artInfo.size;
+    portEl.style.backgroundPosition = artInfo.pos;
+
+    document.getElementById('t6-vic-country').textContent = `${winnerFighter.data.Country} • ${winnerFighter.data.Archetype}`;
+    document.getElementById('t6-vic-name').textContent = winnerFighter.data.DisplayName;
+    document.getElementById('t6-vic-quote').textContent = artInfo.quote;
+
+    const st = t6State.stats;
+    const maxCombo = Math.max(st.p1MaxCombo, st.p2MaxCombo, 1);
+    const totalBlocks = st.p1Blocks + st.p2Blocks;
+    const secsLeft = Math.ceil(t6State.timerFrames / 60);
+
+    document.getElementById('t6-vic-dmg').textContent =
+      `${st.p1DamageDealt.toLocaleString()} vs ${st.p2DamageDealt.toLocaleString()}`;
+    document.getElementById('t6-vic-combo').textContent = `${maxCombo} Hits`;
+    document.getElementById('t6-vic-blocks').textContent = `${totalBlocks} Defensas`;
+    document.getElementById('t6-vic-walls').textContent = `${st.wallBreaks} Ruptura(s)`;
+    document.getElementById('t6-vic-time').textContent = `${secsLeft} Segundos`;
+
+    // Calcular Rango de Estilo (S / A / B / C)
+    const winHpPct = winnerFighter.hp / winnerFighter.maxHp;
+    let rank = 'B';
+    if (winHpPct >= 0.65 && (maxCombo >= 3 || st.wallBreaks >= 1)) rank = 'S';
+    else if (winHpPct >= 0.40 || maxCombo >= 2) rank = 'A';
+    else if (winHpPct < 0.15) rank = 'C';
+
+    const rankEl = document.getElementById('t6-vic-rank');
+    rankEl.textContent = rank;
+    rankEl.style.color = rank === 'S' ? '#ffe07d' : (rank === 'A' ? '#00e676' : '#00e5ff');
+
+    overlayEl.style.display = 'flex';
+    playVictoryFanfare();
+  }
 
   function announceT6(text, color = '#ffe07d', duration = 65, commentary = null, sub = null) {
     t6State.bannerText = text;
@@ -2126,6 +2232,19 @@
     t6State.impactInkFrames = 0;
     t6State.projectiles = [];
     t6State.particles = [];
+    t6State.matchEnded = false;
+    t6State.stats = {
+      p1DamageDealt: 0,
+      p2DamageDealt: 0,
+      p1MaxCombo: 0,
+      p2MaxCombo: 0,
+      p1Blocks: 0,
+      p2Blocks: 0,
+      wallBreaks: 0
+    };
+
+    const vicOverlay = document.getElementById('t6-victory-overlay');
+    if (vicOverlay) vicOverlay.style.display = 'none';
 
     document.getElementById('t6-zone-badge').textContent = 'ZONA A';
     document.getElementById('t6-match-subtitle').textContent =
@@ -2146,6 +2265,33 @@
   t6SelStage.addEventListener('change', resetTab6Match);
   t6SelAI.addEventListener('change', resetTab6Match);
   document.getElementById('t6-btn-restart').addEventListener('click', resetTab6Match);
+
+  const t6BtnRematch = document.getElementById('t6-btn-rematch');
+  if (t6BtnRematch) {
+    t6BtnRematch.addEventListener('click', resetTab6Match);
+  }
+
+  const t6BtnDemoKo = document.getElementById('t6-btn-demo-ko');
+  if (t6BtnDemoKo) {
+    t6BtnDemoKo.addEventListener('click', () => {
+      t6State.p2.hp = 0;
+      t6State.p2.state = 'KO';
+      t6State.stats.p1DamageDealt = Math.max(t6State.stats.p1DamageDealt, t6State.p2.maxHp);
+      t6State.stats.p1MaxCombo = Math.max(t6State.stats.p1MaxCombo, 6);
+      t6State.stats.p1Blocks = Math.max(t6State.stats.p1Blocks, 3);
+      t6State.stats.wallBreaks = Math.max(t6State.stats.wallBreaks, 1);
+      t6State.impactInkFrames = 10;
+      t6State.hitstopFrames = 14;
+      announceT6(
+        `⚽🏆 ¡GOOOOOOOLAZO / K.O.! — GANA ${t6State.p1.data.DisplayName.toUpperCase()}`,
+        '#00e676',
+        180,
+        `"¡GOOOOOOLAZO HISTÓRICO DE ${t6State.p1.data.DisplayName.toUpperCase()}! ¡SE CAE EL ESTADIO ABAJO!"`,
+        'Mostrando Pantalla de Victoria Post-Partido.'
+      );
+      showTab6VictoryOverlay(t6State.p1, 'KO');
+    });
+  }
 
   document.getElementById('t6-btn-fill-meters').addEventListener('click', () => {
     t6State.p1.superMeter = 3000;
@@ -2348,6 +2494,8 @@
 
     // 1. GAMBETA PERFECTA / PARRY ("¡OOOO-LÉ!")
     if (isDefenderParrying) {
+      if (defender.isP1) t6State.stats.p1Blocks++;
+      else t6State.stats.p2Blocks++;
       defender.superMeter = Math.min(3000, defender.superMeter + 400);
       defender.gambeta = Math.min(1000, defender.gambeta + 300);
       attacker.state = 'RECOVERY';
@@ -2375,6 +2523,10 @@
     if (blocked) {
       const chip = Math.max(10, Math.floor(mv.dmg * 0.15));
       defender.hp = Math.max(1, defender.hp - chip);
+      if (defender.isP1) t6State.stats.p1Blocks++;
+      else t6State.stats.p2Blocks++;
+      if (attacker.isP1) t6State.stats.p1DamageDealt += chip;
+      else t6State.stats.p2DamageDealt += chip;
       defender.state = 'BLOCKSTUN';
       defender.stunFrames = mv.blockstun;
       defender.vx = pushDir * (mv.push * 0.22);
@@ -2396,6 +2548,13 @@
 
       attacker.comboCount++;
       attacker.comboDamage += dmg;
+      if (attacker.isP1) {
+        t6State.stats.p1DamageDealt += dmg;
+        t6State.stats.p1MaxCombo = Math.max(t6State.stats.p1MaxCombo, attacker.comboCount);
+      } else {
+        t6State.stats.p2DamageDealt += dmg;
+        t6State.stats.p2MaxCombo = Math.max(t6State.stats.p2MaxCombo, attacker.comboCount);
+      }
       attacker.superMeter = Math.min(3000, attacker.superMeter + mv.meter);
       defender.superMeter = Math.min(3000, defender.superMeter + Math.floor(mv.meter * 0.4));
 
@@ -2430,6 +2589,7 @@
         t6State.wallHp = Math.max(0, t6State.wallHp - (mv.wallDmg || 1));
         if (t6State.wallHp === 0) {
           t6State.inZoneB = true;
+          t6State.stats.wallBreaks++;
           t6State.impactInkFrames = 10;
           t6State.shakeFrames = 24;
           const st = STAGES_DATA[t6State.stageIdx];
@@ -2478,9 +2638,10 @@
           '#00e676',
           180,
           `"¡GOOOOOOLAZO HISTÓRICO DE ${attacker.data.DisplayName.toUpperCase()}! ¡SE CAE EL ESTADIO ABAJO, SEÑORAS Y SEÑORES!"`,
-          'Presiona el botón "🔄 ¡Pitazo Inicial! (Reset)" para jugar otra revancha.'
+          'Presiona "⚔️ Revancha Inmediata" o cambia de Leyenda.'
         );
         playSynthSound('stinger');
+        showTab6VictoryOverlay(attacker, 'KO');
       }
     }
   }
@@ -2648,12 +2809,13 @@
     }
 
     // Reloj del partido
-    if (p1.state !== 'KO' && p2.state !== 'KO' && t6State.timerFrames > 0) {
+    if (!t6State.matchEnded && p1.state !== 'KO' && p2.state !== 'KO' && t6State.timerFrames > 0) {
       t6State.timerFrames--;
       if (t6State.timerFrames === 0) {
-        const winner = p1.hp >= p2.hp ? p1.data.DisplayName : p2.data.DisplayName;
-        announceT6(`⏱️ ¡FINAL DEL TIEMPO REGLAMENTARIO! GANA ${winner.toUpperCase()}`, '#ffe07d', 160);
+        const winnerFighter = p1.hp >= p2.hp ? p1 : p2;
+        announceT6(`⏱️ ¡FINAL DEL TIEMPO REGLAMENTARIO! GANA ${winnerFighter.data.DisplayName.toUpperCase()}`, '#ffe07d', 160);
         playSynthSound('stinger');
+        showTab6VictoryOverlay(winnerFighter, 'TIME');
       }
     }
 

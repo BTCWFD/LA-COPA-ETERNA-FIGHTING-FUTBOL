@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>LA COPA ETERNA: SANGRE Y POTRERO — AAA Command Center & Interactive Lab</title>
-  <link rel="stylesheet" href="styles.css" />
+  <link rel="stylesheet" href="styles.css?v=sfumato2" />
 </head>
 <body>
 
@@ -968,12 +968,65 @@
                 <option value="STREET_INK">⚡ Street-Ink AAA (Neón & Tinta)</option>
               </select>
               <button class="btn btn-gold btn-sm" id="t6-btn-restart">🔄 ¡Pitazo Inicial! (Reset)</button>
+              <button class="btn btn-crimson btn-sm" id="t6-btn-demo-ko" title="Disparar K.O. Instantáneo para probar Pantalla de Victoria">🏆 Demo Victoria / K.O.</button>
             </div>
           </div>
 
-          <!-- Canvas Jugable 1v1 a 60 FPS -->
-          <div class="canvas-wrap" style="border-color:var(--gold);">
+          <!-- Canvas Jugable 1v1 a 60 FPS + Overlay Post-Partido de Victoria / K.O. -->
+          <div class="canvas-wrap" style="border-color:var(--gold); position:relative;">
             <canvas id="t6-canvas" width="1080" height="460"></canvas>
+
+            <!-- AAA Post-Match Victory / K.O. Overlay -->
+            <div class="t6-victory-overlay" id="t6-victory-overlay" style="display:none;">
+              <div class="t6-victory-card" id="t6-victory-card">
+                <div class="t6-vic-header">
+                  <span class="t6-vic-banner" id="t6-vic-banner">🏆 ¡CAMPEÓN DE LA CANCHA!</span>
+                  <span class="t6-vic-rank-pill">RANGO DE ESTILO: <strong id="t6-vic-rank">S</strong></span>
+                </div>
+
+                <div class="t6-vic-body">
+                  <div class="t6-vic-portrait" id="t6-vic-portrait"></div>
+                  <div class="t6-vic-details">
+                    <div class="t6-vic-country" id="t6-vic-country">Brasil 🇧🇷 • Rushdown Explosivo</div>
+                    <h2 class="t6-vic-name" id="t6-vic-name">O Fenômeno</h2>
+                    <p class="t6-vic-quote" id="t6-vic-quote">"¡Con una gambeta de otro planeta dejó pagando a toda la defensa y clavó el gol de la gloria eterna!"</p>
+
+                    <div class="t6-vic-stats-grid">
+                      <div class="t6-vstat">
+                        <span>Daño Total (P1 vs P2)</span>
+                        <strong id="t6-vic-dmg">10,000 vs 3,200</strong>
+                      </div>
+                      <div class="t6-vstat">
+                        <span>Combo Máximo</span>
+                        <strong id="t6-vic-combo">6 Hits</strong>
+                      </div>
+                      <div class="t6-vstat">
+                        <span>Bloqueos & Parries</span>
+                        <strong id="t6-vic-blocks">4 Defensas</strong>
+                      </div>
+                      <div class="t6-vstat">
+                        <span>Muros Rotos (Wall Breaks)</span>
+                        <strong id="t6-vic-walls">1 Ruptura</strong>
+                      </div>
+                      <div class="t6-vstat">
+                        <span>Tiempo Restante</span>
+                        <strong id="t6-vic-time">64 Segundos</strong>
+                      </div>
+                      <div class="t6-vstat">
+                        <span>Veredicto Arbitral EOS</span>
+                        <strong style="color:var(--turf);">✔ DETERMINISTA</strong>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="t6-vic-actions">
+                  <button class="btn btn-gold" id="t6-btn-rematch">⚔️ Revancha Inmediata (Rematch)</button>
+                  <a href="character-select.html" class="btn btn-turf" style="text-decoration:none;">👥 Cambiar Leyendas (16+1)</a>
+                  <a href="main-menu.html" class="btn btn-cyan" style="text-decoration:none;">🏛️ Menú Principal</a>
+                </div>
+              </div>
+            </div>
           </div>
 
           <!-- Controles Arcade Interactivos en Pantalla + Atajos Directos de Especiales y Supers -->
