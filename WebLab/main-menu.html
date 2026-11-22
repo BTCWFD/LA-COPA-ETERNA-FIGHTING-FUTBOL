@@ -531,7 +531,19 @@
           <span class="mi-arrow">ENTER ▶</span>
         </div>
 
-        <div class="menu-item" data-idx="1" data-action="BOSS_MATCH"
+        <div class="menu-item" data-idx="1" data-action="TOURNAMENT_MODE"
+             data-art="../Assets/ConceptArt/Stage_MaracanaBombonera_Concept.jpg"
+             data-tag="MODO TORNEO / ESCALERA ARCADE (5 RONDAS)"
+             data-title="🏆 Modo Torneo: La Copa Eterna (5 Rondas CONMEBOL)"
+             data-caption="Escalera determinista Xorshift32: Octavos, Cuartos, Semifinal, Gran Final Clásica y Desafío Supremo vs V.A.R.-ZERO.">
+          <div class="mi-left">
+            <div class="mi-title">🏆 MODO TORNEO: LA COPA ETERNA (5 RONDAS)</div>
+            <div class="mi-desc">Escalera Arcade Determinista (CopaEternaArcadeLadder.cpp) + Fase 2 Secreta</div>
+          </div>
+          <span class="mi-arrow">COPA ▶</span>
+        </div>
+
+        <div class="menu-item" data-idx="2" data-action="BOSS_MATCH"
              data-art="../Assets/ConceptArt/Boss_VAR_ZERO_Renaissance.jpg"
              data-tag="JEFE FINAL: EL JUEZ SUPREMO (V.A.R.-ZERO)"
              data-title="Desafío Boss Final: El Juez Supremo (V.A.R.-ZERO)"
@@ -543,7 +555,7 @@
           <span class="mi-arrow">BOSS ▶</span>
         </div>
 
-        <div class="menu-item" data-idx="2" data-action="ROSTER_LAB"
+        <div class="menu-item" data-idx="3" data-action="ROSTER_LAB"
              data-art="../Assets/ConceptArt/CharacterSelect_RosterWave2_Renaissance.jpg"
              data-tag="SELECCIÓN DE LEYENDAS & ESTADIOS (16+1)"
              data-title="Cámara de Selección de Leyendas CONMEBOL & 10 Estadios"
@@ -555,7 +567,7 @@
           <span class="mi-arrow">ROSTER ▶</span>
         </div>
 
-        <div class="menu-item" data-idx="3" data-action="ART_GALLERY"
+        <div class="menu-item" data-idx="4" data-action="ART_GALLERY"
              data-art="../Assets/ConceptArt/LaCopaEterna_KeyArt_RosterClash.jpg"
              data-tag="GALERÍA DE ARTE CONCEPTUAL AAA"
              data-title="Colección Maestra: Renacimiento Sfumato & Street-Ink"
@@ -567,7 +579,7 @@
           <span class="mi-arrow">GALERÍA ▶</span>
         </div>
 
-        <div class="menu-item" data-idx="4" data-action="ENGINE_LAB"
+        <div class="menu-item" data-idx="5" data-action="ENGINE_LAB"
              data-art="../Assets/ConceptArt/Stage_MaracanaBombonera_Concept.jpg"
              data-tag="SUITE DE INGENIERÍA UE 5.4+ (7 LABORATORIOS)"
              data-title="Command Center: Q32.32, GGPO, Wwise, Anti-Cheat & Visor 3D"
@@ -829,6 +841,8 @@
         playMenuSfx('confirm');
         if (action === 'VS_MATCH') {
           openVsOverlay(false);
+        } else if (action === 'TOURNAMENT_MODE') {
+          window.location.href = 'tournament.html';
         } else if (action === 'BOSS_MATCH') {
           openVsOverlay(true);
         } else if (action === 'ROSTER_LAB') {

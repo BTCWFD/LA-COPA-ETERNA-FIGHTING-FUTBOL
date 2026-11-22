@@ -2086,6 +2086,13 @@
     lastTapDir: 0,
     lastTapTime: 0,
     matchEnded: false,
+    tourneyMode: false,
+    tourneyRound: 1,
+    showInputDisplay: true,
+    inputLog: [
+      { dir: 5, btn: '', frames: 1 }
+    ],
+    gpPrevButtons: {},
     stats: {
       p1DamageDealt: 0,
       p2DamageDealt: 0,
@@ -2096,6 +2103,54 @@
       wallBreaks: 0
     }
   };
+
+  const T6_DIR_ARROWS = { 1: '↙', 2: '↓', 3: '↘', 4: '←', 5: '•', 6: '→', 7: '↖', 8: '↑', 9: '↗' };
+
+  function pushT6InputHistory(dir, btn = '') {
+    const log = t6State.inputLog;
+    const latest = log[0];
+    if (latest && latest.dir === dir && latest.btn === btn && !btn) {
+      latest.frames = Math.min(999, latest.frames + 1);
+    } else {
+      log.unshift({ dir, btn, frames: 1 });
+      if (log.length > 10) log.pop();
+    }
+    renderT6InputHistoryDOM();
+  }
+
+  function renderT6InputHistoryDOM() {
+    const container = document.getElementById('t6-input-history');
+    if (!container) return;
+    if (!t6State.showInputDisplay) {
+      container.style.display = 'none';
+      return;
+    }
+    container.style.display = 'flex';
+    container.innerHTML = t6State.inputLog.map((item) => {
+      const arrow = T6_DIR_ARROWS[item.dir] || '•';
+      let btnBadge = '';
+      if (item.btn) {
+        const bClass = ['LP', 'MP', 'HP', 'SK', 'GB'].includes(item.btn) ? `b-${item.btn}` : 'b-SP';
+        btnBadge = `<span class="t6-ih-btn ${bClass}">${item.btn}</span>`;
+      }
+      return `
+        <div class="t6-ih-row">
+          <span class="t6-ih-dir">${item.dir}${arrow}</span>
+          ${btnBadge}
+          <span class="t6-ih-frames">${item.frames}f</span>
+        </div>
+      `;
+    }).join('');
+  }
+
+  const t6BtnInputDisp = document.getElementById('t6-btn-input-display');
+  if (t6BtnInputDisp) {
+    t6BtnInputDisp.addEventListener('click', (e) => {
+      t6State.showInputDisplay = !t6State.showInputDisplay;
+      e.currentTarget.textContent = t6State.showInputDisplay ? '📋 Input Display: ON' : '📋 Input Display: OFF';
+      renderT6InputHistoryDOM();
+    });
+  }
 
   // Recortes de Retratos Verificados + Frases de Victoria por Leyenda (0..16)
   const T6_VICTORY_PORTRAITS = [
@@ -2189,6 +2244,25 @@
     rankEl.textContent = rank;
     rankEl.style.color = rank === 'S' ? '#ffe07d' : (rank === 'A' ? '#00e676' : '#00e5ff');
 
+    // Hook de Retorno para Modo Torneo (Llave Copa Eterna)
+    const tourneyBtn = document.getElementById('t6-btn-tourney-next');
+    if (t6State.tourneyMode) {
+      const won = winnerFighter === t6State.p1;
+      const score = st.p1DamageDealt + (won ? 5000 : 0) + maxCombo * 250;
+      try {
+        localStorage.setItem('copaEternaLastMatch', JSON.stringify({
+          round: t6State.tourneyRound,
+          won,
+          rank,
+          score,
+          timestamp: Date.now()
+        }));
+      } catch (_) {}
+      if (tourneyBtn) tourneyBtn.style.display = 'inline-flex';
+    } else if (tourneyBtn) {
+      tourneyBtn.style.display = 'none';
+    }
+
     overlayEl.style.display = 'flex';
     playVictoryFanfare();
   }
@@ -2233,6 +2307,8 @@
     t6State.projectiles = [];
     t6State.particles = [];
     t6State.matchEnded = false;
+    t6State.inputLog = [{ dir: 5, btn: '', frames: 1 }];
+    renderT6InputHistoryDOM();
     t6State.stats = {
       p1DamageDealt: 0,
       p2DamageDealt: 0,
@@ -2348,6 +2424,11 @@
     fighter.stateFrame = 1;
     fighter.moveHitRegistered = false;
     fighter.vx = 0;
+
+    if (fighter.isP1) {
+      const curDir = t6State.inputLog[0] ? t6State.inputLog[0].dir : 5;
+      pushT6InputHistory(curDir, moveKey);
+    }
 
     if (mv.vy && fighter.y === 0) {
       fighter.vy = mv.vy;
@@ -2793,9 +2874,83 @@
     }
   }
 
+  function pollT6GamepadInput() {
+    if (!navigator.getGamepads) return;
+    const pads = navigator.getGamepads();
+    let activePad = null;
+    for (let i = 0; i < pads.length; i++) {
+      if (pads[i] && pads[i].connected) {
+        activePad = pads[i];
+        break;
+      }
+    }
+    const statusEl = document.getElementById('t6-gamepad-status');
+    if (!activePad) {
+      if (statusEl) statusEl.textContent = '🎮 Gamepad: Esperando...';
+      return;
+    }
+    if (statusEl) {
+      statusEl.textContent = '🎮 Gamepad Conectado';
+      statusEl.style.borderColor = '#00e676';
+      statusEl.style.color = '#00e676';
+    }
+
+    const p1 = t6State.p1;
+    const axX = activePad.axes[0] || 0;
+    const axY = activePad.axes[1] || 0;
+    const dUp = activePad.buttons[12]?.pressed || axY < -0.55;
+    const dDown = activePad.buttons[13]?.pressed || axY > 0.55;
+    const dLeft = activePad.buttons[14]?.pressed || axX < -0.45;
+    const dRight = activePad.buttons[15]?.pressed || axX > 0.45;
+
+    let gpDir = 5;
+    if (dUp) gpDir = dRight ? 9 : (dLeft ? 7 : 8);
+    else if (dDown) gpDir = dRight ? 3 : (dLeft ? 1 : 2);
+    else if (dRight) gpDir = 6;
+    else if (dLeft) gpDir = 4;
+
+    if (gpDir !== 5) {
+      pushT6InputHistory(gpDir, '');
+    }
+
+    if (dUp && p1.y === 0) triggerFighterMovement(p1, 'JUMP');
+    else if (dDown && p1.y === 0) triggerFighterMovement(p1, 'CROUCH');
+    else if (dLeft) triggerFighterMovement(p1, 'LEFT');
+    else if (dRight) triggerFighterMovement(p1, 'RIGHT');
+
+    const btnMap = [
+      { idx: 0, act: 'LP' },
+      { idx: 1, act: 'MP' },
+      { idx: 2, act: 'HP' },
+      { idx: 3, act: 'SK' },
+      { idx: 4, act: 'GB' },
+      { idx: 5, act: 'SP_236' },
+      { idx: 6, act: 'SUPER_1' },
+      { idx: 7, act: 'ULT_3' }
+    ];
+
+    btnMap.forEach(({ idx, act }) => {
+      const pressed = Boolean(activePad.buttons[idx]?.pressed);
+      if (pressed && !t6State.gpPrevButtons[idx]) {
+        startFighterMove(p1, act);
+      }
+      t6State.gpPrevButtons[idx] = pressed;
+    });
+
+    // Botón Start (9) para Reset / Rematch inmediato
+    const startPressed = Boolean(activePad.buttons[9]?.pressed);
+    if (startPressed && !t6State.gpPrevButtons[9]) {
+      resetTab6Match();
+    }
+    t6State.gpPrevButtons[9] = startPressed;
+  }
+
   function stepTab6VersusSimulation() {
     const p1 = t6State.p1;
     const p2 = t6State.p2;
+
+    // 0. Polling de Web Gamepad API @ 60Hz
+    pollT6GamepadInput();
 
     if (t6State.bannerTimer > 0) t6State.bannerTimer--;
     if (t6State.impactInkFrames > 0) t6State.impactInkFrames--;
@@ -2819,11 +2974,23 @@
       }
     }
 
-    // Lectura continua de teclas presionadas para caminar en P1
+    // Lectura continua de teclas presionadas para caminar en P1 y alimentar Input History
+    const kUp = Boolean(t6State.keysDown['KeyW'] || t6State.keysDown['ArrowUp']);
+    const kDown = Boolean(t6State.keysDown['KeyS'] || t6State.keysDown['ArrowDown']);
+    const kLeft = Boolean(t6State.keysDown['KeyA'] || t6State.keysDown['ArrowLeft']);
+    const kRight = Boolean(t6State.keysDown['KeyD'] || t6State.keysDown['ArrowRight']);
+
+    let curDir = 5;
+    if (kUp) curDir = kRight ? 9 : (kLeft ? 7 : 8);
+    else if (kDown) curDir = kRight ? 3 : (kLeft ? 1 : 2);
+    else if (kRight) curDir = 6;
+    else if (kLeft) curDir = 4;
+    pushT6InputHistory(curDir, '');
+
     if (['IDLE', 'WALK_F', 'WALK_B'].includes(p1.state) && p1.y === 0) {
-      if (t6State.keysDown['KeyA'] || t6State.keysDown['ArrowLeft']) {
+      if (kLeft) {
         triggerFighterMovement(p1, 'LEFT');
-      } else if (t6State.keysDown['KeyD'] || t6State.keysDown['ArrowRight']) {
+      } else if (kRight) {
         triggerFighterMovement(p1, 'RIGHT');
       } else {
         p1.vx = 0;
@@ -2892,16 +3059,190 @@
     const isSfumato = t6State.artStyle === 'SFUMATO';
     const x = f.x;
     const y = groundY + f.y;
-    const w = f.data.Name === 'BULLDOG_PY' ? 74 : 60;
-    const h = f.state === 'CROUCH' ? 92 : (f.data.Name === 'PULGA_AR' ? 124 : 142);
+    const dir = f.facingRight ? 1 : -1;
+    const isBoss = f.data.Name === 'VAR_ZERO_BOSS';
+    const w = f.data.Name === 'BULLDOG_PY' ? 74 : (isBoss ? 72 : 60);
+    const baseH = f.data.Name === 'PULGA_AR' ? 126 : (isBoss ? 156 : 142);
+    const h = f.state === 'CROUCH' ? baseH * 0.68 : baseH;
 
-    // Sombra en el césped
-    ctx.fillStyle = isSfumato ? 'rgba(22, 14, 6, 0.65)' : 'rgba(0, 0, 0, 0.45)';
+    // 1. Sombra elíptica en el césped
+    ctx.fillStyle = isSfumato ? 'rgba(22, 14, 6, 0.68)' : 'rgba(0, 0, 0, 0.48)';
     ctx.beginPath();
-    ctx.ellipse(x, groundY + 4, w * 0.62, 9, 0, 0, Math.PI * 2);
+    ctx.ellipse(x, groundY + 4, (f.state === 'KO' ? w * 1.15 : w * 0.62), 9, 0, 0, Math.PI * 2);
     ctx.fill();
 
-    // Aura según estado
+    // 2. Cinemática Articulada por Estado y Frame (Idle, Walk, Dash, Attack/Kick, Block, Hitstun, K.O.)
+    const t = f.stateFrame;
+    const breathY = (f.state === 'IDLE') ? Math.sin(t * 0.12) * 3.5 : 0;
+    let bodyTilt = 0;
+    let torsoDrop = breathY;
+
+    if (f.state === 'WALK_F') {
+      bodyTilt = dir * 0.10;
+      torsoDrop = Math.abs(Math.sin(t * 0.28)) * 4;
+    } else if (f.state === 'WALK_B') {
+      bodyTilt = -dir * 0.08;
+      torsoDrop = Math.abs(Math.sin(t * 0.25)) * 3;
+    } else if (f.state === 'DASH_F') {
+      bodyTilt = dir * 0.28;
+      torsoDrop = 8;
+    } else if (f.state === 'DASH_B') {
+      bodyTilt = -dir * 0.22;
+      torsoDrop = 6;
+    } else if (f.state === 'HITSTUN') {
+      bodyTilt = -dir * 0.26;
+      torsoDrop = 6;
+    } else if (f.state === 'BLOCKSTUN') {
+      bodyTilt = -dir * 0.12;
+      torsoDrop = 5;
+    } else if (f.state === 'KO') {
+      bodyTilt = -dir * 1.42; // Derribado en el césped
+      torsoDrop = h * 0.72;
+    } else if (f.state === 'ACTIVE' || f.state === 'STARTUP') {
+      const mvKey = f.activeMoveKey;
+      if (mvKey === 'HP' || mvKey === 'SK' || mvKey === 'SP_236' || mvKey === 'SUPER_1' || mvKey === 'ULT_3') {
+        bodyTilt = -dir * 0.16; // Inclinación de volea / cañonazo
+      } else if (mvKey === 'SP_623') {
+        bodyTilt = -dir * 0.45; // Chilena acrobática
+      } else {
+        bodyTilt = dir * 0.14;
+      }
+    }
+
+    const hipX = x;
+    const hipY = y - h * 0.42 + torsoDrop;
+    const shoulderX = hipX + Math.sin(bodyTilt) * (h * 0.42);
+    const shoulderY = hipY - Math.cos(bodyTilt) * (h * 0.42);
+    const neckX = shoulderX + Math.sin(bodyTilt) * 10;
+    const neckY = shoulderY - Math.cos(bodyTilt) * 10;
+    const headX = neckX + Math.sin(bodyTilt) * 14 + dir * 3;
+    const headY = neckY - Math.cos(bodyTilt) * 14;
+
+    // Coordenadas articuladas de Pierna Trasera y Pierna Delantera (Muslo -> Rodilla -> Botín)
+    let bKneeX = hipX - dir * 12;
+    let bKneeY = hipY + (y - hipY) * 0.52;
+    let bFootX = hipX - dir * 18;
+    let bFootY = y - 4;
+
+    let fKneeX = hipX + dir * 14;
+    let fKneeY = hipY + (y - hipY) * 0.50;
+    let fFootX = hipX + dir * 20;
+    let fFootY = y - 4;
+
+    // Coordenadas articuladas de Brazo Trasero y Brazo Delantero (Hombro -> Codo -> Puño)
+    let bElbowX = shoulderX - dir * 16;
+    let bElbowY = shoulderY + 22;
+    let bHandX = shoulderX - dir * 6;
+    let bHandY = shoulderY + 34;
+
+    let fElbowX = shoulderX + dir * 14;
+    let fElbowY = shoulderY + 20;
+    let fHandX = shoulderX + dir * 26;
+    let fHandY = shoulderY + 12 + breathY;
+
+    if (f.state === 'WALK_F' || f.state === 'WALK_B' || f.state === 'DASH_F') {
+      const cycle = Math.sin(t * (f.state === 'DASH_F' ? 0.55 : 0.30));
+      fKneeX = hipX + dir * 14 + cycle * 16;
+      fFootX = hipX + dir * 16 + cycle * 26;
+      fFootY = y - 4 - Math.max(0, cycle * 10);
+
+      bKneeX = hipX - dir * 10 - cycle * 16;
+      bFootX = hipX - dir * 14 - cycle * 24;
+      bFootY = y - 4 - Math.max(0, -cycle * 10);
+
+      fHandX = shoulderX + dir * 18 - cycle * 18;
+      bHandX = shoulderX - dir * 10 + cycle * 18;
+    } else if (f.state === 'BLOCKSTUN' || f.state === 'PARRY') {
+      // Guardia de brazos cruzados frente al pecho/rostro
+      fElbowX = shoulderX + dir * 18;
+      fElbowY = shoulderY + 10;
+      fHandX = shoulderX + dir * 22;
+      fHandY = shoulderY - 12;
+      bElbowX = shoulderX + dir * 10;
+      bElbowY = shoulderY + 16;
+      bHandX = shoulderX + dir * 16;
+      bHandY = shoulderY - 6;
+    } else if (f.state === 'HITSTUN') {
+      fHandX = shoulderX - dir * 18;
+      fHandY = shoulderY - 8;
+      bHandX = shoulderX - dir * 26;
+      bHandY = shoulderY + 6;
+      fFootX = hipX + dir * 26;
+    } else if (f.state === 'STARTUP' || f.state === 'ACTIVE') {
+      const isAct = f.state === 'ACTIVE';
+      const mvKey = f.activeMoveKey;
+      const ext = isAct ? 1.0 : 0.38;
+
+      if (mvKey === 'LP' || mvKey === 'SP_41236') {
+        // Toque rápido / Jab o Agarre extendido
+        fElbowX = shoulderX + dir * (22 * ext);
+        fElbowY = shoulderY + 4;
+        fHandX = shoulderX + dir * (58 * ext);
+        fHandY = shoulderY + 2;
+      } else if (mvKey === 'MP') {
+        // Cabezazo / Hombro o Rodillazo Medio
+        fKneeX = hipX + dir * (34 * ext);
+        fKneeY = hipY - 8 * ext;
+        fFootX = hipX + dir * (48 * ext);
+        fFootY = hipY + 16;
+      } else {
+        // Patada Fuerte / Disparo de Balón / Chilena / Ultimate
+        const kickHigh = (mvKey === 'SP_623' || mvKey === 'ULT_3') ? -58 : -26;
+        fKneeX = hipX + dir * (32 * ext);
+        fKneeY = hipY + kickHigh * 0.45 * ext;
+        fFootX = hipX + dir * (78 * ext);
+        fFootY = hipY + kickHigh * ext;
+
+        // Arco de Estela Cinética en la patada activa
+        if (isAct) {
+          ctx.save();
+          ctx.strokeStyle = isSfumato ? 'rgba(255, 226, 153, 0.72)' : 'rgba(0, 229, 255, 0.85)';
+          ctx.lineWidth = isSfumato ? 10 : 12;
+          ctx.lineCap = 'round';
+          ctx.beginPath();
+          ctx.arc(hipX, hipY, 74, dir > 0 ? -0.65 : Math.PI - 0.35, dir > 0 ? 0.35 : Math.PI + 0.65);
+          ctx.stroke();
+          ctx.restore();
+        }
+      }
+    }
+
+    // Función auxiliar para dibujar extremidades articuladas con estilo Sfumato o Street-Ink
+    const drawArticulatedLimb = (x1, y1, x2, y2, thickness, colorFill, colorOutline) => {
+      ctx.lineCap = 'round';
+      ctx.lineJoin = 'round';
+      // Contorno exterior
+      ctx.strokeStyle = colorOutline;
+      ctx.lineWidth = thickness + (isSfumato ? 3 : 5);
+      ctx.beginPath();
+      ctx.moveTo(x1, y1);
+      ctx.lineTo(x2, y2);
+      ctx.stroke();
+      // Relleno de la extremidad
+      ctx.strokeStyle = colorFill;
+      ctx.lineWidth = thickness;
+      ctx.beginPath();
+      ctx.moveTo(x1, y1);
+      ctx.lineTo(x2, y2);
+      ctx.stroke();
+    };
+
+    const outlineCol = isSfumato ? '#241509' : '#05070b';
+    const skinCol = isSfumato ? '#c98e5e' : '#f2c6a0';
+    const shortsCol = f.data.ColorSecondary || (isSfumato ? '#1d2d44' : '#101826');
+    const sockCol = f.data.ColorPrimary || '#f5c451';
+
+    // 3. Dibujar Pierna Trasera y Brazo Trasero
+    drawArticulatedLimb(hipX - dir * 6, hipY, bKneeX, bKneeY, 13, shortsCol, outlineCol);
+    drawArticulatedLimb(bKneeX, bKneeY, bFootX, bFootY, 10, sockCol, outlineCol);
+    // Botín trasero
+    ctx.fillStyle = '#141418';
+    ctx.fillRect(bFootX - 7, bFootY - 5, 16, 8);
+
+    drawArticulatedLimb(shoulderX - dir * 8, shoulderY + 4, bElbowX, bElbowY, 10, f.data.ColorPrimary, outlineCol);
+    drawArticulatedLimb(bElbowX, bElbowY, bHandX, bHandY, 8, skinCol, outlineCol);
+
+    // 4. Aura según estado (Parry, Invuln, Nivel 3)
     if (f.state === 'PARRY') {
       ctx.shadowColor = isSfumato ? '#ffe07d' : '#00e5ff';
       ctx.shadowBlur = 24;
@@ -2913,17 +3254,18 @@
       ctx.shadowBlur = 16;
     }
 
+    // 5. Torso Articulado (Camiseta Drapeada Renacentista vs Street-Ink con contornos nítidos)
+    ctx.save();
+    const midTorsoX = (hipX + shoulderX) * 0.5;
+    const midTorsoY = (hipY + shoulderY) * 0.5;
+    ctx.translate(midTorsoX, midTorsoY);
+    ctx.rotate(bodyTilt);
+
+    const tw = w * 0.78;
+    const th = h * 0.44;
+
     if (isSfumato) {
-      // Silueta Anatómica y Túnica / Camiseta Drapeada Renacentista (Chiaroscuro Ocre, Celeste y Oro)
-      const dir = f.facingRight ? 1 : -1;
-
-      // Piernas anatómicas con sombreado de óleo
-      ctx.fillStyle = '#8c5e3c';
-      ctx.fillRect(x - w * 0.34, y - h * 0.36, w * 0.26, h * 0.36);
-      ctx.fillRect(x + w * 0.08, y - h * 0.36, w * 0.26, h * 0.36);
-
-      // Torso con gradiente Chiaroscuro (Luz dorada frontal -> Sombra sepia profunda trasera)
-      const torsoGrad = ctx.createLinearGradient(x - dir * (w / 2), y - h, x + dir * (w / 2), y - h * 0.3);
+      const torsoGrad = ctx.createLinearGradient(-dir * (tw / 2), -th / 2, dir * (tw / 2), th / 2);
       if (f.state === 'HITSTUN') {
         torsoGrad.addColorStop(0, '#7a1c1c');
         torsoGrad.addColorStop(1, '#e06641');
@@ -2931,88 +3273,123 @@
         torsoGrad.addColorStop(0, '#594214');
         torsoGrad.addColorStop(1, '#f5c451');
       } else {
-        torsoGrad.addColorStop(0, '#1f160d');
+        torsoGrad.addColorStop(0, '#21160c');
         torsoGrad.addColorStop(0.45, f.data.ColorPrimary || '#c99738');
         torsoGrad.addColorStop(1, '#ffe599');
       }
-
       ctx.fillStyle = torsoGrad;
-      ctx.beginPath();
-      ctx.moveTo(x - w * 0.48, y - h * 0.96);
-      ctx.lineTo(x + w * 0.48, y - h * 0.96);
-      ctx.lineTo(x + w * 0.40, y - h * 0.34);
-      ctx.lineTo(x - w * 0.40, y - h * 0.34);
-      ctx.closePath();
-      ctx.fill();
       ctx.strokeStyle = '#d4af37';
-      ctx.lineWidth = 2;
-      ctx.stroke();
-      ctx.shadowBlur = 0;
-
-      // Pliegues de tela renacentista (Drapery folds) y banda heráldica celeste/ocre
-      ctx.fillStyle = f.data.ColorSecondary || '#6ba4c8';
-      ctx.beginPath();
-      ctx.moveTo(x - w * 0.42, y - h * 0.76);
-      ctx.lineTo(x + w * 0.42, y - h * 0.66);
-      ctx.lineTo(x + w * 0.40, y - h * 0.52);
-      ctx.lineTo(x - w * 0.40, y - h * 0.62);
-      ctx.closePath();
-      ctx.fill();
-
-      ctx.strokeStyle = 'rgba(28, 18, 8, 0.55)';
-      ctx.lineWidth = 1.5;
-      for (let fl = -1; fl <= 1; fl++) {
-        ctx.beginPath();
-        ctx.moveTo(x + fl * 12, y - h * 0.92);
-        ctx.quadraticCurveTo(x + fl * 16 + dir * 5, y - h * 0.62, x + fl * 10, y - h * 0.36);
-        ctx.stroke();
-      }
+      ctx.lineWidth = 2.2;
     } else {
-      // Modo Street-Ink AAA: Contornos de tinta negra nítidos y colores saturados
       ctx.fillStyle = f.state === 'HITSTUN' ? '#ff2a54' : (f.state === 'BLOCKSTUN' ? '#f5c451' : f.data.ColorPrimary);
       ctx.strokeStyle = '#05070b';
       ctx.lineWidth = 4;
-      ctx.fillRect(x - w / 2, y - h, w, h);
-      ctx.strokeRect(x - w / 2, y - h, w, h);
-      ctx.shadowBlur = 0;
-
-      // Rim light neón interior
-      ctx.strokeStyle = f.data.ColorSecondary || '#00e5ff';
-      ctx.lineWidth = 2;
-      ctx.strokeRect(x - w / 2 + 2, y - h + 2, w - 4, h - 4);
-
-      // Franja deportiva de la camiseta
-      ctx.fillStyle = f.data.ColorSecondary || '#06080d';
-      ctx.fillRect(x - w / 2 + 6, y - h + 34, w - 12, 22);
     }
 
-    // Cabeza e indicador de mirada
-    const headR = 16;
-    const lookOffset = f.facingRight ? 8 : -8;
+    // Trapecio anatómico del torso
+    ctx.beginPath();
+    ctx.moveTo(-tw * 0.54, -th * 0.5);
+    ctx.lineTo(tw * 0.54, -th * 0.5);
+    ctx.lineTo(tw * 0.42, th * 0.5);
+    ctx.lineTo(-tw * 0.42, th * 0.5);
+    ctx.closePath();
+    ctx.fill();
+    ctx.stroke();
+    ctx.shadowBlur = 0;
+
+    // Franja / Banda de Selección y Pliegues Drapeados (Sfumato) o Rim Light Neón (Street-Ink)
+    ctx.fillStyle = f.data.ColorSecondary || '#6ba4c8';
+    ctx.fillRect(-tw * 0.44, -th * 0.14, tw * 0.88, th * 0.28);
+
+    if (isSfumato) {
+      ctx.strokeStyle = 'rgba(28, 18, 8, 0.55)';
+      ctx.lineWidth = 1.4;
+      for (let fl = -1; fl <= 1; fl++) {
+        ctx.beginPath();
+        ctx.moveTo(fl * 9, -th * 0.44);
+        ctx.quadraticCurveTo(fl * 13 + dir * 4, 0, fl * 7, th * 0.44);
+        ctx.stroke();
+      }
+    } else {
+      ctx.strokeStyle = f.data.ColorSecondary || '#00e5ff';
+      ctx.lineWidth = 1.8;
+      ctx.strokeRect(-tw * 0.44, -th * 0.44, tw * 0.88, th * 0.88);
+    }
+    ctx.restore();
+
+    // 6. Dibujar Pierna Delantera (Pateadora) y Brazo Delantero
+    drawArticulatedLimb(hipX + dir * 6, hipY, fKneeX, fKneeY, 14, shortsCol, outlineCol);
+    drawArticulatedLimb(fKneeX, fKneeY, fFootX, fFootY, 11, sockCol, outlineCol);
+    // Botín delantero con tapones dorados
+    ctx.fillStyle = isSfumato ? '#2b190c' : '#11151f';
+    ctx.strokeStyle = '#f5c451';
+    ctx.lineWidth = 1.8;
+    ctx.fillRect(fFootX - 8, fFootY - 6, 18, 9);
+    ctx.strokeRect(fFootX - 8, fFootY - 6, 18, 9);
+
+    drawArticulatedLimb(shoulderX + dir * 8, shoulderY + 4, fElbowX, fElbowY, 11, f.data.ColorPrimary, outlineCol);
+    drawArticulatedLimb(fElbowX, fElbowY, fHandX, fHandY, 9, skinCol, outlineCol);
+
+    // 7. Cuello, Cabeza, Melena / Vincha o Halo Astrolabio para V.A.R.-ZERO
+    drawArticulatedLimb(shoulderX, shoulderY, neckX, neckY, 8, skinCol, outlineCol);
+
+    if (isBoss) {
+      // Halo Astrolabio Dorado Renacentista detrás de la cabeza de V.A.R.-ZERO
+      ctx.save();
+      ctx.strokeStyle = '#ffe07d';
+      ctx.lineWidth = 2.2;
+      ctx.beginPath();
+      ctx.arc(headX, headY, 26, 0, Math.PI * 2);
+      ctx.stroke();
+      ctx.beginPath();
+      ctx.arc(headX, headY, 20, t * 0.05, t * 0.05 + Math.PI * 1.3);
+      ctx.stroke();
+      ctx.restore();
+    }
+
+    const headR = 15.5;
     if (isSfumato) {
       const headGrad = ctx.createRadialGradient(
-        x + lookOffset * 0.6, y - h - headR + 2, 2,
-        x + lookOffset * 0.3, y - h - headR + 4, headR * 1.2
+        headX + dir * 4, headY - 3, 2,
+        headX, headY, headR * 1.25
       );
-      headGrad.addColorStop(0, '#ffe4b8');
-      headGrad.addColorStop(0.65, '#c68b59');
-      headGrad.addColorStop(1, '#3b2313');
+      headGrad.addColorStop(0, isBoss ? '#ffe299' : '#ffe4b8');
+      headGrad.addColorStop(0.65, isBoss ? '#9c732b' : '#c68b59');
+      headGrad.addColorStop(1, '#2d1a0c');
       ctx.fillStyle = headGrad;
     } else {
-      ctx.fillStyle = '#f5d0b5';
+      ctx.fillStyle = isBoss ? '#00e5ff' : '#f5d0b5';
     }
     ctx.beginPath();
-    ctx.arc(x + lookOffset * 0.4, y - h - headR + 4, headR, 0, Math.PI * 2);
+    ctx.arc(headX, headY, headR, 0, Math.PI * 2);
     ctx.fill();
-    ctx.strokeStyle = isSfumato ? '#2b190c' : '#06080d';
-    ctx.lineWidth = 2.2;
+    ctx.strokeStyle = outlineCol;
+    ctx.lineWidth = 2.4;
     ctx.stroke();
 
-    // Caja de Daño (Hitbox) cuando está en fase ACTIVE
+    // Cabello / Melena Afro Dorada (El Pibe) / Vincha Clásica
+    if (f.data.Name === 'PIBE_CO' || f.data.Name === 'LOCO_CO') {
+      ctx.fillStyle = f.data.Name === 'PIBE_CO' ? '#f5c451' : '#1b1b22';
+      for (let c = 0; c < 7; c++) {
+        const ang = Math.PI + (c / 6) * Math.PI;
+        ctx.beginPath();
+        ctx.arc(headX + Math.cos(ang) * 13, headY + Math.sin(ang) * 13 - 2, 7.5, 0, Math.PI * 2);
+        ctx.fill();
+      }
+    } else if (!isBoss) {
+      // Vincha deportiva con color secundario del país
+      ctx.strokeStyle = f.data.ColorSecondary || '#ffffff';
+      ctx.lineWidth = 3.5;
+      ctx.beginPath();
+      ctx.moveTo(headX - headR + 1, headY - 5);
+      ctx.lineTo(headX + headR - 1, headY - 5);
+      ctx.stroke();
+    }
+
+    // 8. Caja de Daño (Hitbox) cuando está en fase ACTIVE
     if (f.state === 'ACTIVE' && f.activeMoveKey) {
       const mv = T6_MOVES[f.activeMoveKey];
       if (mv && mv.range > 0 && mv.type !== 'PROJ') {
-        const dir = f.facingRight ? 1 : -1;
         const hbX = dir > 0 ? x + w / 2 - 5 : x - w / 2 - mv.range + 5;
         const hbW = mv.range;
         const hbY = y - h * 0.78;
@@ -3026,11 +3403,11 @@
       }
     }
 
-    // Etiqueta sobre el jugador
+    // 9. Etiqueta sobre el jugador
     ctx.fillStyle = isSfumato ? '#ffe599' : '#ffffff';
     ctx.font = isSfumato ? 'bold 11.5px Georgia, serif' : 'bold 11px Consolas, monospace';
     ctx.textAlign = 'center';
-    ctx.fillText(`${f.isP1 ? 'P1' : 'P2'}: ${f.data.DisplayName}`, x, y - h - 28);
+    ctx.fillText(`${f.isP1 ? 'P1' : 'P2'}: ${f.data.DisplayName}`, x, y - baseH - 28);
     ctx.textAlign = 'left';
   }
 
@@ -3853,6 +4230,12 @@
           t6SelArtStyle.value = params.art;
           t6State.artStyle = params.art;
         }
+      }
+      if (params.tourney === '1') {
+        t6State.tourneyMode = true;
+        t6State.tourneyRound = Math.max(1, Math.min(5, parseInt(params.round, 10) || 1));
+      } else {
+        t6State.tourneyMode = false;
       }
 
       if (isBossChallenge || parseInt(t6SelP2.value, 10) === ROSTER_DATA.length - 1) {

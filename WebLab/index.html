@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>LA COPA ETERNA: SANGRE Y POTRERO — AAA Command Center & Interactive Lab</title>
-  <link rel="stylesheet" href="styles.css?v=sfumato2" />
+  <link rel="stylesheet" href="styles.css?v=sfumato3" />
 </head>
 <body>
 
@@ -967,14 +967,19 @@
                 <option value="SFUMATO" selected>🖼️ Renacimiento Sfumato (Da Vinci / Mona Lisa)</option>
                 <option value="STREET_INK">⚡ Street-Ink AAA (Neón & Tinta)</option>
               </select>
+              <span class="telemetry-pill" id="t6-gamepad-status" style="padding:3px 8px; font-size:10.5px;">🎮 Gamepad: Esperando...</span>
+              <button class="btn btn-cyan btn-sm" id="t6-btn-input-display" title="Mostrar/Ocultar Historial de Inputs FGC en Vivo">📋 Input Display: ON</button>
               <button class="btn btn-gold btn-sm" id="t6-btn-restart">🔄 ¡Pitazo Inicial! (Reset)</button>
               <button class="btn btn-crimson btn-sm" id="t6-btn-demo-ko" title="Disparar K.O. Instantáneo para probar Pantalla de Victoria">🏆 Demo Victoria / K.O.</button>
             </div>
           </div>
 
-          <!-- Canvas Jugable 1v1 a 60 FPS + Overlay Post-Partido de Victoria / K.O. -->
+          <!-- Canvas Jugable 1v1 a 60 FPS + Input History FGC + Overlay Post-Partido de Victoria / K.O. -->
           <div class="canvas-wrap" style="border-color:var(--gold); position:relative;">
             <canvas id="t6-canvas" width="1080" height="460"></canvas>
+
+            <!-- Columna de Historial de Inputs FGC en Tiempo Real (Últimos 10 comandos) -->
+            <div class="t6-input-history" id="t6-input-history"></div>
 
             <!-- AAA Post-Match Victory / K.O. Overlay -->
             <div class="t6-victory-overlay" id="t6-victory-overlay" style="display:none;">
@@ -1021,6 +1026,7 @@
                 </div>
 
                 <div class="t6-vic-actions">
+                  <a href="tournament.html" class="btn btn-gold" id="t6-btn-tourney-next" style="display:none; text-decoration:none; box-shadow:0 0 18px rgba(245,196,81,0.6);">🏆 Volver a la Llave Copa Eterna →</a>
                   <button class="btn btn-gold" id="t6-btn-rematch">⚔️ Revancha Inmediata (Rematch)</button>
                   <a href="character-select.html" class="btn btn-turf" style="text-decoration:none;">👥 Cambiar Leyendas (16+1)</a>
                   <a href="main-menu.html" class="btn btn-cyan" style="text-decoration:none;">🏛️ Menú Principal</a>

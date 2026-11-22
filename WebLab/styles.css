@@ -1073,4 +1073,67 @@ canvas {
   flex-wrap: wrap;
 }
 
+/* ============================================================================
+   TAB 06: LIVE FGC INPUT HISTORY OVERLAY (ÚLTIMOS 10 COMANDOS)
+   ============================================================================ */
+.t6-input-history {
+  position: absolute;
+  top: 72px;
+  left: 12px;
+  z-index: 25;
+  width: 148px;
+  background: rgba(8, 11, 18, 0.76);
+  border: 1px solid rgba(245, 196, 81, 0.35);
+  border-radius: 7px;
+  padding: 6px 8px;
+  pointer-events: none;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  font-family: var(--font-mono);
+  font-size: 10.5px;
+  backdrop-filter: blur(3px);
+}
+
+.t6-ih-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 2px 4px;
+  border-radius: 4px;
+  background: rgba(255, 255, 255, 0.03);
+}
+
+.t6-ih-row:first-child {
+  background: rgba(245, 196, 81, 0.16);
+  border-left: 2px solid var(--gold);
+}
+
+.t6-ih-dir {
+  font-weight: 900;
+  color: var(--cyan);
+  min-width: 24px;
+}
+
+.t6-ih-btn {
+  padding: 1px 5px;
+  border-radius: 3px;
+  font-weight: 800;
+  font-size: 9.5px;
+  color: #06080d;
+}
+
+.t6-ih-btn.b-LP { background: #00e5ff; }
+.t6-ih-btn.b-MP { background: #f5c451; }
+.t6-ih-btn.b-HP { background: #ff2a54; color: #fff; }
+.t6-ih-btn.b-SK { background: #00e676; }
+.t6-ih-btn.b-GB { background: #b388ff; }
+.t6-ih-btn.b-SP { background: linear-gradient(90deg, #f5c451, #ff2a54); color: #fff; }
+
+.t6-ih-frames {
+  color: var(--text-muted);
+  font-size: 9.5px;
+}
+
+
 

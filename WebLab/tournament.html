@@ -1,0 +1,1527 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>LA COPA ETERNA — Modo Torneo / Escalera Arcade CONMEBOL (5 Rondas)</title>
+  <link rel="stylesheet" href="styles.css" />
+  <style>
+    :root {
+      --sfumato-gold: #d4a347;
+      --sfumato-gold-bright: #ffe299;
+      --sfumato-crimson: #9e2222;
+      --sfumato-crimson-bright: #e03a3a;
+      --sfumato-emerald: #00c864;
+      --sfumato-azure: #38b6ff;
+      --sfumato-wood: #1c120a;
+      --sfumato-panel: rgba(20, 14, 9, 0.91);
+      --sfumato-panel-soft: rgba(28, 19, 12, 0.78);
+      --sfumato-border: rgba(212, 163, 71, 0.55);
+      --font-display: 'Georgia', 'Times New Roman', serif;
+    }
+
+    body.theme-street-ink {
+      --sfumato-gold: #00e5ff;
+      --sfumato-gold-bright: #00e676;
+      --sfumato-crimson: #ff2a54;
+      --sfumato-crimson-bright: #ff5c7c;
+      --sfumato-wood: #060911;
+      --sfumato-panel: rgba(10, 15, 25, 0.92);
+      --sfumato-panel-soft: rgba(15, 23, 38, 0.82);
+      --sfumato-border: rgba(0, 229, 255, 0.55);
+      --font-display: 'Segoe UI', system-ui, sans-serif;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      padding: 0;
+      min-height: 100vh;
+      overflow-x: hidden;
+      background-color: #0b0704;
+      color: #f5ebd7;
+      font-family: var(--font-ui);
+      position: relative;
+      user-select: none;
+    }
+
+    /* Fondo Chiaroscuro Renacentista + Lienzo al Óleo + Brasas */
+    .hero-bg {
+      position: fixed;
+      inset: 0;
+      background-image: url('../Assets/ConceptArt/Stage_MaracanaBombonera_Concept.jpg');
+      background-size: cover;
+      background-position: center;
+      filter: sepia(0.45) contrast(1.16) brightness(0.32);
+      transform: scale(1.03);
+      transition: filter 0.45s ease;
+      z-index: 0;
+    }
+
+    body.theme-street-ink .hero-bg {
+      filter: saturate(1.35) contrast(1.22) brightness(0.28);
+    }
+
+    .chiaroscuro-vignette {
+      position: fixed;
+      inset: 0;
+      background:
+        radial-gradient(circle at 50% 25%, rgba(212, 163, 71, 0.16) 0%, rgba(14, 9, 5, 0.88) 68%, rgba(6, 4, 2, 0.97) 100%),
+        linear-gradient(180deg, rgba(12, 8, 4, 0.88) 0%, rgba(18, 12, 6, 0.65) 50%, rgba(10, 6, 3, 0.94) 100%);
+      pointer-events: none;
+      z-index: 1;
+    }
+
+    .canvas-grain {
+      position: fixed;
+      inset: 0;
+      background-image:
+        repeating-linear-gradient(0deg, rgba(255, 225, 160, 0.018) 0px, rgba(255, 225, 160, 0.018) 1px, transparent 1px, transparent 3px),
+        repeating-linear-gradient(90deg, rgba(255, 225, 160, 0.015) 0px, rgba(255, 225, 160, 0.015) 1px, transparent 1px, transparent 4px);
+      pointer-events: none;
+      z-index: 2;
+    }
+
+    #embers-canvas {
+      position: fixed;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: 3;
+    }
+
+    /* Barra Superior */
+    .tourney-topbar {
+      position: relative;
+      z-index: 10;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 13px 28px;
+      background: linear-gradient(180deg, rgba(15, 10, 6, 0.96) 0%, rgba(15, 10, 6, 0.65) 100%);
+      border-bottom: 1px solid var(--sfumato-border);
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+
+    .crest-badge {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .crest-medallion {
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      background: radial-gradient(circle, #ffe299 0%, #b8860b 70%, #4a3000 100%);
+      border: 2px solid #fff0c2;
+      box-shadow: 0 0 18px rgba(212, 163, 71, 0.65);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 20px;
+      color: #1a0f05;
+    }
+
+    /* Contenedor Principal */
+    .tourney-container {
+      position: relative;
+      z-index: 10;
+      max-width: 1580px;
+      margin: 0 auto;
+      padding: 20px 26px 46px;
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    /* Banner de Notificación Post-Partido */
+    .match-toast {
+      display: none;
+      align-items: center;
+      justify-content: space-between;
+      gap: 14px;
+      padding: 13px 18px;
+      border-radius: 10px;
+      background: linear-gradient(90deg, rgba(0, 200, 100, 0.16), rgba(20, 14, 9, 0.94));
+      border: 1.5px solid var(--sfumato-emerald);
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.7);
+      font-size: 0.92rem;
+      flex-wrap: wrap;
+    }
+
+    .match-toast.show {
+      display: flex;
+    }
+
+    .match-toast.defeat {
+      background: linear-gradient(90deg, rgba(158, 34, 34, 0.25), rgba(20, 14, 9, 0.94));
+      border-color: var(--sfumato-crimson-bright);
+    }
+
+    /* Banner de Campeón de La Copa Eterna */
+    .champion-banner {
+      display: none;
+      position: relative;
+      overflow: hidden;
+      border-radius: 14px;
+      border: 3px solid var(--sfumato-gold-bright);
+      background:
+        radial-gradient(circle at 50% 0%, rgba(255, 226, 153, 0.28) 0%, rgba(24, 15, 7, 0.96) 65%);
+      padding: 26px 30px;
+      text-align: center;
+      box-shadow: 0 0 60px rgba(212, 163, 71, 0.45), 0 20px 55px rgba(0, 0, 0, 0.9);
+      animation: fadeInScale 0.45s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    .champion-banner.show {
+      display: block;
+    }
+
+    @keyframes fadeInScale {
+      from { opacity: 0; transform: scale(0.96) translateY(-10px); }
+      to { opacity: 1; transform: scale(1) translateY(0); }
+    }
+
+    .champion-banner h2 {
+      margin: 6px 0 8px;
+      font-family: var(--font-display);
+      font-size: 2.25rem;
+      font-weight: 900;
+      letter-spacing: 2px;
+      color: var(--sfumato-gold-bright);
+      text-shadow: 0 0 26px rgba(255, 206, 84, 0.75), 0 4px 14px rgba(0, 0, 0, 0.95);
+    }
+
+    .champion-banner p {
+      margin: 0 auto 16px;
+      max-width: 780px;
+      color: #e6d6bc;
+      font-size: 0.98rem;
+    }
+
+    /* Panel de Configuración: Elegir Leyenda + Semilla Xorshift32 + Estadísticas del Run */
+    .setup-grid {
+      display: grid;
+      grid-template-columns: 370px 1fr;
+      gap: 20px;
+      align-items: stretch;
+    }
+
+    @media (max-width: 1080px) {
+      .setup-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .sfumato-card {
+      background: var(--sfumato-panel);
+      border: 1.5px solid var(--sfumato-border);
+      border-radius: 12px;
+      padding: 18px 20px;
+      box-shadow: 0 16px 44px rgba(0, 0, 0, 0.82), inset 0 0 24px rgba(212, 163, 71, 0.08);
+    }
+
+    .section-kicker {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      font-weight: 800;
+      letter-spacing: 1.1px;
+      text-transform: uppercase;
+      color: var(--sfumato-gold-bright);
+      margin-bottom: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+    }
+
+    /* Tarjeta del Retador (P1) */
+    .challenger-card {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .challenger-portrait-wrap {
+      display: flex;
+      gap: 14px;
+      align-items: center;
+    }
+
+    .portrait-mini {
+      width: 96px;
+      height: 110px;
+      flex-shrink: 0;
+      border-radius: 9px;
+      border: 2px solid var(--sfumato-gold-bright);
+      background-color: #120b06;
+      background-repeat: no-repeat;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.8), inset 0 0 18px rgba(0, 0, 0, 0.7);
+    }
+
+    .challenger-meta h2 {
+      margin: 0 0 3px;
+      font-family: var(--font-display);
+      font-size: 1.45rem;
+      color: #fff6e0;
+    }
+
+    .challenger-meta .sub {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      color: var(--sfumato-gold-bright);
+    }
+
+    .challenger-select {
+      width: 100%;
+      background: rgba(12, 8, 5, 0.92);
+      color: #fff6e0;
+      border: 1px solid var(--sfumato-border);
+      border-radius: 7px;
+      padding: 9px 11px;
+      font-family: var(--font-ui);
+      font-size: 0.9rem;
+      font-weight: 700;
+      cursor: pointer;
+    }
+
+    .challenger-select:focus {
+      outline: none;
+      border-color: var(--sfumato-gold-bright);
+    }
+
+    /* Control de Semilla Xorshift32 y Telemetría del Run */
+    .seed-panel {
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      gap: 14px;
+    }
+
+    .seed-controls-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .seed-input {
+      background: rgba(12, 8, 5, 0.92);
+      color: var(--sfumato-gold-bright);
+      border: 1.5px solid var(--sfumato-border);
+      border-radius: 7px;
+      padding: 9px 12px;
+      font-family: var(--font-mono);
+      font-size: 0.95rem;
+      font-weight: 800;
+      width: 175px;
+      letter-spacing: 0.8px;
+    }
+
+    .seed-input:focus {
+      outline: none;
+      border-color: var(--sfumato-gold-bright);
+      box-shadow: 0 0 12px rgba(212, 163, 71, 0.35);
+    }
+
+    .run-stats-strip {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 10px;
+    }
+
+    @media (max-width: 720px) {
+      .run-stats-strip {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+
+    .run-stat-box {
+      background: rgba(12, 8, 5, 0.7);
+      border: 1px solid rgba(212, 163, 71, 0.25);
+      border-radius: 8px;
+      padding: 10px 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 3px;
+    }
+
+    .run-stat-box .lbl {
+      font-family: var(--font-mono);
+      font-size: 10px;
+      color: #bcae96;
+      text-transform: uppercase;
+    }
+
+    .run-stat-box .val {
+      font-family: var(--font-display);
+      font-size: 1.18rem;
+      font-weight: 900;
+      color: var(--sfumato-gold-bright);
+    }
+
+    /* Secret Boss Phase 2 Badge */
+    .secret-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 7px 13px;
+      border-radius: 999px;
+      font-family: var(--font-mono);
+      font-size: 11.5px;
+      font-weight: 800;
+      border: 1px solid rgba(212, 163, 71, 0.38);
+      background: rgba(16, 10, 6, 0.85);
+      color: #c9b89e;
+      transition: all 0.25s ease;
+    }
+
+    .secret-badge.unlocked {
+      border-color: #ff4769;
+      background: linear-gradient(90deg, rgba(158, 34, 34, 0.52), rgba(212, 163, 71, 0.28));
+      color: #ffe299;
+      box-shadow: 0 0 20px rgba(224, 58, 58, 0.55);
+      animation: pulseGlow 2.1s infinite ease-in-out;
+    }
+
+    @keyframes pulseGlow {
+      0%, 100% { box-shadow: 0 0 14px rgba(224, 58, 58, 0.45); }
+      50% { box-shadow: 0 0 28px rgba(255, 210, 100, 0.75); }
+    }
+
+    /* Escalera de 5 Rondas CONMEBOL */
+    .ladder-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-end;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin-bottom: 4px;
+    }
+
+    .ladder-header h1 {
+      margin: 0;
+      font-family: var(--font-display);
+      font-size: 1.9rem;
+      font-weight: 900;
+      letter-spacing: 1.2px;
+      color: var(--sfumato-gold-bright);
+      text-shadow: 0 3px 16px rgba(0, 0, 0, 0.9);
+    }
+
+    .ladder-grid {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 14px;
+      position: relative;
+    }
+
+    @media (max-width: 1260px) {
+      .ladder-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+
+    @media (max-width: 680px) {
+      .ladder-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .round-card {
+      position: relative;
+      background: var(--sfumato-panel);
+      border: 1.5px solid rgba(212, 163, 71, 0.32);
+      border-radius: 12px;
+      padding: 14px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      transition: transform 0.22s ease, border-color 0.22s ease, box-shadow 0.22s ease;
+      box-shadow: 0 12px 32px rgba(0, 0, 0, 0.75);
+      overflow: hidden;
+    }
+
+    .round-card.state-locked {
+      opacity: 0.62;
+      filter: saturate(0.7);
+    }
+
+    .round-card.state-current {
+      border: 2px solid var(--sfumato-gold-bright);
+      transform: translateY(-4px);
+      box-shadow: 0 18px 42px rgba(0, 0, 0, 0.9), 0 0 28px rgba(212, 163, 71, 0.4);
+    }
+
+    .round-card.state-won {
+      border-color: var(--sfumato-emerald);
+      box-shadow: 0 12px 32px rgba(0, 0, 0, 0.8), inset 0 0 22px rgba(0, 200, 100, 0.14);
+    }
+
+    .round-card.state-lost {
+      border-color: var(--sfumato-crimson-bright);
+      box-shadow: 0 12px 32px rgba(0, 0, 0, 0.85), inset 0 0 22px rgba(224, 58, 58, 0.2);
+    }
+
+    .round-card.is-boss {
+      border-color: rgba(224, 58, 58, 0.72);
+      background: linear-gradient(180deg, rgba(38, 12, 12, 0.92) 0%, rgba(16, 10, 8, 0.95) 100%);
+    }
+
+    .round-card.is-boss.state-current {
+      border-color: #ff4769;
+      box-shadow: 0 18px 46px rgba(0, 0, 0, 0.92), 0 0 34px rgba(224, 58, 58, 0.55);
+    }
+
+    .round-top-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .round-num-pill {
+      font-family: var(--font-mono);
+      font-size: 10.5px;
+      font-weight: 800;
+      padding: 3px 8px;
+      border-radius: 4px;
+      background: rgba(212, 163, 71, 0.16);
+      border: 1px solid var(--sfumato-border);
+      color: var(--sfumato-gold-bright);
+    }
+
+    .round-card.is-boss .round-num-pill {
+      background: rgba(224, 58, 58, 0.26);
+      border-color: #ff5c7c;
+      color: #ffd5dc;
+    }
+
+    .rivalry-tag {
+      font-family: var(--font-mono);
+      font-size: 9.5px;
+      font-weight: 800;
+      padding: 2px 6px;
+      border-radius: 4px;
+      background: rgba(158, 34, 34, 0.5);
+      border: 1px solid #ff7a7a;
+      color: #ffe299;
+    }
+
+    .round-title {
+      font-family: var(--font-display);
+      font-size: 1.04rem;
+      font-weight: 900;
+      color: #fff6e0;
+      line-height: 1.2;
+      min-height: 2.4em;
+    }
+
+    .opp-portrait {
+      width: 100%;
+      height: 158px;
+      border-radius: 8px;
+      border: 1.5px solid var(--sfumato-border);
+      background-color: #120b06;
+      background-repeat: no-repeat;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .opp-portrait::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(180deg, transparent 42%, rgba(10, 6, 3, 0.94) 100%);
+      pointer-events: none;
+    }
+
+    .opp-portrait-caption {
+      position: absolute;
+      left: 10px;
+      right: 10px;
+      bottom: 8px;
+      z-index: 2;
+    }
+
+    .opp-portrait-caption .opp-name {
+      font-family: var(--font-display);
+      font-size: 1.15rem;
+      font-weight: 900;
+      color: #ffffff;
+      text-shadow: 0 2px 8px rgba(0, 0, 0, 0.95);
+    }
+
+    .opp-portrait-caption .opp-country {
+      font-family: var(--font-mono);
+      font-size: 10px;
+      color: var(--sfumato-gold-bright);
+    }
+
+    .round-stage-line {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      color: #cbbba2;
+      background: rgba(10, 7, 4, 0.65);
+      border: 1px solid rgba(212, 163, 71, 0.18);
+      border-radius: 6px;
+      padding: 6px 8px;
+    }
+
+    .round-status-badge {
+      margin-top: auto;
+      padding: 7px 10px;
+      border-radius: 6px;
+      font-family: var(--font-mono);
+      font-size: 11.5px;
+      font-weight: 800;
+      text-align: center;
+      background: rgba(12, 8, 5, 0.8);
+      border: 1px solid rgba(255, 255, 255, 0.14);
+      color: #bba992;
+    }
+
+    .round-status-badge.won {
+      background: rgba(0, 200, 100, 0.16);
+      border-color: var(--sfumato-emerald);
+      color: #7dffb8;
+    }
+
+    .round-status-badge.current {
+      background: rgba(212, 163, 71, 0.2);
+      border-color: var(--sfumato-gold-bright);
+      color: var(--sfumato-gold-bright);
+    }
+
+    .round-status-badge.lost {
+      background: rgba(224, 58, 58, 0.22);
+      border-color: #ff5c7c;
+      color: #ffadb9;
+    }
+
+    .round-telemetry-mini {
+      font-family: var(--font-mono);
+      font-size: 10px;
+      color: #b7a68e;
+      text-align: center;
+    }
+
+    /* Barra de Acción Principal */
+    .action-dock {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      flex-wrap: wrap;
+      background: linear-gradient(90deg, rgba(28, 17, 10, 0.95), rgba(18, 12, 7, 0.94));
+      border: 2px solid var(--sfumato-gold);
+      border-radius: 12px;
+      padding: 18px 22px;
+      box-shadow: 0 18px 48px rgba(0, 0, 0, 0.88), 0 0 28px rgba(212, 163, 71, 0.2);
+    }
+
+    .action-dock-info h3 {
+      margin: 0 0 4px;
+      font-family: var(--font-display);
+      font-size: 1.32rem;
+      color: var(--sfumato-gold-bright);
+    }
+
+    .action-dock-info p {
+      margin: 0;
+      font-size: 0.88rem;
+      color: #d6c5ad;
+      font-family: var(--font-mono);
+    }
+
+    .btn-play-round {
+      background: linear-gradient(135deg, #d4a347 0%, #9e2222 100%);
+      color: #fffaf0;
+      border: 2px solid #ffe299;
+      border-radius: 10px;
+      padding: 14px 26px;
+      font-family: var(--font-display);
+      font-size: 1.08rem;
+      font-weight: 900;
+      letter-spacing: 0.8px;
+      cursor: pointer;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.75), 0 0 24px rgba(212, 163, 71, 0.45);
+      transition: transform 0.16s ease, box-shadow 0.16s ease, filter 0.16s ease;
+    }
+
+    .btn-play-round:hover:not(:disabled) {
+      transform: translateY(-2px) scale(1.02);
+      box-shadow: 0 14px 36px rgba(0, 0, 0, 0.85), 0 0 34px rgba(255, 226, 153, 0.7);
+      filter: brightness(1.08);
+    }
+
+    .btn-play-round:disabled {
+      opacity: 0.45;
+      cursor: not-allowed;
+    }
+
+    body.theme-street-ink .btn-play-round {
+      background: linear-gradient(135deg, #00e5ff 0%, #ff2a54 100%);
+      border-color: #00e676;
+      color: #060911;
+    }
+
+    .sim-controls {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .rank-pill-s { color: #ffe299; font-weight: 900; }
+    .rank-pill-a { color: #00e676; font-weight: 900; }
+    .rank-pill-b { color: #38b6ff; font-weight: 900; }
+    .rank-pill-c { color: #c7b49b; font-weight: 900; }
+  </style>
+</head>
+<body>
+
+  <div class="hero-bg"></div>
+  <div class="chiaroscuro-vignette"></div>
+  <div class="canvas-grain"></div>
+  <canvas id="embers-canvas"></canvas>
+
+  <!-- ========================================================================
+       BARRA SUPERIOR DE NAVEGACIÓN Y ESTILO VISUAL
+       ======================================================================== -->
+  <header class="tourney-topbar">
+    <div class="crest-badge">
+      <div class="crest-medallion">🏆</div>
+      <div>
+        <div style="font-family:var(--font-display); font-weight:900; font-size:15px; color:var(--sfumato-gold-bright); letter-spacing:1px;">
+          MODO TORNEO — LA COPA ETERNA (5 RONDAS CONMEBOL)
+        </div>
+        <div style="font-family:var(--font-mono); font-size:11px; color:#b8a68e;">
+          Espejo Web de CopaEternaArcadeLadder.cpp • Xorshift32 Determinista • Q32.32 Rank Evaluator
+        </div>
+      </div>
+    </div>
+
+    <div class="btn-group" style="align-items:center; flex-wrap:wrap;">
+      <button class="btn btn-gold btn-sm" id="btn-theme-toggle">
+        🖼️ Estilo: Renacimiento Sfumato
+      </button>
+      <a href="main-menu.html" class="btn btn-cyan btn-sm" style="text-decoration:none;">
+        🏛️ Menú Principal
+      </a>
+      <a href="character-select.html" class="btn btn-turf btn-sm" style="text-decoration:none;">
+        👥 Selección de Leyendas
+      </a>
+      <a href="art-gallery.html" class="btn btn-crimson btn-sm" style="text-decoration:none;">
+        🎨 Galería de Arte AAA
+      </a>
+    </div>
+  </header>
+
+  <main class="tourney-container">
+
+    <!-- Notificación Post-Partido desde TAB 06 -->
+    <div class="match-toast" id="match-toast">
+      <div id="match-toast-text"></div>
+      <button class="btn btn-sm btn-gold" id="btn-dismiss-toast">Entendido</button>
+    </div>
+
+    <!-- Banner de Campeón (Al ganar Ronda 5: V.A.R.-ZERO) -->
+    <section class="champion-banner" id="champion-banner">
+      <div style="font-family:var(--font-mono); font-size:12px; color:#ffe299; letter-spacing:2px; font-weight:800;">
+        ✦ GLORIA ETERNA SUDAMERICANA • INVICTO EN EL POTRERO ✦
+      </div>
+      <h2>🏆 CAMPEÓN DE LA COPA ETERNA 🏆</h2>
+      <p id="champion-summary-text">
+        Has conquistado las 5 rondas deterministas de la CONMEBOL y doblegado al Juez Supremo (V.A.R.-ZERO).
+      </p>
+      <div class="btn-group" style="justify-content:center;">
+        <button class="btn btn-gold" id="btn-new-cup-from-banner">
+          🔄 Iniciar Nueva Copa Eterna
+        </button>
+        <a href="art-gallery.html" class="btn btn-cyan" style="text-decoration:none;">
+          🎨 Ver Colección Renacentista
+        </a>
+      </div>
+    </section>
+
+    <!-- Panel Superior: Retador P1 + Semilla Xorshift32 + Progreso del Torneo -->
+    <section class="setup-grid">
+      <!-- Izquierda: Leyenda Seleccionada -->
+      <div class="sfumato-card challenger-card">
+        <div class="section-kicker">
+          <span>⚔️ TU LEYENDA RETADORA (P1)</span>
+          <span id="p1-code-tag" style="color:var(--sfumato-emerald);">FENOMENO_BR</span>
+        </div>
+
+        <div class="challenger-portrait-wrap">
+          <div class="portrait-mini" id="p1-portrait-mini"></div>
+          <div class="challenger-meta">
+            <h2 id="p1-name-display">O Fenômeno</h2>
+            <div class="sub" id="p1-country-display">Brasil 🇧🇷 • Rushdown Explosivo</div>
+            <div style="font-size:0.78rem; color:#cbbba2; margin-top:6px;" id="p1-rival-hint">
+              Rival Canónico en Gran Final: El Cañón (Argentina 🇦🇷)
+            </div>
+          </div>
+        </div>
+
+        <label for="sel-player-fighter" style="font-family:var(--font-mono); font-size:10.5px; color:#cbbba2;">
+          Cambiar Leyenda CONMEBOL (regenera la llave con la semilla activa):
+        </label>
+        <select id="sel-player-fighter" class="challenger-select"></select>
+      </div>
+
+      <!-- Derecha: Semilla Determinista Xorshift32 & Estado del Run -->
+      <div class="sfumato-card seed-panel">
+        <div>
+          <div class="section-kicker">
+            <span>🎲 GENERADOR DETERMINISTA XORSHIFT32 (COPAETERNAARCADELADDER.CPP)</span>
+            <span class="secret-badge" id="secret-boss-badge">
+              🔒 Fase 2 Secreta V.A.R.-ZERO: Llega Invicto o con Rango S en la Final
+            </span>
+          </div>
+
+          <div class="seed-controls-row">
+            <label for="seed-input" style="font-family:var(--font-mono); font-size:12px; color:#d6c5ad; font-weight:700;">
+              Semilla uint32:
+            </label>
+            <input type="number" id="seed-input" class="seed-input" min="1" max="4294967295" value="19301950" />
+            <button class="btn btn-gold btn-sm" id="btn-apply-seed">⚙️ Generar Llave</button>
+            <button class="btn btn-cyan btn-sm" id="btn-random-seed">🎲 Semilla Aleatoria</button>
+            <button class="btn btn-crimson btn-sm" id="btn-reset-tourney">🔄 Reiniciar Torneo</button>
+          </div>
+        </div>
+
+        <div class="run-stats-strip">
+          <div class="run-stat-box">
+            <span class="lbl">Ronda Actual</span>
+            <span class="val" id="stat-current-round">1 / 5</span>
+          </div>
+          <div class="run-stat-box">
+            <span class="lbl">Rondas Perdidas</span>
+            <span class="val" id="stat-rounds-lost">0</span>
+          </div>
+          <div class="run-stat-box">
+            <span class="lbl">Rangos S Logrados</span>
+            <span class="val" id="stat-rank-s-count">0</span>
+          </div>
+          <div class="run-stat-box">
+            <span class="lbl">Continues Usados</span>
+            <span class="val" id="stat-continues">0</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Llave de 5 Rondas -->
+    <section>
+      <div class="ladder-header">
+        <div>
+          <h1>ESCALERA OFICIAL DE LA COPA ETERNA</h1>
+          <div style="font-family:var(--font-mono); font-size:11.5px; color:#cbbba2;">
+            Octavos ➔ Cuartos ➔ Semifinal CONMEBOL ➔ Gran Final Sudamericana (Rival Canónico) ➔ Desafío Supremo: V.A.R.-ZERO
+          </div>
+        </div>
+        <div style="font-family:var(--font-mono); font-size:11px; color:var(--sfumato-gold-bright);" id="ladder-seed-label">
+          Seed Activa: #19301950 • Persistencia: localStorage (copaEternaTournament)
+        </div>
+      </div>
+
+      <div class="ladder-grid" id="ladder-grid">
+        <!-- 5 Tarjetas generadas por Xorshift32 -->
+      </div>
+    </section>
+
+    <!-- Dock de Acción Principal -->
+    <section class="action-dock">
+      <div class="action-dock-info">
+        <h3 id="dock-matchup-title">Ronda 1 — Octavos de Final: O Fenômeno vs ...</h3>
+        <p id="dock-matchup-meta">Sede: ... • Modo Visual: Renacimiento Sfumato</p>
+      </div>
+
+      <div class="sim-controls">
+        <button class="btn-play-round" id="btn-play-current">
+          ⚔️ JUGAR RONDA ACTUAL (60 FPS)
+        </button>
+        <button class="btn btn-turf" id="btn-simulate-win" title="Avanza instantáneamente la ronda actual con telemetría determinista de prueba">
+          ⚡ Simular Victoria Ronda Actual
+        </button>
+      </div>
+    </section>
+
+  </main>
+
+  <script>
+    (() => {
+      'use strict';
+
+      // ========================================================================
+      // 1. CATÁLOGO EXACTO 16 LEYENDAS + BOSS FINAL (Índices 0..16) Y 10 ESTADIOS (0..9)
+      //    Idéntico a WebLab/character-select.html y CopaEternaArcadeLadder.cpp
+      // ========================================================================
+      const FIGHTERS = [
+        { idx: 0,  Name: 'FENOMENO_BR',   DisplayName: 'O Fenômeno',                 Country: 'Brasil 🇧🇷',     Archetype: 'Rushdown Explosivo',        ArtSheet: '../Assets/ConceptArt/VSScreen_Brasil_vs_Argentina_Renaissance.jpg', BgSize: '210% auto', BgPos: '12% 24%' },
+        { idx: 1,  Name: 'BRUXO_BR',      DisplayName: 'O Bruxo',                    Country: 'Brasil 🇧🇷',     Archetype: 'Trickster / Mix-up',        ArtSheet: '../Assets/ConceptArt/LaCopaEterna_KeyArt_RosterClash.jpg',          BgSize: '220% auto', BgPos: '24% 25%' },
+        { idx: 2,  Name: 'CANON_AR',      DisplayName: 'El Cañón',                   Country: 'Argentina 🇦🇷',  Archetype: 'Power Shoto',               ArtSheet: '../Assets/ConceptArt/CharacterSelect_PortraitSheet_CONMEBOL.jpg',   BgSize: '310% auto', BgPos: '84% 22%' },
+        { idx: 3,  Name: 'PULGA_AR',      DisplayName: 'La Pulga',                   Country: 'Argentina 🇦🇷',  Archetype: 'Pixie / Footsies',          ArtSheet: '../Assets/ConceptArt/VSScreen_Brasil_vs_Argentina_Renaissance.jpg', BgSize: '210% auto', BgPos: '88% 24%' },
+        { idx: 4,  Name: 'PIBE_CO',       DisplayName: 'El Pibe',                    Country: 'Colombia 🇨🇴',   Archetype: 'Setplay Zoner',             ArtSheet: '../Assets/ConceptArt/CharacterSelect_PortraitSheet_CONMEBOL.jpg',   BgSize: '310% auto', BgPos: '14% 22%' },
+        { idx: 5,  Name: 'LOCO_CO',       DisplayName: 'El Loco',                    Country: 'Colombia 🇨🇴',   Archetype: 'Counter-Acrobat',           ArtSheet: '../Assets/ConceptArt/CharacterSelect_PortraitSheet_CONMEBOL.jpg',   BgSize: '310% auto', BgPos: '48% 22%' },
+        { idx: 6,  Name: 'PISTOLERO_UY',  DisplayName: 'El Pistolero',               Country: 'Uruguay 🇺🇾',    Archetype: 'Hybrid Grappler',           ArtSheet: '../Assets/ConceptArt/CharacterSelect_PortraitSheet_CONMEBOL.jpg',   BgSize: '310% auto', BgPos: '25% 78%' },
+        { idx: 7,  Name: 'MATADOR_UY',    DisplayName: 'El Matador',                 Country: 'Uruguay 🇺🇾',    Archetype: 'Long-Range Hybrid',         ArtSheet: '../Assets/ConceptArt/LaCopaEterna_KeyArt_RosterClash.jpg',          BgSize: '220% auto', BgPos: '78% 28%' },
+        { idx: 8,  Name: 'BAMBAM_CL',     DisplayName: 'Bam-Bam',                    Country: 'Chile 🇨🇱',      Archetype: 'Air-Dominance',             ArtSheet: '../Assets/ConceptArt/CharacterSelect_RosterWave2_Renaissance.jpg',  BgSize: '400% auto', BgPos: '6% 14%'  },
+        { idx: 9,  Name: 'REY_CL',        DisplayName: 'El Rey',                     Country: 'Chile 🇨🇱',      Archetype: 'Berserker Rekka',           ArtSheet: '../Assets/ConceptArt/CharacterSelect_RosterWave2_Renaissance.jpg',  BgSize: '400% auto', BgPos: '36% 14%' },
+        { idx: 10, Name: 'BULLDOG_PY',    DisplayName: 'El Bulldog',                 Country: 'Paraguay 🇵🇾',   Archetype: 'Big-Body Grappler / Zoner', ArtSheet: '../Assets/ConceptArt/CharacterSelect_RosterWave2_Renaissance.jpg',  BgSize: '400% auto', BgPos: '66% 14%' },
+        { idx: 11, Name: 'MAESTRO_PE',    DisplayName: 'El Maestro',                 Country: 'Perú 🇵🇪',       Archetype: 'Technical Footsies',        ArtSheet: '../Assets/ConceptArt/CharacterSelect_RosterWave2_Renaissance.jpg',  BgSize: '400% auto', BgPos: '95% 14%' },
+        { idx: 12, Name: 'TREN_EC',       DisplayName: 'El Tren Amazónico',          Country: 'Ecuador 🇪🇨',    Archetype: 'Speedster / Run-Cancel',    ArtSheet: '../Assets/ConceptArt/CharacterSelect_RosterWave2_Renaissance.jpg',  BgSize: '400% auto', BgPos: '6% 86%'  },
+        { idx: 13, Name: 'HURACAN_VE',    DisplayName: 'El Huracán Vinotinto',       Country: 'Venezuela 🇻🇪',  Archetype: 'Dead-Ball Sniper',          ArtSheet: '../Assets/ConceptArt/CharacterSelect_RosterWave2_Renaissance.jpg',  BgSize: '400% auto', BgPos: '36% 86%' },
+        { idx: 14, Name: 'DIABLO_BO',     DisplayName: 'El Diablo Andino',           Country: 'Bolivia 🇧🇴',    Archetype: 'Stamina Debuffer',          ArtSheet: '../Assets/ConceptArt/CharacterSelect_RosterWave2_Renaissance.jpg',  BgSize: '400% auto', BgPos: '66% 86%' },
+        { idx: 15, Name: 'GENERAL_FR',    DisplayName: 'Le Général',                 Country: 'Francia 🇫🇷',    Archetype: 'Tactical Stance',           ArtSheet: '../Assets/ConceptArt/CharacterSelect_RosterWave2_Renaissance.jpg',  BgSize: '400% auto', BgPos: '95% 86%' },
+        { idx: 16, Name: 'BOSS_VAR_ZERO', DisplayName: 'Juez Supremo (V.A.R.-ZERO)', Country: 'BOSS FINAL ⚠️', Archetype: 'Boss Zoner / Time Rewinder',ArtSheet: '../Assets/ConceptArt/Boss_VAR_ZERO_Renaissance.jpg',                BgSize: '135% auto', BgPos: '50% 22%' }
+      ];
+
+      const STAGES = [
+        { idx: 0, id: 'STAGE_MARACANA',      Name: 'Templo do Maracanã',      Country: 'Brasil 🇧🇷',    BPM: 115 },
+        { idx: 1, id: 'STAGE_BOMBONERA',     Name: 'La Caldera de La Boca',   Country: 'Argentina 🇦🇷', BPM: 128 },
+        { idx: 2, id: 'STAGE_CENTENARIO',    Name: 'Monumento Centenario',    Country: 'Uruguay 🇺🇾',   BPM: 120 },
+        { idx: 3, id: 'STAGE_METROPOLITANO', Name: 'Coloso de Barranquilla',  Country: 'Colombia 🇨🇴',  BPM: 130 },
+        { idx: 4, id: 'STAGE_NUNOA',         Name: 'Coliseo de Ñuñoa',        Country: 'Chile 🇨🇱',     BPM: 125 },
+        { idx: 5, id: 'STAGE_DEFENSORES',    Name: 'El Fortín de Sajonia',    Country: 'Paraguay 🇵🇾',  BPM: 120 },
+        { idx: 6, id: 'STAGE_NACIONAL_LIMA', Name: 'Templo José Díaz (Lima)', Country: 'Perú 🇵🇪',      BPM: 118 },
+        { idx: 7, id: 'STAGE_ATAHUALPA',     Name: 'El Volcán de Quito',      Country: 'Ecuador 🇪🇨',   BPM: 135 },
+        { idx: 8, id: 'STAGE_AVILA',         Name: 'Monumental del Ávila',    Country: 'Venezuela 🇻🇪', BPM: 170 },
+        { idx: 9, id: 'STAGE_HERNANDO_SILES',Name: 'Nido del Cóndor (3600m)', Country: 'Bolivia 🇧🇴',   BPM: 110 }
+      ];
+
+      const ROUND_TITLES = [
+        'Octavos de Final',
+        'Cuartos de Final',
+        'Semifinal CONMEBOL',
+        'Gran Final Sudamericana',
+        'Desafío Supremo: Juez Supremo (V.A.R.-ZERO)'
+      ];
+
+      // Rival Canónico (espejo exacto de ResolveCanonicalRivalForFighter en C++)
+      const CANONICAL_RIVAL = {
+        0: 2, 2: 0,
+        3: 6, 6: 3,
+        1: 4, 4: 1,
+        5: 10, 10: 5,
+        9: 11, 11: 9,
+        8: 7, 7: 8,
+        12: 13, 13: 12,
+        14: 15, 15: 14
+      };
+
+      // Estadio Local por Luchador (espejo exacto de ResolveHomeStageForFighter en C++)
+      const HOME_STAGE_BY_FIGHTER = {
+        0: 0, 1: 0,
+        2: 1, 3: 1,
+        6: 2, 7: 2,
+        4: 3, 5: 3,
+        8: 4, 9: 4,
+        10: 5,
+        11: 6,
+        12: 7,
+        13: 8,
+        14: 9, 15: 9
+      };
+
+      const STORAGE_KEY = 'copaEternaTournament';
+      const LAST_MATCH_KEY = 'copaEternaLastMatch';
+
+      // ========================================================================
+      // 2. PRNG DETERMINISTA XORSHIFT32 + EVALUADOR DE RANGO S/A/B/C
+      // ========================================================================
+      function nextXorshift32(state) {
+        let x = state >>> 0;
+        x ^= (x << 13) >>> 0;
+        x ^= (x >>> 17);
+        x ^= (x << 5) >>> 0;
+        x = x >>> 0;
+        return x === 0 ? 0x6D2B79F5 : x;
+      }
+
+      function hashString32(str) {
+        let h = 2166136261 >>> 0;
+        for (let i = 0; i < str.length; i++) {
+          h ^= str.charCodeAt(i);
+          h = Math.imul(h, 16777619) >>> 0;
+        }
+        return h >>> 0;
+      }
+
+      function computeDeterministicScore(telemetry) {
+        const p1Dmg = Math.max(0, Number(telemetry.p1DamageDealt) || 0);
+        const p2Dmg = Math.max(0, Number(telemetry.p2DamageDealt) || 0);
+        const netDmg = Math.max(0, p1Dmg - Math.floor(p2Dmg / 2));
+        const dmgScore = Math.floor(netDmg * 0.45);
+        const comboScore = Math.min(99, Math.max(0, Number(telemetry.maxCombo) || 0)) * 320;
+        const parryScore = Math.min(20, Math.max(0, Number(telemetry.perfectParries) || 0)) * 1500;
+        const wallScore = Math.min(5, Math.max(0, Number(telemetry.wallBreaks) || 0)) * 1200;
+        const timeScore = Math.floor(Math.min(5940, Math.max(0, Number(telemetry.remainingFrames) || 0)) * 1.25);
+        const lossPenalty = Math.max(0, Number(telemetry.roundsLost) || 0) * 2500;
+        return Math.max(0, dmgScore + comboScore + parryScore + wallScore + timeScore - lossPenalty);
+      }
+
+      function computeStyleRank(score) {
+        if (score >= 18000) return 'S';
+        if (score >= 13500) return 'A';
+        if (score >= 9000) return 'B';
+        return 'C';
+      }
+
+      function buildDeterministicLadder(playerIdx, seedInput) {
+        const safePlayer = (playerIdx >= 0 && playerIdx <= 15) ? playerIdx : 0;
+        const cleanSeed = ((Number(seedInput) >>> 0) === 0) ? 19301950 : (Number(seedInput) >>> 0);
+        const rivalIdx = CANONICAL_RIVAL[safePlayer] !== undefined ? CANONICAL_RIVAL[safePlayer] : 2;
+
+        // Pool de 14 candidatos (excluyendo jugador y rival canónico de Gran Final)
+        const pool = [];
+        for (let i = 0; i < 16; i++) {
+          if (i !== safePlayer && i !== rivalIdx) {
+            pool.push(i);
+          }
+        }
+
+        // Fisher-Yates determinista con Xorshift32
+        let rng = (cleanSeed ^ hashString32(FIGHTERS[safePlayer].Name)) >>> 0;
+        if (rng === 0) rng = 0x9E3779B9;
+
+        for (let i = pool.length - 1; i > 0; i--) {
+          rng = nextXorshift32(rng);
+          const swapIdx = rng % (i + 1);
+          const tmp = pool[i];
+          pool[i] = pool[swapIdx];
+          pool[swapIdx] = tmp;
+        }
+
+        rng = nextXorshift32(rng);
+        const bossStageIdx = (rng & 1) === 0 ? 0 : 1; // Maracanã o Bombonera
+
+        const rounds = [
+          {
+            roundNum: 1,
+            title: ROUND_TITLES[0],
+            oppIdx: pool[0],
+            stageIdx: HOME_STAGE_BY_FIGHTER[pool[0]] ?? 0,
+            isRivalry: false,
+            isBoss: false,
+            status: 'CURRENT', // 'LOCKED' | 'CURRENT' | 'WON' | 'LOST'
+            rank: null,
+            score: 0,
+            roundsLost: 0
+          },
+          {
+            roundNum: 2,
+            title: ROUND_TITLES[1],
+            oppIdx: pool[1],
+            stageIdx: HOME_STAGE_BY_FIGHTER[pool[1]] ?? 1,
+            isRivalry: false,
+            isBoss: false,
+            status: 'LOCKED',
+            rank: null,
+            score: 0,
+            roundsLost: 0
+          },
+          {
+            roundNum: 3,
+            title: ROUND_TITLES[2],
+            oppIdx: pool[2],
+            stageIdx: HOME_STAGE_BY_FIGHTER[pool[2]] ?? 2,
+            isRivalry: false,
+            isBoss: false,
+            status: 'LOCKED',
+            rank: null,
+            score: 0,
+            roundsLost: 0
+          },
+          {
+            roundNum: 4,
+            title: ROUND_TITLES[3],
+            oppIdx: rivalIdx,
+            stageIdx: HOME_STAGE_BY_FIGHTER[rivalIdx] ?? 1,
+            isRivalry: true,
+            isBoss: false,
+            status: 'LOCKED',
+            rank: null,
+            score: 0,
+            roundsLost: 0
+          },
+          {
+            roundNum: 5,
+            title: ROUND_TITLES[4],
+            oppIdx: 16,
+            stageIdx: bossStageIdx,
+            isRivalry: false,
+            isBoss: true,
+            status: 'LOCKED',
+            rank: null,
+            score: 0,
+            roundsLost: 0
+          }
+        ];
+
+        return {
+          version: 1,
+          playerIdx: safePlayer,
+          seed: cleanSeed,
+          currentRoundIdx: 0, // 0..4, 5 = Champion
+          totalRoundsLost: 0,
+          totalRankS: 0,
+          continuesUsed: 0,
+          secretBossPhase2Unlocked: false,
+          isChampion: false,
+          artMode: 'SFUMATO',
+          rounds
+        };
+      }
+
+      // ========================================================================
+      // 3. PERSISTENCIA EN localStorage + CONSUMO DE copaEternaLastMatch (TAB 06)
+      // ========================================================================
+      let state = null;
+      let isStreetInk = false;
+
+      function saveState() {
+        try {
+          state.artMode = isStreetInk ? 'STREET_INK' : 'SFUMATO';
+          localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+        } catch (err) {
+          console.warn('No se pudo guardar copaEternaTournament en localStorage:', err);
+        }
+      }
+
+      function loadState() {
+        try {
+          const raw = localStorage.getItem(STORAGE_KEY);
+          if (raw) {
+            const parsed = JSON.parse(raw);
+            if (parsed && Array.isArray(parsed.rounds) && parsed.rounds.length === 5) {
+              return parsed;
+            }
+          }
+        } catch (err) {
+          console.warn('Error leyendo copaEternaTournament:', err);
+        }
+        return buildDeterministicLadder(0, 19301950);
+      }
+
+      function showToast(html, isDefeat) {
+        const toast = document.getElementById('match-toast');
+        document.getElementById('match-toast-text').innerHTML = html;
+        toast.classList.toggle('defeat', !!isDefeat);
+        toast.classList.add('show');
+      }
+
+      function recordRoundResult(playerWon, rawTelemetry) {
+        if (!state || state.isChampion || state.currentRoundIdx >= 5) return;
+
+        const rIdx = state.currentRoundIdx;
+        const node = state.rounds[rIdx];
+        const roundsLost = Math.max(0, Number(rawTelemetry.roundsLost ?? rawTelemetry.p1RoundsLost ?? (playerWon ? 0 : 2)) || 0);
+        const computedScore = Number(rawTelemetry.score ?? rawTelemetry.performanceScore) || computeDeterministicScore({
+          p1DamageDealt: rawTelemetry.p1DamageDealt ?? (playerWon ? 20000 : 8500),
+          p2DamageDealt: rawTelemetry.p2DamageDealt ?? (playerWon ? 6000 : 20000),
+          maxCombo: rawTelemetry.maxCombo ?? (playerWon ? 12 : 4),
+          perfectParries: rawTelemetry.perfectParries ?? (playerWon ? 2 : 0),
+          wallBreaks: rawTelemetry.wallBreaks ?? (playerWon ? 1 : 0),
+          remainingFrames: rawTelemetry.remainingFrames ?? 3400,
+          roundsLost
+        });
+
+        const explicitRank = typeof rawTelemetry.rank === 'string'
+          ? rawTelemetry.rank.toUpperCase().replace('RANK_', '').trim()
+          : (typeof rawTelemetry.styleRank === 'string'
+            ? rawTelemetry.styleRank.toUpperCase().replace('RANK_', '').trim()
+            : null);
+
+        const finalRank = (explicitRank && ['S', 'A', 'B', 'C'].includes(explicitRank))
+          ? explicitRank
+          : computeStyleRank(computedScore);
+
+        state.totalRoundsLost += roundsLost;
+        node.score = computedScore;
+        node.roundsLost = roundsLost;
+        node.rank = finalRank;
+
+        if (!playerWon) {
+          state.continuesUsed += 1;
+          node.status = 'LOST';
+          saveState();
+          showToast(
+            `<strong>❌ Eliminado en Ronda ${node.roundNum} (${node.title})</strong> ante <strong>${FIGHTERS[node.oppIdx].DisplayName}</strong>. Pulsa <em>Jugar Ronda Actual</em> para usar un Continue y reintentar.`,
+            true
+          );
+          return;
+        }
+
+        // Victoria en la ronda actual
+        node.status = 'WON';
+        if (finalRank === 'S') {
+          state.totalRankS += 1;
+        }
+
+        // Evaluar condición secreta al superar la Gran Final Sudamericana (rIdx === 3)
+        if (rIdx === 3) {
+          const flawlessRun = (state.totalRoundsLost === 0 && state.continuesUsed === 0);
+          const grandFinalRankS = (finalRank === 'S');
+          state.secretBossPhase2Unlocked = (flawlessRun || grandFinalRankS);
+        }
+
+        state.currentRoundIdx += 1;
+
+        if (state.currentRoundIdx >= 5) {
+          state.isChampion = true;
+          saveState();
+          showToast(
+            `<strong>🏆 ¡VICTORIA HISTÓRICA EN LA RONDA 5!</strong> Derrotaste a <strong>${FIGHTERS[16].DisplayName}</strong> con <strong>Rango ${finalRank}</strong> (${computedScore.toLocaleString()} pts). ¡Eres Campeón de La Copa Eterna!`,
+            false
+          );
+        } else {
+          state.rounds[state.currentRoundIdx].status = 'CURRENT';
+          saveState();
+          const nextNode = state.rounds[state.currentRoundIdx];
+          const secretNote = (rIdx === 3 && state.secretBossPhase2Unlocked)
+            ? ' • <strong style="color:#ffe299;">🔥 ¡FASE 2 SECRETA DE V.A.R.-ZERO DESBLOQUEADA!</strong>'
+            : '';
+          showToast(
+            `<strong>✅ Victoria en Ronda ${node.roundNum} (${node.title})</strong> — Rango <strong>${finalRank}</strong> (${computedScore.toLocaleString()} pts). Próximo rival: <strong>${FIGHTERS[nextNode.oppIdx].DisplayName}</strong>.${secretNote}`,
+            false
+          );
+        }
+      }
+
+      function consumeLastMatchFromTab6() {
+        try {
+          const raw = localStorage.getItem(LAST_MATCH_KEY);
+          if (!raw) return;
+          const payload = JSON.parse(raw);
+          localStorage.removeItem(LAST_MATCH_KEY);
+
+          if (!payload || typeof payload !== 'object') return;
+          // Verificar que corresponda a un partido de torneo si trae bandera explícita
+          if (payload.tourney === false || payload.tourney === 0) return;
+
+          const won = (payload.won !== undefined)
+            ? Boolean(payload.won)
+            : (payload.p1Won !== undefined)
+              ? Boolean(payload.p1Won)
+              : (payload.winner === 'P1' || payload.winner === 1 || payload.result === 'WIN');
+
+          recordRoundResult(won, payload);
+        } catch (err) {
+          console.warn('Error procesando copaEternaLastMatch:', err);
+        }
+      }
+
+      // ========================================================================
+      // 4. RENDERIZADO DE LA INTERFAZ DEL TORNEO
+      // ========================================================================
+      function populatePlayerSelect() {
+        const sel = document.getElementById('sel-player-fighter');
+        sel.innerHTML = '';
+        for (let i = 0; i < 16; i++) {
+          const f = FIGHTERS[i];
+          const opt = document.createElement('option');
+          opt.value = String(f.idx);
+          opt.textContent = `${f.DisplayName} — ${f.Country} (${f.Archetype})`;
+          sel.appendChild(opt);
+        }
+      }
+
+      function applyTheme(streetInk) {
+        isStreetInk = Boolean(streetInk);
+        document.body.classList.toggle('theme-street-ink', isStreetInk);
+        document.getElementById('btn-theme-toggle').textContent = isStreetInk
+          ? '⚡ Estilo: Street-Ink AAA'
+          : '🖼️ Estilo: Renacimiento Sfumato';
+        if (state) {
+          saveState();
+          renderDock();
+        }
+      }
+
+      function renderDock() {
+        const playBtn = document.getElementById('btn-play-current');
+        const simBtn = document.getElementById('btn-simulate-win');
+        const titleEl = document.getElementById('dock-matchup-title');
+        const metaEl = document.getElementById('dock-matchup-meta');
+
+        const p1 = FIGHTERS[state.playerIdx];
+        const artLabel = isStreetInk ? 'Street-Ink AAA' : 'Renacimiento Sfumato';
+
+        if (state.isChampion || state.currentRoundIdx >= 5) {
+          titleEl.textContent = `🏆 ${p1.DisplayName} — CAMPEÓN DE LA COPA ETERNA`;
+          metaEl.textContent = `Semilla #${state.seed} completada • Rangos S: ${state.totalRankS} • Rondas perdidas: ${state.totalRoundsLost}`;
+          playBtn.disabled = true;
+          playBtn.textContent = '🏆 TORNEO COMPLETADO';
+          simBtn.disabled = true;
+          return;
+        }
+
+        const node = state.rounds[state.currentRoundIdx];
+        const opp = FIGHTERS[node.oppIdx];
+        const stage = STAGES[node.stageIdx];
+
+        const retryPrefix = node.status === 'LOST' ? 'REINTENTAR ' : '';
+        titleEl.textContent = `${retryPrefix}Ronda ${node.roundNum} — ${node.title}: ${p1.DisplayName} vs ${opp.DisplayName}`;
+        metaEl.textContent = `Sede: ${stage.Name} (${stage.Country}) • ${stage.BPM} BPM • Estilo: ${artLabel}${node.isBoss ? ' • ⚠️ BOSS FINAL' : ''}`;
+
+        playBtn.disabled = false;
+        playBtn.textContent = node.status === 'LOST'
+          ? '🔄 REINTENTAR RONDA ACTUAL (60 FPS)'
+          : '⚔️ JUGAR RONDA ACTUAL (60 FPS)';
+        simBtn.disabled = false;
+      }
+
+      function renderAll() {
+        const p1 = FIGHTERS[state.playerIdx];
+        const rival = FIGHTERS[CANONICAL_RIVAL[state.playerIdx] ?? 2];
+
+        // Retador P1
+        document.getElementById('sel-player-fighter').value = String(state.playerIdx);
+        document.getElementById('p1-code-tag').textContent = p1.Name;
+        document.getElementById('p1-name-display').textContent = p1.DisplayName;
+        document.getElementById('p1-country-display').textContent = `${p1.Country} • ${p1.Archetype}`;
+        document.getElementById('p1-rival-hint').textContent = `Rival Canónico en Gran Final: ${rival.DisplayName} (${rival.Country})`;
+
+        const portEl = document.getElementById('p1-portrait-mini');
+        portEl.style.backgroundImage = `url('${p1.ArtSheet}')`;
+        portEl.style.backgroundSize = p1.BgSize;
+        portEl.style.backgroundPosition = p1.BgPos;
+
+        // Semilla & Estadísticas
+        document.getElementById('seed-input').value = String(state.seed);
+        document.getElementById('ladder-seed-label').textContent = `Seed Activa: #${state.seed} • Persistencia: localStorage (${STORAGE_KEY})`;
+        document.getElementById('stat-current-round').textContent = state.isChampion ? 'CAMPEÓN 🏆' : `${state.currentRoundIdx + 1} / 5`;
+        document.getElementById('stat-rounds-lost').textContent = String(state.totalRoundsLost);
+        document.getElementById('stat-rank-s-count').textContent = String(state.totalRankS);
+        document.getElementById('stat-continues').textContent = String(state.continuesUsed);
+
+        // Secret Boss Phase 2 Badge
+        const secretBadge = document.getElementById('secret-boss-badge');
+        const potentialFlawless = (state.totalRoundsLost === 0 && state.continuesUsed === 0);
+        if (state.secretBossPhase2Unlocked) {
+          secretBadge.classList.add('unlocked');
+          secretBadge.textContent = '🔥 SECRET BOSS PHASE 2 DESBLOQUEADA: Tiempo de Descuento Infinito + Rewind 90f';
+        } else if (state.currentRoundIdx < 4 && potentialFlawless) {
+          secretBadge.classList.remove('unlocked');
+          secretBadge.textContent = '✨ En Camino Invicto: Mantén 0 rondas perdidas o logra Rango S en la Final para Fase 2';
+        } else {
+          secretBadge.classList.remove('unlocked');
+          secretBadge.textContent = '🔒 Fase 2 Secreta V.A.R.-ZERO: Requiere Invicto o Rango S en Gran Final';
+        }
+
+        // Banner de Campeón
+        const champBanner = document.getElementById('champion-banner');
+        champBanner.classList.toggle('show', !!state.isChampion);
+        if (state.isChampion) {
+          const bossPhaseNote = state.secretBossPhase2Unlocked
+            ? ' ¡Incluyendo la victoria sobre la Fase 2 Secreta de V.A.R.-ZERO!'
+            : '';
+          document.getElementById('champion-summary-text').textContent =
+            `${p1.DisplayName} (${p1.Country}) ha levantado La Copa Eterna en la semilla #${state.seed} con ${state.totalRankS} calificaciones Rango S y ${state.totalRoundsLost} rondas perdidas.${bossPhaseNote}`;
+        }
+
+        // Tarjetas de las 5 Rondas
+        const grid = document.getElementById('ladder-grid');
+        grid.innerHTML = '';
+
+        state.rounds.forEach((node) => {
+          const opp = FIGHTERS[node.oppIdx];
+          const stage = STAGES[node.stageIdx];
+
+          const card = document.createElement('article');
+          const statusClass =
+            node.status === 'WON' ? 'state-won' :
+            node.status === 'LOST' ? 'state-lost' :
+            node.status === 'CURRENT' ? 'state-current' : 'state-locked';
+
+          card.className = `round-card ${statusClass}${node.isBoss ? ' is-boss' : ''}`;
+
+          let statusBadgeHtml = '';
+          if (node.status === 'WON') {
+            statusBadgeHtml = `<div class="round-status-badge won">✅ Victoria (Rango ${node.rank || 'A'})</div>`;
+          } else if (node.status === 'LOST') {
+            statusBadgeHtml = `<div class="round-status-badge lost">❌ Eliminado (Reintentar)</div>`;
+          } else if (node.status === 'CURRENT') {
+            statusBadgeHtml = `<div class="round-status-badge current">⚔️ RONDA ACTUAL</div>`;
+          } else {
+            statusBadgeHtml = `<div class="round-status-badge">🔒 Pendiente</div>`;
+          }
+
+          let topRightTag = '';
+          if (node.isRivalry) {
+            topRightTag = '<span class="rivalry-tag">🔥 RIVALIDAD CLÁSICA</span>';
+          } else if (node.isBoss && state.secretBossPhase2Unlocked) {
+            topRightTag = '<span class="rivalry-tag">⚡ FASE 2 ACTIVA</span>';
+          } else if (node.isBoss) {
+            topRightTag = '<span class="rivalry-tag">👑 BOSS FINAL</span>';
+          }
+
+          const telemetryLine = (node.status === 'WON' || node.status === 'LOST')
+            ? `<div class="round-telemetry-mini">Q32.32 Score: ${Number(node.score || 0).toLocaleString()} pts • Rondas perdidas: ${node.roundsLost || 0}</div>`
+            : `<div class="round-telemetry-mini">${opp.Archetype}</div>`;
+
+          card.innerHTML = `
+            <div class="round-top-row">
+              <span class="round-num-pill">RONDA ${node.roundNum} / 5</span>
+              ${topRightTag}
+            </div>
+            <div class="round-title">${node.title}</div>
+            <div class="opp-portrait" style="background-image:url('${opp.ArtSheet}'); background-size:${opp.BgSize}; background-position:${opp.BgPos};">
+              <div class="opp-portrait-caption">
+                <div class="opp-country">${opp.Country}</div>
+                <div class="opp-name">${opp.DisplayName}</div>
+              </div>
+            </div>
+            <div class="round-stage-line">
+              🏟️ ${stage.Name}<br />
+              <span style="opacity:0.8;">${stage.Country} • ${stage.BPM} BPM</span>
+            </div>
+            ${telemetryLine}
+            ${statusBadgeHtml}
+          `;
+
+          grid.appendChild(card);
+        });
+
+        renderDock();
+      }
+
+      // ========================================================================
+      // 5. EVENTOS DE CONTROL DEL TORNEO
+      // ========================================================================
+      function launchCurrentRound() {
+        if (!state || state.isChampion || state.currentRoundIdx >= 5) return;
+        const node = state.rounds[state.currentRoundIdx];
+        const artParam = isStreetInk ? 'STREET_INK' : 'SFUMATO';
+        saveState();
+
+        let url = `index.html#tab-6&p1=${state.playerIdx}&p2=${node.oppIdx}&stage=${node.stageIdx}&art=${artParam}&tourney=1&round=${node.roundNum}`;
+        if (node.roundNum === 5 || node.isBoss) {
+          url += '&boss=1';
+        }
+        window.location.href = url;
+      }
+
+      function simulateCurrentRoundWin() {
+        if (!state || state.isChampion || state.currentRoundIdx >= 5) return;
+        const rIdx = state.currentRoundIdx;
+        // Telemetría determinista de prueba para demostrar Rango S / A / B y desbloqueo de Fase 2
+        const mockPresets = [
+          { p1DamageDealt: 20000, p2DamageDealt: 3200, maxCombo: 14, perfectParries: 3, wallBreaks: 1, remainingFrames: 4200, roundsLost: 0 }, // Rango S
+          { p1DamageDealt: 20000, p2DamageDealt: 6500, maxCombo: 10, perfectParries: 2, wallBreaks: 1, remainingFrames: 3600, roundsLost: 0 }, // Rango S/A
+          { p1DamageDealt: 20000, p2DamageDealt: 8000, maxCombo: 9,  perfectParries: 1, wallBreaks: 1, remainingFrames: 3100, roundsLost: 0 }, // Rango A
+          { p1DamageDealt: 20000, p2DamageDealt: 2800, maxCombo: 16, perfectParries: 3, wallBreaks: 2, remainingFrames: 4500, roundsLost: 0 }, // Rango S en Final -> Desbloquea Fase 2!
+          { p1DamageDealt: 28000, p2DamageDealt: 9500, maxCombo: 18, perfectParries: 4, wallBreaks: 2, remainingFrames: 3800, roundsLost: 0 }  // Boss Final Rango S
+        ];
+        recordRoundResult(true, mockPresets[rIdx] || mockPresets[0]);
+        renderAll();
+      }
+
+      function regenerateTourney(playerIdx, seedVal) {
+        state = buildDeterministicLadder(playerIdx, seedVal);
+        state.artMode = isStreetInk ? 'STREET_INK' : 'SFUMATO';
+        saveState();
+        document.getElementById('match-toast').classList.remove('show');
+        renderAll();
+      }
+
+      document.getElementById('btn-theme-toggle').addEventListener('click', () => {
+        applyTheme(!isStreetInk);
+      });
+
+      document.getElementById('sel-player-fighter').addEventListener('change', (e) => {
+        const nextIdx = parseInt(e.target.value, 10) || 0;
+        const currentSeed = parseInt(document.getElementById('seed-input').value, 10) || state.seed;
+        regenerateTourney(nextIdx, currentSeed);
+      });
+
+      document.getElementById('btn-apply-seed').addEventListener('click', () => {
+        const val = parseInt(document.getElementById('seed-input').value, 10);
+        const cleanSeed = (!isNaN(val) && val > 0) ? (val >>> 0) : 19301950;
+        regenerateTourney(state.playerIdx, cleanSeed);
+      });
+
+      document.getElementById('btn-random-seed').addEventListener('click', () => {
+        const randSeed = (Math.floor(Math.random() * 89999999) + 10000000) >>> 0;
+        regenerateTourney(state.playerIdx, randSeed);
+      });
+
+      document.getElementById('btn-reset-tourney').addEventListener('click', () => {
+        regenerateTourney(state.playerIdx, state.seed);
+      });
+
+      document.getElementById('btn-new-cup-from-banner').addEventListener('click', () => {
+        const nextSeed = (Math.floor(Math.random() * 89999999) + 10000000) >>> 0;
+        regenerateTourney(state.playerIdx, nextSeed);
+      });
+
+      document.getElementById('btn-play-current').addEventListener('click', launchCurrentRound);
+      document.getElementById('btn-simulate-win').addEventListener('click', simulateCurrentRoundWin);
+      document.getElementById('btn-dismiss-toast').addEventListener('click', () => {
+        document.getElementById('match-toast').classList.remove('show');
+      });
+
+      // ========================================================================
+      // 6. PARTÍCULAS FLOTANTES DORADAS (BRASAS DE ESTADIO / CHISPAS AL ÓLEO)
+      // ========================================================================
+      const canvas = document.getElementById('embers-canvas');
+      const ctx = canvas.getContext('2d');
+      let cw = (canvas.width = window.innerWidth);
+      let ch = (canvas.height = window.innerHeight);
+
+      window.addEventListener('resize', () => {
+        cw = canvas.width = window.innerWidth;
+        ch = canvas.height = window.innerHeight;
+      });
+
+      const embers = Array.from({ length: 42 }, () => ({
+        x: Math.random() * cw,
+        y: Math.random() * ch,
+        r: 1.1 + Math.random() * 2.4,
+        vx: (Math.random() - 0.5) * 0.4,
+        vy: -0.3 - Math.random() * 0.7,
+        alpha: 0.18 + Math.random() * 0.5
+      }));
+
+      function renderEmbers() {
+        ctx.clearRect(0, 0, cw, ch);
+        for (let i = 0; i < embers.length; i++) {
+          const em = embers[i];
+          em.x += em.vx;
+          em.y += em.vy;
+          if (em.y < -10) {
+            em.y = ch + 10;
+            em.x = Math.random() * cw;
+          }
+          ctx.fillStyle = isStreetInk
+            ? `rgba(0, 229, 255, ${em.alpha})`
+            : `rgba(245, 196, 81, ${em.alpha})`;
+          ctx.beginPath();
+          ctx.arc(em.x, em.y, em.r, 0, Math.PI * 2);
+          ctx.fill();
+        }
+        requestAnimationFrame(renderEmbers);
+      }
+
+      // ========================================================================
+      // 7. INICIALIZACIÓN AL CARGAR LA PÁGINA
+      // ========================================================================
+      populatePlayerSelect();
+      state = loadState();
+      applyTheme(state.artMode === 'STREET_INK');
+      consumeLastMatchFromTab6();
+      renderAll();
+      requestAnimationFrame(renderEmbers);
+    })();
+  </script>
+</body>
+</html>
