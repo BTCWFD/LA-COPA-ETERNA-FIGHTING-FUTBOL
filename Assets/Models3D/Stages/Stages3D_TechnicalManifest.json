@@ -1,0 +1,398 @@
+{
+  "SchemaVersion": "1.0.0-CONMEBOL-STAGES-GLTF2",
+  "Project": "LA COPA ETERNA: SANGRE Y POTRERO",
+  "TargetEngine": "Unreal Engine 5.4+ (2.5D Fighting Arena & Chaos Wall-Break Pipeline)",
+  "CoordinateConvention": {
+    "UpAxis": "+Y",
+    "FightingPlaneX": {
+      "ZoneA_Meters": [
+        -12.5,
+        12.5
+      ],
+      "WallBreakX": [
+        -12.55,
+        12.55
+      ],
+      "ZoneB_Meters": [
+        -18.5,
+        18.5
+      ]
+    },
+    "CameraViewDirection": "+Z looking toward -Z (unobstructed foreground)"
+  },
+  "TotalStagesGenerated": 10,
+  "AllStagesValidated": true,
+  "Stages": [
+    {
+      "File": "SM_Stage_Maracana_BR.glb",
+      "FileSizeBytes": 319336,
+      "Vertices": 8848,
+      "Triangles": 4492,
+      "MaterialCount": 10,
+      "BoundingBoxMin": [
+        -35.75,
+        -0.33,
+        -25.71
+      ],
+      "BoundingBoxMax": [
+        35.75,
+        28.5,
+        8.5
+      ],
+      "BoundingDimensionsMeters": {
+        "WidthX": 71.49,
+        "HeightY": 28.83,
+        "DepthZ": 34.21
+      },
+      "StageID": "STAGE_MARACANA_BR",
+      "DisplayName": "Estádio do Maracanã (Brasil)",
+      "Landmarks": [
+        "Curved concrete elliptical ring & roof canopy",
+        "4 towering floodlight towers with emissive banks",
+        "Pre-fractured destructible LED side walls"
+      ],
+      "Validation": {
+        "ValidGLTF2Binary": true,
+        "HeaderMagic": "glTF",
+        "Version": 2,
+        "JSONChunkBytes": 9220,
+        "BINChunkBytes": 310088,
+        "Primitives": 10
+      }
+    },
+    {
+      "File": "SM_Stage_Bombonera_AR.glb",
+      "FileSizeBytes": 124160,
+      "Vertices": 3264,
+      "Triangles": 1632,
+      "MaterialCount": 11,
+      "BoundingBoxMin": [
+        -27.15,
+        -0.33,
+        -19.4
+      ],
+      "BoundingBoxMax": [
+        27.15,
+        22.0,
+        9.8
+      ],
+      "BoundingDimensionsMeters": {
+        "WidthX": 54.31,
+        "HeightY": 22.33,
+        "DepthZ": 29.2
+      },
+      "StageID": "STAGE_BOMBONERA_AR",
+      "DisplayName": "La Bombonera (Argentina)",
+      "Landmarks": [
+        "Steep vertical 3-tier D-shaped stands with gold fascia",
+        "VIP Palcos vertical wall",
+        "Caminito colorful corrugated-style side facade",
+        "Pre-fractured destructible walls"
+      ],
+      "Validation": {
+        "ValidGLTF2Binary": true,
+        "HeaderMagic": "glTF",
+        "Version": 2,
+        "JSONChunkBytes": 9892,
+        "BINChunkBytes": 114240,
+        "Primitives": 11
+      }
+    },
+    {
+      "File": "SM_Stage_Centenario_UY.glb",
+      "FileSizeBytes": 154464,
+      "Vertices": 4196,
+      "Triangles": 2132,
+      "MaterialCount": 8,
+      "BoundingBoxMin": [
+        -28.39,
+        -0.33,
+        -27.7
+      ],
+      "BoundingBoxMax": [
+        28.39,
+        45.65,
+        8.5
+      ],
+      "BoundingDimensionsMeters": {
+        "WidthX": 56.79,
+        "HeightY": 45.98,
+        "DepthZ": 36.2
+      },
+      "StageID": "STAGE_CENTENARIO_UY",
+      "DisplayName": "Estadio Centenario (Uruguay)",
+      "Landmarks": [
+        "Art Deco Torre de los Homenajes with 9 balconies & spire",
+        "Heritage concrete colonnade arches",
+        "Pre-fractured celeste side walls"
+      ],
+      "Validation": {
+        "ValidGLTF2Binary": true,
+        "HeaderMagic": "glTF",
+        "Version": 2,
+        "JSONChunkBytes": 7372,
+        "BINChunkBytes": 147064,
+        "Primitives": 8
+      }
+    },
+    {
+      "File": "SM_Stage_Metropolitano_CO.glb",
+      "FileSizeBytes": 227164,
+      "Vertices": 6166,
+      "Triangles": 3304,
+      "MaterialCount": 11,
+      "BoundingBoxMin": [
+        -32.69,
+        -0.33,
+        -23.57
+      ],
+      "BoundingBoxMax": [
+        32.69,
+        17.85,
+        8.94
+      ],
+      "BoundingDimensionsMeters": {
+        "WidthX": 65.37,
+        "HeightY": 18.18,
+        "DepthZ": 32.5
+      },
+      "StageID": "STAGE_METROPOLITANO_CO",
+      "DisplayName": "Estadio Metropolitano (Colombia)",
+      "Landmarks": [
+        "Sweeping curved tropical canopy ribs & white shade membranes",
+        "Yellow/Blue/Red stadium bowl",
+        "Caribbean palm-lined Zone B concourse"
+      ],
+      "Validation": {
+        "ValidGLTF2Binary": true,
+        "HeaderMagic": "glTF",
+        "Version": 2,
+        "JSONChunkBytes": 10000,
+        "BINChunkBytes": 217136,
+        "Primitives": 11
+      }
+    },
+    {
+      "File": "SM_Stage_Nunoa_CL.glb",
+      "FileSizeBytes": 300628,
+      "Vertices": 8376,
+      "Triangles": 4188,
+      "MaterialCount": 8,
+      "BoundingBoxMin": [
+        -59.79,
+        -2.0,
+        -73.35
+      ],
+      "BoundingBoxMax": [
+        59.95,
+        46.0,
+        12.29
+      ],
+      "BoundingDimensionsMeters": {
+        "WidthX": 119.74,
+        "HeightY": 48.0,
+        "DepthZ": 85.65
+      },
+      "StageID": "STAGE_NUNOA_CL",
+      "DisplayName": "Estadio Nacional de Ñuñoa (Chile)",
+      "Landmarks": [
+        "Elliptical terracotta athletic track with lane lines",
+        "Low-profile open stadium bowl",
+        "Snow-capped Cordillera de los Andes backdrop"
+      ],
+      "Validation": {
+        "ValidGLTF2Binary": true,
+        "HeaderMagic": "glTF",
+        "Version": 2,
+        "JSONChunkBytes": 7440,
+        "BINChunkBytes": 293160,
+        "Primitives": 8
+      }
+    },
+    {
+      "File": "SM_Stage_Defensores_PY.glb",
+      "FileSizeBytes": 93876,
+      "Vertices": 2424,
+      "Triangles": 1368,
+      "MaterialCount": 9,
+      "BoundingBoxMin": [
+        -25.0,
+        -0.33,
+        -23.05
+      ],
+      "BoundingBoxMax": [
+        25.0,
+        26.5,
+        8.5
+      ],
+      "BoundingDimensionsMeters": {
+        "WidthX": 50.0,
+        "HeightY": 26.83,
+        "DepthZ": 31.55
+      },
+      "StageID": "STAGE_DEFENSORES_PY",
+      "DisplayName": "Estadio Defensores del Chaco (Paraguay)",
+      "Landmarks": [
+        "Fortress concrete bastions with battlements",
+        "4 towering red/white/blue tricolor pylons",
+        "Pre-fractured concrete side walls"
+      ],
+      "Validation": {
+        "ValidGLTF2Binary": true,
+        "HeaderMagic": "glTF",
+        "Version": 2,
+        "JSONChunkBytes": 8072,
+        "BINChunkBytes": 85776,
+        "Primitives": 9
+      }
+    },
+    {
+      "File": "SM_Stage_NacionalLima_PE.glb",
+      "FileSizeBytes": 171632,
+      "Vertices": 4660,
+      "Triangles": 2368,
+      "MaterialCount": 9,
+      "BoundingBoxMin": [
+        -31.33,
+        -0.33,
+        -27.1
+      ],
+      "BoundingBoxMax": [
+        31.33,
+        41.7,
+        8.5
+      ],
+      "BoundingDimensionsMeters": {
+        "WidthX": 62.66,
+        "HeightY": 42.03,
+        "DepthZ": 35.6
+      },
+      "StageID": "STAGE_NACIONAL_LIMA_PE",
+      "DisplayName": "Estadio Nacional de Lima (Perú)",
+      "Landmarks": [
+        "29 illuminated red & white vertical architectural fins",
+        "Torre Norte glass tower with metallic spire",
+        "Pre-fractured red LED side walls"
+      ],
+      "Validation": {
+        "ValidGLTF2Binary": true,
+        "HeaderMagic": "glTF",
+        "Version": 2,
+        "JSONChunkBytes": 8276,
+        "BINChunkBytes": 163328,
+        "Primitives": 9
+      }
+    },
+    {
+      "File": "SM_Stage_Atahualpa_EC.glb",
+      "FileSizeBytes": 165468,
+      "Vertices": 4476,
+      "Triangles": 2328,
+      "MaterialCount": 9,
+      "BoundingBoxMin": [
+        -47.72,
+        -2.0,
+        -80.0
+      ],
+      "BoundingBoxMax": [
+        49.38,
+        44.6,
+        8.5
+      ],
+      "BoundingDimensionsMeters": {
+        "WidthX": 97.1,
+        "HeightY": 46.6,
+        "DepthZ": 88.5
+      },
+      "StageID": "STAGE_ATAHUALPA_EC",
+      "DisplayName": "Estadio Olímpico Atahualpa (Ecuador)",
+      "Landmarks": [
+        "Golden equatorial center line & Mitad del Mundo marker",
+        "Towering volcanic cone backdrop",
+        "Glowing emissive ember crater & lava fissures"
+      ],
+      "Validation": {
+        "ValidGLTF2Binary": true,
+        "HeaderMagic": "glTF",
+        "Version": 2,
+        "JSONChunkBytes": 8240,
+        "BINChunkBytes": 157200,
+        "Primitives": 9
+      }
+    },
+    {
+      "File": "SM_Stage_Avila_VE.glb",
+      "FileSizeBytes": 203700,
+      "Vertices": 5538,
+      "Triangles": 2892,
+      "MaterialCount": 10,
+      "BoundingBoxMin": [
+        -60.0,
+        -2.0,
+        -68.26
+      ],
+      "BoundingBoxMax": [
+        60.94,
+        34.0,
+        8.5
+      ],
+      "BoundingDimensionsMeters": {
+        "WidthX": 120.95,
+        "HeightY": 36.0,
+        "DepthZ": 76.76
+      },
+      "StageID": "STAGE_AVILA_VE",
+      "DisplayName": "Estadio del Ávila (Venezuela)",
+      "Landmarks": [
+        "Modern cantilevered silver & vinotinto curved roof",
+        "Cerro El Ávila lush coastal mountain ridge",
+        "Elevated VIP helipad with glowing H & perimeter ring"
+      ],
+      "Validation": {
+        "ValidGLTF2Binary": true,
+        "HeaderMagic": "glTF",
+        "Version": 2,
+        "JSONChunkBytes": 9104,
+        "BINChunkBytes": 194568,
+        "Primitives": 10
+      }
+    },
+    {
+      "File": "SM_Stage_HernandoSiles_BO.glb",
+      "FileSizeBytes": 130976,
+      "Vertices": 3456,
+      "Triangles": 1728,
+      "MaterialCount": 11,
+      "BoundingBoxMin": [
+        -45.29,
+        -3.75,
+        -73.48
+      ],
+      "BoundingBoxMax": [
+        48.09,
+        49.0,
+        8.5
+      ],
+      "BoundingDimensionsMeters": {
+        "WidthX": 93.38,
+        "HeightY": 52.75,
+        "DepthZ": 81.98
+      },
+      "StageID": "STAGE_HERNANDO_SILES_BO",
+      "DisplayName": "Estadio Hernando Siles (Bolivia - 3,600m)",
+      "Landmarks": [
+        "3,600m above-the-clouds semi-transparent floating cloud planes",
+        "Carved Tiwanaku-inspired Andean stone monolith",
+        "Triple-peaked snow-capped Illimani backdrop"
+      ],
+      "Validation": {
+        "ValidGLTF2Binary": true,
+        "HeaderMagic": "glTF",
+        "Version": 2,
+        "JSONChunkBytes": 9988,
+        "BINChunkBytes": 120960,
+        "Primitives": 11
+      }
+    }
+  ]
+}

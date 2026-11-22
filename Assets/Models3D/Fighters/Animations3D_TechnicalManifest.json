@@ -1,0 +1,1261 @@
+{
+  "SchemaVersion": "2.0.0-UE5.4-GLTF2-Animations",
+  "Project": "LA COPA ETERNA: SANGRE Y POTRERO",
+  "TargetFormat": "glTF 2.0 Binary (.glb)",
+  "SampleRateFPS": 60,
+  "UpgradedClipNames": [
+    "Idle_Breath",
+    "Dash_Forward",
+    "Kick_High",
+    "Special_Chilena",
+    "Victory_Pose"
+  ],
+  "TotalFightersUpgraded": 17,
+  "ValidationPassed": true,
+  "ClipCatalog": [
+    {
+      "ClipName": "Idle_Breath",
+      "DurationSeconds": 2.0,
+      "KeyframeCount": 121,
+      "Looping": true,
+      "Description": "60 FPS looping breathing & fighting guard sway (plus hovering + orbital astrolabe halo on SK_SUPREME_JUDGE_BOSS)"
+    },
+    {
+      "ClipName": "Dash_Forward",
+      "DurationSeconds": 0.6,
+      "KeyframeCount": 37,
+      "Looping": false,
+      "Description": "Explosive forward sprint lean with root translation burst, torso pitch, arm drive, and hair wind-drag"
+    },
+    {
+      "ClipName": "Kick_High",
+      "DurationSeconds": 0.8,
+      "KeyframeCount": 49,
+      "Looping": false,
+      "Description": "Dynamic high leg/body strike rotation & forward lunge with 1.18x anime impact exaggeration on striking shin/boot"
+    },
+    {
+      "ClipName": "Special_Chilena",
+      "DurationSeconds": 1.2,
+      "KeyframeCount": 73,
+      "Looping": false,
+      "Description": "Acrobatic 360-degree overhead bicycle-kick arc with parabolic leap, scissor-kick whip, and 1.25x apex strike scale"
+    },
+    {
+      "ClipName": "Victory_Pose",
+      "DurationSeconds": 1.5,
+      "KeyframeCount": 91,
+      "Looping": false,
+      "Description": "Triumphant championship celebration salute (SK_SUPREME_JUDGE_BOSS features hovering levitation + dual counter-rotating astrolabe halo)"
+    }
+  ],
+  "Fighters": [
+    {
+      "FighterFile": "SK_BAMBAM_CL.glb",
+      "FighterID": "BAMBAM_CL",
+      "IsBoss": false,
+      "FileSizeBytes": 149120,
+      "TotalAnimationsInGLB": 10,
+      "AllAnimationNames": [
+        "Anim_Idle",
+        "Anim_5LP_Jab4f",
+        "Anim_236SK_Shot",
+        "Anim_623HP_BicycleKick",
+        "Anim_214SK_Scorpion",
+        "Idle_Breath",
+        "Dash_Forward",
+        "Kick_High",
+        "Special_Chilena",
+        "Victory_Pose"
+      ],
+      "UpgradedClips": [
+        {
+          "ClipName": "Idle_Breath",
+          "DurationSeconds": 2.0,
+          "FPS": 60,
+          "KeyframeCount": 121,
+          "ChannelCount": 15,
+          "SamplerCount": 15,
+          "Interpolation": "LINEAR",
+          "SpecialFeatures": "Full-body 60 FPS keyframe animation"
+        },
+        {
+          "ClipName": "Dash_Forward",
+          "DurationSeconds": 0.6,
+          "FPS": 60,
+          "KeyframeCount": 37,
+          "ChannelCount": 16,
+          "SamplerCount": 16,
+          "Interpolation": "LINEAR",
+          "SpecialFeatures": "Full-body 60 FPS keyframe animation"
+        },
+        {
+          "ClipName": "Kick_High",
+          "DurationSeconds": 0.8,
+          "FPS": 60,
+          "KeyframeCount": 49,
+          "ChannelCount": 15,
+          "SamplerCount": 15,
+          "Interpolation": "LINEAR",
+          "SpecialFeatures": "Full-body 60 FPS keyframe animation"
+        },
+        {
+          "ClipName": "Special_Chilena",
+          "DurationSeconds": 1.2,
+          "FPS": 60,
+          "KeyframeCount": 73,
+          "ChannelCount": 14,
+          "SamplerCount": 14,
+          "Interpolation": "LINEAR",
+          "SpecialFeatures": "Full-body 60 FPS keyframe animation"
+        },
+        {
+          "ClipName": "Victory_Pose",
+          "DurationSeconds": 1.5,
+          "FPS": 60,
+          "KeyframeCount": 91,
+          "ChannelCount": 14,
+          "SamplerCount": 14,
+          "Interpolation": "LINEAR",
+          "SpecialFeatures": "Full-body 60 FPS keyframe animation"
+        }
+      ]
+    },
+    {
+      "FighterFile": "SK_BRUXO_BR.glb",
+      "FighterID": "BRUXO_BR",
+      "IsBoss": false,
+      "FileSizeBytes": 149112,
+      "TotalAnimationsInGLB": 10,
+      "AllAnimationNames": [
+        "Anim_Idle",
+        "Anim_5LP_Jab4f",
+        "Anim_236SK_Shot",
+        "Anim_623HP_BicycleKick",
+        "Anim_214SK_Scorpion",
+        "Idle_Breath",
+        "Dash_Forward",
+        "Kick_High",
+        "Special_Chilena",
+        "Victory_Pose"
+      ],
+      "UpgradedClips": [
+        {
+          "ClipName": "Idle_Breath",
+          "DurationSeconds": 2.0,
+          "FPS": 60,
+          "KeyframeCount": 121,
+          "ChannelCount": 15,
+          "SamplerCount": 15,
+          "Interpolation": "LINEAR",
+          "SpecialFeatures": "Full-body 60 FPS keyframe animation"
+        },
+        {
+          "ClipName": "Dash_Forward",
+          "DurationSeconds": 0.6,
+          "FPS": 60,
+          "KeyframeCount": 37,
+          "ChannelCount": 16,
+          "SamplerCount": 16,
+          "Interpolation": "LINEAR",
+          "SpecialFeatures": "Full-body 60 FPS keyframe animation"
+        },
+        {
+          "ClipName": "Kick_High",
+          "DurationSeconds": 0.8,
+          "FPS": 60,
+          "KeyframeCount": 49,
+          "ChannelCount": 15,
+          "SamplerCount": 15,
+          "Interpolation": "LINEAR",
+          "SpecialFeatures": "Full-body 60 FPS keyframe animation"
+        },
+        {
+          "ClipName": "Special_Chilena",
+          "DurationSeconds": 1.2,
+          "FPS": 60,
+          "KeyframeCount": 73,
+          "ChannelCount": 14,
+          "SamplerCount": 14,
+          "Interpolation": "LINEAR",
+          "SpecialFeatures": "Full-body 60 FPS keyframe animation"
+        },
+        {
+          "ClipName": "Victory_Pose",
+          "DurationSeconds": 1.5,
+          "FPS": 60,
+          "KeyframeCount": 91,
+          "ChannelCount": 14,
+          "SamplerCount": 14,
+          "Interpolation": "LINEAR",
+          "SpecialFeatures": "Full-body 60 FPS keyframe animation"
+        }
+      ]
+    },
+    {
+      "FighterFile": "SK_BULLDOG_PY.glb",
+      "FighterID": "BULLDOG_PY",
+      "IsBoss": false,
+      "FileSizeBytes": 149096,
+      "TotalAnimationsInGLB": 10,
+      "AllAnimationNames": [
+        "Anim_Idle",
+        "Anim_5LP_Jab4f",
+        "Anim_236SK_Shot",
+        "Anim_623HP_BicycleKick",
+        "Anim_214SK_Scorpion",
+        "Idle_Breath",
+        "Dash_Forward",
+        "Kick_High",
+        "Special_Chilena",
+        "Victory_Pose"
+      ],
+      "UpgradedClips": [
+        {
+          "ClipName": "Idle_Breath",
+          "DurationSeconds": 2.0,
+          "FPS": 60,
+          "KeyframeCount": 121,
+          "ChannelCount": 15,
+          "SamplerCount": 15,
+          "Interpolation": "LINEAR",
+          "SpecialFeatures": "Full-body 60 FPS keyframe animation"
+        },
+        {
+          "ClipName": "Dash_Forward",
+          "DurationSeconds": 0.6,
+          "FPS": 60,
+          "KeyframeCount": 37,
+          "ChannelCount": 16,
+          "SamplerCount": 16,
+          "Interpolation": "LINEAR",
+          "SpecialFeatures": "Full-body 60 FPS keyframe animation"
+        },
+        {
+          "ClipName": "Kick_High",
+          "DurationSeconds": 0.8,
+          "FPS": 60,
+          "KeyframeCount": 49,
+          "ChannelCount": 15,
+          "SamplerCount": 15,
+          "Interpolation": "LINEAR",
+          "SpecialFeatures": "Full-body 60 FPS keyframe animation"
+        },
+        {
+          "ClipName": "Special_Chilena",
+          "DurationSeconds": 1.2,
+          "FPS": 60,
+          "KeyframeCount": 73,
+          "ChannelCount": 14,
+          "SamplerCount": 14,
+          "Interpolation": "LINEAR",
+          "SpecialFeatures": "Full-body 60 FPS keyframe animation"
+        },
+        {
+          "ClipName": "Victory_Pose",
+          "DurationSeconds": 1.5,
+          "FPS": 60,
+          "KeyframeCount": 91,
+          "ChannelCount": 14,
+          "SamplerCount": 14,
+          "Interpolation": "LINEAR",
+          "SpecialFeatures": "Full-body 60 FPS keyframe animation"
+        }
+      ]
+    },
+    {
+      "FighterFile": "SK_CANON_AR.glb",
+      "FighterID": "CANON_AR",
+      "IsBoss": false,
+      "FileSizeBytes": 149100,
+      "TotalAnimationsInGLB": 10,
+      "AllAnimationNames": [
+        "Anim_Idle",
+        "Anim_5LP_Jab4f",
+        "Anim_236SK_Shot",
+        "Anim_623HP_BicycleKick",
+        "Anim_214SK_Scorpion",
+        "Idle_Breath",
+        "Dash_Forward",
+        "Kick_High",
+        "Special_Chilena",
+        "Victory_Pose"
+      ],
+      "UpgradedClips": [
+        {
+          "ClipName": "Idle_Breath",
+          "DurationSeconds": 2.0,
+          "FPS": 60,
+          "KeyframeCount": 121,
+          "ChannelCount": 15,
+          "SamplerCount": 15,
+          "Interpolation": "LINEAR",
+          "SpecialFeatures": "Full-body 60 FPS keyframe animation"
+        },
+        {
+          "ClipName": "Dash_Forward",
+          "DurationSeconds": 0.6,
+          "FPS": 60,
+          "KeyframeCount": 37,
+          "ChannelCount": 16,
+          "SamplerCount": 16,
+          "Interpolation": "LINEAR",
+          "SpecialFeatures": "Full-body 60 FPS keyframe animation"
+        },
+        {
+          "ClipName": "Kick_High",
+          "DurationSeconds": 0.8,
+          "FPS": 60,
+          "KeyframeCount": 49,
+          "ChannelCount": 15,
+          "SamplerCount": 15,
+          "Interpolation": "LINEAR",
+          "SpecialFeatures": "Full-body 60 FPS keyframe animation"
+        },
+        {
+          "ClipName": "Special_Chilena",
+          "DurationSeconds": 1.2,
+          "FPS": 60,
+          "KeyframeCount": 73,
+          "ChannelCount": 14,
+          "SamplerCount": 14,
+          "Interpolation": "LINEAR",
+          "SpecialFeatures": "Full-body 60 FPS keyframe animation"
+        },
+        {
+          "ClipName": "Victory_Pose",
+          "DurationSeconds": 1.5,
+          "FPS": 60,
+          "KeyframeCount": 91,
+          "ChannelCount": 14,
+          "SamplerCount": 14,
+          "Interpolation": "LINEAR",
+          "SpecialFeatures": "Full-body 60 FPS keyframe animation"
+        }
+      ]
+    },
+    {
+      "FighterFile": "SK_DIABLO_BO.glb",
+      "FighterID": "DIABLO_BO",
+      "IsBoss": false,
+      "FileSizeBytes": 149124,
+      "TotalAnimationsInGLB": 10,
+      "AllAnimationNames": [
+        "Anim_Idle",
+        "Anim_5LP_Jab4f",
+        "Anim_236SK_Shot",
+        "Anim_623HP_BicycleKick",
+        "Anim_214SK_Scorpion",
+        "Idle_Breath",
+        "Dash_Forward",
+        "Kick_High",
+        "Special_Chilena",
+        "Victory_Pose"
+      ],
+      "UpgradedClips": [
+        {
+          "ClipName": "Idle_Breath",
+          "DurationSeconds": 2.0,
+          "FPS": 60,
+          "KeyframeCount": 121,
+          "ChannelCount": 15,
+          "SamplerCount": 15,
+          "Interpolation": "LINEAR",
+          "SpecialFeatures": "Full-body 60 FPS keyframe animation"
+        },
+        {
+          "ClipName": "Dash_Forward",
+          "DurationSeconds": 0.6,
+          "FPS": 60,
+          "KeyframeCount": 37,
+          "ChannelCount": 16,
+          "SamplerCount": 16,
+          "Interpolation": "LINEAR",
+          "SpecialFeatures": "Full-body 60 FPS keyframe animation"
+        },
+        {
+          "ClipName": "Kick_High",
+          "DurationSeconds": 0.8,
+          "FPS": 60,
+          "KeyframeCount": 49,
+          "ChannelCount": 15,
+          "SamplerCount": 15,
+          "Interpolation": "LINEAR",
+          "SpecialFeatures": "Full-body 60 FPS keyframe animation"
+        },
+        {
+          "ClipName": "Special_Chilena",
+          "DurationSeconds": 1.2,
+          "FPS": 60,
+          "KeyframeCount": 73,
+          "ChannelCount": 14,
+          "SamplerCount": 14,
+          "Interpolation": "LINEAR",
+          "SpecialFeatures": "Full-body 60 FPS keyframe animation"
+        },
+        {
+          "ClipName": "Victory_Pose",
+          "DurationSeconds": 1.5,
+          "FPS": 60,
+          "KeyframeCount": 91,
+          "ChannelCount": 14,
+          "SamplerCount": 14,
+          "Interpolation": "LINEAR",
+          "SpecialFeatures": "Full-body 60 FPS keyframe animation"
+        }
+      ]
+    },
+    {
+      "FighterFile": "SK_FENOMENO_BR.glb",
+      "FighterID": "FENOMENO_BR",
+      "IsBoss": false,
+      "FileSizeBytes": 149124,
+      "TotalAnimationsInGLB": 10,
+      "AllAnimationNames": [
+        "Anim_Idle",
+        "Anim_5LP_Jab4f",
+        "Anim_236SK_Shot",
+        "Anim_623HP_BicycleKick",
+        "Anim_214SK_Scorpion",
+        "Idle_Breath",
+        "Dash_Forward",
+        "Kick_High",
+        "Special_Chilena",
+        "Victory_Pose"
+      ],
+      "UpgradedClips": [
+        {
+          "ClipName": "Idle_Breath",
+          "DurationSeconds": 2.0,
+          "FPS": 60,
+          "KeyframeCount": 121,
+          "ChannelCount": 15,
+          "SamplerCount": 15,
+          "Interpolation": "LINEAR",
+          "SpecialFeatures": "Full-body 60 FPS keyframe animation"
+        },
+        {
+          "ClipName": "Dash_Forward",
+          "DurationSeconds": 0.6,
+          "FPS": 60,
+          "KeyframeCount": 37,
+          "ChannelCount": 16,
+          "SamplerCount": 16,
+          "Interpolation": "LINEAR",
+          "SpecialFeatures": "Full-body 60 FPS keyframe animation"
+        },
+        {
+          "ClipName": "Kick_High",
+          "DurationSeconds": 0.8,
+          "FPS": 60,
+          "KeyframeCount": 49,
+          "ChannelCount": 15,
+          "SamplerCount": 15,
+          "Interpolation": "LINEAR",
+          "SpecialFeatures": "Full-body 60 FPS keyframe animation"
+        },
+        {
+          "ClipName": "Special_Chilena",
+          "DurationSeconds": 1.2,
+          "FPS": 60,
+          "KeyframeCount": 73,
+          "ChannelCount": 14,
+          "SamplerCount": 14,
+          "Interpolation": "LINEAR",
+          "SpecialFeatures": "Full-body 60 FPS keyframe animation"
+        },
+        {
+          "ClipName": "Victory_Pose",
+          "DurationSeconds": 1.5,
+          "FPS": 60,
+          "KeyframeCount": 91,
+          "ChannelCount": 14,
+          "SamplerCount": 14,
+          "Interpolation": "LINEAR",
+          "SpecialFeatures": "Full-body 60 FPS keyframe animation"
+        }
+      ]
+    },
+    {
+      "FighterFile": "SK_GENERAL_FR.glb",
+      "FighterID": "GENERAL_FR",
+      "IsBoss": false,
+      "FileSizeBytes": 149108,
+      "TotalAnimationsInGLB": 10,
+      "AllAnimationNames": [
+        "Anim_Idle",
+        "Anim_5LP_Jab4f",
+        "Anim_236SK_Shot",
+        "Anim_623HP_BicycleKick",
+        "Anim_214SK_Scorpion",
+        "Idle_Breath",
+        "Dash_Forward",
+        "Kick_High",
+        "Special_Chilena",
+        "Victory_Pose"
+      ],
+      "UpgradedClips": [
+        {
+          "ClipName": "Idle_Breath",
+          "DurationSeconds": 2.0,
+          "FPS": 60,
+          "KeyframeCount": 121,
+          "ChannelCount": 15,
+          "SamplerCount": 15,
+          "Interpolation": "LINEAR",
+          "SpecialFeatures": "Full-body 60 FPS keyframe animation"
+        },
+        {
+          "ClipName": "Dash_Forward",
+          "DurationSeconds": 0.6,
+          "FPS": 60,
+          "KeyframeCount": 37,
+          "ChannelCount": 16,
+          "SamplerCount": 16,
+          "Interpolation": "LINEAR",
+          "SpecialFeatures": "Full-body 60 FPS keyframe animation"
+        },
+        {
+          "ClipName": "Kick_High",
+          "DurationSeconds": 0.8,
+          "FPS": 60,
+          "KeyframeCount": 49,
+          "ChannelCount": 15,
+          "SamplerCount": 15,
+          "Interpolation": "LINEAR",
+          "SpecialFeatures": "Full-body 60 FPS keyframe animation"
+        },
+        {
+          "ClipName": "Special_Chilena",
+          "DurationSeconds": 1.2,
+          "FPS": 60,
+          "KeyframeCount": 73,
+          "ChannelCount": 14,
+          "SamplerCount": 14,
+          "Interpolation": "LINEAR",
+          "SpecialFeatures": "Full-body 60 FPS keyframe animation"
+        },
+        {
+          "ClipName": "Victory_Pose",
+          "DurationSeconds": 1.5,
+          "FPS": 60,
+          "KeyframeCount": 91,
+          "ChannelCount": 14,
+          "SamplerCount": 14,
+          "Interpolation": "LINEAR",
+          "SpecialFeatures": "Full-body 60 FPS keyframe animation"
+        }
+      ]
+    },
+    {
+      "FighterFile": "SK_HURACAN_VE.glb",
+      "FighterID": "HURACAN_VE",
+      "IsBoss": false,
+      "FileSizeBytes": 149120,
+      "TotalAnimationsInGLB": 10,
+      "AllAnimationNames": [
+        "Anim_Idle",
+        "Anim_5LP_Jab4f",
+        "Anim_236SK_Shot",
+        "Anim_623HP_BicycleKick",
+        "Anim_214SK_Scorpion",
+        "Idle_Breath",
+        "Dash_Forward",
+        "Kick_High",
+        "Special_Chilena",
+        "Victory_Pose"
+      ],
+      "UpgradedClips": [
+        {
+          "ClipName": "Idle_Breath",
+          "DurationSeconds": 2.0,
+          "FPS": 60,
+          "KeyframeCount": 121,
+          "ChannelCount": 15,
+          "SamplerCount": 15,
+          "Interpolation": "LINEAR",
+          "SpecialFeatures": "Full-body 60 FPS keyframe animation"
+        },
+        {
+          "ClipName": "Dash_Forward",
+          "DurationSeconds": 0.6,
+          "FPS": 60,
+          "KeyframeCount": 37,
+          "ChannelCount": 16,
+          "SamplerCount": 16,
+          "Interpolation": "LINEAR",
+          "SpecialFeatures": "Full-body 60 FPS keyframe animation"
+        },
+        {
+          "ClipName": "Kick_High",
+          "DurationSeconds": 0.8,
+          "FPS": 60,
+          "KeyframeCount": 49,
+          "ChannelCount": 15,
+          "SamplerCount": 15,
+          "Interpolation": "LINEAR",
+          "SpecialFeatures": "Full-body 60 FPS keyframe animation"
+        },
+        {
+          "ClipName": "Special_Chilena",
+          "DurationSeconds": 1.2,
+          "FPS": 60,
+          "KeyframeCount": 73,
+          "ChannelCount": 14,
+          "SamplerCount": 14,
+          "Interpolation": "LINEAR",
+          "SpecialFeatures": "Full-body 60 FPS keyframe animation"
+        },
+        {
+          "ClipName": "Victory_Pose",
+          "DurationSeconds": 1.5,
+          "FPS": 60,
+          "KeyframeCount": 91,
+          "ChannelCount": 14,
+          "SamplerCount": 14,
+          "Interpolation": "LINEAR",
+          "SpecialFeatures": "Full-body 60 FPS keyframe animation"
+        }
+      ]
+    },
+    {
+      "FighterFile": "SK_LOCO_CO.glb",
+      "FighterID": "LOCO_CO",
+      "IsBoss": false,
+      "FileSizeBytes": 155948,
+      "TotalAnimationsInGLB": 10,
+      "AllAnimationNames": [
+        "Anim_Idle",
+        "Anim_5LP_Jab4f",
+        "Anim_236SK_Shot",
+        "Anim_623HP_BicycleKick",
+        "Anim_214SK_Scorpion",
+        "Idle_Breath",
+        "Dash_Forward",
+        "Kick_High",
+        "Special_Chilena",
+        "Victory_Pose"
+      ],
+      "UpgradedClips": [
+        {
+          "ClipName": "Idle_Breath",
+          "DurationSeconds": 2.0,
+          "FPS": 60,
+          "KeyframeCount": 121,
+          "ChannelCount": 15,
+          "SamplerCount": 15,
+          "Interpolation": "LINEAR",
+          "SpecialFeatures": "Full-body 60 FPS keyframe animation"
+        },
+        {
+          "ClipName": "Dash_Forward",
+          "DurationSeconds": 0.6,
+          "FPS": 60,
+          "KeyframeCount": 37,
+          "ChannelCount": 16,
+          "SamplerCount": 16,
+          "Interpolation": "LINEAR",
+          "SpecialFeatures": "Full-body 60 FPS keyframe animation"
+        },
+        {
+          "ClipName": "Kick_High",
+          "DurationSeconds": 0.8,
+          "FPS": 60,
+          "KeyframeCount": 49,
+          "ChannelCount": 15,
+          "SamplerCount": 15,
+          "Interpolation": "LINEAR",
+          "SpecialFeatures": "Full-body 60 FPS keyframe animation"
+        },
+        {
+          "ClipName": "Special_Chilena",
+          "DurationSeconds": 1.2,
+          "FPS": 60,
+          "KeyframeCount": 73,
+          "ChannelCount": 14,
+          "SamplerCount": 14,
+          "Interpolation": "LINEAR",
+          "SpecialFeatures": "Full-body 60 FPS keyframe animation"
+        },
+        {
+          "ClipName": "Victory_Pose",
+          "DurationSeconds": 1.5,
+          "FPS": 60,
+          "KeyframeCount": 91,
+          "ChannelCount": 14,
+          "SamplerCount": 14,
+          "Interpolation": "LINEAR",
+          "SpecialFeatures": "Full-body 60 FPS keyframe animation"
+        }
+      ]
+    },
+    {
+      "FighterFile": "SK_MAESTRO_PE.glb",
+      "FighterID": "MAESTRO_PE",
+      "IsBoss": false,
+      "FileSizeBytes": 149116,
+      "TotalAnimationsInGLB": 10,
+      "AllAnimationNames": [
+        "Anim_Idle",
+        "Anim_5LP_Jab4f",
+        "Anim_236SK_Shot",
+        "Anim_623HP_BicycleKick",
+        "Anim_214SK_Scorpion",
+        "Idle_Breath",
+        "Dash_Forward",
+        "Kick_High",
+        "Special_Chilena",
+        "Victory_Pose"
+      ],
+      "UpgradedClips": [
+        {
+          "ClipName": "Idle_Breath",
+          "DurationSeconds": 2.0,
+          "FPS": 60,
+          "KeyframeCount": 121,
+          "ChannelCount": 15,
+          "SamplerCount": 15,
+          "Interpolation": "LINEAR",
+          "SpecialFeatures": "Full-body 60 FPS keyframe animation"
+        },
+        {
+          "ClipName": "Dash_Forward",
+          "DurationSeconds": 0.6,
+          "FPS": 60,
+          "KeyframeCount": 37,
+          "ChannelCount": 16,
+          "SamplerCount": 16,
+          "Interpolation": "LINEAR",
+          "SpecialFeatures": "Full-body 60 FPS keyframe animation"
+        },
+        {
+          "ClipName": "Kick_High",
+          "DurationSeconds": 0.8,
+          "FPS": 60,
+          "KeyframeCount": 49,
+          "ChannelCount": 15,
+          "SamplerCount": 15,
+          "Interpolation": "LINEAR",
+          "SpecialFeatures": "Full-body 60 FPS keyframe animation"
+        },
+        {
+          "ClipName": "Special_Chilena",
+          "DurationSeconds": 1.2,
+          "FPS": 60,
+          "KeyframeCount": 73,
+          "ChannelCount": 14,
+          "SamplerCount": 14,
+          "Interpolation": "LINEAR",
+          "SpecialFeatures": "Full-body 60 FPS keyframe animation"
+        },
+        {
+          "ClipName": "Victory_Pose",
+          "DurationSeconds": 1.5,
+          "FPS": 60,
+          "KeyframeCount": 91,
+          "ChannelCount": 14,
+          "SamplerCount": 14,
+          "Interpolation": "LINEAR",
+          "SpecialFeatures": "Full-body 60 FPS keyframe animation"
+        }
+      ]
+    },
+    {
+      "FighterFile": "SK_MATADOR_UY.glb",
+      "FighterID": "MATADOR_UY",
+      "IsBoss": false,
+      "FileSizeBytes": 149120,
+      "TotalAnimationsInGLB": 10,
+      "AllAnimationNames": [
+        "Anim_Idle",
+        "Anim_5LP_Jab4f",
+        "Anim_236SK_Shot",
+        "Anim_623HP_BicycleKick",
+        "Anim_214SK_Scorpion",
+        "Idle_Breath",
+        "Dash_Forward",
+        "Kick_High",
+        "Special_Chilena",
+        "Victory_Pose"
+      ],
+      "UpgradedClips": [
+        {
+          "ClipName": "Idle_Breath",
+          "DurationSeconds": 2.0,
+          "FPS": 60,
+          "KeyframeCount": 121,
+          "ChannelCount": 15,
+          "SamplerCount": 15,
+          "Interpolation": "LINEAR",
+          "SpecialFeatures": "Full-body 60 FPS keyframe animation"
+        },
+        {
+          "ClipName": "Dash_Forward",
+          "DurationSeconds": 0.6,
+          "FPS": 60,
+          "KeyframeCount": 37,
+          "ChannelCount": 16,
+          "SamplerCount": 16,
+          "Interpolation": "LINEAR",
+          "SpecialFeatures": "Full-body 60 FPS keyframe animation"
+        },
+        {
+          "ClipName": "Kick_High",
+          "DurationSeconds": 0.8,
+          "FPS": 60,
+          "KeyframeCount": 49,
+          "ChannelCount": 15,
+          "SamplerCount": 15,
+          "Interpolation": "LINEAR",
+          "SpecialFeatures": "Full-body 60 FPS keyframe animation"
+        },
+        {
+          "ClipName": "Special_Chilena",
+          "DurationSeconds": 1.2,
+          "FPS": 60,
+          "KeyframeCount": 73,
+          "ChannelCount": 14,
+          "SamplerCount": 14,
+          "Interpolation": "LINEAR",
+          "SpecialFeatures": "Full-body 60 FPS keyframe animation"
+        },
+        {
+          "ClipName": "Victory_Pose",
+          "DurationSeconds": 1.5,
+          "FPS": 60,
+          "KeyframeCount": 91,
+          "ChannelCount": 14,
+          "SamplerCount": 14,
+          "Interpolation": "LINEAR",
+          "SpecialFeatures": "Full-body 60 FPS keyframe animation"
+        }
+      ]
+    },
+    {
+      "FighterFile": "SK_PIBE_CO.glb",
+      "FighterID": "PIBE_CO",
+      "IsBoss": false,
+      "FileSizeBytes": 155948,
+      "TotalAnimationsInGLB": 10,
+      "AllAnimationNames": [
+        "Anim_Idle",
+        "Anim_5LP_Jab4f",
+        "Anim_236SK_Shot",
+        "Anim_623HP_BicycleKick",
+        "Anim_214SK_Scorpion",
+        "Idle_Breath",
+        "Dash_Forward",
+        "Kick_High",
+        "Special_Chilena",
+        "Victory_Pose"
+      ],
+      "UpgradedClips": [
+        {
+          "ClipName": "Idle_Breath",
+          "DurationSeconds": 2.0,
+          "FPS": 60,
+          "KeyframeCount": 121,
+          "ChannelCount": 15,
+          "SamplerCount": 15,
+          "Interpolation": "LINEAR",
+          "SpecialFeatures": "Full-body 60 FPS keyframe animation"
+        },
+        {
+          "ClipName": "Dash_Forward",
+          "DurationSeconds": 0.6,
+          "FPS": 60,
+          "KeyframeCount": 37,
+          "ChannelCount": 16,
+          "SamplerCount": 16,
+          "Interpolation": "LINEAR",
+          "SpecialFeatures": "Full-body 60 FPS keyframe animation"
+        },
+        {
+          "ClipName": "Kick_High",
+          "DurationSeconds": 0.8,
+          "FPS": 60,
+          "KeyframeCount": 49,
+          "ChannelCount": 15,
+          "SamplerCount": 15,
+          "Interpolation": "LINEAR",
+          "SpecialFeatures": "Full-body 60 FPS keyframe animation"
+        },
+        {
+          "ClipName": "Special_Chilena",
+          "DurationSeconds": 1.2,
+          "FPS": 60,
+          "KeyframeCount": 73,
+          "ChannelCount": 14,
+          "SamplerCount": 14,
+          "Interpolation": "LINEAR",
+          "SpecialFeatures": "Full-body 60 FPS keyframe animation"
+        },
+        {
+          "ClipName": "Victory_Pose",
+          "DurationSeconds": 1.5,
+          "FPS": 60,
+          "KeyframeCount": 91,
+          "ChannelCount": 14,
+          "SamplerCount": 14,
+          "Interpolation": "LINEAR",
+          "SpecialFeatures": "Full-body 60 FPS keyframe animation"
+        }
+      ]
+    },
+    {
+      "FighterFile": "SK_PISTOLERO_UY.glb",
+      "FighterID": "PISTOLERO_UY",
+      "IsBoss": false,
+      "FileSizeBytes": 149124,
+      "TotalAnimationsInGLB": 10,
+      "AllAnimationNames": [
+        "Anim_Idle",
+        "Anim_5LP_Jab4f",
+        "Anim_236SK_Shot",
+        "Anim_623HP_BicycleKick",
+        "Anim_214SK_Scorpion",
+        "Idle_Breath",
+        "Dash_Forward",
+        "Kick_High",
+        "Special_Chilena",
+        "Victory_Pose"
+      ],
+      "UpgradedClips": [
+        {
+          "ClipName": "Idle_Breath",
+          "DurationSeconds": 2.0,
+          "FPS": 60,
+          "KeyframeCount": 121,
+          "ChannelCount": 15,
+          "SamplerCount": 15,
+          "Interpolation": "LINEAR",
+          "SpecialFeatures": "Full-body 60 FPS keyframe animation"
+        },
+        {
+          "ClipName": "Dash_Forward",
+          "DurationSeconds": 0.6,
+          "FPS": 60,
+          "KeyframeCount": 37,
+          "ChannelCount": 16,
+          "SamplerCount": 16,
+          "Interpolation": "LINEAR",
+          "SpecialFeatures": "Full-body 60 FPS keyframe animation"
+        },
+        {
+          "ClipName": "Kick_High",
+          "DurationSeconds": 0.8,
+          "FPS": 60,
+          "KeyframeCount": 49,
+          "ChannelCount": 15,
+          "SamplerCount": 15,
+          "Interpolation": "LINEAR",
+          "SpecialFeatures": "Full-body 60 FPS keyframe animation"
+        },
+        {
+          "ClipName": "Special_Chilena",
+          "DurationSeconds": 1.2,
+          "FPS": 60,
+          "KeyframeCount": 73,
+          "ChannelCount": 14,
+          "SamplerCount": 14,
+          "Interpolation": "LINEAR",
+          "SpecialFeatures": "Full-body 60 FPS keyframe animation"
+        },
+        {
+          "ClipName": "Victory_Pose",
+          "DurationSeconds": 1.5,
+          "FPS": 60,
+          "KeyframeCount": 91,
+          "ChannelCount": 14,
+          "SamplerCount": 14,
+          "Interpolation": "LINEAR",
+          "SpecialFeatures": "Full-body 60 FPS keyframe animation"
+        }
+      ]
+    },
+    {
+      "FighterFile": "SK_PULGA_AR.glb",
+      "FighterID": "PULGA_AR",
+      "IsBoss": false,
+      "FileSizeBytes": 149124,
+      "TotalAnimationsInGLB": 10,
+      "AllAnimationNames": [
+        "Anim_Idle",
+        "Anim_5LP_Jab4f",
+        "Anim_236SK_Shot",
+        "Anim_623HP_BicycleKick",
+        "Anim_214SK_Scorpion",
+        "Idle_Breath",
+        "Dash_Forward",
+        "Kick_High",
+        "Special_Chilena",
+        "Victory_Pose"
+      ],
+      "UpgradedClips": [
+        {
+          "ClipName": "Idle_Breath",
+          "DurationSeconds": 2.0,
+          "FPS": 60,
+          "KeyframeCount": 121,
+          "ChannelCount": 15,
+          "SamplerCount": 15,
+          "Interpolation": "LINEAR",
+          "SpecialFeatures": "Full-body 60 FPS keyframe animation"
+        },
+        {
+          "ClipName": "Dash_Forward",
+          "DurationSeconds": 0.6,
+          "FPS": 60,
+          "KeyframeCount": 37,
+          "ChannelCount": 16,
+          "SamplerCount": 16,
+          "Interpolation": "LINEAR",
+          "SpecialFeatures": "Full-body 60 FPS keyframe animation"
+        },
+        {
+          "ClipName": "Kick_High",
+          "DurationSeconds": 0.8,
+          "FPS": 60,
+          "KeyframeCount": 49,
+          "ChannelCount": 15,
+          "SamplerCount": 15,
+          "Interpolation": "LINEAR",
+          "SpecialFeatures": "Full-body 60 FPS keyframe animation"
+        },
+        {
+          "ClipName": "Special_Chilena",
+          "DurationSeconds": 1.2,
+          "FPS": 60,
+          "KeyframeCount": 73,
+          "ChannelCount": 14,
+          "SamplerCount": 14,
+          "Interpolation": "LINEAR",
+          "SpecialFeatures": "Full-body 60 FPS keyframe animation"
+        },
+        {
+          "ClipName": "Victory_Pose",
+          "DurationSeconds": 1.5,
+          "FPS": 60,
+          "KeyframeCount": 91,
+          "ChannelCount": 14,
+          "SamplerCount": 14,
+          "Interpolation": "LINEAR",
+          "SpecialFeatures": "Full-body 60 FPS keyframe animation"
+        }
+      ]
+    },
+    {
+      "FighterFile": "SK_REY_CL.glb",
+      "FighterID": "REY_CL",
+      "IsBoss": false,
+      "FileSizeBytes": 147404,
+      "TotalAnimationsInGLB": 10,
+      "AllAnimationNames": [
+        "Anim_Idle",
+        "Anim_5LP_Jab4f",
+        "Anim_236SK_Shot",
+        "Anim_623HP_BicycleKick",
+        "Anim_214SK_Scorpion",
+        "Idle_Breath",
+        "Dash_Forward",
+        "Kick_High",
+        "Special_Chilena",
+        "Victory_Pose"
+      ],
+      "UpgradedClips": [
+        {
+          "ClipName": "Idle_Breath",
+          "DurationSeconds": 2.0,
+          "FPS": 60,
+          "KeyframeCount": 121,
+          "ChannelCount": 15,
+          "SamplerCount": 15,
+          "Interpolation": "LINEAR",
+          "SpecialFeatures": "Full-body 60 FPS keyframe animation"
+        },
+        {
+          "ClipName": "Dash_Forward",
+          "DurationSeconds": 0.6,
+          "FPS": 60,
+          "KeyframeCount": 37,
+          "ChannelCount": 16,
+          "SamplerCount": 16,
+          "Interpolation": "LINEAR",
+          "SpecialFeatures": "Full-body 60 FPS keyframe animation"
+        },
+        {
+          "ClipName": "Kick_High",
+          "DurationSeconds": 0.8,
+          "FPS": 60,
+          "KeyframeCount": 49,
+          "ChannelCount": 15,
+          "SamplerCount": 15,
+          "Interpolation": "LINEAR",
+          "SpecialFeatures": "Full-body 60 FPS keyframe animation"
+        },
+        {
+          "ClipName": "Special_Chilena",
+          "DurationSeconds": 1.2,
+          "FPS": 60,
+          "KeyframeCount": 73,
+          "ChannelCount": 14,
+          "SamplerCount": 14,
+          "Interpolation": "LINEAR",
+          "SpecialFeatures": "Full-body 60 FPS keyframe animation"
+        },
+        {
+          "ClipName": "Victory_Pose",
+          "DurationSeconds": 1.5,
+          "FPS": 60,
+          "KeyframeCount": 91,
+          "ChannelCount": 14,
+          "SamplerCount": 14,
+          "Interpolation": "LINEAR",
+          "SpecialFeatures": "Full-body 60 FPS keyframe animation"
+        }
+      ]
+    },
+    {
+      "FighterFile": "SK_SUPREME_JUDGE_BOSS.glb",
+      "FighterID": "SUPREME_JUDGE_BOSS",
+      "IsBoss": true,
+      "FileSizeBytes": 162784,
+      "TotalAnimationsInGLB": 10,
+      "AllAnimationNames": [
+        "Anim_Idle",
+        "Anim_5LP_Jab4f",
+        "Anim_236SK_Shot",
+        "Anim_623HP_BicycleKick",
+        "Anim_214SK_Scorpion",
+        "Idle_Breath",
+        "Dash_Forward",
+        "Kick_High",
+        "Special_Chilena",
+        "Victory_Pose"
+      ],
+      "UpgradedClips": [
+        {
+          "ClipName": "Idle_Breath",
+          "DurationSeconds": 2.0,
+          "FPS": 60,
+          "KeyframeCount": 121,
+          "ChannelCount": 17,
+          "SamplerCount": 17,
+          "Interpolation": "LINEAR",
+          "SpecialFeatures": "Hovering idle + orbital astrolabe halo rotation"
+        },
+        {
+          "ClipName": "Dash_Forward",
+          "DurationSeconds": 0.6,
+          "FPS": 60,
+          "KeyframeCount": 37,
+          "ChannelCount": 16,
+          "SamplerCount": 16,
+          "Interpolation": "LINEAR",
+          "SpecialFeatures": "Full-body 60 FPS keyframe animation"
+        },
+        {
+          "ClipName": "Kick_High",
+          "DurationSeconds": 0.8,
+          "FPS": 60,
+          "KeyframeCount": 49,
+          "ChannelCount": 15,
+          "SamplerCount": 15,
+          "Interpolation": "LINEAR",
+          "SpecialFeatures": "Full-body 60 FPS keyframe animation"
+        },
+        {
+          "ClipName": "Special_Chilena",
+          "DurationSeconds": 1.2,
+          "FPS": 60,
+          "KeyframeCount": 73,
+          "ChannelCount": 14,
+          "SamplerCount": 14,
+          "Interpolation": "LINEAR",
+          "SpecialFeatures": "Full-body 60 FPS keyframe animation"
+        },
+        {
+          "ClipName": "Victory_Pose",
+          "DurationSeconds": 1.5,
+          "FPS": 60,
+          "KeyframeCount": 91,
+          "ChannelCount": 20,
+          "SamplerCount": 20,
+          "Interpolation": "LINEAR",
+          "SpecialFeatures": "Hovering levitation + dual counter-rotating astrolabe halo motion"
+        }
+      ]
+    },
+    {
+      "FighterFile": "SK_TREN_EC.glb",
+      "FighterID": "TREN_EC",
+      "IsBoss": false,
+      "FileSizeBytes": 149108,
+      "TotalAnimationsInGLB": 10,
+      "AllAnimationNames": [
+        "Anim_Idle",
+        "Anim_5LP_Jab4f",
+        "Anim_236SK_Shot",
+        "Anim_623HP_BicycleKick",
+        "Anim_214SK_Scorpion",
+        "Idle_Breath",
+        "Dash_Forward",
+        "Kick_High",
+        "Special_Chilena",
+        "Victory_Pose"
+      ],
+      "UpgradedClips": [
+        {
+          "ClipName": "Idle_Breath",
+          "DurationSeconds": 2.0,
+          "FPS": 60,
+          "KeyframeCount": 121,
+          "ChannelCount": 15,
+          "SamplerCount": 15,
+          "Interpolation": "LINEAR",
+          "SpecialFeatures": "Full-body 60 FPS keyframe animation"
+        },
+        {
+          "ClipName": "Dash_Forward",
+          "DurationSeconds": 0.6,
+          "FPS": 60,
+          "KeyframeCount": 37,
+          "ChannelCount": 16,
+          "SamplerCount": 16,
+          "Interpolation": "LINEAR",
+          "SpecialFeatures": "Full-body 60 FPS keyframe animation"
+        },
+        {
+          "ClipName": "Kick_High",
+          "DurationSeconds": 0.8,
+          "FPS": 60,
+          "KeyframeCount": 49,
+          "ChannelCount": 15,
+          "SamplerCount": 15,
+          "Interpolation": "LINEAR",
+          "SpecialFeatures": "Full-body 60 FPS keyframe animation"
+        },
+        {
+          "ClipName": "Special_Chilena",
+          "DurationSeconds": 1.2,
+          "FPS": 60,
+          "KeyframeCount": 73,
+          "ChannelCount": 14,
+          "SamplerCount": 14,
+          "Interpolation": "LINEAR",
+          "SpecialFeatures": "Full-body 60 FPS keyframe animation"
+        },
+        {
+          "ClipName": "Victory_Pose",
+          "DurationSeconds": 1.5,
+          "FPS": 60,
+          "KeyframeCount": 91,
+          "ChannelCount": 14,
+          "SamplerCount": 14,
+          "Interpolation": "LINEAR",
+          "SpecialFeatures": "Full-body 60 FPS keyframe animation"
+        }
+      ]
+    }
+  ]
+}
