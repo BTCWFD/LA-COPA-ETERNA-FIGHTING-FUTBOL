@@ -1,0 +1,306 @@
+{
+  "schema_version": "1.0.0-BLENDER52-UE54-STAGES",
+  "project": "LA COPA ETERNA: SANGRE Y POTRERO",
+  "generated_utc": "2026-11-24T03:18:10.918018+00:00",
+  "blender_version": "5.2.1 LTS",
+  "blender_version_tuple": [
+    5,
+    2,
+    1
+  ],
+  "target_engine": "Unreal Engine 5.4+",
+  "fbx_export_settings": {
+    "axis_forward": "-Y",
+    "axis_up": "Z",
+    "global_scale": 1.0,
+    "apply_unit_scale": true,
+    "mesh_smooth_type": "FACE",
+    "use_mesh_modifiers": true,
+    "use_tspace": true,
+    "embed_textures": true
+  },
+  "zone_a_collision_spec": {
+    "zone_a_x_meters": [
+      -12.5,
+      12.5
+    ],
+    "arena_y_depth_meters": [
+      -8.5,
+      8.5
+    ],
+    "hulls": [
+      "UCX_PitchFloor",
+      "UCX_WallLeft",
+      "UCX_WallRight"
+    ]
+  },
+  "total_stages_exported": 10,
+  "all_uvs_verified": true,
+  "all_weighted_normals_applied": true,
+  "total_fbx_bytes": 1658088,
+  "master_blend": {
+    "file": "Master_Maracana_And_Centenario.blend",
+    "relative_path": "Assets/BlenderProduction/Stages/Master_Maracana_And_Centenario.blend",
+    "file_size_bytes": 248864,
+    "included_stages": [
+      {
+        "source_glb": "SM_Stage_Maracana_BR.glb",
+        "collection": "01_Stage_Maracana_BR",
+        "visible_by_default": true,
+        "mesh_count": 1,
+        "collision_count": 3
+      },
+      {
+        "source_glb": "SM_Stage_Centenario_UY.glb",
+        "collection": "02_Stage_Centenario_UY",
+        "visible_by_default": false,
+        "mesh_count": 1,
+        "collision_count": 3
+      }
+    ],
+    "total_mesh_objects": 2,
+    "total_collision_objects": 6,
+    "lighting_rig": {
+      "rig_name": "Renacimiento Sfumato Golden-Amber Three-Point Studio Rig",
+      "lights": [
+        "Renacimiento_Key_GoldenAmber",
+        "Renacimiento_Fill_Sfumato",
+        "Renacimiento_Rim_MoltenGold"
+      ],
+      "camera": "Camera_25D_Broadcast",
+      "world": "World_Renacimiento_Sfumato"
+    }
+  },
+  "stages": [
+    {
+      "stage_id": "STAGE_MARACANA_BR",
+      "display_name": "Estádio do Maracanã (Brasil)",
+      "source_glb": "SM_Stage_Maracana_BR.glb",
+      "source_glb_size_bytes": 319336,
+      "fbx_file": "SM_Stage_Maracana_BR.fbx",
+      "fbx_relative_path": "Assets/BlenderProduction/Stages/SM_Stage_Maracana_BR.fbx",
+      "fbx_size_bytes": 273660,
+      "mesh_object_count": 1,
+      "collision_object_count": 3,
+      "collision_names": [
+        "UCX_PitchFloor",
+        "UCX_WallLeft",
+        "UCX_WallRight"
+      ],
+      "vertex_count": 8848,
+      "polygon_count": 4492,
+      "triangle_count": 4492,
+      "material_count": 10,
+      "uvs_verified": true,
+      "weighted_normals_applied": true,
+      "sharp_edges_marked": 8884
+    },
+    {
+      "stage_id": "STAGE_BOMBONERA_AR",
+      "display_name": "La Bombonera (Argentina)",
+      "source_glb": "SM_Stage_Bombonera_AR.glb",
+      "source_glb_size_bytes": 124160,
+      "fbx_file": "SM_Stage_Bombonera_AR.fbx",
+      "fbx_relative_path": "Assets/BlenderProduction/Stages/SM_Stage_Bombonera_AR.fbx",
+      "fbx_size_bytes": 107308,
+      "mesh_object_count": 1,
+      "collision_object_count": 3,
+      "collision_names": [
+        "UCX_PitchFloor",
+        "UCX_WallLeft",
+        "UCX_WallRight"
+      ],
+      "vertex_count": 3264,
+      "polygon_count": 1632,
+      "triangle_count": 1632,
+      "material_count": 11,
+      "uvs_verified": true,
+      "weighted_normals_applied": true,
+      "sharp_edges_marked": 3264
+    },
+    {
+      "stage_id": "STAGE_CENTENARIO_UY",
+      "display_name": "Estadio Centenario (Uruguay)",
+      "source_glb": "SM_Stage_Centenario_UY.glb",
+      "source_glb_size_bytes": 154464,
+      "fbx_file": "SM_Stage_Centenario_UY.fbx",
+      "fbx_relative_path": "Assets/BlenderProduction/Stages/SM_Stage_Centenario_UY.fbx",
+      "fbx_size_bytes": 120460,
+      "mesh_object_count": 1,
+      "collision_object_count": 3,
+      "collision_names": [
+        "UCX_PitchFloor",
+        "UCX_WallLeft",
+        "UCX_WallRight"
+      ],
+      "vertex_count": 4196,
+      "polygon_count": 2132,
+      "triangle_count": 2132,
+      "material_count": 8,
+      "uvs_verified": true,
+      "weighted_normals_applied": true,
+      "sharp_edges_marked": 4205
+    },
+    {
+      "stage_id": "STAGE_METROPOLITANO_CO",
+      "display_name": "Estadio Metropolitano (Colombia)",
+      "source_glb": "SM_Stage_Metropolitano_CO.glb",
+      "source_glb_size_bytes": 227164,
+      "fbx_file": "SM_Stage_Metropolitano_CO.fbx",
+      "fbx_relative_path": "Assets/BlenderProduction/Stages/SM_Stage_Metropolitano_CO.fbx",
+      "fbx_size_bytes": 226156,
+      "mesh_object_count": 1,
+      "collision_object_count": 3,
+      "collision_names": [
+        "UCX_PitchFloor",
+        "UCX_WallLeft",
+        "UCX_WallRight"
+      ],
+      "vertex_count": 6166,
+      "polygon_count": 3304,
+      "triangle_count": 3304,
+      "material_count": 11,
+      "uvs_verified": true,
+      "weighted_normals_applied": true,
+      "sharp_edges_marked": 6285
+    },
+    {
+      "stage_id": "STAGE_NUNOA_CL",
+      "display_name": "Estadio Nacional de Ñuñoa (Chile)",
+      "source_glb": "SM_Stage_Nunoa_CL.glb",
+      "source_glb_size_bytes": 300628,
+      "fbx_file": "SM_Stage_Nunoa_CL.fbx",
+      "fbx_relative_path": "Assets/BlenderProduction/Stages/SM_Stage_Nunoa_CL.fbx",
+      "fbx_size_bytes": 251004,
+      "mesh_object_count": 1,
+      "collision_object_count": 3,
+      "collision_names": [
+        "UCX_PitchFloor",
+        "UCX_WallLeft",
+        "UCX_WallRight"
+      ],
+      "vertex_count": 8376,
+      "polygon_count": 4188,
+      "triangle_count": 4188,
+      "material_count": 8,
+      "uvs_verified": true,
+      "weighted_normals_applied": true,
+      "sharp_edges_marked": 8376
+    },
+    {
+      "stage_id": "STAGE_DEFENSORES_PY",
+      "display_name": "Estadio Defensores del Chaco (Paraguay)",
+      "source_glb": "SM_Stage_Defensores_PY.glb",
+      "source_glb_size_bytes": 93876,
+      "fbx_file": "SM_Stage_Defensores_PY.fbx",
+      "fbx_relative_path": "Assets/BlenderProduction/Stages/SM_Stage_Defensores_PY.fbx",
+      "fbx_size_bytes": 78940,
+      "mesh_object_count": 1,
+      "collision_object_count": 3,
+      "collision_names": [
+        "UCX_PitchFloor",
+        "UCX_WallLeft",
+        "UCX_WallRight"
+      ],
+      "vertex_count": 2424,
+      "polygon_count": 1368,
+      "triangle_count": 1368,
+      "material_count": 9,
+      "uvs_verified": true,
+      "weighted_normals_applied": true,
+      "sharp_edges_marked": 2508
+    },
+    {
+      "stage_id": "STAGE_NACIONAL_LIMA_PE",
+      "display_name": "Estadio Nacional de Lima (Perú)",
+      "source_glb": "SM_Stage_NacionalLima_PE.glb",
+      "source_glb_size_bytes": 171632,
+      "fbx_file": "SM_Stage_NacionalLima_PE.fbx",
+      "fbx_relative_path": "Assets/BlenderProduction/Stages/SM_Stage_NacionalLima_PE.fbx",
+      "fbx_size_bytes": 157004,
+      "mesh_object_count": 1,
+      "collision_object_count": 3,
+      "collision_names": [
+        "UCX_PitchFloor",
+        "UCX_WallLeft",
+        "UCX_WallRight"
+      ],
+      "vertex_count": 4660,
+      "polygon_count": 2368,
+      "triangle_count": 2368,
+      "material_count": 9,
+      "uvs_verified": true,
+      "weighted_normals_applied": true,
+      "sharp_edges_marked": 4660
+    },
+    {
+      "stage_id": "STAGE_ATAHUALPA_EC",
+      "display_name": "Estadio Olímpico Atahualpa (Ecuador)",
+      "source_glb": "SM_Stage_Atahualpa_EC.glb",
+      "source_glb_size_bytes": 165468,
+      "fbx_file": "SM_Stage_Atahualpa_EC.fbx",
+      "fbx_relative_path": "Assets/BlenderProduction/Stages/SM_Stage_Atahualpa_EC.fbx",
+      "fbx_size_bytes": 138956,
+      "mesh_object_count": 1,
+      "collision_object_count": 3,
+      "collision_names": [
+        "UCX_PitchFloor",
+        "UCX_WallLeft",
+        "UCX_WallRight"
+      ],
+      "vertex_count": 4476,
+      "polygon_count": 2328,
+      "triangle_count": 2328,
+      "material_count": 9,
+      "uvs_verified": true,
+      "weighted_normals_applied": true,
+      "sharp_edges_marked": 4476
+    },
+    {
+      "stage_id": "STAGE_AVILA_VE",
+      "display_name": "Estadio del Ávila (Venezuela)",
+      "source_glb": "SM_Stage_Avila_VE.glb",
+      "source_glb_size_bytes": 203700,
+      "fbx_file": "SM_Stage_Avila_VE.fbx",
+      "fbx_relative_path": "Assets/BlenderProduction/Stages/SM_Stage_Avila_VE.fbx",
+      "fbx_size_bytes": 185132,
+      "mesh_object_count": 1,
+      "collision_object_count": 3,
+      "collision_names": [
+        "UCX_PitchFloor",
+        "UCX_WallLeft",
+        "UCX_WallRight"
+      ],
+      "vertex_count": 5538,
+      "polygon_count": 2892,
+      "triangle_count": 2892,
+      "material_count": 10,
+      "uvs_verified": true,
+      "weighted_normals_applied": true,
+      "sharp_edges_marked": 5573
+    },
+    {
+      "stage_id": "STAGE_HERNANDO_SILES_BO",
+      "display_name": "Estadio Hernando Siles (Bolivia - 3,600m)",
+      "source_glb": "SM_Stage_HernandoSiles_BO.glb",
+      "source_glb_size_bytes": 130976,
+      "fbx_file": "SM_Stage_HernandoSiles_BO.fbx",
+      "fbx_relative_path": "Assets/BlenderProduction/Stages/SM_Stage_HernandoSiles_BO.fbx",
+      "fbx_size_bytes": 119468,
+      "mesh_object_count": 1,
+      "collision_object_count": 3,
+      "collision_names": [
+        "UCX_PitchFloor",
+        "UCX_WallLeft",
+        "UCX_WallRight"
+      ],
+      "vertex_count": 3456,
+      "polygon_count": 1728,
+      "triangle_count": 1728,
+      "material_count": 11,
+      "uvs_verified": true,
+      "weighted_normals_applied": true,
+      "sharp_edges_marked": 3456
+    }
+  ]
+}

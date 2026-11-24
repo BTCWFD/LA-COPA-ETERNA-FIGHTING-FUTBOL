@@ -1,0 +1,966 @@
+{
+  "project": "LA COPA ETERNA: SANGRE Y POTRERO",
+  "pipeline": "blender_fighters_ue5_pipeline.py",
+  "generated_at_utc": "2026-11-24T03:19:01.499749+00:00",
+  "blender_version": "5.2.1 LTS",
+  "blender_version_tuple": [
+    5,
+    2,
+    1
+  ],
+  "target_engine": "Unreal Engine 5.4+",
+  "fbx_export_settings": {
+    "apply_scale_options": "FBX_SCALE_ALL",
+    "add_leaf_bones": false,
+    "bake_anim": true,
+    "bake_anim_use_all_actions": true,
+    "fps": 60,
+    "embed_textures": true,
+    "mesh_smooth_type": "FACE",
+    "subsurf_levels": 1
+  },
+  "total_fighters": 17,
+  "all_fbx_nonzero": true,
+  "all_chaos_cloth_verified": true,
+  "showcase_blend": {
+    "path": "Assets/BlenderProduction/Fighters/Master_17Fighters_Showcase.blend",
+    "size_bytes": 5968497
+  },
+  "fighters": [
+    {
+      "fighter": "SK_BAMBAM_CL",
+      "source_glb": "Assets/Models3D/Fighters/SK_BAMBAM_CL.glb",
+      "armature_name": "SK_BAMBAM_CL",
+      "mesh_name": "Mesh_BAMBAM_CL",
+      "bone_count": 38,
+      "action_count": 10,
+      "actions": [
+        "Anim_214SK_Scorpion",
+        "Anim_236SK_Shot",
+        "Anim_5LP_Jab4f",
+        "Anim_623HP_BicycleKick",
+        "Anim_Idle",
+        "Dash_Forward",
+        "Idle_Breath",
+        "Kick_High",
+        "Special_Chilena",
+        "Victory_Pose"
+      ],
+      "pre_subsurf_vertices": 432,
+      "pre_subsurf_faces": 216,
+      "vertices": 1188,
+      "faces": 648,
+      "uv_layers": [
+        "UVMap"
+      ],
+      "smooth_shaded": true,
+      "materials": [
+        "M_FighterSkin_SSS",
+        "M_FighterKit_Retro90s_Cloth",
+        "M_FighterHairCards_And_Eyes"
+      ],
+      "bound_textures": {
+        "skin_normal": "T_Skin_MicroPores_Normal.png",
+        "kit_albedo": "T_Kit_Chile_Albedo.png",
+        "kit_orm": "T_FighterKit_ORM.png",
+        "kit_normal": "T_Retro90s_Jacquard_Normal.png"
+      },
+      "chaos_cloth": {
+        "vertex_group": "ChaosCloth_Jersey_Weight",
+        "max_distance_cm": 12.0,
+        "jersey_vertex_count": 294,
+        "pinned_collar_vertices": 77,
+        "gradient_vertices": 164,
+        "free_hem_vertices": 53,
+        "min_weight": 0.0,
+        "max_weight": 1.0,
+        "jersey_z_range_m": [
+          0.8811,
+          1.3795
+        ]
+      },
+      "output_fbx": "Assets/BlenderProduction/Fighters/SK_BAMBAM_CL.fbx",
+      "fbx_size_bytes": 4009740
+    },
+    {
+      "fighter": "SK_BRUXO_BR",
+      "source_glb": "Assets/Models3D/Fighters/SK_BRUXO_BR.glb",
+      "armature_name": "SK_BRUXO_BR",
+      "mesh_name": "Mesh_BRUXO_BR",
+      "bone_count": 38,
+      "action_count": 10,
+      "actions": [
+        "Anim_214SK_Scorpion",
+        "Anim_236SK_Shot",
+        "Anim_5LP_Jab4f",
+        "Anim_623HP_BicycleKick",
+        "Anim_Idle",
+        "Dash_Forward",
+        "Idle_Breath",
+        "Kick_High",
+        "Special_Chilena",
+        "Victory_Pose"
+      ],
+      "pre_subsurf_vertices": 432,
+      "pre_subsurf_faces": 216,
+      "vertices": 1188,
+      "faces": 648,
+      "uv_layers": [
+        "UVMap"
+      ],
+      "smooth_shaded": true,
+      "materials": [
+        "M_FighterSkin_SSS",
+        "M_FighterKit_Retro90s_Cloth",
+        "M_FighterHairCards_And_Eyes"
+      ],
+      "bound_textures": {
+        "skin_normal": "T_Skin_MicroPores_Normal.png",
+        "kit_albedo": "T_Kit_Brazil_Albedo.png",
+        "kit_orm": "T_FighterKit_ORM.png",
+        "kit_normal": "T_Retro90s_Jacquard_Normal.png"
+      },
+      "chaos_cloth": {
+        "vertex_group": "ChaosCloth_Jersey_Weight",
+        "max_distance_cm": 12.0,
+        "jersey_vertex_count": 310,
+        "pinned_collar_vertices": 101,
+        "gradient_vertices": 140,
+        "free_hem_vertices": 69,
+        "min_weight": 0.0,
+        "max_weight": 1.0,
+        "jersey_z_range_m": [
+          0.8615,
+          1.4105
+        ]
+      },
+      "output_fbx": "Assets/BlenderProduction/Fighters/SK_BRUXO_BR.fbx",
+      "fbx_size_bytes": 4039052
+    },
+    {
+      "fighter": "SK_BULLDOG_PY",
+      "source_glb": "Assets/Models3D/Fighters/SK_BULLDOG_PY.glb",
+      "armature_name": "SK_BULLDOG_PY",
+      "mesh_name": "Mesh_BULLDOG_PY",
+      "bone_count": 38,
+      "action_count": 10,
+      "actions": [
+        "Anim_214SK_Scorpion",
+        "Anim_236SK_Shot",
+        "Anim_5LP_Jab4f",
+        "Anim_623HP_BicycleKick",
+        "Anim_Idle",
+        "Dash_Forward",
+        "Idle_Breath",
+        "Kick_High",
+        "Special_Chilena",
+        "Victory_Pose"
+      ],
+      "pre_subsurf_vertices": 432,
+      "pre_subsurf_faces": 216,
+      "vertices": 1188,
+      "faces": 648,
+      "uv_layers": [
+        "UVMap"
+      ],
+      "smooth_shaded": true,
+      "materials": [
+        "M_FighterSkin_SSS",
+        "M_FighterKit_Retro90s_Cloth",
+        "M_FighterHairCards_And_Eyes"
+      ],
+      "bound_textures": {
+        "skin_normal": "T_Skin_MicroPores_Normal.png",
+        "kit_albedo": "T_Kit_Paraguay_Albedo.png",
+        "kit_orm": "T_FighterKit_ORM.png",
+        "kit_normal": "T_Retro90s_Jacquard_Normal.png"
+      },
+      "chaos_cloth": {
+        "vertex_group": "ChaosCloth_Jersey_Weight",
+        "max_distance_cm": 12.0,
+        "jersey_vertex_count": 310,
+        "pinned_collar_vertices": 101,
+        "gradient_vertices": 140,
+        "free_hem_vertices": 69,
+        "min_weight": 0.0,
+        "max_weight": 1.0,
+        "jersey_z_range_m": [
+          0.9088,
+          1.488
+        ]
+      },
+      "output_fbx": "Assets/BlenderProduction/Fighters/SK_BULLDOG_PY.fbx",
+      "fbx_size_bytes": 4079052
+    },
+    {
+      "fighter": "SK_CANON_AR",
+      "source_glb": "Assets/Models3D/Fighters/SK_CANON_AR.glb",
+      "armature_name": "SK_CANON_AR",
+      "mesh_name": "Mesh_CANON_AR",
+      "bone_count": 38,
+      "action_count": 10,
+      "actions": [
+        "Anim_214SK_Scorpion",
+        "Anim_236SK_Shot",
+        "Anim_5LP_Jab4f",
+        "Anim_623HP_BicycleKick",
+        "Anim_Idle",
+        "Dash_Forward",
+        "Idle_Breath",
+        "Kick_High",
+        "Special_Chilena",
+        "Victory_Pose"
+      ],
+      "pre_subsurf_vertices": 432,
+      "pre_subsurf_faces": 216,
+      "vertices": 1188,
+      "faces": 648,
+      "uv_layers": [
+        "UVMap"
+      ],
+      "smooth_shaded": true,
+      "materials": [
+        "M_FighterSkin_SSS",
+        "M_FighterKit_Retro90s_Cloth",
+        "M_FighterHairCards_And_Eyes"
+      ],
+      "bound_textures": {
+        "skin_normal": "T_Skin_MicroPores_Normal.png",
+        "kit_albedo": "T_Kit_Argentina_Albedo.png",
+        "kit_orm": "T_FighterKit_ORM.png",
+        "kit_normal": "T_Retro90s_Jacquard_Normal.png"
+      },
+      "chaos_cloth": {
+        "vertex_group": "ChaosCloth_Jersey_Weight",
+        "max_distance_cm": 12.0,
+        "jersey_vertex_count": 310,
+        "pinned_collar_vertices": 101,
+        "gradient_vertices": 140,
+        "free_hem_vertices": 69,
+        "min_weight": 0.0,
+        "max_weight": 1.0,
+        "jersey_z_range_m": [
+          0.8757,
+          1.4338
+        ]
+      },
+      "output_fbx": "Assets/BlenderProduction/Fighters/SK_CANON_AR.fbx",
+      "fbx_size_bytes": 4194412
+    },
+    {
+      "fighter": "SK_DIABLO_BO",
+      "source_glb": "Assets/Models3D/Fighters/SK_DIABLO_BO.glb",
+      "armature_name": "SK_DIABLO_BO",
+      "mesh_name": "Mesh_DIABLO_BO",
+      "bone_count": 38,
+      "action_count": 10,
+      "actions": [
+        "Anim_214SK_Scorpion",
+        "Anim_236SK_Shot",
+        "Anim_5LP_Jab4f",
+        "Anim_623HP_BicycleKick",
+        "Anim_Idle",
+        "Dash_Forward",
+        "Idle_Breath",
+        "Kick_High",
+        "Special_Chilena",
+        "Victory_Pose"
+      ],
+      "pre_subsurf_vertices": 432,
+      "pre_subsurf_faces": 216,
+      "vertices": 1188,
+      "faces": 648,
+      "uv_layers": [
+        "UVMap"
+      ],
+      "smooth_shaded": true,
+      "materials": [
+        "M_FighterSkin_SSS",
+        "M_FighterKit_Retro90s_Cloth",
+        "M_FighterHairCards_And_Eyes"
+      ],
+      "bound_textures": {
+        "skin_normal": "T_Skin_MicroPores_Normal.png",
+        "kit_albedo": "T_Kit_Bolivia_Albedo.png",
+        "kit_orm": "T_FighterKit_ORM.png",
+        "kit_normal": "T_Retro90s_Jacquard_Normal.png"
+      },
+      "chaos_cloth": {
+        "vertex_group": "ChaosCloth_Jersey_Weight",
+        "max_distance_cm": 12.0,
+        "jersey_vertex_count": 294,
+        "pinned_collar_vertices": 77,
+        "gradient_vertices": 164,
+        "free_hem_vertices": 53,
+        "min_weight": 0.0,
+        "max_weight": 1.0,
+        "jersey_z_range_m": [
+          0.8712,
+          1.364
+        ]
+      },
+      "output_fbx": "Assets/BlenderProduction/Fighters/SK_DIABLO_BO.fbx",
+      "fbx_size_bytes": 4013932
+    },
+    {
+      "fighter": "SK_FENOMENO_BR",
+      "source_glb": "Assets/Models3D/Fighters/SK_FENOMENO_BR.glb",
+      "armature_name": "SK_FENOMENO_BR",
+      "mesh_name": "Mesh_FENOMENO_BR",
+      "bone_count": 38,
+      "action_count": 10,
+      "actions": [
+        "Anim_214SK_Scorpion",
+        "Anim_236SK_Shot",
+        "Anim_5LP_Jab4f",
+        "Anim_623HP_BicycleKick",
+        "Anim_Idle",
+        "Dash_Forward",
+        "Idle_Breath",
+        "Kick_High",
+        "Special_Chilena",
+        "Victory_Pose"
+      ],
+      "pre_subsurf_vertices": 432,
+      "pre_subsurf_faces": 216,
+      "vertices": 1188,
+      "faces": 648,
+      "uv_layers": [
+        "UVMap"
+      ],
+      "smooth_shaded": true,
+      "materials": [
+        "M_FighterSkin_SSS",
+        "M_FighterKit_Retro90s_Cloth",
+        "M_FighterHairCards_And_Eyes"
+      ],
+      "bound_textures": {
+        "skin_normal": "T_Skin_MicroPores_Normal.png",
+        "kit_albedo": "T_Kit_Brazil_Albedo.png",
+        "kit_orm": "T_FighterKit_ORM.png",
+        "kit_normal": "T_Retro90s_Jacquard_Normal.png"
+      },
+      "chaos_cloth": {
+        "vertex_group": "ChaosCloth_Jersey_Weight",
+        "max_distance_cm": 12.0,
+        "jersey_vertex_count": 310,
+        "pinned_collar_vertices": 101,
+        "gradient_vertices": 140,
+        "free_hem_vertices": 69,
+        "min_weight": 0.0,
+        "max_weight": 1.0,
+        "jersey_z_range_m": [
+          0.8662,
+          1.4183
+        ]
+      },
+      "output_fbx": "Assets/BlenderProduction/Fighters/SK_FENOMENO_BR.fbx",
+      "fbx_size_bytes": 4037084
+    },
+    {
+      "fighter": "SK_GENERAL_FR",
+      "source_glb": "Assets/Models3D/Fighters/SK_GENERAL_FR.glb",
+      "armature_name": "SK_GENERAL_FR",
+      "mesh_name": "Mesh_GENERAL_FR",
+      "bone_count": 38,
+      "action_count": 10,
+      "actions": [
+        "Anim_214SK_Scorpion",
+        "Anim_236SK_Shot",
+        "Anim_5LP_Jab4f",
+        "Anim_623HP_BicycleKick",
+        "Anim_Idle",
+        "Dash_Forward",
+        "Idle_Breath",
+        "Kick_High",
+        "Special_Chilena",
+        "Victory_Pose"
+      ],
+      "pre_subsurf_vertices": 432,
+      "pre_subsurf_faces": 216,
+      "vertices": 1188,
+      "faces": 648,
+      "uv_layers": [
+        "UVMap"
+      ],
+      "smooth_shaded": true,
+      "materials": [
+        "M_FighterSkin_SSS",
+        "M_FighterKit_Retro90s_Cloth",
+        "M_FighterHairCards_And_Eyes"
+      ],
+      "bound_textures": {
+        "skin_normal": "T_Skin_MicroPores_Normal.png",
+        "kit_albedo": "T_Kit_France_Albedo.png",
+        "kit_orm": "T_FighterKit_ORM.png",
+        "kit_normal": "T_Retro90s_Jacquard_Normal.png"
+      },
+      "chaos_cloth": {
+        "vertex_group": "ChaosCloth_Jersey_Weight",
+        "max_distance_cm": 12.0,
+        "jersey_vertex_count": 310,
+        "pinned_collar_vertices": 101,
+        "gradient_vertices": 140,
+        "free_hem_vertices": 69,
+        "min_weight": 0.0,
+        "max_weight": 1.0,
+        "jersey_z_range_m": [
+          0.8757,
+          1.4338
+        ]
+      },
+      "output_fbx": "Assets/BlenderProduction/Fighters/SK_GENERAL_FR.fbx",
+      "fbx_size_bytes": 3989356
+    },
+    {
+      "fighter": "SK_HURACAN_VE",
+      "source_glb": "Assets/Models3D/Fighters/SK_HURACAN_VE.glb",
+      "armature_name": "SK_HURACAN_VE",
+      "mesh_name": "Mesh_HURACAN_VE",
+      "bone_count": 38,
+      "action_count": 10,
+      "actions": [
+        "Anim_214SK_Scorpion",
+        "Anim_236SK_Shot",
+        "Anim_5LP_Jab4f",
+        "Anim_623HP_BicycleKick",
+        "Anim_Idle",
+        "Dash_Forward",
+        "Idle_Breath",
+        "Kick_High",
+        "Special_Chilena",
+        "Victory_Pose"
+      ],
+      "pre_subsurf_vertices": 432,
+      "pre_subsurf_faces": 216,
+      "vertices": 1188,
+      "faces": 648,
+      "uv_layers": [
+        "UVMap"
+      ],
+      "smooth_shaded": true,
+      "materials": [
+        "M_FighterSkin_SSS",
+        "M_FighterKit_Retro90s_Cloth",
+        "M_FighterHairCards_And_Eyes"
+      ],
+      "bound_textures": {
+        "skin_normal": "T_Skin_MicroPores_Normal.png",
+        "kit_albedo": "T_Kit_Venezuela_Albedo.png",
+        "kit_orm": "T_FighterKit_ORM.png",
+        "kit_normal": "T_Retro90s_Jacquard_Normal.png"
+      },
+      "chaos_cloth": {
+        "vertex_group": "ChaosCloth_Jersey_Weight",
+        "max_distance_cm": 12.0,
+        "jersey_vertex_count": 310,
+        "pinned_collar_vertices": 101,
+        "gradient_vertices": 140,
+        "free_hem_vertices": 69,
+        "min_weight": 0.0,
+        "max_weight": 1.0,
+        "jersey_z_range_m": [
+          0.852,
+          1.395
+        ]
+      },
+      "output_fbx": "Assets/BlenderProduction/Fighters/SK_HURACAN_VE.fbx",
+      "fbx_size_bytes": 3995756
+    },
+    {
+      "fighter": "SK_LOCO_CO",
+      "source_glb": "Assets/Models3D/Fighters/SK_LOCO_CO.glb",
+      "armature_name": "SK_LOCO_CO",
+      "mesh_name": "Mesh_LOCO_CO",
+      "bone_count": 38,
+      "action_count": 10,
+      "actions": [
+        "Anim_214SK_Scorpion",
+        "Anim_236SK_Shot",
+        "Anim_5LP_Jab4f",
+        "Anim_623HP_BicycleKick",
+        "Anim_Idle",
+        "Dash_Forward",
+        "Idle_Breath",
+        "Kick_High",
+        "Special_Chilena",
+        "Victory_Pose"
+      ],
+      "pre_subsurf_vertices": 528,
+      "pre_subsurf_faces": 264,
+      "vertices": 1452,
+      "faces": 792,
+      "uv_layers": [
+        "UVMap"
+      ],
+      "smooth_shaded": true,
+      "materials": [
+        "M_FighterSkin_SSS",
+        "M_FighterKit_Retro90s_Cloth",
+        "M_FighterHairCards_And_Eyes"
+      ],
+      "bound_textures": {
+        "skin_normal": "T_Skin_MicroPores_Normal.png",
+        "kit_albedo": "T_Kit_Colombia_Albedo.png",
+        "kit_orm": "T_FighterKit_ORM.png",
+        "kit_normal": "T_Retro90s_Jacquard_Normal.png"
+      },
+      "chaos_cloth": {
+        "vertex_group": "ChaosCloth_Jersey_Weight",
+        "max_distance_cm": 12.0,
+        "jersey_vertex_count": 294,
+        "pinned_collar_vertices": 77,
+        "gradient_vertices": 164,
+        "free_hem_vertices": 53,
+        "min_weight": 0.0,
+        "max_weight": 1.0,
+        "jersey_z_range_m": [
+          0.8712,
+          1.364
+        ]
+      },
+      "output_fbx": "Assets/BlenderProduction/Fighters/SK_LOCO_CO.fbx",
+      "fbx_size_bytes": 4107324
+    },
+    {
+      "fighter": "SK_MAESTRO_PE",
+      "source_glb": "Assets/Models3D/Fighters/SK_MAESTRO_PE.glb",
+      "armature_name": "SK_MAESTRO_PE",
+      "mesh_name": "Mesh_MAESTRO_PE",
+      "bone_count": 38,
+      "action_count": 10,
+      "actions": [
+        "Anim_214SK_Scorpion",
+        "Anim_236SK_Shot",
+        "Anim_5LP_Jab4f",
+        "Anim_623HP_BicycleKick",
+        "Anim_Idle",
+        "Dash_Forward",
+        "Idle_Breath",
+        "Kick_High",
+        "Special_Chilena",
+        "Victory_Pose"
+      ],
+      "pre_subsurf_vertices": 432,
+      "pre_subsurf_faces": 216,
+      "vertices": 1188,
+      "faces": 648,
+      "uv_layers": [
+        "UVMap"
+      ],
+      "smooth_shaded": true,
+      "materials": [
+        "M_FighterSkin_SSS",
+        "M_FighterKit_Retro90s_Cloth",
+        "M_FighterHairCards_And_Eyes"
+      ],
+      "bound_textures": {
+        "skin_normal": "T_Skin_MicroPores_Normal.png",
+        "kit_albedo": "T_Kit_Peru_Albedo.png",
+        "kit_orm": "T_FighterKit_ORM.png",
+        "kit_normal": "T_Retro90s_Jacquard_Normal.png"
+      },
+      "chaos_cloth": {
+        "vertex_group": "ChaosCloth_Jersey_Weight",
+        "max_distance_cm": 12.0,
+        "jersey_vertex_count": 294,
+        "pinned_collar_vertices": 77,
+        "gradient_vertices": 164,
+        "free_hem_vertices": 53,
+        "min_weight": 0.0,
+        "max_weight": 1.0,
+        "jersey_z_range_m": [
+          0.8762,
+          1.3718
+        ]
+      },
+      "output_fbx": "Assets/BlenderProduction/Fighters/SK_MAESTRO_PE.fbx",
+      "fbx_size_bytes": 4023660
+    },
+    {
+      "fighter": "SK_MATADOR_UY",
+      "source_glb": "Assets/Models3D/Fighters/SK_MATADOR_UY.glb",
+      "armature_name": "SK_MATADOR_UY",
+      "mesh_name": "Mesh_MATADOR_UY",
+      "bone_count": 38,
+      "action_count": 10,
+      "actions": [
+        "Anim_214SK_Scorpion",
+        "Anim_236SK_Shot",
+        "Anim_5LP_Jab4f",
+        "Anim_623HP_BicycleKick",
+        "Anim_Idle",
+        "Dash_Forward",
+        "Idle_Breath",
+        "Kick_High",
+        "Special_Chilena",
+        "Victory_Pose"
+      ],
+      "pre_subsurf_vertices": 432,
+      "pre_subsurf_faces": 216,
+      "vertices": 1188,
+      "faces": 648,
+      "uv_layers": [
+        "UVMap"
+      ],
+      "smooth_shaded": true,
+      "materials": [
+        "M_FighterSkin_SSS",
+        "M_FighterKit_Retro90s_Cloth",
+        "M_FighterHairCards_And_Eyes"
+      ],
+      "bound_textures": {
+        "skin_normal": "T_Skin_MicroPores_Normal.png",
+        "kit_albedo": "T_Kit_Uruguay_Albedo.png",
+        "kit_orm": "T_FighterKit_ORM.png",
+        "kit_normal": "T_Retro90s_Jacquard_Normal.png"
+      },
+      "chaos_cloth": {
+        "vertex_group": "ChaosCloth_Jersey_Weight",
+        "max_distance_cm": 12.0,
+        "jersey_vertex_count": 310,
+        "pinned_collar_vertices": 101,
+        "gradient_vertices": 140,
+        "free_hem_vertices": 69,
+        "min_weight": 0.0,
+        "max_weight": 1.0,
+        "jersey_z_range_m": [
+          0.852,
+          1.395
+        ]
+      },
+      "output_fbx": "Assets/BlenderProduction/Fighters/SK_MATADOR_UY.fbx",
+      "fbx_size_bytes": 4119804
+    },
+    {
+      "fighter": "SK_PIBE_CO",
+      "source_glb": "Assets/Models3D/Fighters/SK_PIBE_CO.glb",
+      "armature_name": "SK_PIBE_CO",
+      "mesh_name": "Mesh_PIBE_CO",
+      "bone_count": 38,
+      "action_count": 10,
+      "actions": [
+        "Anim_214SK_Scorpion",
+        "Anim_236SK_Shot",
+        "Anim_5LP_Jab4f",
+        "Anim_623HP_BicycleKick",
+        "Anim_Idle",
+        "Dash_Forward",
+        "Idle_Breath",
+        "Kick_High",
+        "Special_Chilena",
+        "Victory_Pose"
+      ],
+      "pre_subsurf_vertices": 528,
+      "pre_subsurf_faces": 264,
+      "vertices": 1452,
+      "faces": 792,
+      "uv_layers": [
+        "UVMap"
+      ],
+      "smooth_shaded": true,
+      "materials": [
+        "M_FighterSkin_SSS",
+        "M_FighterKit_Retro90s_Cloth",
+        "M_FighterHairCards_And_Eyes"
+      ],
+      "bound_textures": {
+        "skin_normal": "T_Skin_MicroPores_Normal.png",
+        "kit_albedo": "T_Kit_Colombia_Albedo.png",
+        "kit_orm": "T_FighterKit_ORM.png",
+        "kit_normal": "T_Retro90s_Jacquard_Normal.png"
+      },
+      "chaos_cloth": {
+        "vertex_group": "ChaosCloth_Jersey_Weight",
+        "max_distance_cm": 12.0,
+        "jersey_vertex_count": 294,
+        "pinned_collar_vertices": 77,
+        "gradient_vertices": 164,
+        "free_hem_vertices": 53,
+        "min_weight": 0.0,
+        "max_weight": 1.0,
+        "jersey_z_range_m": [
+          0.8712,
+          1.364
+        ]
+      },
+      "output_fbx": "Assets/BlenderProduction/Fighters/SK_PIBE_CO.fbx",
+      "fbx_size_bytes": 4107724
+    },
+    {
+      "fighter": "SK_PISTOLERO_UY",
+      "source_glb": "Assets/Models3D/Fighters/SK_PISTOLERO_UY.glb",
+      "armature_name": "SK_PISTOLERO_UY",
+      "mesh_name": "Mesh_PISTOLERO_UY",
+      "bone_count": 38,
+      "action_count": 10,
+      "actions": [
+        "Anim_214SK_Scorpion",
+        "Anim_236SK_Shot",
+        "Anim_5LP_Jab4f",
+        "Anim_623HP_BicycleKick",
+        "Anim_Idle",
+        "Dash_Forward",
+        "Idle_Breath",
+        "Kick_High",
+        "Special_Chilena",
+        "Victory_Pose"
+      ],
+      "pre_subsurf_vertices": 432,
+      "pre_subsurf_faces": 216,
+      "vertices": 1188,
+      "faces": 648,
+      "uv_layers": [
+        "UVMap"
+      ],
+      "smooth_shaded": true,
+      "materials": [
+        "M_FighterSkin_SSS",
+        "M_FighterKit_Retro90s_Cloth",
+        "M_FighterHairCards_And_Eyes"
+      ],
+      "bound_textures": {
+        "skin_normal": "T_Skin_MicroPores_Normal.png",
+        "kit_albedo": "T_Kit_Uruguay_Albedo.png",
+        "kit_orm": "T_FighterKit_ORM.png",
+        "kit_normal": "T_Retro90s_Jacquard_Normal.png"
+      },
+      "chaos_cloth": {
+        "vertex_group": "ChaosCloth_Jersey_Weight",
+        "max_distance_cm": 12.0,
+        "jersey_vertex_count": 310,
+        "pinned_collar_vertices": 101,
+        "gradient_vertices": 140,
+        "free_hem_vertices": 69,
+        "min_weight": 0.0,
+        "max_weight": 1.0,
+        "jersey_z_range_m": [
+          0.8615,
+          1.4105
+        ]
+      },
+      "output_fbx": "Assets/BlenderProduction/Fighters/SK_PISTOLERO_UY.fbx",
+      "fbx_size_bytes": 4120876
+    },
+    {
+      "fighter": "SK_PULGA_AR",
+      "source_glb": "Assets/Models3D/Fighters/SK_PULGA_AR.glb",
+      "armature_name": "SK_PULGA_AR",
+      "mesh_name": "Mesh_PULGA_AR",
+      "bone_count": 38,
+      "action_count": 10,
+      "actions": [
+        "Anim_214SK_Scorpion",
+        "Anim_236SK_Shot",
+        "Anim_5LP_Jab4f",
+        "Anim_623HP_BicycleKick",
+        "Anim_Idle",
+        "Dash_Forward",
+        "Idle_Breath",
+        "Kick_High",
+        "Special_Chilena",
+        "Victory_Pose"
+      ],
+      "pre_subsurf_vertices": 432,
+      "pre_subsurf_faces": 216,
+      "vertices": 1188,
+      "faces": 648,
+      "uv_layers": [
+        "UVMap"
+      ],
+      "smooth_shaded": true,
+      "materials": [
+        "M_FighterSkin_SSS",
+        "M_FighterKit_Retro90s_Cloth",
+        "M_FighterHairCards_And_Eyes"
+      ],
+      "bound_textures": {
+        "skin_normal": "T_Skin_MicroPores_Normal.png",
+        "kit_albedo": "T_Kit_Argentina_Albedo.png",
+        "kit_orm": "T_FighterKit_ORM.png",
+        "kit_normal": "T_Retro90s_Jacquard_Normal.png"
+      },
+      "chaos_cloth": {
+        "vertex_group": "ChaosCloth_Jersey_Weight",
+        "max_distance_cm": 12.0,
+        "jersey_vertex_count": 275,
+        "pinned_collar_vertices": 77,
+        "gradient_vertices": 160,
+        "free_hem_vertices": 38,
+        "min_weight": 0.0,
+        "max_weight": 1.0,
+        "jersey_z_range_m": [
+          0.8507,
+          1.3175
+        ]
+      },
+      "output_fbx": "Assets/BlenderProduction/Fighters/SK_PULGA_AR.fbx",
+      "fbx_size_bytes": 4194076
+    },
+    {
+      "fighter": "SK_REY_CL",
+      "source_glb": "Assets/Models3D/Fighters/SK_REY_CL.glb",
+      "armature_name": "SK_REY_CL",
+      "mesh_name": "Mesh_REY_CL",
+      "bone_count": 38,
+      "action_count": 10,
+      "actions": [
+        "Anim_214SK_Scorpion",
+        "Anim_236SK_Shot",
+        "Anim_5LP_Jab4f",
+        "Anim_623HP_BicycleKick",
+        "Anim_Idle",
+        "Dash_Forward",
+        "Idle_Breath",
+        "Kick_High",
+        "Special_Chilena",
+        "Victory_Pose"
+      ],
+      "pre_subsurf_vertices": 408,
+      "pre_subsurf_faces": 204,
+      "vertices": 1122,
+      "faces": 612,
+      "uv_layers": [
+        "UVMap"
+      ],
+      "smooth_shaded": true,
+      "materials": [
+        "M_FighterSkin_SSS",
+        "M_FighterKit_Retro90s_Cloth",
+        "M_FighterHairCards_And_Eyes"
+      ],
+      "bound_textures": {
+        "skin_normal": "T_Skin_MicroPores_Normal.png",
+        "kit_albedo": "T_Kit_Chile_Albedo.png",
+        "kit_orm": "T_FighterKit_ORM.png",
+        "kit_normal": "T_Retro90s_Jacquard_Normal.png"
+      },
+      "chaos_cloth": {
+        "vertex_group": "ChaosCloth_Jersey_Weight",
+        "max_distance_cm": 12.0,
+        "jersey_vertex_count": 310,
+        "pinned_collar_vertices": 101,
+        "gradient_vertices": 140,
+        "free_hem_vertices": 69,
+        "min_weight": 0.0,
+        "max_weight": 1.0,
+        "jersey_z_range_m": [
+          0.852,
+          1.395
+        ]
+      },
+      "output_fbx": "Assets/BlenderProduction/Fighters/SK_REY_CL.fbx",
+      "fbx_size_bytes": 4005916
+    },
+    {
+      "fighter": "SK_SUPREME_JUDGE_BOSS",
+      "source_glb": "Assets/Models3D/Fighters/SK_SUPREME_JUDGE_BOSS.glb",
+      "armature_name": "SK_SUPREME_JUDGE_BOSS",
+      "mesh_name": "Mesh_SUPREME_JUDGE_BOSS",
+      "bone_count": 38,
+      "action_count": 10,
+      "actions": [
+        "Anim_214SK_Scorpion",
+        "Anim_236SK_Shot",
+        "Anim_5LP_Jab4f",
+        "Anim_623HP_BicycleKick",
+        "Anim_Idle",
+        "Dash_Forward",
+        "Idle_Breath",
+        "Kick_High",
+        "Special_Chilena",
+        "Victory_Pose"
+      ],
+      "pre_subsurf_vertices": 432,
+      "pre_subsurf_faces": 216,
+      "vertices": 1188,
+      "faces": 648,
+      "uv_layers": [
+        "UVMap"
+      ],
+      "smooth_shaded": true,
+      "materials": [
+        "M_FighterSkin_SSS",
+        "M_FighterKit_Retro90s_Cloth",
+        "M_FighterHairCards_And_Eyes"
+      ],
+      "bound_textures": {
+        "skin_normal": "T_Skin_MicroPores_Normal.png",
+        "kit_albedo": "T_Kit_VARBoss_Albedo.png",
+        "kit_orm": "T_FighterKit_ORM.png",
+        "kit_normal": "T_Retro90s_Jacquard_Normal.png"
+      },
+      "chaos_cloth": {
+        "vertex_group": "ChaosCloth_Jersey_Weight",
+        "max_distance_cm": 12.0,
+        "jersey_vertex_count": 342,
+        "pinned_collar_vertices": 109,
+        "gradient_vertices": 201,
+        "free_hem_vertices": 32,
+        "min_weight": 0.0,
+        "max_weight": 1.0,
+        "jersey_z_range_m": [
+          0.8815,
+          1.6663
+        ]
+      },
+      "output_fbx": "Assets/BlenderProduction/Fighters/SK_SUPREME_JUDGE_BOSS.fbx",
+      "fbx_size_bytes": 3983548
+    },
+    {
+      "fighter": "SK_TREN_EC",
+      "source_glb": "Assets/Models3D/Fighters/SK_TREN_EC.glb",
+      "armature_name": "SK_TREN_EC",
+      "mesh_name": "Mesh_TREN_EC",
+      "bone_count": 38,
+      "action_count": 10,
+      "actions": [
+        "Anim_214SK_Scorpion",
+        "Anim_236SK_Shot",
+        "Anim_5LP_Jab4f",
+        "Anim_623HP_BicycleKick",
+        "Anim_Idle",
+        "Dash_Forward",
+        "Idle_Breath",
+        "Kick_High",
+        "Special_Chilena",
+        "Victory_Pose"
+      ],
+      "pre_subsurf_vertices": 432,
+      "pre_subsurf_faces": 216,
+      "vertices": 1188,
+      "faces": 648,
+      "uv_layers": [
+        "UVMap"
+      ],
+      "smooth_shaded": true,
+      "materials": [
+        "M_FighterSkin_SSS",
+        "M_FighterKit_Retro90s_Cloth",
+        "M_FighterHairCards_And_Eyes"
+      ],
+      "bound_textures": {
+        "skin_normal": "T_Skin_MicroPores_Normal.png",
+        "kit_albedo": "T_Kit_Ecuador_Albedo.png",
+        "kit_orm": "T_FighterKit_ORM.png",
+        "kit_normal": "T_Retro90s_Jacquard_Normal.png"
+      },
+      "chaos_cloth": {
+        "vertex_group": "ChaosCloth_Jersey_Weight",
+        "max_distance_cm": 12.0,
+        "jersey_vertex_count": 294,
+        "pinned_collar_vertices": 77,
+        "gradient_vertices": 164,
+        "free_hem_vertices": 53,
+        "min_weight": 0.0,
+        "max_weight": 1.0,
+        "jersey_z_range_m": [
+          0.886,
+          1.3873
+        ]
+      },
+      "output_fbx": "Assets/BlenderProduction/Fighters/SK_TREN_EC.fbx",
+      "fbx_size_bytes": 4026556
+    }
+  ]
+}
