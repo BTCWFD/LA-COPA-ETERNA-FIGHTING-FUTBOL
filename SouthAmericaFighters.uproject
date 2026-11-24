@@ -42,6 +42,14 @@
 		{
 			"Name": "OnlineSubsystemEOS",
 			"Enabled": true
+		},
+		{
+			"Name": "PythonScriptPlugin",
+			"Enabled": true
+		},
+		{
+			"Name": "Interchange",
+			"Enabled": true
 		}
 	],
 	"TargetPlatforms": [

@@ -1,8 +1,15 @@
 # ⚽ LA COPA ETERNA: SANGRE Y POTRERO
-**Juego de Pelea 2.5D AAA de las Leyendas del Fútbol Sudamericano (CONMEBOL)**  
-*Unreal Engine 5.4+ | C++20 Core | Punto Fijo Q32.32 Determinista | GGPO Rollback + EOS Crossplay | Audiokinetic Wwise | WebLab 60 FPS*
+**Juego de Pelea 2.5D AAA de las Leyendas del Fútbol Sudamericano (CONMEBOL) — Edición Renacimiento *Sfumato***  
+*Unreal Engine 5.4+ | C++20 Core | Punto Fijo Q32.32 Determinista | GGPO Rollback + EOS Crossplay | Shader `M_PP_SfumatoChiaroscuro` | Audiokinetic Wwise | WebLab 60 FPS*
 
-![Key Art](Assets/ConceptArt/LaCopaEterna_KeyArt_RosterClash.jpg)
+![Key Art Renacimiento Sfumato](Assets/ConceptArt/LaCopaEterna_KeyArt_Renaissance.jpg)
+
+---
+
+## 🖼️ Dirección de Arte Dual: *Renacimiento Sfumato (Da Vinci)* & *Street-Ink AAA*
+| Trofeo Oficial *La Copa Eterna* | Pantalla VS (*O Fenômeno* vs *La Pulga*) | Jefe Final: *V.A.R.-ZERO* |
+| :---: | :---: | :---: |
+| ![Trofeo](Assets/ConceptArt/Trophy_LaCopaEterna_Renaissance.jpg) | ![VS Screen](Assets/ConceptArt/VSScreen_Brasil_vs_Argentina_Renaissance.jpg) | ![Boss VAR-ZERO](Assets/ConceptArt/Boss_VAR_ZERO_Renaissance.jpg) |
 
 ---
 
@@ -93,19 +100,37 @@
 
 ---
 
-## 🚀 Cómo Ejecutar el Laboratorio Interactivo y Modo Versus 1v1 Jugable (`WebLab`)
+## 🚀 Cómo Ejecutar y Empaquetar el Juego
 
-Puedes abrir directamente `WebLab/index.html` en cualquier navegador moderno o iniciar un servidor local:
+### 1. Lanzador Rápido WebLab 60 FPS (Windows 1-Clic)
+Haz doble clic en **`start-game.bat`** o ejecuta en consola:
 
 ```bash
 python -m http.server 8080
-# Abre http://localhost:8080/WebLab/index.html
+# Abre http://localhost:8080/WebLab/main-menu.html
 ```
 
-- **Pestaña 01:** Visor Técnico de Frame Data, Hitboxes/Hurtboxes y Roster CONMEBOL.
-- **Pestaña 02:** Depurador de Kernel Determinista (`Q32.32`, Ring Buffer 60f y Checksum Fletcher-32).
-- **Pestaña 03:** El Potrero de Pruebas (Dummy Multi-Slot), Monitor GGPO, Wall Break, Live Takeover y V.A.R. Rewind.
-- **Pestaña 04:** Laboratorio de Shaders (Hitstop, Impact Ink, Rim Light), Glifos CommonUI, Curvas DualSense y Consola Wwise.
-- **Pestaña 05:** Centro de Arbitraje eSports (Auditor Anti-Cheat, Compresor `.safreplay` y Calculadora Glicko-2).
-- **Pestaña 06:** **⚽ Modo Versus 1v1 Jugable en Tiempo Real (60 FPS)** con sintes de hinchada y relator en vivo.
-- **Pestaña 07:** **🧊 Estudio 3D Interactivo Orbital 360°** (Shaded PBR, Esqueleto de 186 huesos, Mapa de Calor Chaos Cloth y Smear Frames).
+- **[Menú Principal AAA](WebLab/main-menu.html):** Pantalla de título *Renacimiento Sfumato*, Pantalla VS animada y selector de estilo en vivo.
+- **[Selección de Leyendas 16+1 y 10 Estadios](WebLab/character-select.html):** Paneles bilaterales P1 vs P2, estadísticas y vista previa de escenarios.
+- **[Modo Torneo "La Copa Eterna"](WebLab/tournament.html):** Llave determinista de 5 rondas (`Xorshift32`) con desbloqueo secreto de Fase 2 de `V.A.R.-ZERO`.
+- **[Galería de Arte AAA](WebLab/art-gallery.html):** Exposición de los 9 lienzos *Renacimiento Sfumato*, 3 obras *Street-Ink* y Atlas Vectorial SVG.
+- **[Command Center & Modo Versus 1v1 (7 Pestañas)](WebLab/index.html):** Frame Data, Kernel Q32.32, Potrero/GGPO, Shaders/Wwise, Arbitraje eSports, **TAB 06 Versus 1v1 (Luchadores Articulados + Gamepad PS5/Xbox + Input Display FGC + Victoria K.O.)** y **TAB 07 Visor 3D (17 Luchadores Animados + 10 Estadios CONMEBOL `.glb`)**.
+
+### 2. Importación Automática en Unreal Engine 5.4+
+1. Abre **`SouthAmericaFighters.uproject`** en **Unreal Engine 5.4+** (con `PythonScriptPlugin` e `Interchange` ya habilitados).
+2. Ejecuta la auditoría local previa o corre el pipeline dentro del editor UE 5.4+:
+```bash
+python Scripts/ue5_auto_import_pipeline.py --dry-run
+```
+
+### 3. Backend eSports Go (Tests & Docker)
+```bash
+cd Backend
+go test -v ./...
+docker compose up --build
+```
+
+### 4. Stress Test Determinista GGPO (18,000 Frames / 0 Desyncs)
+```bash
+python Scripts/headless_desync_stress_test.py --matches 15 --frames 1200 --packet-loss 0.25 --max-rollback 8
+```
