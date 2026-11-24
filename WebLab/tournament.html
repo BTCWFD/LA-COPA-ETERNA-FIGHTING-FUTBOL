@@ -205,18 +205,65 @@
       font-size: 0.98rem;
     }
 
-    /* Panel de Configuración: Elegir Leyenda + Semilla Xorshift32 + Estadísticas del Run */
+    /* Panel de Configuración: Elegir Leyenda + Semilla Xorshift32 + Reliquia de La Copa Eterna */
     .setup-grid {
       display: grid;
-      grid-template-columns: 370px 1fr;
-      gap: 20px;
+      grid-template-columns: 350px 1fr 290px;
+      gap: 18px;
       align-items: stretch;
     }
 
-    @media (max-width: 1080px) {
+    @media (max-width: 1240px) {
       .setup-grid {
         grid-template-columns: 1fr;
       }
+    }
+
+    .trophy-showcase-card {
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      gap: 10px;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .trophy-showcase-img-wrap {
+      width: 100%;
+      height: 152px;
+      border-radius: 9px;
+      overflow: hidden;
+      border: 1.5px solid var(--sfumato-gold-bright);
+      box-shadow: 0 8px 26px rgba(0, 0, 0, 0.8), 0 0 20px rgba(212, 163, 71, 0.35);
+      background: #0b0704;
+    }
+
+    .trophy-showcase-img-wrap img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transition: transform 0.5s ease;
+    }
+
+    .trophy-showcase-card:hover .trophy-showcase-img-wrap img {
+      transform: scale(1.06);
+    }
+
+    .champion-trophy-hero {
+      width: 240px;
+      height: 165px;
+      margin: 10px auto 12px;
+      border-radius: 12px;
+      overflow: hidden;
+      border: 2.5px solid var(--sfumato-gold-bright);
+      box-shadow: 0 0 38px rgba(245, 196, 81, 0.65), 0 12px 32px rgba(0, 0, 0, 0.9);
+    }
+
+    .champion-trophy-hero img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
     }
 
     .sfumato-card {
@@ -738,6 +785,9 @@
         ✦ GLORIA ETERNA SUDAMERICANA • INVICTO EN EL POTRERO ✦
       </div>
       <h2>🏆 CAMPEÓN DE LA COPA ETERNA 🏆</h2>
+      <div class="champion-trophy-hero">
+        <img src="../Assets/ConceptArt/Trophy_LaCopaEterna_Renaissance.jpg" alt="Trofeo Oficial de La Copa Eterna (Renacimiento Sfumato)" />
+      </div>
       <p id="champion-summary-text">
         Has conquistado las 5 rondas deterministas de la CONMEBOL y doblegado al Juez Supremo (V.A.R.-ZERO).
       </p>
@@ -814,6 +864,25 @@
           <div class="run-stat-box">
             <span class="lbl">Continues Usados</span>
             <span class="val" id="stat-continues">0</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Derecha: Reliquia Sagrada — Trofeo Oficial de La Copa Eterna (Renacimiento Sfumato) -->
+      <div class="sfumato-card trophy-showcase-card">
+        <div class="section-kicker" style="margin-bottom:2px;">
+          <span>🏆 RELIQUIA SUPREMA</span>
+          <span style="color:var(--sfumato-gold-bright);">SFUMATO</span>
+        </div>
+        <div class="trophy-showcase-img-wrap">
+          <img src="../Assets/ConceptArt/Trophy_LaCopaEterna_Renaissance.jpg" alt="Trofeo Oficial La Copa Eterna" />
+        </div>
+        <div>
+          <div style="font-family:var(--font-display); font-weight:800; font-size:0.95rem; color:var(--sfumato-gold-bright);">
+            Cáliz Dorado de La Copa Eterna
+          </div>
+          <div style="font-size:0.74rem; color:#cbbba2; margin-top:3px;">
+            Forjado en oro bruñido y bronce sobre las 10 catedrales CONMEBOL. Otorgado al vencedor del Juez Supremo.
           </div>
         </div>
       </div>

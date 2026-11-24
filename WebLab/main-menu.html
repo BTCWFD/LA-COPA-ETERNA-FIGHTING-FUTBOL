@@ -42,7 +42,7 @@
     .hero-bg {
       position: fixed;
       inset: 0;
-      background-image: url('../Assets/ConceptArt/LaCopaEterna_KeyArt_RosterClash.jpg');
+      background-image: url('../Assets/ConceptArt/LaCopaEterna_KeyArt_Renaissance.jpg');
       background-size: cover;
       background-position: center;
       filter: sepia(0.38) contrast(1.12) brightness(0.45);
@@ -314,11 +314,11 @@
       color: #cbbba2;
     }
 
-    /* Mini tira de miniaturas de las 6 obras verificadas */
+    /* Mini tira de miniaturas de las 9 obras verificadas */
     .thumb-strip {
       display: grid;
-      grid-template-columns: repeat(6, 1fr);
-      gap: 8px;
+      grid-template-columns: repeat(9, 1fr);
+      gap: 7px;
     }
 
     .thumb-card {
@@ -532,7 +532,7 @@
         </div>
 
         <div class="menu-item" data-idx="1" data-action="TOURNAMENT_MODE"
-             data-art="../Assets/ConceptArt/Stage_MaracanaBombonera_Concept.jpg"
+             data-art="../Assets/ConceptArt/Trophy_LaCopaEterna_Renaissance.jpg"
              data-tag="MODO TORNEO / ESCALERA ARCADE (5 RONDAS)"
              data-title="🏆 Modo Torneo: La Copa Eterna (5 Rondas CONMEBOL)"
              data-caption="Escalera determinista Xorshift32: Octavos, Cuartos, Semifinal, Gran Final Clásica y Desafío Supremo vs V.A.R.-ZERO.">
@@ -568,7 +568,7 @@
         </div>
 
         <div class="menu-item" data-idx="4" data-action="ART_GALLERY"
-             data-art="../Assets/ConceptArt/LaCopaEterna_KeyArt_RosterClash.jpg"
+             data-art="../Assets/ConceptArt/LaCopaEterna_KeyArt_Renaissance.jpg"
              data-tag="GALERÍA DE ARTE CONCEPTUAL AAA"
              data-title="Colección Maestra: Renacimiento Sfumato & Street-Ink"
              data-caption="Explora en alta resolución los óleos renacentistas, retratos CONMEBOL, estadios 2.5D y el Atlas SVG.">
@@ -580,7 +580,7 @@
         </div>
 
         <div class="menu-item" data-idx="5" data-action="ENGINE_LAB"
-             data-art="../Assets/ConceptArt/Stage_MaracanaBombonera_Concept.jpg"
+             data-art="../Assets/ConceptArt/Stage_HernandoSiles_Bolivia_Renaissance.jpg"
              data-tag="SUITE DE INGENIERÍA UE 5.4+ (7 LABORATORIOS)"
              data-title="Command Center: Q32.32, GGPO, Wwise, Anti-Cheat & Visor 3D"
              data-caption="Accede al Ring Buffer de 60f, Replay Takeover, Consola Wwise y Estudio 3D Chaos Cloth (.glb).">
@@ -598,11 +598,11 @@
       </div>
     </div>
 
-    <!-- Columna Derecha: Escaparate Visual Dinámico con las 6 Obras Verificadas -->
+    <!-- Columna Derecha: Escaparate Visual Dinámico con las 9 Obras Verificadas -->
     <div class="showcase-frame">
       <div class="showcase-art-wrap">
-        <span class="showcase-overlay-tag" id="preview-tag">MODO VERSUS 1v1 (60 FPS EN VIVO)</span>
-        <img id="preview-img" src="../Assets/ConceptArt/VSScreen_Brasil_vs_Argentina_Renaissance.jpg" alt="Vista Previa Modo" />
+        <span class="showcase-overlay-tag" id="preview-tag">KEY ART RENACENTISTA: LA COPA ETERNA</span>
+        <img id="preview-img" src="../Assets/ConceptArt/LaCopaEterna_KeyArt_Renaissance.jpg" alt="Vista Previa Modo" />
       </div>
 
       <div class="showcase-caption">
@@ -615,9 +615,18 @@
         </button>
       </div>
 
-      <!-- Miniaturas Interactivas de las 6 Obras de Assets/ConceptArt/ -->
+      <!-- Miniaturas Interactivas de las 9 Obras de Assets/ConceptArt/ -->
       <div class="thumb-strip" id="thumb-strip">
-        <div class="thumb-card active" data-src="../Assets/ConceptArt/VSScreen_Brasil_vs_Argentina_Renaissance.jpg" title="VS Screen: Brasil vs Argentina (Renacimiento Sfumato)">
+        <div class="thumb-card active" data-src="../Assets/ConceptArt/LaCopaEterna_KeyArt_Renaissance.jpg" title="Key Art Oficial Renacimiento Sfumato: La Copa Eterna">
+          <img src="../Assets/ConceptArt/LaCopaEterna_KeyArt_Renaissance.jpg" alt="Key Art Renacimiento" />
+        </div>
+        <div class="thumb-card" data-src="../Assets/ConceptArt/Trophy_LaCopaEterna_Renaissance.jpg" title="Reliquia Sagrada: Trofeo Oficial de La Copa Eterna (Sfumato)">
+          <img src="../Assets/ConceptArt/Trophy_LaCopaEterna_Renaissance.jpg" alt="Trofeo La Copa Eterna" />
+        </div>
+        <div class="thumb-card" data-src="../Assets/ConceptArt/Stage_HernandoSiles_Bolivia_Renaissance.jpg" title="Estadio Nido del Cóndor — Hernando Siles (Bolivia 3600m Sfumato)">
+          <img src="../Assets/ConceptArt/Stage_HernandoSiles_Bolivia_Renaissance.jpg" alt="Hernando Siles Bolivia 3600m" />
+        </div>
+        <div class="thumb-card" data-src="../Assets/ConceptArt/VSScreen_Brasil_vs_Argentina_Renaissance.jpg" title="VS Screen: Brasil vs Argentina (Renacimiento Sfumato)">
           <img src="../Assets/ConceptArt/VSScreen_Brasil_vs_Argentina_Renaissance.jpg" alt="VS Screen" />
         </div>
         <div class="thumb-card" data-src="../Assets/ConceptArt/Boss_VAR_ZERO_Renaissance.jpg" title="Jefe Final: El Juez Supremo (V.A.R.-ZERO)">
