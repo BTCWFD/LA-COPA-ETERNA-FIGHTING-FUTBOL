@@ -89,7 +89,6 @@ public:
      * Ejecutado exactamente 1 vez por frame visual (60Hz) tras resolver la simulación determinista.
      * Controla el conteo regresivo de Hitstop, el offset oscilatorio del Mesh defensor y el decaimiento de Chaos Cloth.
      */
-    UFUNCTION(BlueprintCallable, Category = "Combat|TechArt")
     void DeterministicVisualStep(uint32 CurrentFrame);
 
     /**

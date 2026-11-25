@@ -131,11 +131,9 @@ public:
         int32 InMaxHealth = 10000);
 
     /** Captura y empaqueta los botones presionados actualmente en una máscara determinista de 16 bits (ECombatInputBits). */
-    UFUNCTION(BlueprintPure, Category = "Fighter|Input")
     uint16 PollLocalRawInputBitmask() const;
 
     /** Permite inyectar una máscara de bits directa (para pruebas automatizadas, IA o reproducción de Replay). */
-    UFUNCTION(BlueprintCallable, Category = "Fighter|Input")
     void SetInjectedInputBitmask(uint16 InMask, bool bEnableOverride);
 
     /**
@@ -145,7 +143,6 @@ public:
      * - Hurtbox: Verde (Normal) / Azul Cian (Blockstun/Invulnerable)
      * - Hitbox: Rojo Intenso
      */
-    UFUNCTION(BlueprintCallable, Category = "Fighter|Visuals")
     void SyncVisualTransformFromFixedPoint(uint32 CurrentFrame, bool bDrawGreyboxAABBs = true);
 
     UFUNCTION(BlueprintPure, Category = "Fighter|Deterministic")

@@ -26,7 +26,7 @@ struct SOUTHAMERICAFIGHTERSCORE_API FCombatFrameSnapshot
 {
     GENERATED_BODY()
 
-    UPROPERTY(SaveGame, BlueprintReadOnly, Category = "VAR|Snapshot")
+    UPROPERTY(SaveGame)
     uint32 FrameNumber = 0;
 
     UPROPERTY(SaveGame, BlueprintReadOnly, Category = "VAR|Snapshot")
@@ -59,14 +59,14 @@ struct SOUTHAMERICAFIGHTERSCORE_API FCombatFrameSnapshot
     UPROPERTY(SaveGame, BlueprintReadOnly, Category = "VAR|Snapshot")
     uint8 P2StateID = 0;
 
-    UPROPERTY(SaveGame, BlueprintReadOnly, Category = "VAR|Snapshot")
+    UPROPERTY(SaveGame)
     uint16 P1StateFrame = 0;
 
-    UPROPERTY(SaveGame, BlueprintReadOnly, Category = "VAR|Snapshot")
+    UPROPERTY(SaveGame)
     uint16 P2StateFrame = 0;
 
     /** Checksum determinista Fletcher-32 sobre el estado de este frame. */
-    UPROPERTY(SaveGame, BlueprintReadOnly, Category = "VAR|Snapshot")
+    UPROPERTY(SaveGame)
     uint32 Checksum = 0;
 
     uint32 ComputeFletcher32Checksum() const;
@@ -119,7 +119,6 @@ public:
     bool CheckAndTriggerPhaseTwoTransition();
 
     /** Devuelve la máscara de bits de entrada (ECombatInputBits) decidida por el jefe en este frame. */
-    UFUNCTION(BlueprintPure, Category = "BossAI|Deterministic")
     uint16 GetCurrentBossInputBitmask() const { return CurrentBossInputBitmask; }
 
     UFUNCTION(BlueprintPure, Category = "BossAI|State")

@@ -260,6 +260,6 @@ void UFighterAnimInstance::PushChaosClothParametersToSkeletalMesh()
     // solicitar a Chaos Cloth el reset de velocidades inerciales de partículas
     if (ChaosClothRules.AnimDriveStiffness >= 0.94f && TeleportStiffnessHoldFrames == 2)
     {
-        OwningMesh->ForceNextUpdateTeleportAndReset();
+        OwningMesh->ForceClothNextUpdateTeleportAndReset();
     }
 }

@@ -175,7 +175,6 @@ public:
      * Salta instantáneamente a cualquier frame de la partida (< 1.5ms).
      * Restaura el Keyframe múltiplo de 300 más cercano y re-simula determinísticamente el residuo (0..299 frames).
      */
-    UFUNCTION(BlueprintCallable, Category = "Combat|Replay")
     bool JumpToFrame(uint32 TargetFrame);
 
     /**
@@ -191,10 +190,8 @@ public:
         UDeterministicFighterStateMachine* OutLiveP2Machine,
         UFightingCameraDirector* OutLiveCameraDirector);
 
-    UFUNCTION(BlueprintPure, Category = "Combat|Replay")
     uint32 GetCurrentReplayFrame() const { return CurrentPlaybackFrame; }
 
-    UFUNCTION(BlueprintPure, Category = "Combat|Replay")
     uint32 GetTotalReplayFrames() const { return static_cast<uint32>(RecordedInputs.Num()); }
 
     UFUNCTION(BlueprintPure, Category = "Combat|Replay")

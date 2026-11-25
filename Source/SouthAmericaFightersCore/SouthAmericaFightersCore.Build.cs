@@ -23,7 +23,7 @@ public class SouthAmericaFightersCore : ModuleRules
             "AIModule"
         });
 
-        // Desactiva optimizaciones de punto flotante que rompan determinismo entre x86_64 y Consolas
-        bEnableUndefinedIdentifierWarnings = true;
+        // Validación estricta de identificadores indefinidos en UE 5.8+
+        CppCompileWarningSettings.UndefinedIdentifierWarningLevel = WarningLevel.Error;
     }
 }

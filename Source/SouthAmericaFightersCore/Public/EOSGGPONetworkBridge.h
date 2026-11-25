@@ -5,6 +5,10 @@
 #include "CoreMinimal.h"
 #include "UObject/NoExportTypes.h"
 
+#ifndef WITH_EOS_SDK
+#define WITH_EOS_SDK 0
+#endif
+
 #if WITH_EOS_SDK
 #include "eos_sdk.h"
 #include "eos_p2p.h"
@@ -67,6 +71,10 @@ public:
     static uint16 ComputeFletcher16(const uint8* Data, SIZE_T Length);
 
 private:
+#ifndef WITH_EOS_SDK
+#define WITH_EOS_SDK 0
+#endif
+
 #if WITH_EOS_SDK
     EOS_HP2P P2PHandle = nullptr;
     EOS_ProductUserId LocalUserId = nullptr;

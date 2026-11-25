@@ -38,7 +38,7 @@ struct SOUTHAMERICAFIGHTERSCORE_API FActiveCommentaryLine
     UPROPERTY(BlueprintReadOnly, Category = "Audio|Commentary")
     ECommentaryPriority Priority = ECommentaryPriority::None;
 
-    UPROPERTY(BlueprintReadOnly, Category = "Audio|Commentary")
+    UPROPERTY()
     uint32 TriggerFrame = 0;
 
     UPROPERTY(BlueprintReadOnly, Category = "Audio|Commentary")
@@ -75,7 +75,6 @@ public:
      * Llamado una vez por frame confirmado/visual (60Hz).
      * Evalúa RTPC_Match_Excitement, RTPC_Crowd_Momentum, decaimiento de combo de "Olé" y expiración de líneas de relato.
      */
-    UFUNCTION(BlueprintCallable, Category = "Combat|Audio")
     void UpdateDeterministicAudioFrame(
         uint32 CurrentFrame,
         bool bIsRollbackReSimulation,
@@ -89,7 +88,6 @@ public:
      * Solicita reproducir una línea de relato deportivo con resolución de prioridad e Interrupt Stingers.
      * Ignora duplicados durante un re-simulate de Rollback si el evento ya fue emitido en una ventana de 6 frames.
      */
-    UFUNCTION(BlueprintCallable, Category = "Combat|Audio")
     bool TriggerLiveCommentaryEvent(
         FName WwiseEventName,
         ECommentaryPriority Priority,
@@ -101,14 +99,12 @@ public:
      * Dispara la transición acústica de Ruptura de Alambrado / Túnel de Vestuarios (Wall Break).
      * Cambia el State Group `Acoustic_Environment` y empuja el bus de subgraves LFE.
      */
-    UFUNCTION(BlueprintCallable, Category = "Combat|Audio")
     void NotifyStageWallBreakTransition(FName NewZoneStateName, uint32 CurrentFrame);
 
     /**
      * Registra una esquiva/Gambeta exitosa para disparar el rugido "¡OOOO-LÉ!" de la hinchada.
      * Incrementa `RTPC_Ole_Combo_Pitch` en +100 cents por cada esquiva consecutiva dentro de la ventana activa.
      */
-    UFUNCTION(BlueprintCallable, Category = "Combat|Audio")
     void RegisterSuccessfulGambetaForCrowd(uint32 CurrentFrame, int32 PerformingPlayerIndex);
 
     UFUNCTION(BlueprintPure, Category = "Combat|Audio")

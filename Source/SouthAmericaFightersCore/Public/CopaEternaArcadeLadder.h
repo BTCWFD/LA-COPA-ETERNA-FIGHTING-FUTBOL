@@ -136,7 +136,6 @@ public:
      * Construye de forma puramente determinista la llave de 5 encuentros:
      * Match 1: Octavos -> Match 2: Cuartos -> Match 3: Semifinal -> Match 4: Gran Final (Rival Clásico) -> Match 5: Desafío Supremo V.A.R.-ZERO.
      */
-    UFUNCTION(BlueprintCallable, Category = "Arcade|Ladder")
     void InitializeDeterministicLadder(FName InPlayerFighterID, uint32 InDeterministicSeed);
 
     /**
@@ -180,7 +179,6 @@ public:
     UFUNCTION(BlueprintPure, Category = "Arcade|Ladder")
     int32 GetTotalRankSCountInRun() const { return TotalRankSCount; }
 
-    UFUNCTION(BlueprintPure, Category = "Arcade|Ladder")
     uint32 GetDeterministicSeed() const { return ActiveDeterministicSeed; }
 
 public:

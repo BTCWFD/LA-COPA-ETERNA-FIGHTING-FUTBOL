@@ -70,7 +70,7 @@ struct SOUTHAMERICAFIGHTERSCORE_API FDeterministicHUDFramePacket
 {
     GENERATED_BODY()
 
-    UPROPERTY(BlueprintReadOnly, Category = "HUD")
+    UPROPERTY()
     uint32 SimulationFrame = 0;
 
     UPROPERTY(BlueprintReadOnly, Category = "HUD")

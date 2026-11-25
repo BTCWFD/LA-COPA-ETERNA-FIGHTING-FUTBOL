@@ -91,7 +91,6 @@ public:
      * Si `bWasBlocked == true` y `FrameAdvantageOnBlock > 0` (ej. Bati-Cañonazo Cargado +4), eleva automáticamente
      * el efecto a `BlockPlusFrameAdvantage` (escudo hexagonal cian que parpadea en amarillo/naranja intenso).
      */
-    UFUNCTION(BlueprintCallable, Category = "Combat|NiagaraVFX")
     UNiagaraComponent* SpawnDeterministicImpactVFX(
         uint32 CurrentFrame,
         ECombatImpactVFXType ImpactType,
@@ -103,7 +102,6 @@ public:
     /**
      * Genera una captura espectral (Ghost Mesh Trail) de la pose exacta del personaje al ejecutar un Gambeta Parry Perfecto.
      */
-    UFUNCTION(BlueprintCallable, Category = "Combat|NiagaraVFX")
     void SpawnGambetaGhostMeshTrail(
         uint32 CurrentFrame,
         USkeletalMeshComponent* SourceFighterMesh,
@@ -114,7 +112,6 @@ public:
      * Activa o actualiza frame a frame la envoltura elemental del balón (`NS_SuperBall_Trail`) según la selección nacional.
      * También actualiza la posición previa y actual del balón para el shader volumétrico de `La Garúa` en Lima.
      */
-    UFUNCTION(BlueprintCallable, Category = "Combat|NiagaraVFX")
     void UpdateSuperBallElementalTrail(
         uint32 CurrentFrame,
         ESouthAmericaBallElement BallElement,
@@ -126,14 +123,12 @@ public:
      * Llamado por el motor de Rollback cuando se rebobina al frame `RollbackTargetFrame`.
      * Destruye inmediatamente cualquier partícula predicha en frames `>= RollbackTargetFrame` que haya quedado invalidada.
      */
-    UFUNCTION(BlueprintCallable, Category = "Combat|NiagaraVFX")
     void PruneSpeculativeVFXFromRollback(uint32 RollbackTargetFrame);
 
     /**
      * Paso determinista por frame (60Hz) para actualizar el contador de 3 frames del post-proceso `PP_StreetInk_Impact`
      * y el decaimiento de los Ghost Mesh Trails.
      */
-    UFUNCTION(BlueprintCallable, Category = "Combat|NiagaraVFX")
     void TickDeterministicVFXFrame(uint32 CurrentFrame);
 
     /** Devuelve el peso normalizado (1.0, 0.66, 0.33, 0.0) del pulso de 3 frames `PP_StreetInk_Impact` */

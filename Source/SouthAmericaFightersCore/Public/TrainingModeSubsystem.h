@@ -34,7 +34,7 @@ struct SOUTHAMERICAFIGHTERSCORE_API FDummyRecordingSlot
     static constexpr int32 MaxFramesPerSlot = 600; // 10 segundos exactos a 60 Hz
 
     /** Buffer de máscaras de bits de 16 bits (ECombatInputBits) por frame grabado. */
-    UPROPERTY(BlueprintReadOnly, Category = "Training|Recording")
+    UPROPERTY()
     TArray<uint16> FrameInputs;
 
     /** Orientación original del Dummy en el frame 0 de la grabación (para auto-flip al cambiar de lado). */

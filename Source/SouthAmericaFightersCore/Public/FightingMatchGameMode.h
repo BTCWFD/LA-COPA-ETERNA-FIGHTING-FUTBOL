@@ -24,7 +24,7 @@ struct SOUTHAMERICAFIGHTERSCORE_API FMatchGlobalStatePOD
 {
     GENERATED_BODY()
 
-    UPROPERTY(SaveGame, BlueprintReadOnly, Category = "MatchState")
+    UPROPERTY(SaveGame)
     uint32 CurrentSimulationFrame = 0;
 
     UPROPERTY(SaveGame, BlueprintReadOnly, Category = "MatchState")
@@ -102,7 +102,6 @@ public:
     virtual void Tick(float DeltaSeconds) override;
 
     /** Ejecuta exactamente 1 tick maestro determinista de combate (1/60s). */
-    UFUNCTION(BlueprintCallable, Category = "Match|Deterministic")
     void StepDeterministicMatchTick(uint16 P1InputMask, uint16 P2InputMask, bool bIsRollbackReSimulation = false);
 
     /** Dispara un proyectil de balón determinista en la cancha. */

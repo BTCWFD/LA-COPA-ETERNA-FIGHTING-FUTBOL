@@ -60,14 +60,14 @@ void UFighterVisualFeedbackComponent::DeterministicVisualStep(uint32 CurrentFram
             if (IsValid(MainBodyMesh))
             {
                 MainBodyMesh->ResumeClothingSimulation();
-                MainBodyMesh->ForceNextUpdateTeleportAndReset();
+                MainBodyMesh->ForceClothNextUpdateTeleportAndReset();
             }
             for (const TObjectPtr<USkeletalMeshComponent>& ClothMesh : ClothApparelMeshes)
             {
                 if (IsValid(ClothMesh))
                 {
                     ClothMesh->ResumeClothingSimulation();
-                    ClothMesh->ForceNextUpdateTeleportAndReset();
+                    ClothMesh->ForceClothNextUpdateTeleportAndReset();
                 }
             }
         }
@@ -191,7 +191,7 @@ void UFighterVisualFeedbackComponent::NotifyRollbackOrTeleportSnap(float Positio
 
     if (IsValid(MainBodyMesh))
     {
-        MainBodyMesh->ForceNextUpdateTeleportAndReset();
+        MainBodyMesh->ForceClothNextUpdateTeleportAndReset();
         MainBodyMesh->SuspendClothingSimulation();
     }
 
@@ -199,7 +199,7 @@ void UFighterVisualFeedbackComponent::NotifyRollbackOrTeleportSnap(float Positio
     {
         if (IsValid(ClothMesh))
         {
-            ClothMesh->ForceNextUpdateTeleportAndReset();
+            ClothMesh->ForceClothNextUpdateTeleportAndReset();
             ClothMesh->SuspendClothingSimulation();
         }
     }

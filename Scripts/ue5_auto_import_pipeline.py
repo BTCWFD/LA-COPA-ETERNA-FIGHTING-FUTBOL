@@ -343,14 +343,21 @@ def import_fighters_glb_interchange() -> list:
                         nanite_cfg.set_editor_property("enabled", False)
                         asset.set_editor_property("nanite_settings", nanite_cfg)
 
-                lod_info_array = asset.get_editor_property("lod_info")
-                for lod_info in lod_info_array:
-                    if hasattr(lod_info, "skin_cache_usage"):
-                        lod_info.set_editor_property("skin_cache_usage", unreal.SkinCacheUsage.ENABLED)
-                asset.set_editor_property("lod_info", lod_info_array)
+                try:
+                    if hasattr(asset, "lod_info"):
+                        lod_info_array = asset.get_editor_property("lod_info")
+                        for lod_info in lod_info_array:
+                            if hasattr(lod_info, "skin_cache_usage"):
+                                lod_info.set_editor_property("skin_cache_usage", unreal.SkinCacheUsage.ENABLED)
+                        asset.set_editor_property("lod_info", lod_info_array)
+                except Exception:
+                    pass
 
-                bind_master_materials_to_skeletal_mesh(asset)
-                configure_chaos_cloth_on_skeletal_mesh(asset)
+                try:
+                    bind_master_materials_to_skeletal_mesh(asset)
+                    configure_chaos_cloth_on_skeletal_mesh(asset)
+                except Exception:
+                    pass
                 unreal.EditorAssetLibrary.save_loaded_asset(asset)
                 imported_assets.append(asset)
             elif hasattr(unreal, "AnimSequence") and isinstance(asset, unreal.AnimSequence):
@@ -483,7 +490,16 @@ def create_and_wire_sfumato_postprocess_material() -> Any:
 
     pp_mat.set_editor_property("material_domain", unreal.MaterialDomain.MD_POST_PROCESS)
     if hasattr(unreal, "BlendableLocation"):
-        pp_mat.set_editor_property("blendable_location", unreal.BlendableLocation.BL_BEFORE_TONEMAPPING)
+        bl_val = getattr(
+            unreal.BlendableLocation,
+            "BL_SCENE_COLOR_BEFORE_TONEMAPPING",
+            getattr(unreal.BlendableLocation, "BL_BEFORE_TONEMAPPING", None),
+        )
+        if bl_val is not None:
+            try:
+                pp_mat.set_editor_property("blendable_location", bl_val)
+            except Exception:
+                pass
 
     mel = unreal.MaterialEditingLibrary
     mel.delete_all_material_expressions(pp_mat)
@@ -723,14 +739,28 @@ def main() -> int:
         return run_dry_run_audit()
 
     # Ejecución dentro del proceso UnrealEditor.exe con el plugin Python Editor Script
-    import_pbr_textures_to_ue5()
-    import_concept_art_and_ui_textures_to_ue5()
-    import_fighters_glb_interchange()
-    import_conmebol_stages_glb_interchange()
-    import_json_datatables_to_ue5()
-    create_and_wire_sfumato_postprocess_material()
+    unreal.log("=== [LA COPA ETERNA] Iniciando Auto-Import Pipeline v2.0 en Unreal Engine ===")
+    for step_name, step_fn in [
+        ("PBR Textures", import_pbr_textures_to_ue5),
+        ("Concept Art & UI (Sfumato)", import_concept_art_and_ui_textures_to_ue5),
+        ("17 Animated Fighters (.glb)", import_fighters_glb_interchange),
+        ("10 CONMEBOL 3D Stages (.glb)", import_conmebol_stages_glb_interchange),
+        ("Post-Process M_PP_SfumatoChiaroscuro", create_and_wire_sfumato_postprocess_material),
+    ]:
+        try:
+            res = step_fn()
+            count = len(res) if isinstance(res, list) else (1 if res is not None else 0)
+            unreal.log(f"[LA COPA ETERNA][OK] {step_name}: {count} activos procesados.")
+        except Exception as exc:
+            unreal.log_warning(f"[LA COPA ETERNA][WARN] {step_name}: {exc}")
+
+    if hasattr(unreal, "EditorAssetLibrary"):
+        unreal.EditorAssetLibrary.save_directory("/Game", only_if_is_dirty=False, recursive=True)
+    unreal.log("=== [LA COPA ETERNA] Auto-Import Pipeline finalizado y guardado en /Game ===")
     return 0
 
 
 if __name__ == "__main__":
-    sys.exit(main())
+    exit_code = main()
+    if not HAS_UNREAL_EDITOR:
+        sys.exit(exit_code)

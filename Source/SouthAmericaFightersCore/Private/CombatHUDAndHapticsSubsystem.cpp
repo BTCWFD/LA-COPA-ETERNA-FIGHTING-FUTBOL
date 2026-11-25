@@ -309,10 +309,10 @@ void UCombatHapticsSubsystem::ApplyDualSenseTriggerEffect(
         return;
     }
 
-    // Modulación de ForceFeedback dinámica compatible con el InputDeviceSubsystem de UE 5.4
-    FDynamicForceFeedbackAction::Type ActionType = (Strength > KINDA_SMALL_NUMBER)
-        ? FDynamicForceFeedbackAction::Update
-        : FDynamicForceFeedbackAction::Stop;
+    // Modulación de ForceFeedback dinámica compatible con el InputDeviceSubsystem de UE 5.4+
+    EDynamicForceFeedbackAction::Type ActionType = (Strength > KINDA_SMALL_NUMBER)
+        ? EDynamicForceFeedbackAction::Update
+        : EDynamicForceFeedbackAction::Stop;
 
     FDynamicForceFeedbackDetails Details;
     Details.bAffectsLeftLarge = false;
@@ -338,7 +338,7 @@ void UCombatHapticsSubsystem::ClearAllHardwareTriggers()
     APlayerController* PC = LP->GetPlayerController(GetWorld());
     if (IsValid(PC))
     {
-        PC->PlayDynamicForceFeedback(0.0f, 0.0f, true, true, true, true, FDynamicForceFeedbackAction::Stop);
+        PC->PlayDynamicForceFeedback(0.0f, 0.0f, true, true, true, true, EDynamicForceFeedbackAction::Stop);
     }
 }
 
@@ -362,7 +362,7 @@ void UCombatHapticsSubsystem::SendForceFeedbackEnvelope(
     }
 
     const float CombinedIntensity = FMath::Clamp(
-        FMath::Max4(LeftLarge, RightSmall, LeftTriggerImpulse, RightTriggerImpulse),
+        FMath::Max(FMath::Max(LeftLarge, RightSmall), FMath::Max(LeftTriggerImpulse, RightTriggerImpulse)),
         0.0f,
         1.0f);
 
@@ -373,5 +373,5 @@ void UCombatHapticsSubsystem::SendForceFeedbackEnvelope(
         LeftTriggerImpulse > 0.05f,
         RightSmall > 0.05f,
         RightTriggerImpulse > 0.05f,
-        FDynamicForceFeedbackAction::Start);
+        EDynamicForceFeedbackAction::Start);
 }
