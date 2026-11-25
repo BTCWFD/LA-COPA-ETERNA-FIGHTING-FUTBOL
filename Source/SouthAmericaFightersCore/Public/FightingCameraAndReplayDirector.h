@@ -122,6 +122,16 @@ public:
     UFUNCTION(BlueprintPure, Category = "Combat|Camera")
     FTransform GetVisualCameraTransformCm(float& OutHorizontalFOV) const;
 
+    /**
+     * Devuelve directamente el FTransform mundial en Unreal Engine (en centímetros) para BroadcastCameraActor.
+     */
+    UFUNCTION(BlueprintPure, Category = "Combat|Camera")
+    FTransform GetWorldCameraTransformUE() const
+    {
+        float UnusedFOV = 54.0f;
+        return GetVisualCameraTransformCm(UnusedFOV);
+    }
+
     const FCameraTransformPOD& GetCameraState() const { return CameraState; }
     void SaveCameraState(FCameraTransformPOD& OutState) const { OutState = CameraState; }
     void LoadCameraState(const FCameraTransformPOD& InState) { CameraState = InState; }

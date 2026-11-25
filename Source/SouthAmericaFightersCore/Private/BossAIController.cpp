@@ -74,20 +74,23 @@ void ABossAIController::DeterministicStep(uint32 CurrentFrame)
         bIsSystemOverloaded = false;
     }
 
-    // 3. Evaluar transición a Fase 2 ("Tiempo de Descuento Infinito")
-    CheckAndTriggerPhaseTwoTransition();
-
-    // 4. Si está en Fase 2 y está recibiendo un combo prolongado en Hitstun, activar V.A.R. Rewind
-    if (CurrentPhase == EBossPhase::Phase2_InfiniteStoppage && BossFighterSM != nullptr)
+    // 3. Evaluar transición a Fase 2 ("Tiempo de Descuento Infinito") y V.A.R. Rewind solo si la mecánica está habilitada
+    if (bAllowVARRewindMechanic)
     {
-        const FFighterDeterministicStatePOD& BossState = BossFighterSM->GetState();
-        if (BossState.CurrentState == EFighterActionState::Hitstun &&
-            BossState.CurrentStateFrame >= 24 &&
-            RewindCooldownRemaining == 0)
+        CheckAndTriggerPhaseTwoTransition();
+
+        // 4. Si está en Fase 2 y está recibiendo un combo prolongado en Hitstun, activar V.A.R. Rewind
+        if (CurrentPhase == EBossPhase::Phase2_InfiniteStoppage && BossFighterSM != nullptr)
         {
-            if (TriggerVARRewind(DefaultRewindFrames))
+            const FFighterDeterministicStatePOD& BossState = BossFighterSM->GetState();
+            if (BossState.CurrentState == EFighterActionState::Hitstun &&
+                BossState.CurrentStateFrame >= 24 &&
+                RewindCooldownRemaining == 0)
             {
-                return;
+                if (TriggerVARRewind(DefaultRewindFrames))
+                {
+                    return;
+                }
             }
         }
     }

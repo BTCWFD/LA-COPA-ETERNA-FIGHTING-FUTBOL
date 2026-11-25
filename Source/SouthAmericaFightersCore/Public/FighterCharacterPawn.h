@@ -12,9 +12,12 @@
 
 class USceneComponent;
 class USkeletalMeshComponent;
+class USkeletalMesh;
+class UAnimSequence;
 class UStaticMeshComponent;
 class UInputAction;
 class UInputMappingContext;
+class APlayerController;
 
 /**
  * Estado POD determinista de un proyectil de balón en el plano de combate 2.5D (Q32.32).
@@ -69,6 +72,8 @@ class SOUTHAMERICAFIGHTERSCORE_API ADeterministicBallProjectile : public AActor
 public:
     ADeterministicBallProjectile();
 
+    virtual void BeginPlay() override;
+
     /** Inicializa el proyectil en coordenadas Q32.32. */
     void SpawnDeterministicBall(
         int32 InOwnerPlayerIndex,
@@ -103,6 +108,8 @@ protected:
 
 private:
     FBallProjectileDeterministicStatePOD BallState;
+
+    void LoadBallVisualMesh();
 };
 
 /**
@@ -129,6 +136,18 @@ public:
         FFixedPoint SpawnX,
         bool bStartFacingRight,
         int32 InMaxHealth = 10000);
+
+    /** Carga de forma segura el SkeletalMesh y clips UAnimSequence del plantel sudamericano (compatible con -NullRHI). */
+    UFUNCTION(BlueprintCallable, Category = "Fighter|Visuals")
+    void LoadVisualAssetsForFighter(FName InFighterRosterID);
+
+    /** Reproduce la animación de victoria del luchador al ganar la ronda/partida. */
+    UFUNCTION(BlueprintCallable, Category = "Fighter|Visuals")
+    void PlayVictoryPoseAnimation();
+
+    /** Vincula este Pawn a un APlayerController local y activa la captura de entradas de combate. */
+    UFUNCTION(BlueprintCallable, Category = "Fighter|Input")
+    void BindFighterPlayerControllerInput(APlayerController* InPlayerController);
 
     /** Captura y empaqueta los botones presionados actualmente en una máscara determinista de 16 bits (ECombatInputBits). */
     uint16 PollLocalRawInputBitmask() const;
@@ -165,6 +184,10 @@ public:
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Fighter|Greyboxing")
     bool bEnableLiveAABBDebugDraw = true;
 
+    /** Indica si este Pawn está controlado actualmente por un jugador humano local (PlayerController). */
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Fighter|Input")
+    bool bIsPlayerControlled = false;
+
 protected:
     UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Fighter|Components")
     TObjectPtr<USceneComponent> RootPivotComponent;
@@ -177,6 +200,27 @@ protected:
 
     UPROPERTY(Transient)
     TObjectPtr<UDeterministicFighterStateMachine> StateMachine;
+
+    UPROPERTY(Transient)
+    TObjectPtr<USkeletalMesh> CachedSkeletalMesh = nullptr;
+
+    UPROPERTY(Transient)
+    TObjectPtr<UAnimSequence> CachedAnimIdleBreath = nullptr;
+
+    UPROPERTY(Transient)
+    TObjectPtr<UAnimSequence> CachedAnimDashForward = nullptr;
+
+    UPROPERTY(Transient)
+    TObjectPtr<UAnimSequence> CachedAnimKickHigh = nullptr;
+
+    UPROPERTY(Transient)
+    TObjectPtr<UAnimSequence> CachedAnimSpecialChilena = nullptr;
+
+    UPROPERTY(Transient)
+    TObjectPtr<UAnimSequence> CachedAnimVictoryPose = nullptr;
+
+    UPROPERTY(Transient)
+    TObjectPtr<UAnimSequence> LastPlayedAnimSequence = nullptr;
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Fighter|Identity")
     FName FighterRosterID = TEXT("FENOMENO_BR");
@@ -213,4 +257,12 @@ private:
     void OnInputGBReleased()    { LiveHardwareInputMask &= ~ECombatInputBits::GB; }
 
     void DrawFixedAABBDebugBox(const FFixedAABB& Box, const FColor& Color, float Thickness = 2.0f) const;
+    void UpdateVisualAnimationForState(const FFighterDeterministicStatePOD& SimState);
+    static FString ResolveVisualAssetStemForFighter(FName InFighterRosterID);
+
+    EFighterActionState LastVisualAnimState = EFighterActionState::Idle;
+    FName LastVisualAnimMoveID = NAME_None;
+    bool bHasInitializedVisualAnimState = false;
+    bool bVictoryPoseActive = false;
+    bool bHasBoundInputActions = false;
 };

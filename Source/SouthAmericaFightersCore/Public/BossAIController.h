@@ -162,6 +162,10 @@ public:
     UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "BossAI|Config")
     int32 SystemOverloadDurationFrames = 240;
 
+    /** Si es false (sparring AI estándar para oponentes normales), no ejecuta la mecánica V.A.R. Rewind ni transición de jefe. */
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "BossAI|Config")
+    bool bAllowVARRewindMechanic = true;
+
     UPROPERTY(BlueprintAssignable, Category = "BossAI|Events")
     FOnVARRewindExecuted OnVARRewindExecuted;
 

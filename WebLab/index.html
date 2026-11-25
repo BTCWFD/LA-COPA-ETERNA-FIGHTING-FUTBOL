@@ -957,6 +957,7 @@
               <label style="font-size:11px; color:var(--cyan);">Modo P2:</label>
               <select id="t6-sel-ai">
                 <option value="CPU_PRO">🤖 CPU Competitiva CONMEBOL</option>
+                <option value="LOCAL_2P">👥 2 Jugadores Locales (P1 WASD vs P2 Flechas + Numpad)</option>
                 <option value="BOSS_VAR">👁️ Boss Final: V.A.R.-ZERO (Fase 1 & 2 Rewind)</option>
                 <option value="DUMMY">🎯 Training Dummy (Práctica)</option>
               </select>
@@ -1068,7 +1069,7 @@
 
             <div>
               <div style="font-size:10px; color:var(--gold-bright); margin-bottom:4px; font-weight:700;">
-                ESPECIALES Y SUPERS DIRECTOS (1-Click / Teclas 1, 2, 3, 4, 5)
+                ESPECIALES Y SUPERS DIRECTOS P1 (1-Click / Teclas 1-5 en 1P)
               </div>
               <div class="btn-group">
                 <button class="btn btn-turf t6-act-btn" data-act="SP_236">1: 236+SK (Tiro Especial)</button>
@@ -1079,6 +1080,15 @@
                   5: 🌟 214214+HP+SK (Grito Sagrado Nv.3)
                 </button>
               </div>
+            </div>
+
+            <div style="width:100%; border-top:1px dashed rgba(255,255,255,0.12); padding-top:6px; margin-top:2px; display:flex; justify-content:space-between; flex-wrap:wrap; gap:10px; font-size:10.5px; font-family:var(--font-mono);">
+              <span style="color:var(--turf);">
+                <strong>P1 (Local/1P):</strong> WASD + U/I/O/J/K (o Gamepad #1)
+              </span>
+              <span style="color:var(--crimson);">
+                <strong>P2 (Modo 2P Local):</strong> Flechas ◀▲▼▶ + Numpad 1/2/3/4/5 (o 7/8/9/B/N, dígitos 1-5 o Gamepad #2)
+              </span>
             </div>
           </div>
         </div>
@@ -1130,12 +1140,12 @@
 
           <div class="slot-card">
             <div style="font-weight:800; color:var(--cyan); font-size:11.5px;">⌨️ MAPA DE TECLADO RÁPIDO (EN PESTAÑA 06):</div>
-            <div class="kv-row"><span>Caminar / Bloquear:</span><span>A / D o ◀ / ▶</span></div>
-            <div class="kv-row"><span>Saltar / Agacharse:</span><span>W / S o ▲ / ▼</span></div>
-            <div class="kv-row"><span>Dash Adelante / Atrás:</span><span>Doble toque D / A</span></div>
-            <div class="kv-row"><span>Golpes Normales (LP, MP, HP):</span><span>Teclas J, K, L</span></div>
-            <div class="kv-row"><span>Balón (SK) / Gambeta Parry (GB):</span><span>Teclas U / I</span></div>
-            <div class="kv-row"><span>Especiales y Ultimate Directos:</span><span>Teclas 1, 2, 3, 4, 5</span></div>
+            <div class="kv-row"><span>P1 Mover / Saltar / Agachar:</span><span>W / A / S / D (+ Flechas en 1P)</span></div>
+            <div class="kv-row"><span>P1 Dash Adelante / Atrás:</span><span>Doble toque D / A</span></div>
+            <div class="kv-row"><span>P1 Ataques (LP/MP/HP/SK/GB):</span><span>J / K / L(o O) / U / I (+ Gamepad #1)</span></div>
+            <div class="kv-row"><span>P1 Especiales / Supers (1P):</span><span>Teclas 1, 2, 3, 4, 5</span></div>
+            <div class="kv-row"><span>P2 Mover / Dash (Modo 2P):</span><span>Flechas ◀ ▲ ▼ ▶ (doble toque ◀/▶)</span></div>
+            <div class="kv-row"><span>P2 Ataques (Modo 2P):</span><span>Numpad 1-5 / 7,8,9,B,N / 1-5 / Pad #2</span></div>
             <div style="display:flex; gap:6px; margin-top:6px;">
               <button class="btn btn-sm btn-gold" id="t6-btn-fill-meters" style="width:100%;">⚡ Llenar Barras Super & Gambeta al 100%</button>
             </div>
@@ -1292,6 +1302,7 @@
 
           <div class="canvas-wrap" style="border-color:var(--purple); cursor:grab;" id="t7-canvas-wrap">
             <canvas id="t7-canvas" width="760" height="440"></canvas>
+            <div class="t7-webgl-hud" id="t7-webgl-hud"></div>
           </div>
 
           <div class="box-legend">
@@ -1450,6 +1461,7 @@
     </div>
   </div>
 
+  <script src="webgl-viewer.js"></script>
   <script src="app.js"></script>
 </body>
 </html>

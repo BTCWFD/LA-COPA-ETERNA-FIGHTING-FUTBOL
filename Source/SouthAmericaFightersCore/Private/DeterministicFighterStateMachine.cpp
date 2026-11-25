@@ -1,5 +1,6 @@
 // DeterministicFighterStateMachine.cpp - SouthAmericaFightersCore
 #include "DeterministicFighterStateMachine.h"
+#include "Engine/DataTable.h"
 
 namespace DeterministicArenaConstants
 {
@@ -16,12 +17,85 @@ namespace DeterministicArenaConstants
     static constexpr int64 GravityMmPerFrameSq = 14;
 }
 
+static FMoveFrameDataRow MakeUniversalMoveRow(
+    const TCHAR* InMoveID,
+    const TCHAR* InNotation,
+    int32 InStartup,
+    int32 InActive,
+    int32 InRecovery,
+    int32 InAdvBlock,
+    int32 InAdvHit,
+    int32 InDamage,
+    uint8 InCancelFlags,
+    int32 InCancelDuration)
+{
+    FMoveFrameDataRow Row;
+    Row.MoveID = FName(InMoveID);
+    Row.NumpadNotation = InNotation;
+    Row.StartupFrames = InStartup;
+    Row.ActiveFrames = InActive;
+    Row.RecoveryFrames = InRecovery;
+    Row.AdvantageOnBlock = InAdvBlock;
+    Row.AdvantageOnHit = InAdvHit;
+    Row.BaseDamage = InDamage;
+    Row.CancelFlags = InCancelFlags;
+    Row.CancelWindowDurationFrames = InCancelDuration;
+    return Row;
+}
+
 void UDeterministicFighterStateMachine::InitializeFighter(FFixedPoint SpawnX, bool bStartFacingRight, int32 MaxHP)
 {
     State = FFighterDeterministicStatePOD{};
     State.Position = FFixedVector2D(SpawnX, FFixedPoint(0));
     State.bIsFacingRight = bStartFacingRight;
     State.CurrentHealth = MaxHP;
+
+    if (MoveCatalog.IsEmpty())
+    {
+        MoveCatalog.Add(TEXT("Normal_5LP"), MakeUniversalMoveRow(TEXT("Normal_5LP"), TEXT("5LP"), 4, 3, 7, 1, 4, 400, 7, 6));
+        MoveCatalog.Add(TEXT("Normal_5MP"), MakeUniversalMoveRow(TEXT("Normal_5MP"), TEXT("5MP"), 7, 4, 14, -1, 5, 700, 6, 7));
+        MoveCatalog.Add(TEXT("Normal_5HP"), MakeUniversalMoveRow(TEXT("Normal_5HP"), TEXT("5HP"), 11, 4, 21, -4, 3, 1100, 12, 8));
+        MoveCatalog.Add(TEXT("Special_41236_CommandGrab"), MakeUniversalMoveRow(TEXT("Special_41236_CommandGrab"), TEXT("41236+LP"), 6, 3, 28, 0, 30, 1800, 0, 0));
+        MoveCatalog.Add(TEXT("Special_623_AntiAir"), MakeUniversalMoveRow(TEXT("Special_623_AntiAir"), TEXT("623+HP"), 5, 10, 30, -20, 28, 1400, 4, 6));
+        MoveCatalog.Add(TEXT("Special_236_Projectile"), MakeUniversalMoveRow(TEXT("Special_236_Projectile"), TEXT("236+SK"), 14, 12, 24, -3, 2, 1100, 4, 6));
+        MoveCatalog.Add(TEXT("Special_214_Technique"), MakeUniversalMoveRow(TEXT("Special_214_Technique"), TEXT("214+SK"), 16, 8, 22, -4, 24, 1250, 4, 6));
+        MoveCatalog.Add(TEXT("Super_Level1"), MakeUniversalMoveRow(TEXT("Super_Level1"), TEXT("236236+SK"), 7, 18, 32, -18, 35, 2400, 0, 0));
+        MoveCatalog.Add(TEXT("Ultimate_GritoSagrado"), MakeUniversalMoveRow(TEXT("Ultimate_GritoSagrado"), TEXT("214214+HP+SK"), 5, 24, 45, -30, 60, 4500, 0, 0));
+    }
+}
+
+void UDeterministicFighterStateMachine::LoadMoveCatalogFromDataTable(const UDataTable* FrameDataTable)
+{
+    if (!FrameDataTable)
+    {
+        return;
+    }
+
+    static const FString ContextString(TEXT("DeterministicFighterStateMachine_FrameData"));
+    TArray<FMoveFrameDataRow*> AllRows;
+    FrameDataTable->GetAllRows<FMoveFrameDataRow>(ContextString, AllRows);
+
+    for (const FMoveFrameDataRow* Row : AllRows)
+    {
+        if (!Row || Row->MoveID.IsNone())
+        {
+            continue;
+        }
+        MoveCatalog.Add(Row->MoveID, *Row);
+
+        if (Row->MoveID == TEXT("5LP_UNIVERSAL"))
+        {
+            MoveCatalog.Add(TEXT("Normal_5LP"), *Row);
+        }
+        else if (Row->MoveID == TEXT("5MP_UNIVERSAL"))
+        {
+            MoveCatalog.Add(TEXT("Normal_5MP"), *Row);
+        }
+        else if (Row->MoveID == TEXT("5HP_UNIVERSAL"))
+        {
+            MoveCatalog.Add(TEXT("Normal_5HP"), *Row);
+        }
+    }
 }
 
 void UDeterministicFighterStateMachine::StepSimulationFrame(

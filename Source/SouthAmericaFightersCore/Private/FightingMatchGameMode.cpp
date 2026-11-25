@@ -1,8 +1,37 @@
 // FightingMatchGameMode.cpp - SouthAmericaFightersCore
 #include "FightingMatchGameMode.h"
-#include "Engine/World.h"
+#include "Camera/CameraActor.h"
+#include "Camera/CameraComponent.h"
+#include "Engine/DataTable.h"
 #include "Engine/GameInstance.h"
+#include "Engine/World.h"
+#include "EngineUtils.h"
 #include "FightingInputParser.h"
+#include "FrameDataTypes.h"
+#include "GameFramework/PlayerController.h"
+#include "Misc/PackageName.h"
+
+namespace FightingMatchAssetPaths
+{
+    static constexpr const TCHAR* RosterTablePkg    = TEXT("/Game/DataTables/DT_SouthAmericaRoster");
+    static constexpr const TCHAR* StagesTablePkg    = TEXT("/Game/DataTables/DT_StagesCONMEBOL");
+    static constexpr const TCHAR* FrameDataTablePkg = TEXT("/Game/DataTables/DT_FrameDataUniversal");
+
+    static UDataTable* TryLoadDataTable(const TCHAR* PackagePath, const TCHAR* Label)
+    {
+        if (!FPackageName::DoesPackageExist(PackagePath))
+        {
+            UE_LOG(LogTemp, Log, TEXT("FightingMatchGameMode: DataTable %s not packaged at %s (using built-in defaults)."), Label, PackagePath);
+            return nullptr;
+        }
+        if (UDataTable* Table = LoadObject<UDataTable>(nullptr, PackagePath))
+        {
+            UE_LOG(LogTemp, Log, TEXT("FightingMatchGameMode: Loaded %s (%d rows)."), Label, Table->GetRowNames().Num());
+            return Table;
+        }
+        return nullptr;
+    }
+}
 
 AFightingMatchGameMode::AFightingMatchGameMode()
 {
@@ -34,6 +63,10 @@ void AFightingMatchGameMode::BeginPlay()
         return;
     }
 
+    // 1. Cargar DataTables oficiales desde /Game/DataTables/ (si existen) y configurar estadio según el mapa
+    LoadCoreCombatDataTables();
+    ConfigureStageDataFromCurrentWorld(World);
+
     CameraDirector = NewObject<UFightingCameraDirector>(this, TEXT("FightingCameraDirector"));
     CameraDirector->InitializeStageBounds(
         ActiveStageData.ZoneABounds.GetLeftWallFixed(),
@@ -42,7 +75,35 @@ void AFightingMatchGameMode::BeginPlay()
     NetworkBridge = NewObject<UEOSGGPONetworkBridge>(this, TEXT("EOSGGPONetworkBridge"));
     ReplayDirector = NewObject<UReplayPlaybackSubsystem>(this, TEXT("ReplayPlaybackSubsystem"));
 
-    // Instanciar luchadores P1 y P2 si no están ya en el nivel
+    // Resolver HP inicial desde DT_SouthAmericaRoster si está cargado
+    const FName DefaultP1ID = TEXT("FENOMENO_BR");
+    const FName DefaultP2ID = TEXT("CANON_AR");
+    int32 P1MaxHP = 10000;
+    int32 P2MaxHP = 10500;
+
+    if (LoadedRosterTable)
+    {
+        static const FString RosterCtx(TEXT("MatchBeginPlay_Roster"));
+        TArray<FFighterRosterRow*> RosterRows;
+        LoadedRosterTable->GetAllRows<FFighterRosterRow>(RosterCtx, RosterRows);
+        for (const FFighterRosterRow* Row : RosterRows)
+        {
+            if (!Row)
+            {
+                continue;
+            }
+            if (Row->Name == DefaultP1ID && Row->MaxHealth > 0)
+            {
+                P1MaxHP = Row->MaxHealth;
+            }
+            else if (Row->Name == DefaultP2ID && Row->MaxHealth > 0)
+            {
+                P2MaxHP = Row->MaxHealth;
+            }
+        }
+    }
+
+    // 2. Instanciar luchadores P1 y P2 si no están ya en el nivel
     FActorSpawnParameters SpawnParams;
     SpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
 
@@ -51,7 +112,7 @@ void AFightingMatchGameMode::BeginPlay()
         Player1Pawn = World->SpawnActor<AFighterCharacterPawn>(AFighterCharacterPawn::StaticClass(), FVector(-250.0f, 0.0f, 0.0f), FRotator::ZeroRotator, SpawnParams);
         if (Player1Pawn)
         {
-            Player1Pawn->InitializeFighterForRound(0, TEXT("FENOMENO_BR"), FFixedPoint::FromMillimeters(-2500), true, 10000);
+            Player1Pawn->InitializeFighterForRound(0, DefaultP1ID, FFixedPoint::FromMillimeters(-2500), true, P1MaxHP);
         }
     }
 
@@ -60,9 +121,24 @@ void AFightingMatchGameMode::BeginPlay()
         Player2Pawn = World->SpawnActor<AFighterCharacterPawn>(AFighterCharacterPawn::StaticClass(), FVector(250.0f, 0.0f, 0.0f), FRotator(0.0f, 180.0f, 0.0f), SpawnParams);
         if (Player2Pawn)
         {
-            Player2Pawn->InitializeFighterForRound(1, TEXT("CANON_AR"), FFixedPoint::FromMillimeters(2500), false, 10500);
+            Player2Pawn->InitializeFighterForRound(1, DefaultP2ID, FFixedPoint::FromMillimeters(2500), false, P2MaxHP);
         }
     }
+
+    if (LoadedFrameDataTable)
+    {
+        if (Player1Pawn && Player1Pawn->GetFighterStateMachine())
+        {
+            Player1Pawn->GetFighterStateMachine()->LoadMoveCatalogFromDataTable(LoadedFrameDataTable);
+        }
+        if (Player2Pawn && Player2Pawn->GetFighterStateMachine())
+        {
+            Player2Pawn->GetFighterStateMachine()->LoadMoveCatalogFromDataTable(LoadedFrameDataTable);
+        }
+    }
+
+    // 3. Configurar BroadcastCameraActor 2.5D, posesión de PlayerController e IA de P2 / 2do jugador local
+    SetupLiveCameraAndControllers(World);
 
     // Pool de proyectiles de balón deterministas (1 activo por jugador en pantalla)
     Player1BallProjectile = World->SpawnActor<ADeterministicBallProjectile>(ADeterministicBallProjectile::StaticClass(), FVector::ZeroVector, FRotator::ZeroRotator, SpawnParams);
@@ -86,10 +162,253 @@ void AFightingMatchGameMode::BeginPlay()
         }
     }
 
-    // Inicializar Audio Reactivo Wwise del estadio
+    // Inicializar Audio Reactivo Wwise del estadio (incluyendo altitud 3600m en La Paz)
     if (UWwiseCombatAudioDirector* AudioDirector = World->GetSubsystem<UWwiseCombatAudioDirector>())
     {
-        AudioDirector->InitializeMatchAudioEnvironment(ActiveStageData.StageID, TEXT("FENOMENO_BR"), 0.0f);
+        const FName HomeFighter = Player1Pawn ? Player1Pawn->GetFighterRosterID() : DefaultP1ID;
+        AudioDirector->InitializeMatchAudioEnvironment(
+            ActiveStageData.StageID,
+            HomeFighter,
+            ActiveStageData.GetEffectiveAltitudeMeters());
+    }
+}
+
+void AFightingMatchGameMode::LoadCoreCombatDataTables()
+{
+    LoadedRosterTable    = FightingMatchAssetPaths::TryLoadDataTable(FightingMatchAssetPaths::RosterTablePkg, TEXT("DT_SouthAmericaRoster"));
+    LoadedStagesTable    = FightingMatchAssetPaths::TryLoadDataTable(FightingMatchAssetPaths::StagesTablePkg, TEXT("DT_StagesCONMEBOL"));
+    LoadedFrameDataTable = FightingMatchAssetPaths::TryLoadDataTable(FightingMatchAssetPaths::FrameDataTablePkg, TEXT("DT_FrameDataUniversal"));
+}
+
+FName AFightingMatchGameMode::ResolveStageIDFromMapName(const FString& CleanMapName)
+{
+    if (CleanMapName.Contains(TEXT("Bombonera"), ESearchCase::IgnoreCase) || CleanMapName.Contains(TEXT("02_"), ESearchCase::IgnoreCase))
+    {
+        return TEXT("STAGE_BOMBONERA");
+    }
+    if (CleanMapName.Contains(TEXT("Centenario"), ESearchCase::IgnoreCase) || CleanMapName.Contains(TEXT("03_"), ESearchCase::IgnoreCase))
+    {
+        return TEXT("STAGE_CENTENARIO");
+    }
+    if (CleanMapName.Contains(TEXT("Metropolitano"), ESearchCase::IgnoreCase) || CleanMapName.Contains(TEXT("Barranquilla"), ESearchCase::IgnoreCase) || CleanMapName.Contains(TEXT("04_"), ESearchCase::IgnoreCase))
+    {
+        return TEXT("STAGE_METROPOLITANO");
+    }
+    if (CleanMapName.Contains(TEXT("Nunoa"), ESearchCase::IgnoreCase) || CleanMapName.Contains(TEXT("05_"), ESearchCase::IgnoreCase))
+    {
+        return TEXT("STAGE_NUNOA");
+    }
+    if (CleanMapName.Contains(TEXT("Defensores"), ESearchCase::IgnoreCase) || CleanMapName.Contains(TEXT("Asuncion"), ESearchCase::IgnoreCase) || CleanMapName.Contains(TEXT("06_"), ESearchCase::IgnoreCase))
+    {
+        return TEXT("STAGE_DEFENSORES");
+    }
+    if (CleanMapName.Contains(TEXT("NacionalLima"), ESearchCase::IgnoreCase) || CleanMapName.Contains(TEXT("Lima"), ESearchCase::IgnoreCase) || CleanMapName.Contains(TEXT("07_"), ESearchCase::IgnoreCase))
+    {
+        return TEXT("STAGE_NACIONAL_LIMA");
+    }
+    if (CleanMapName.Contains(TEXT("Atahualpa"), ESearchCase::IgnoreCase) || CleanMapName.Contains(TEXT("Quito"), ESearchCase::IgnoreCase) || CleanMapName.Contains(TEXT("08_"), ESearchCase::IgnoreCase))
+    {
+        return TEXT("STAGE_ATAHUALPA");
+    }
+    if (CleanMapName.Contains(TEXT("Avila"), ESearchCase::IgnoreCase) || CleanMapName.Contains(TEXT("Caracas"), ESearchCase::IgnoreCase) || CleanMapName.Contains(TEXT("09_"), ESearchCase::IgnoreCase))
+    {
+        return TEXT("STAGE_AVILA");
+    }
+    if (CleanMapName.Contains(TEXT("HernandoSiles"), ESearchCase::IgnoreCase) || CleanMapName.Contains(TEXT("LaPaz"), ESearchCase::IgnoreCase) || CleanMapName.Contains(TEXT("10_"), ESearchCase::IgnoreCase))
+    {
+        return TEXT("STAGE_HERNANDO_SILES");
+    }
+    return TEXT("STAGE_MARACANA");
+}
+
+FStageDataRow AFightingMatchGameMode::BuildCanonicalStageData(FName StageID)
+{
+    FStageCONMEBOLTableRow FlatRow;
+    FlatRow.StageID = StageID;
+
+    if (StageID == TEXT("STAGE_BOMBONERA"))
+    {
+        FlatRow.DisplayName = FText::FromString(TEXT("La Caldera de La Boca (Buenos Aires)"));
+        FlatRow.ZoneAWidth = 2200; FlatRow.WallHealth = 4; FlatRow.BPM = 128.0f;
+    }
+    else if (StageID == TEXT("STAGE_CENTENARIO"))
+    {
+        FlatRow.DisplayName = FText::FromString(TEXT("Monumento Centenario (Montevideo)"));
+        FlatRow.ZoneAWidth = 2400; FlatRow.WallHealth = 3; FlatRow.BPM = 120.0f;
+    }
+    else if (StageID == TEXT("STAGE_METROPOLITANO"))
+    {
+        FlatRow.DisplayName = FText::FromString(TEXT("Coloso de Barranquilla (Metropolitano)"));
+        FlatRow.ZoneAWidth = 2500; FlatRow.WallHealth = 3; FlatRow.BPM = 130.0f;
+    }
+    else if (StageID == TEXT("STAGE_NUNOA"))
+    {
+        FlatRow.DisplayName = FText::FromString(TEXT("Coliseo de Ñuñoa (Santiago)"));
+        FlatRow.ZoneAWidth = 2400; FlatRow.WallHealth = 3; FlatRow.BPM = 125.0f;
+    }
+    else if (StageID == TEXT("STAGE_DEFENSORES"))
+    {
+        FlatRow.DisplayName = FText::FromString(TEXT("El Fortín de Sajonia (Defensores del Chaco - Asunción)"));
+        FlatRow.ZoneAWidth = 2300; FlatRow.WallHealth = 4; FlatRow.BPM = 120.0f;
+    }
+    else if (StageID == TEXT("STAGE_NACIONAL_LIMA"))
+    {
+        FlatRow.DisplayName = FText::FromString(TEXT("Templo José Díaz (Estadio Nacional de Lima)"));
+        FlatRow.ZoneAWidth = 2400; FlatRow.WallHealth = 3; FlatRow.BPM = 118.0f;
+    }
+    else if (StageID == TEXT("STAGE_ATAHUALPA"))
+    {
+        FlatRow.DisplayName = FText::FromString(TEXT("El Volcán de Quito (Atahualpa / Casa Blanca)"));
+        FlatRow.ZoneAWidth = 2450; FlatRow.WallHealth = 3; FlatRow.BPM = 135.0f;
+    }
+    else if (StageID == TEXT("STAGE_AVILA"))
+    {
+        FlatRow.DisplayName = FText::FromString(TEXT("El Monumental del Ávila (Caracas)"));
+        FlatRow.ZoneAWidth = 2400; FlatRow.WallHealth = 3; FlatRow.BPM = 170.0f;
+    }
+    else if (StageID == TEXT("STAGE_HERNANDO_SILES"))
+    {
+        FlatRow.DisplayName = FText::FromString(TEXT("El Nido del Cóndor - 3600m (Hernando Siles - La Paz)"));
+        FlatRow.ZoneAWidth = 2600; FlatRow.WallHealth = 2; FlatRow.BPM = 110.0f;
+        FlatRow.AltitudeMeters = FStageDataRow::LaPazAltitudeMeters;
+    }
+    else
+    {
+        FlatRow.StageID = TEXT("STAGE_MARACANA");
+        FlatRow.DisplayName = FText::FromString(TEXT("Templo do Maracanã (Río de Janeiro)"));
+        FlatRow.ZoneAWidth = 2500; FlatRow.WallHealth = 3; FlatRow.BPM = 115.0f;
+    }
+
+    return FlatRow.ToStageDataRow();
+}
+
+void AFightingMatchGameMode::ConfigureStageDataFromCurrentWorld(const UWorld* World)
+{
+    if (!World)
+    {
+        return;
+    }
+
+    const FString RawMapName = World->GetMapName();
+    const FString CleanMapName = UWorld::RemovePIEPrefix(RawMapName);
+    const FName TargetStageID = ResolveStageIDFromMapName(CleanMapName);
+
+    ActiveStageData = BuildCanonicalStageData(TargetStageID);
+
+    if (LoadedStagesTable)
+    {
+        static const FString StagesCtx(TEXT("MatchBeginPlay_Stages"));
+        TArray<FStageCONMEBOLTableRow*> StageRows;
+        LoadedStagesTable->GetAllRows<FStageCONMEBOLTableRow>(StagesCtx, StageRows);
+        for (const FStageCONMEBOLTableRow* Row : StageRows)
+        {
+            if (Row && Row->StageID == TargetStageID)
+            {
+                ActiveStageData = Row->ToStageDataRow();
+                break;
+            }
+        }
+    }
+
+    UE_LOG(LogTemp, Log, TEXT("FightingMatchGameMode: Map='%s' -> Stage='%s' (ZoneA=[%lld..%lld mm], WallHP=%d, BPM=%.1f, Alt=%.0fm)."),
+        *CleanMapName,
+        *ActiveStageData.StageID.ToString(),
+        ActiveStageData.ZoneABounds.LeftWallFixedMm,
+        ActiveStageData.ZoneABounds.RightWallFixedMm,
+        ActiveStageData.ZoneABounds.MaxWallHealth,
+        ActiveStageData.BaseTempoBPM,
+        ActiveStageData.GetEffectiveAltitudeMeters());
+}
+
+void AFightingMatchGameMode::SetupLiveCameraAndControllers(UWorld* World)
+{
+    if (!World)
+    {
+        return;
+    }
+
+    // 1. Buscar o crear BroadcastCameraActor para el plano competitivo 2.5D
+    if (!BroadcastCameraActor)
+    {
+        for (TActorIterator<ACameraActor> It(World); It; ++It)
+        {
+            ACameraActor* Candidate = *It;
+            if (Candidate && (Candidate->ActorHasTag(TEXT("BroadcastCamera")) || Candidate->GetName().Contains(TEXT("BroadcastCamera"))))
+            {
+                BroadcastCameraActor = Candidate;
+                break;
+            }
+        }
+
+        if (!BroadcastCameraActor)
+        {
+            const FTransform InitialCamTransform = CameraDirector
+                ? CameraDirector->GetWorldCameraTransformUE()
+                : FTransform(FRotator(0.0f, 90.0f, 0.0f), FVector(0.0f, -480.0f, 115.0f));
+
+            FActorSpawnParameters CamParams;
+            CamParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
+            BroadcastCameraActor = World->SpawnActor<ACameraActor>(ACameraActor::StaticClass(), InitialCamTransform, CamParams);
+            if (BroadcastCameraActor)
+            {
+                BroadcastCameraActor->Tags.AddUnique(TEXT("BroadcastCamera"));
+            }
+        }
+    }
+
+    if (BroadcastCameraActor && CameraDirector)
+    {
+        float HorizontalFOV = 54.0f;
+        const FTransform CamTransform = CameraDirector->GetVisualCameraTransformCm(HorizontalFOV);
+        BroadcastCameraActor->SetActorTransform(CamTransform);
+        if (UCameraComponent* CamComp = BroadcastCameraActor->GetCameraComponent())
+        {
+            CamComp->SetFieldOfView(HorizontalFOV);
+        }
+    }
+
+    // 2. Vincular PlayerControllers locales (P1 y opcionalmente P2 local) y fijar la vista en BroadcastCameraActor
+    TArray<APlayerController*> LocalControllers;
+    for (FConstPlayerControllerIterator It = World->GetPlayerControllerIterator(); It; ++It)
+    {
+        if (APlayerController* PC = It->Get())
+        {
+            LocalControllers.Add(PC);
+        }
+    }
+
+    if (LocalControllers.Num() >= 1 && Player1Pawn)
+    {
+        APlayerController* P1Controller = LocalControllers[0];
+        P1Controller->bAutoManageActiveCameraTarget = false;
+        Player1Pawn->BindFighterPlayerControllerInput(P1Controller);
+        if (BroadcastCameraActor)
+        {
+            P1Controller->SetViewTargetWithBlend(BroadcastCameraActor, 0.0f);
+        }
+    }
+
+    if (LocalControllers.Num() >= 2 && Player2Pawn)
+    {
+        APlayerController* P2Controller = LocalControllers[1];
+        P2Controller->bAutoManageActiveCameraTarget = false;
+        Player2Pawn->BindFighterPlayerControllerInput(P2Controller);
+        if (BroadcastCameraActor)
+        {
+            P2Controller->SetViewTargetWithBlend(BroadcastCameraActor, 0.0f);
+        }
+    }
+    else if (!bIsTrainingModeMatch && !ActiveBossAIController && bSpawnDefaultSparringAI && Player1Pawn && Player2Pawn)
+    {
+        // 3. Si P2 no tiene controlador ni Training Dummy, instanciar IA de combate por defecto
+        FActorSpawnParameters AIParams;
+        AIParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
+        ActiveBossAIController = World->SpawnActor<ABossAIController>(ABossAIController::StaticClass(), FVector::ZeroVector, FRotator::ZeroRotator, AIParams);
+        if (ActiveBossAIController)
+        {
+            ActiveBossAIController->bAllowVARRewindMechanic = ABossAIController::IsBossFighterID(Player2Pawn->GetFighterRosterID());
+            ActiveBossAIController->BindFighterStateMachines(Player1Pawn->GetFighterStateMachine(), Player2Pawn->GetFighterStateMachine());
+        }
     }
 }
 
@@ -115,7 +434,7 @@ void AFightingMatchGameMode::Tick(float DeltaSeconds)
     const uint16 P1Mask = Player1Pawn->PollLocalRawInputBitmask();
     uint16 P2Mask = Player2Pawn->PollLocalRawInputBitmask();
 
-    // Resolver fuente de entrada de P2 (Modo Entrenamiento o Jefe V.A.R. - ZERO)
+    // Resolver fuente de entrada de P2 (Modo Entrenamiento, 2do Jugador Local o IA Sparring / Jefe V.A.R. - ZERO)
     if (bIsTrainingModeMatch)
     {
         if (UGameInstance* GI = GetGameInstance())
@@ -126,7 +445,7 @@ void AFightingMatchGameMode::Tick(float DeltaSeconds)
             }
         }
     }
-    else if (ActiveBossAIController)
+    else if (!Player2Pawn->bIsPlayerControlled && ActiveBossAIController)
     {
         if (AFightingMatchGameState* MatchGS = GetGameState<AFightingMatchGameState>())
         {
@@ -167,13 +486,29 @@ void AFightingMatchGameMode::StepDeterministicMatchTick(uint16 P1InputMask, uint
         }
     }
 
-    // 1. Capturar posiciones previas antes del paso para evaluación simétrica
+    // 1. Capturar posiciones y estados previos antes del paso para evaluación simétrica
     const FFixedVector2D PrevP1Pos = P1SM->GetState().Position;
     const FFixedVector2D PrevP2Pos = P2SM->GetState().Position;
+    const EFighterActionState PrevP1ActionState = P1SM->GetState().CurrentState;
+    const EFighterActionState PrevP2ActionState = P2SM->GetState().CurrentState;
 
     // 2. Avanzar 1 frame ambas máquinas de estados deterministas
     P1SM->StepSimulationFrame(P1InputMask, PrevP2Pos);
     P2SM->StepSimulationFrame(P2InputMask, PrevP1Pos);
+
+    // Disparar proyectil de balón determinista en el primer frame activo de 236+SK
+    if (PrevP1ActionState != EFighterActionState::AttackActive &&
+        P1SM->GetState().CurrentState == EFighterActionState::AttackActive &&
+        P1SM->GetState().ActiveMoveID == TEXT("Special_236_Projectile"))
+    {
+        SpawnBallProjectileForFighter(0, Player1Pawn->GetFighterRosterID() == TEXT("CANON_AR"));
+    }
+    if (PrevP2ActionState != EFighterActionState::AttackActive &&
+        P2SM->GetState().CurrentState == EFighterActionState::AttackActive &&
+        P2SM->GetState().ActiveMoveID == TEXT("Special_236_Projectile"))
+    {
+        SpawnBallProjectileForFighter(1, Player2Pawn->GetFighterRosterID() == TEXT("CANON_AR"));
+    }
 
     // Reiniciar contadores de combo cuando el defensor vuelve a estado neutro
     if (MatchGS)
@@ -574,6 +909,17 @@ void AFightingMatchGameMode::BroadcastVisualAndHUDState(bool bIsRollbackReSimula
     AFightingMatchGameState* MatchGS = GetGameState<AFightingMatchGameState>();
     const uint32 CurrentFrame = MatchGS ? MatchGS->MatchState.CurrentSimulationFrame : 0;
 
+    if (BroadcastCameraActor && CameraDirector)
+    {
+        float HorizontalFOV = 54.0f;
+        const FTransform CamTransform = CameraDirector->GetVisualCameraTransformCm(HorizontalFOV);
+        BroadcastCameraActor->SetActorTransform(CamTransform);
+        if (UCameraComponent* CamComp = BroadcastCameraActor->GetCameraComponent())
+        {
+            CamComp->SetFieldOfView(HorizontalFOV);
+        }
+    }
+
     if (Player1Pawn)
     {
         Player1Pawn->SyncVisualTransformFromFixedPoint(CurrentFrame, true);
@@ -600,6 +946,15 @@ void AFightingMatchGameMode::BroadcastVisualAndHUDState(bool bIsRollbackReSimula
 
     const FFighterDeterministicStatePOD& P1State = P1SM->GetState();
     const FFighterDeterministicStatePOD& P2State = P2SM->GetState();
+
+    if (P2State.CurrentHealth <= 0 && P1State.CurrentHealth > 0 && Player1Pawn)
+    {
+        Player1Pawn->PlayVictoryPoseAnimation();
+    }
+    else if (P1State.CurrentHealth <= 0 && P2State.CurrentHealth > 0 && Player2Pawn)
+    {
+        Player2Pawn->PlayVictoryPoseAnimation();
+    }
 
     // Actualizar Audio Reactivo Wwise
     if (UWorld* World = GetWorld())

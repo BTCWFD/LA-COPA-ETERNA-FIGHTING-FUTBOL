@@ -44,6 +44,8 @@ struct FFighterDeterministicStatePOD
     bool bHitboxAlreadyRegistered = false;
 };
 
+class UDataTable;
+
 UCLASS(BlueprintType)
 class SOUTHAMERICAFIGHTERSCORE_API UDeterministicFighterStateMachine : public UObject
 {
@@ -51,6 +53,7 @@ class SOUTHAMERICAFIGHTERSCORE_API UDeterministicFighterStateMachine : public UO
 
 public:
     void InitializeFighter(FFixedPoint SpawnX, bool bStartFacingRight, int32 MaxHP);
+    void LoadMoveCatalogFromDataTable(const UDataTable* FrameDataTable);
     void StepSimulationFrame(uint16 RawInputBitmask, const FFixedVector2D& OpponentPosition);
 
     FFixedAABB GetCurrentPushbox() const;

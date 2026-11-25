@@ -2125,6 +2125,8 @@
     latchedBtn: '',
     lastTapDir: 0,
     lastTapTime: 0,
+    p2LastTapDir: 0,
+    p2LastTapTime: 0,
     matchEnded: false,
     tourneyMode: false,
     tourneyRound: 1,
@@ -2133,6 +2135,7 @@
       { dir: 5, btn: '', frames: 1 }
     ],
     gpPrevButtons: {},
+    gpPrevButtonsP2: {},
     stats: {
       p1DamageDealt: 0,
       p2DamageDealt: 0,
@@ -2366,12 +2369,15 @@
     document.getElementById('t6-match-subtitle').textContent =
       `${t6State.p1.data.DisplayName} vs ${t6State.p2.data.DisplayName} — ${st.DisplayName} (${st.ZoneA})`;
 
+    const isLocal2P = t6SelAI.value === 'LOCAL_2P';
     announceT6(
-      '⚽ ¡PITAZO INICIAL! — RUEDA EL BALÓN',
+      isLocal2P ? '👥 ¡DUELO LOCAL 2P! — P1 (WASD) vs P2 (FLECHAS)' : '⚽ ¡PITAZO INICIAL! — RUEDA EL BALÓN',
       '#00e676',
       85,
       `"¡Arranca el duelo histórico entre ${t6State.p1.data.DisplayName} y ${t6State.p2.data.DisplayName} en ${st.DisplayName}!"`,
-      'Fase Neutral 2.5D activa @ 60.0 FPS deterministas.'
+      isLocal2P
+        ? '2P Local activo: P1 (WASD + U/I/O/J/K o Pad #1) vs P2 (Flechas + Numpad 1-5 / 7,8,9,B,N o Pad #2).'
+        : 'Fase Neutral 2.5D activa @ 60.0 FPS deterministas.'
     );
     playSynthSound('stinger');
   }
@@ -2557,6 +2563,7 @@
     KeyJ: 'LP',
     KeyK: 'MP',
     KeyL: 'HP',
+    KeyO: 'HP',
     KeyU: 'SK',
     KeyI: 'GB',
     Digit1: 'SP_236',
@@ -2566,30 +2573,108 @@
     Digit5: 'ULT_3'
   };
 
-  // Controles de Teclado en Tiempo Real para Tab 6
+  const T6_P1_LOCAL2P_ATTACK_MAP = {
+    KeyJ: 'LP',
+    KeyK: 'MP',
+    KeyL: 'HP',
+    KeyO: 'HP',
+    KeyU: 'SK',
+    KeyI: 'GB'
+  };
+
+  const T6_P2_LOCAL2P_ATTACK_MAP = {
+    Numpad1: 'LP',
+    Digit1: 'LP',
+    Numpad7: 'LP',
+    Numpad2: 'MP',
+    Digit2: 'MP',
+    Numpad8: 'MP',
+    Numpad3: 'HP',
+    Digit3: 'HP',
+    Numpad9: 'HP',
+    Numpad4: 'SK',
+    Digit4: 'SK',
+    KeyB: 'SK',
+    Numpad5: 'GB',
+    Digit5: 'GB',
+    KeyN: 'GB',
+    Numpad6: 'SP_236',
+    Digit6: 'SP_236',
+    Numpad0: 'SUPER_1',
+    Digit0: 'SUPER_1',
+    NumpadEnter: 'ULT_3',
+    Slash: 'ULT_3'
+  };
+
+  function handleDirectionalTapDash(fighter, tapDir, lastDirProp, lastTimeProp, now) {
+    if (t6State[lastDirProp] === tapDir && now - t6State[lastTimeProp] < 240) {
+      const cmd = tapDir === 6
+        ? (fighter.facingRight ? 'DASH_F' : 'DASH_B')
+        : (fighter.facingRight ? 'DASH_B' : 'DASH_F');
+      triggerFighterMovement(fighter, cmd);
+      t6State[lastDirProp] = 0;
+      return true;
+    }
+    t6State[lastDirProp] = tapDir;
+    t6State[lastTimeProp] = now;
+    return false;
+  }
+
+  // Controles de Teclado en Tiempo Real para Tab 6 (1P y Modo Local 2P)
   window.addEventListener('keydown', (e) => {
     if (activeTab !== 'tab6') return;
     if (['INPUT', 'SELECT', 'TEXTAREA'].includes(document.activeElement.tagName)) return;
 
     t6State.keysDown[e.code] = true;
-
-    // Detección de doble toque para Dash (66 / 44)
+    const isLocal2P = t6SelAI.value === 'LOCAL_2P';
     const now = performance.now();
-    if (e.code === 'KeyD' || e.code === 'ArrowRight') {
-      if (!e.repeat && t6State.lastTapDir === 6 && now - t6State.lastTapTime < 240) {
-        triggerFighterMovement(t6State.p1, t6State.p1.facingRight ? 'DASH_F' : 'DASH_B');
-        t6State.lastTapDir = 0;
-        return;
+
+    if (isLocal2P) {
+      // --- MODO 2 JUGADORES LOCALES: P1 (WASD + U/I/O/J/K) vs P2 (Flechas + Numpad 1-5 / Digits 1-5 / 7-9,B,N) ---
+      if (e.code === 'KeyD' && !e.repeat) {
+        if (handleDirectionalTapDash(t6State.p1, 6, 'lastTapDir', 'lastTapTime', now)) return;
+      } else if (e.code === 'KeyA' && !e.repeat) {
+        if (handleDirectionalTapDash(t6State.p1, 4, 'lastTapDir', 'lastTapTime', now)) return;
+      } else if (e.code === 'KeyW') {
+        e.preventDefault();
+        triggerFighterMovement(t6State.p1, 'JUMP');
+      } else if (e.code === 'KeyS') {
+        e.preventDefault();
+        triggerFighterMovement(t6State.p1, 'CROUCH');
       }
-      if (!e.repeat) { t6State.lastTapDir = 6; t6State.lastTapTime = now; }
+
+      if (T6_P1_LOCAL2P_ATTACK_MAP[e.code] && !e.repeat) {
+        e.preventDefault();
+        startFighterMove(t6State.p1, T6_P1_LOCAL2P_ATTACK_MAP[e.code]);
+      }
+
+      if (e.code === 'ArrowRight') {
+        e.preventDefault();
+        if (!e.repeat && handleDirectionalTapDash(t6State.p2, 6, 'p2LastTapDir', 'p2LastTapTime', now)) return;
+      } else if (e.code === 'ArrowLeft') {
+        e.preventDefault();
+        if (!e.repeat && handleDirectionalTapDash(t6State.p2, 4, 'p2LastTapDir', 'p2LastTapTime', now)) return;
+      } else if (e.code === 'ArrowUp') {
+        e.preventDefault();
+        triggerFighterMovement(t6State.p2, 'JUMP');
+      } else if (e.code === 'ArrowDown') {
+        e.preventDefault();
+        triggerFighterMovement(t6State.p2, 'CROUCH');
+      }
+
+      if (T6_P2_LOCAL2P_ATTACK_MAP[e.code] && !e.repeat) {
+        e.preventDefault();
+        startFighterMove(t6State.p2, T6_P2_LOCAL2P_ATTACK_MAP[e.code]);
+      }
+      return;
+    }
+
+    // --- MODO 1P (vs CPU / Boss / Dummy): WASD + Flechas mapeadas a P1 ---
+    if (e.code === 'KeyD' || e.code === 'ArrowRight') {
+      if (!e.repeat && handleDirectionalTapDash(t6State.p1, 6, 'lastTapDir', 'lastTapTime', now)) return;
     }
     if (e.code === 'KeyA' || e.code === 'ArrowLeft') {
-      if (!e.repeat && t6State.lastTapDir === 4 && now - t6State.lastTapTime < 240) {
-        triggerFighterMovement(t6State.p1, t6State.p1.facingRight ? 'DASH_B' : 'DASH_F');
-        t6State.lastTapDir = 0;
-        return;
-      }
-      if (!e.repeat) { t6State.lastTapDir = 4; t6State.lastTapTime = now; }
+      if (!e.repeat && handleDirectionalTapDash(t6State.p1, 4, 'lastTapDir', 'lastTapTime', now)) return;
     }
 
     if (e.code === 'KeyW' || e.code === 'ArrowUp') {
@@ -2606,27 +2691,45 @@
     }
   });
 
+  function syncFighterPostKeyUp(fighter, upLeft, upRight, upDown) {
+    if (!['WALK_F', 'WALK_B', 'CROUCH'].includes(fighter.state)) return;
+    if (upDown && fighter.y === 0) {
+      fighter.state = 'CROUCH';
+      fighter.vx = 0;
+    } else if (upLeft && !upRight && fighter.y === 0) {
+      triggerFighterMovement(fighter, 'LEFT');
+    } else if (upRight && !upLeft && fighter.y === 0) {
+      triggerFighterMovement(fighter, 'RIGHT');
+    } else {
+      fighter.state = 'IDLE';
+      fighter.vx = 0;
+    }
+  }
+
   window.addEventListener('keyup', (e) => {
     delete t6State.keysDown[e.code];
     if (activeTab !== 'tab6') return;
 
+    if (t6SelAI.value === 'LOCAL_2P') {
+      syncFighterPostKeyUp(
+        t6State.p1,
+        Boolean(t6State.keysDown['KeyA']),
+        Boolean(t6State.keysDown['KeyD']),
+        Boolean(t6State.keysDown['KeyS'])
+      );
+      syncFighterPostKeyUp(
+        t6State.p2,
+        Boolean(t6State.keysDown['ArrowLeft']),
+        Boolean(t6State.keysDown['ArrowRight']),
+        Boolean(t6State.keysDown['ArrowDown'])
+      );
+      return;
+    }
+
     const stillCrouching = Boolean(t6State.keysDown['KeyS'] || t6State.keysDown['ArrowDown']);
     const stillLeft = Boolean(t6State.keysDown['KeyA'] || t6State.keysDown['ArrowLeft']);
     const stillRight = Boolean(t6State.keysDown['KeyD'] || t6State.keysDown['ArrowRight']);
-
-    if (['WALK_F', 'WALK_B', 'CROUCH'].includes(t6State.p1.state)) {
-      if (stillCrouching && t6State.p1.y === 0) {
-        t6State.p1.state = 'CROUCH';
-        t6State.p1.vx = 0;
-      } else if (stillLeft && !stillRight && t6State.p1.y === 0) {
-        triggerFighterMovement(t6State.p1, 'LEFT');
-      } else if (stillRight && !stillLeft && t6State.p1.y === 0) {
-        triggerFighterMovement(t6State.p1, 'RIGHT');
-      } else {
-        t6State.p1.state = 'IDLE';
-        t6State.p1.vx = 0;
-      }
-    }
+    syncFighterPostKeyUp(t6State.p1, stillLeft, stillRight, stillCrouching);
   });
 
   function applyHitOrBlock(attacker, defender, mv) {
@@ -2941,34 +3044,16 @@
     }
   }
 
-  function pollT6GamepadInput() {
+  function readSingleGamepadState(pad, prevButtons) {
     const emptyGp = { active: false, up: false, down: false, left: false, right: false, dir: 5, heldBtn: '', risingActs: [], startPressed: false };
-    if (!navigator.getGamepads) return emptyGp;
-    const pads = navigator.getGamepads();
-    let activePad = null;
-    for (let i = 0; i < pads.length; i++) {
-      if (pads[i] && pads[i].connected) {
-        activePad = pads[i];
-        break;
-      }
-    }
-    const statusEl = document.getElementById('t6-gamepad-status');
-    if (!activePad) {
-      if (statusEl) statusEl.textContent = '🎮 Gamepad: Esperando...';
-      return emptyGp;
-    }
-    if (statusEl) {
-      statusEl.textContent = '🎮 Gamepad Conectado';
-      statusEl.style.borderColor = '#00e676';
-      statusEl.style.color = '#00e676';
-    }
+    if (!pad) return emptyGp;
 
-    const axX = activePad.axes[0] || 0;
-    const axY = activePad.axes[1] || 0;
-    const dUp = Boolean(activePad.buttons[12]?.pressed || axY < -0.55);
-    const dDown = Boolean(activePad.buttons[13]?.pressed || axY > 0.55);
-    const dLeft = Boolean(activePad.buttons[14]?.pressed || axX < -0.45);
-    const dRight = Boolean(activePad.buttons[15]?.pressed || axX > 0.45);
+    const axX = pad.axes[0] || 0;
+    const axY = pad.axes[1] || 0;
+    const dUp = Boolean(pad.buttons[12]?.pressed || axY < -0.55);
+    const dDown = Boolean(pad.buttons[13]?.pressed || axY > 0.55);
+    const dLeft = Boolean(pad.buttons[14]?.pressed || axX < -0.45);
+    const dRight = Boolean(pad.buttons[15]?.pressed || axX > 0.45);
 
     let gpDir = 5;
     if (dUp && !dDown) gpDir = (dRight && !dLeft) ? 9 : ((dLeft && !dRight) ? 7 : 8);
@@ -2990,18 +3075,17 @@
     let heldBtn = '';
     const risingActs = [];
     btnMap.forEach(({ idx, act }) => {
-      const pressed = Boolean(activePad.buttons[idx]?.pressed);
+      const pressed = Boolean(pad.buttons[idx]?.pressed);
       if (pressed && !heldBtn) heldBtn = act;
-      if (pressed && !t6State.gpPrevButtons[idx]) {
+      if (pressed && !prevButtons[idx]) {
         risingActs.push(act);
       }
-      t6State.gpPrevButtons[idx] = pressed;
+      prevButtons[idx] = pressed;
     });
 
-    // Botón Start (9) para Reset / Rematch inmediato
-    const startNow = Boolean(activePad.buttons[9]?.pressed);
-    const startJustPressed = startNow && !t6State.gpPrevButtons[9];
-    t6State.gpPrevButtons[9] = startNow;
+    const startNow = Boolean(pad.buttons[9]?.pressed);
+    const startJustPressed = startNow && !prevButtons[9];
+    prevButtons[9] = startNow;
 
     return {
       active: true,
@@ -3016,28 +3100,65 @@
     };
   }
 
+  function pollT6GamepadInput() {
+    const emptyGp = { active: false, up: false, down: false, left: false, right: false, dir: 5, heldBtn: '', risingActs: [], startPressed: false };
+    const statusEl = document.getElementById('t6-gamepad-status');
+    if (!navigator.getGamepads) {
+      if (statusEl) statusEl.textContent = '🎮 Gamepad: Esperando...';
+      return { p1: emptyGp, p2: emptyGp };
+    }
+    const pads = navigator.getGamepads();
+    const connectedPads = [];
+    for (let i = 0; i < pads.length; i++) {
+      if (pads[i] && pads[i].connected) connectedPads.push(pads[i]);
+    }
+    if (statusEl) {
+      if (connectedPads.length === 0) {
+        statusEl.textContent = '🎮 Gamepad: Esperando...';
+        statusEl.style.borderColor = '';
+        statusEl.style.color = '';
+      } else if (connectedPads.length === 1) {
+        statusEl.textContent = '🎮 1 Gamepad Conectado (P1)';
+        statusEl.style.borderColor = '#00e676';
+        statusEl.style.color = '#00e676';
+      } else {
+        statusEl.textContent = `🎮 ${connectedPads.length} Gamepads Conectados (P1 & P2)`;
+        statusEl.style.borderColor = '#00e5ff';
+        statusEl.style.color = '#00e5ff';
+      }
+    }
+
+    return {
+      p1: readSingleGamepadState(connectedPads[0] || null, t6State.gpPrevButtons),
+      p2: readSingleGamepadState(connectedPads[1] || null, t6State.gpPrevButtonsP2)
+    };
+  }
+
   function stepTab6VersusSimulation() {
     const p1 = t6State.p1;
     const p2 = t6State.p2;
+    const isLocal2P = t6SelAI.value === 'LOCAL_2P';
 
-    // 0. Polling Unificado (Gamepad + Teclado + UI) @ 60Hz con limpieza SOCD
-    const gp = pollT6GamepadInput();
-    if (gp.startPressed) {
+    // 0. Polling Unificado (Gamepad #1/#2 + Teclado + UI) @ 60Hz con limpieza SOCD
+    const gps = pollT6GamepadInput();
+    const gp = gps.p1;
+    const gp2 = gps.p2;
+    if (gp.startPressed || (isLocal2P && gp2.startPressed)) {
       resetTab6Match();
       return;
     }
 
-    const kUp = Boolean(t6State.keysDown['KeyW'] || t6State.keysDown['ArrowUp'] || t6State.uiMoveHeld === 'JUMP');
-    const kDown = Boolean(t6State.keysDown['KeyS'] || t6State.keysDown['ArrowDown'] || t6State.uiMoveHeld === 'CROUCH');
-    const kLeft = Boolean(t6State.keysDown['KeyA'] || t6State.keysDown['ArrowLeft'] || t6State.uiMoveHeld === 'LEFT');
-    const kRight = Boolean(t6State.keysDown['KeyD'] || t6State.keysDown['ArrowRight'] || t6State.uiMoveHeld === 'RIGHT');
+    const kUp = Boolean(t6State.keysDown['KeyW'] || (!isLocal2P && t6State.keysDown['ArrowUp']) || t6State.uiMoveHeld === 'JUMP');
+    const kDown = Boolean(t6State.keysDown['KeyS'] || (!isLocal2P && t6State.keysDown['ArrowDown']) || t6State.uiMoveHeld === 'CROUCH');
+    const kLeft = Boolean(t6State.keysDown['KeyA'] || (!isLocal2P && t6State.keysDown['ArrowLeft']) || t6State.uiMoveHeld === 'LEFT');
+    const kRight = Boolean(t6State.keysDown['KeyD'] || (!isLocal2P && t6State.keysDown['ArrowRight']) || t6State.uiMoveHeld === 'RIGHT');
 
     const rawUp = kUp || gp.up;
     const rawDown = kDown || gp.down;
     const rawLeft = kLeft || gp.left;
     const rawRight = kRight || gp.right;
 
-    // Limpieza SOCD Neutral (Arriba+Abajo = Neutro, Izquierda+Derecha = Neutro)
+    // Limpieza SOCD Neutral P1 (Arriba+Abajo = Neutro, Izquierda+Derecha = Neutro)
     const uUp = rawUp && !rawDown;
     const uDown = rawDown && !rawUp;
     const uLeft = rawLeft && !rawRight;
@@ -3071,14 +3192,15 @@
       }
     }
 
-    // Ejecutar ataques recién presionados desde Gamepad en este frame
+    // Ejecutar ataques recién presionados desde Gamepad #1 en este frame
     gp.risingActs.forEach((act) => {
       startFighterMove(p1, act);
     });
 
-    // Fusionar botón activo (pulso de ataque del frame, tecla sostenida o botón de Gamepad)
+    // Fusionar botón activo P1 (pulso de ataque del frame, tecla sostenida o botón de Gamepad)
     let heldKeyBtn = '';
-    for (const [code, act] of Object.entries(T6_ATTACK_KEY_MAP)) {
+    const p1Map = isLocal2P ? T6_P1_LOCAL2P_ATTACK_MAP : T6_ATTACK_KEY_MAP;
+    for (const [code, act] of Object.entries(p1Map)) {
       if (t6State.keysDown[code]) {
         heldKeyBtn = act;
         break;
@@ -3090,7 +3212,7 @@
     // Único registro determinista por frame en el Input History FGC
     pushT6InputHistory(curDir, unifiedBtn);
 
-    // Aplicar movimiento direccional unificado (Gamepad + Teclado) respetando agachado sostenido
+    // Aplicar movimiento direccional unificado P1 (Gamepad #1 + Teclado) respetando agachado sostenido
     if (uUp && p1.y === 0) {
       triggerFighterMovement(p1, 'JUMP');
     } else if (['IDLE', 'WALK_F', 'WALK_B', 'CROUCH'].includes(p1.state) && p1.y === 0) {
@@ -3106,8 +3228,38 @@
       }
     }
 
-    // IA del Jugador 2
-    updateP2CompetitiveAI();
+    // Jugador 2: Humano Local (LOCAL_2P) o IA Competitiva
+    if (isLocal2P) {
+      gp2.risingActs.forEach((act) => {
+        startFighterMove(p2, act);
+      });
+      const p2RawUp = Boolean(t6State.keysDown['ArrowUp']) || gp2.up;
+      const p2RawDown = Boolean(t6State.keysDown['ArrowDown']) || gp2.down;
+      const p2RawLeft = Boolean(t6State.keysDown['ArrowLeft']) || gp2.left;
+      const p2RawRight = Boolean(t6State.keysDown['ArrowRight']) || gp2.right;
+
+      const p2Up = p2RawUp && !p2RawDown;
+      const p2Down = p2RawDown && !p2RawUp;
+      const p2Left = p2RawLeft && !p2RawRight;
+      const p2Right = p2RawRight && !p2RawLeft;
+
+      if (p2Up && p2.y === 0) {
+        triggerFighterMovement(p2, 'JUMP');
+      } else if (['IDLE', 'WALK_F', 'WALK_B', 'CROUCH'].includes(p2.state) && p2.y === 0) {
+        if (p2Down) {
+          triggerFighterMovement(p2, 'CROUCH');
+        } else if (p2Left) {
+          triggerFighterMovement(p2, 'LEFT');
+        } else if (p2Right) {
+          triggerFighterMovement(p2, 'RIGHT');
+        } else {
+          p2.vx = 0;
+          p2.state = 'IDLE';
+        }
+      }
+    } else {
+      updateP2CompetitiveAI();
+    }
 
     // Físicas y máquinas de estado de P1 y P2
     updateFighterPhysicsAndState(p1, p2);
@@ -3810,7 +3962,9 @@
   const t7SelLighting = document.getElementById('t7-sel-lighting');
   const t7SelPose = document.getElementById('t7-sel-pose');
   const t7Canvas = document.getElementById('t7-canvas');
-  const t7Ctx = t7Canvas.getContext('2d');
+  const t7WebglHud = document.getElementById('t7-webgl-hud');
+  const t7UseWebGL = Boolean(window.SAFWglViewer && window.SAFWglViewer.init(t7Canvas));
+  const t7Ctx = t7UseWebGL ? null : t7Canvas.getContext('2d');
 
   // Metadatos 3D específicos por Leyenda (17 SK_*.glb con sus 10 clips @ 60 FPS)
   const CHAR_3D_PROFILES = {
@@ -4448,11 +4602,22 @@
     return project3DPoint({ x, y, z }, cx, cy, t7State.yaw, t7State.pitch, t7State.zoom);
   }
 
-  function renderTab7Studio3D() {
-    const w = t7Canvas.width;
-    const h = t7Canvas.height;
-    t7Ctx.clearRect(0, 0, w, h);
+  function getActiveTab7GlbUrl() {
+    if (t7State.category === 'FIGHTERS') {
+      const ch = ROSTER_DATA[t7State.charIdx] || ROSTER_DATA[0];
+      const prof = CHAR_3D_PROFILES[ch.Name] || CHAR_3D_PROFILES.FENOMENO_BR;
+      return `../Assets/Models3D/Fighters/${prof.file}`;
+    }
+    if (t7State.category === 'STAGES') {
+      const st = STAGES_3D_CATALOG[t7State.stageIdx] || STAGES_3D_CATALOG[0];
+      return `../Assets/Models3D/Stages/${st.File}`;
+    }
+    return t7State.propKey === 'BALL_32'
+      ? '../Assets/Models3D/Props/SM_Ball_TruncatedIcosahedron_32Panels.glb'
+      : '../Assets/Models3D/Stages/SM_Stage_PitchAndDestructibleWalls.glb';
+  }
 
+  function renderTab7Studio3D() {
     t7State.tick++;
     if (t7State.animPlaying) {
       t7State.animClock += t7State.animSpeed;
@@ -4463,6 +4628,43 @@
     if (t7State.ballKickTimer > 0) {
       t7State.ballKickTimer--;
     }
+
+    if (t7UseWebGL && window.SAFWglViewer && window.SAFWglViewer.isReady()) {
+      const glbUrl = getActiveTab7GlbUrl();
+      window.SAFWglViewer.render(glbUrl, t7State);
+      const stats = window.SAFWglViewer.getStats();
+
+      const kfLbl = document.getElementById('t7-clip-kf-lbl');
+      if (t7State.category === 'FIGHTERS') {
+        const clipMeta = CLIP_3D_METADATA[t7State.pose] || CLIP_3D_METADATA.Idle_Breath;
+        const totalKf = stats.loaded && stats.totalKf > 1 ? stats.totalKf : clipMeta.kf;
+        const curKf = stats.loaded && stats.totalKf > 1 ? stats.curKf : ((Math.floor(t7State.animClock) % clipMeta.kf) + 1);
+        if (kfLbl) kfLbl.textContent = `KF: ${String(curKf).padStart(3, '0')} / ${totalKf}`;
+      } else if (kfLbl) {
+        kfLbl.textContent = 'STATIC MESH';
+      }
+
+      if (t7WebglHud) {
+        t7WebglHud.style.display = 'block';
+        const statusBadge = stats.loaded
+          ? `<span class="hud-badge">WEBGL2 glTF 2.0</span>`
+          : `<span class="hud-badge" style="color:#ffe07d;border-color:#ffe07d;">CARGANDO .GLB...</span>`;
+        const geoInfo = stats.loaded
+          ? `${stats.verts.toLocaleString()} VERTS / ${stats.tris.toLocaleString()} TRIS${stats.joints ? ` • ${stats.joints} JOINTS` : ''}`
+          : stats.file;
+        t7WebglHud.innerHTML =
+          `<div>${statusBadge}<strong>${stats.file || glbUrl.split('/').pop()}</strong> (${geoInfo})</div>` +
+          `<div class="hud-sub">MODE: ${t7State.mode} | LIGHT: ${t7State.lighting} | CLIP: ${t7State.category === 'FIGHTERS' ? t7State.pose : 'N/A'} | SPEED: ${t7State.animSpeed}x | YAW: ${(t7State.yaw * 57.3).toFixed(0)}°</div>`;
+      }
+      return;
+    }
+
+    if (t7WebglHud) t7WebglHud.style.display = 'none';
+    if (!t7Ctx) return;
+
+    const w = t7Canvas.width;
+    const h = t7Canvas.height;
+    t7Ctx.clearRect(0, 0, w, h);
 
     const isSfumato = t7State.lighting === 'SFUMATO';
     const cx = w / 2;

@@ -54,3 +54,45 @@ struct SOUTHAMERICAFIGHTERSCORE_API FMoveFrameDataRow : public FTableRowBase
     UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "FrameData")
     int32 CancelWindowDurationFrames = 6;
 };
+
+/**
+ * Fila de DataTable para el plantel oficial sudamericano (DT_SouthAmericaRoster.json).
+ */
+USTRUCT(BlueprintType)
+struct SOUTHAMERICAFIGHTERSCORE_API FFighterRosterRow : public FTableRowBase
+{
+    GENERATED_BODY()
+
+    UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Roster")
+    FName Name;
+
+    UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Roster")
+    FText DisplayName;
+
+    UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Roster")
+    FString Country;
+
+    UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Roster")
+    FString Era;
+
+    UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Roster")
+    FString Archetype;
+
+    UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Roster")
+    int32 MaxHealth = 10000;
+
+    UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Roster")
+    int32 StunThreshold = 1000;
+
+    UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Roster")
+    int32 ForwardDashFrames = 16;
+
+    UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Roster")
+    int32 BackDashFrames = 20;
+
+    UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Roster")
+    FString SignatureMoveNotation;
+
+    UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Roster")
+    FString SignatureMoveName;
+};

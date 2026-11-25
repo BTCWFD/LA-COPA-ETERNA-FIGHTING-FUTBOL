@@ -16,6 +16,9 @@
 #include "EOSGGPONetworkBridge.h"
 #include "FightingMatchGameMode.generated.h"
 
+class ACameraActor;
+class UDataTable;
+
 /**
  * Estado global determinista de la ronda y del escenario (serializable en el Ring Buffer de Rollback).
  */
@@ -119,6 +122,9 @@ public:
     UFUNCTION(BlueprintPure, Category = "Match|Camera")
     UFightingCameraDirector* GetCameraDirector() const { return CameraDirector; }
 
+    UFUNCTION(BlueprintPure, Category = "Match|Camera")
+    ACameraActor* GetBroadcastCameraActor() const { return BroadcastCameraActor; }
+
     UFUNCTION(BlueprintPure, Category = "Match|Netcode")
     UEOSGGPONetworkBridge* GetNetworkBridge() const { return NetworkBridge; }
 
@@ -138,6 +144,10 @@ public:
     /** Referencia opcional al controlador de IA del Jefe Final V.A.R. - ZERO. */
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Match|AI")
     TObjectPtr<ABossAIController> ActiveBossAIController = nullptr;
+
+    /** Si es true y P2 no tiene Training Dummy ni 2do jugador local, genera un oponente IA ligero por defecto. */
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Match|AI")
+    bool bSpawnDefaultSparringAI = true;
 
 protected:
     UPROPERTY(Transient)
@@ -161,7 +171,25 @@ protected:
     UPROPERTY(Transient)
     TObjectPtr<UReplayPlaybackSubsystem> ReplayDirector = nullptr;
 
+    UPROPERTY(Transient)
+    TObjectPtr<ACameraActor> BroadcastCameraActor = nullptr;
+
+    UPROPERTY(Transient)
+    TObjectPtr<UDataTable> LoadedRosterTable = nullptr;
+
+    UPROPERTY(Transient)
+    TObjectPtr<UDataTable> LoadedStagesTable = nullptr;
+
+    UPROPERTY(Transient)
+    TObjectPtr<UDataTable> LoadedFrameDataTable = nullptr;
+
 private:
+    void LoadCoreCombatDataTables();
+    void ConfigureStageDataFromCurrentWorld(const UWorld* World);
+    void SetupLiveCameraAndControllers(UWorld* World);
+    static FName ResolveStageIDFromMapName(const FString& CleanMapName);
+    static FStageDataRow BuildCanonicalStageData(FName StageID);
+
     void ResolvePushboxAndStageWallCollision();
     void StepAndResolveBallProjectiles(bool bIsRollbackReSimulation);
     void ResolveMeleeHitboxes(bool bIsRollbackReSimulation);

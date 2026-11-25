@@ -1,11 +1,32 @@
 // FighterCharacterPawn.cpp - SouthAmericaFightersCore
 #include "FighterCharacterPawn.h"
+#include "Animation/AnimSequence.h"
+#include "Components/InputComponent.h"
 #include "Components/SceneComponent.h"
 #include "Components/SkeletalMeshComponent.h"
 #include "Components/StaticMeshComponent.h"
-#include "Components/InputComponent.h"
 #include "DrawDebugHelpers.h"
+#include "Engine/SkeletalMesh.h"
+#include "Engine/StaticMesh.h"
 #include "Engine/World.h"
+#include "GameFramework/PlayerController.h"
+#include "Misc/PackageName.h"
+
+namespace FighterVisualAssetPaths
+{
+    static constexpr const TCHAR* BallStaticMeshPackage = TEXT("/Game/Props/SM_Ball_TruncatedIcosahedron_32Panels");
+    static constexpr const TCHAR* BallStaticMeshObject  = TEXT("/Game/Props/SM_Ball_TruncatedIcosahedron_32Panels.SM_Ball_TruncatedIcosahedron_32Panels");
+
+    template <typename TAsset>
+    static TAsset* LoadAssetIfPackageExists(const FString& PackagePath)
+    {
+        if (PackagePath.IsEmpty() || !FPackageName::DoesPackageExist(PackagePath))
+        {
+            return nullptr;
+        }
+        return LoadObject<TAsset>(nullptr, *PackagePath);
+    }
+}
 
 // ============================================================================
 // ADeterministicBallProjectile
@@ -19,6 +40,31 @@ ADeterministicBallProjectile::ADeterministicBallProjectile()
     SetRootComponent(BallMeshComponent);
     BallMeshComponent->SetCollisionEnabled(ECollisionEnabled::NoCollision);
     SetActorHiddenInGame(true);
+}
+
+void ADeterministicBallProjectile::BeginPlay()
+{
+    Super::BeginPlay();
+    LoadBallVisualMesh();
+}
+
+void ADeterministicBallProjectile::LoadBallVisualMesh()
+{
+    if (!BallMeshComponent || BallMeshComponent->GetStaticMesh() != nullptr || IsRunningDedicatedServer())
+    {
+        return;
+    }
+
+    if (FPackageName::DoesPackageExist(FighterVisualAssetPaths::BallStaticMeshPackage))
+    {
+        if (UStaticMesh* LoadedBallMesh = Cast<UStaticMesh>(StaticLoadObject(
+            UStaticMesh::StaticClass(),
+            nullptr,
+            FighterVisualAssetPaths::BallStaticMeshObject)))
+        {
+            BallMeshComponent->SetStaticMesh(LoadedBallMesh);
+        }
+    }
 }
 
 void ADeterministicBallProjectile::SpawnDeterministicBall(
@@ -160,6 +206,11 @@ void AFighterCharacterPawn::BeginPlay()
         StateMachine->InitializeFighter(DefaultSpawnX, PlayerIndex == 0, MaxHealth);
     }
 
+    if (!CachedSkeletalMesh)
+    {
+        LoadVisualAssetsForFighter(FighterRosterID);
+    }
+
     if (VisualFeedbackComponent && MainSkeletalMesh)
     {
         TArray<USkeletalMeshComponent*> EmptyClothArray;
@@ -170,10 +221,11 @@ void AFighterCharacterPawn::BeginPlay()
 void AFighterCharacterPawn::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 {
     Super::SetupPlayerInputComponent(PlayerInputComponent);
-    if (!PlayerInputComponent)
+    if (!PlayerInputComponent || bHasBoundInputActions)
     {
         return;
     }
+    bHasBoundInputActions = true;
 
     PlayerInputComponent->BindAction(TEXT("Combat_Up"), IE_Pressed, this, &AFighterCharacterPawn::OnInputUpPressed);
     PlayerInputComponent->BindAction(TEXT("Combat_Up"), IE_Released, this, &AFighterCharacterPawn::OnInputUpReleased);
@@ -204,8 +256,13 @@ void AFighterCharacterPawn::InitializeFighterForRound(
     int32 InMaxHealth)
 {
     PlayerIndex = InPlayerIndex;
-    FighterRosterID = InFighterRosterID;
+    FighterRosterID = InFighterRosterID.IsNone() ? FName(TEXT("FENOMENO_BR")) : InFighterRosterID;
     MaxHealth = FMath::Max(1, InMaxHealth);
+    bVictoryPoseActive = false;
+    bHasInitializedVisualAnimState = false;
+    LastVisualAnimState = EFighterActionState::Idle;
+    LastVisualAnimMoveID = NAME_None;
+    LastPlayedAnimSequence = nullptr;
 
     if (!StateMachine)
     {
@@ -213,7 +270,98 @@ void AFighterCharacterPawn::InitializeFighterForRound(
     }
 
     StateMachine->InitializeFighter(SpawnX, bStartFacingRight, MaxHealth);
+    LoadVisualAssetsForFighter(FighterRosterID);
     SyncVisualTransformFromFixedPoint(0, bEnableLiveAABBDebugDraw);
+}
+
+FString AFighterCharacterPawn::ResolveVisualAssetStemForFighter(FName InFighterRosterID)
+{
+    if (InFighterRosterID.IsNone())
+    {
+        return TEXT("FENOMENO_BR");
+    }
+
+    if (InFighterRosterID == TEXT("VAR_ZERO_BOSS") ||
+        InFighterRosterID == TEXT("BOSS_VAR_ZERO") ||
+        InFighterRosterID == TEXT("SUPREME_JUDGE_BOSS"))
+    {
+        return TEXT("SUPREME_JUDGE_BOSS");
+    }
+
+    FString Stem = InFighterRosterID.ToString();
+    if (Stem.StartsWith(TEXT("SK_")))
+    {
+        Stem.RightChopInline(3);
+    }
+    return Stem.IsEmpty() ? TEXT("FENOMENO_BR") : Stem;
+}
+
+void AFighterCharacterPawn::LoadVisualAssetsForFighter(FName InFighterRosterID)
+{
+    if (!MainSkeletalMesh || IsRunningDedicatedServer())
+    {
+        return;
+    }
+
+    const FString AssetStem = ResolveVisualAssetStemForFighter(InFighterRosterID);
+    const FString BaseMeshDir = FString::Printf(
+        TEXT("/Game/Characters/SouthAmericaRoster/Meshes/SK_%s/SkeletalMeshes"),
+        *AssetStem);
+
+    const FString SkeletalMeshPath   = FString::Printf(TEXT("%s/SK_%s"), *BaseMeshDir, *AssetStem);
+    const FString IdleBreathPath     = FString::Printf(TEXT("%s/SK_%sIdle_Breath"), *BaseMeshDir, *AssetStem);
+    const FString DashForwardPath    = FString::Printf(TEXT("%s/SK_%sDash_Forward"), *BaseMeshDir, *AssetStem);
+    const FString KickHighPath       = FString::Printf(TEXT("%s/SK_%sKick_High"), *BaseMeshDir, *AssetStem);
+    const FString SpecialChilenaPath = FString::Printf(TEXT("%s/SK_%sSpecial_Chilena"), *BaseMeshDir, *AssetStem);
+    const FString VictoryPosePath    = FString::Printf(TEXT("%s/SK_%sVictory_Pose"), *BaseMeshDir, *AssetStem);
+
+    CachedSkeletalMesh       = FighterVisualAssetPaths::LoadAssetIfPackageExists<USkeletalMesh>(SkeletalMeshPath);
+    CachedAnimIdleBreath     = FighterVisualAssetPaths::LoadAssetIfPackageExists<UAnimSequence>(IdleBreathPath);
+    CachedAnimDashForward    = FighterVisualAssetPaths::LoadAssetIfPackageExists<UAnimSequence>(DashForwardPath);
+    CachedAnimKickHigh       = FighterVisualAssetPaths::LoadAssetIfPackageExists<UAnimSequence>(KickHighPath);
+    CachedAnimSpecialChilena = FighterVisualAssetPaths::LoadAssetIfPackageExists<UAnimSequence>(SpecialChilenaPath);
+    CachedAnimVictoryPose    = FighterVisualAssetPaths::LoadAssetIfPackageExists<UAnimSequence>(VictoryPosePath);
+
+    if (CachedSkeletalMesh)
+    {
+        MainSkeletalMesh->SetSkeletalMeshAsset(CachedSkeletalMesh);
+        MainSkeletalMesh->SetAnimationMode(EAnimationMode::AnimationSingleNode);
+
+        if (CachedAnimIdleBreath)
+        {
+            MainSkeletalMesh->PlayAnimation(CachedAnimIdleBreath, true);
+            LastPlayedAnimSequence = CachedAnimIdleBreath;
+        }
+    }
+}
+
+void AFighterCharacterPawn::PlayVictoryPoseAnimation()
+{
+    bVictoryPoseActive = true;
+    if (MainSkeletalMesh && CachedAnimVictoryPose && LastPlayedAnimSequence != CachedAnimVictoryPose)
+    {
+        MainSkeletalMesh->SetAnimationMode(EAnimationMode::AnimationSingleNode);
+        MainSkeletalMesh->PlayAnimation(CachedAnimVictoryPose, false);
+        LastPlayedAnimSequence = CachedAnimVictoryPose;
+    }
+}
+
+void AFighterCharacterPawn::BindFighterPlayerControllerInput(APlayerController* InPlayerController)
+{
+    if (!InPlayerController)
+    {
+        return;
+    }
+
+    bIsPlayerControlled = true;
+    if (InPlayerController->GetPawn() != this)
+    {
+        InPlayerController->Possess(this);
+    }
+    else if (InputComponent && !bHasBoundInputActions)
+    {
+        SetupPlayerInputComponent(InputComponent);
+    }
 }
 
 uint16 AFighterCharacterPawn::PollLocalRawInputBitmask() const
@@ -259,6 +407,8 @@ void AFighterCharacterPawn::SyncVisualTransformFromFixedPoint(uint32 CurrentFram
 
     SetActorLocationAndRotation(FVector(VisualXCm, 0.0f, VisualZCm), FacingRot);
 
+    UpdateVisualAnimationForState(SimState);
+
     if (VisualFeedbackComponent)
     {
         VisualFeedbackComponent->DeterministicVisualStep(CurrentFrame);
@@ -289,6 +439,95 @@ void AFighterCharacterPawn::SyncVisualTransformFromFixedPoint(uint32 CurrentFram
             DrawFixedAABBDebugBox(ActiveHitbox, FColor::Red, 3.0f);
         }
     }
+}
+
+void AFighterCharacterPawn::UpdateVisualAnimationForState(const FFighterDeterministicStatePOD& SimState)
+{
+    if (!MainSkeletalMesh || !CachedSkeletalMesh)
+    {
+        return;
+    }
+
+    if (bVictoryPoseActive)
+    {
+        if (CachedAnimVictoryPose && LastPlayedAnimSequence != CachedAnimVictoryPose)
+        {
+            MainSkeletalMesh->SetAnimationMode(EAnimationMode::AnimationSingleNode);
+            MainSkeletalMesh->PlayAnimation(CachedAnimVictoryPose, false);
+            LastPlayedAnimSequence = CachedAnimVictoryPose;
+        }
+        return;
+    }
+
+    UAnimSequence* TargetAnim = CachedAnimIdleBreath;
+    bool bLoop = true;
+
+    switch (SimState.CurrentState)
+    {
+    case EFighterActionState::WalkForward:
+    case EFighterActionState::WalkBackward:
+    case EFighterActionState::DashForward:
+    case EFighterActionState::DashBackward:
+    case EFighterActionState::JumpStartup:
+    case EFighterActionState::Airborne:
+        TargetAnim = CachedAnimDashForward ? CachedAnimDashForward : CachedAnimIdleBreath;
+        bLoop = true;
+        break;
+
+    case EFighterActionState::AttackStartup:
+    case EFighterActionState::AttackActive:
+    case EFighterActionState::AttackRecovery:
+    {
+        const FString MoveStr = SimState.ActiveMoveID.ToString();
+        const bool bIsSpecialOrSuper =
+            MoveStr.Contains(TEXT("Special"), ESearchCase::IgnoreCase) ||
+            MoveStr.Contains(TEXT("Super"), ESearchCase::IgnoreCase) ||
+            MoveStr.Contains(TEXT("Ultimate"), ESearchCase::IgnoreCase) ||
+            MoveStr.Contains(TEXT("Chilena"), ESearchCase::IgnoreCase) ||
+            MoveStr.Contains(TEXT("Scorpion"), ESearchCase::IgnoreCase);
+
+        if (bIsSpecialOrSuper && CachedAnimSpecialChilena)
+        {
+            TargetAnim = CachedAnimSpecialChilena;
+        }
+        else
+        {
+            TargetAnim = CachedAnimKickHigh ? CachedAnimKickHigh : CachedAnimSpecialChilena;
+        }
+        bLoop = false;
+        break;
+    }
+
+    case EFighterActionState::Idle:
+    case EFighterActionState::Crouch:
+    case EFighterActionState::Blockstun:
+    case EFighterActionState::Hitstun:
+    case EFighterActionState::HardKnockdown:
+    default:
+        TargetAnim = CachedAnimIdleBreath;
+        bLoop = true;
+        break;
+    }
+
+    if (!TargetAnim)
+    {
+        TargetAnim = CachedAnimIdleBreath;
+    }
+
+    const bool bEnteredNewAttack =
+        (SimState.CurrentState == EFighterActionState::AttackStartup) &&
+        (LastVisualAnimState != EFighterActionState::AttackStartup || SimState.ActiveMoveID != LastVisualAnimMoveID);
+
+    if (TargetAnim && (!bHasInitializedVisualAnimState || TargetAnim != LastPlayedAnimSequence || bEnteredNewAttack))
+    {
+        MainSkeletalMesh->SetAnimationMode(EAnimationMode::AnimationSingleNode);
+        MainSkeletalMesh->PlayAnimation(TargetAnim, bLoop);
+        LastPlayedAnimSequence = TargetAnim;
+    }
+
+    LastVisualAnimState = SimState.CurrentState;
+    LastVisualAnimMoveID = SimState.ActiveMoveID;
+    bHasInitializedVisualAnimState = true;
 }
 
 void AFighterCharacterPawn::DrawFixedAABBDebugBox(const FFixedAABB& Box, const FColor& Color, float Thickness) const

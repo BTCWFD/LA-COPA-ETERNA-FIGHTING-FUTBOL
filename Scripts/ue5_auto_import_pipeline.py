@@ -69,12 +69,15 @@ MODELS_MANIFEST_PATH = os.path.join(PROJECT_ROOT, "Assets", "Models3D", "Models3
 # Destinos virtuales dentro del Content Browser de Unreal Engine 5.8+
 UE_FIGHTERS_DEST = "/Game/Characters/SouthAmericaRoster/Meshes"
 UE_STAGES_DEST = "/Game/Stages/CONMEBOL/Meshes"
+UE_PROPS_DEST = "/Game/Props"
 UE_TEXTURES_DEST = "/Game/Characters/SouthAmericaRoster/TexturesPBR"
 UE_CONCEPT_UI_DEST = "/Game/UI/ConceptArtAndPortraits"
 UE_DATATABLES_DEST = "/Game/DataTables"
 UE_AUDIO_STEMS_DEST = "/Game/Audio/Stems"
 UE_MATERIALS_DEST = "/Game/Characters/SouthAmericaRoster/Materials"
+UE_FIGHTER_MICS_DEST = "/Game/Characters/SouthAmericaRoster/Materials/Instances"
 UE_STAGE_MATERIALS_DEST = "/Game/Stages/CONMEBOL/Materials"
+UE_STAGE_MICS_DEST = "/Game/Stages/CONMEBOL/Materials/Instances"
 UE_UI_MATERIALS_DEST = "/Game/UI/Materials"
 UE_POSTPROCESS_DEST = "/Game/TechArt/PostProcess"
 
@@ -483,16 +486,18 @@ def _build_fighter_kit_cloth_material() -> Any:
     mud_param = _create_scalar_param(mel, mat, "PitchMudAmount", 0.16, -700, 560)
 
     # Vincular textura PBR de kit si existe en /Game/Characters/SouthAmericaRoster/TexturesPBR
+    # Mezcla 85% KitAlbedoTexture + 15% TeamPrimaryColor para preservar los colores nacionales del PNG sin oscurecerlos
     albedo_source_node = primary_col
     default_kit_tex = unreal.EditorAssetLibrary.load_asset(f"{UE_TEXTURES_DEST}/T_Kit_Brazil_Albedo")
     if isinstance(default_kit_tex, unreal.Texture2D):
         tex_param = mel.create_material_expression(mat, unreal.MaterialExpressionTextureSampleParameter2D, -960, -620)
         tex_param.set_editor_property("parameter_name", "KitAlbedoTexture")
         tex_param.set_editor_property("texture", default_kit_tex)
-        mul_tint = mel.create_material_expression(mat, unreal.MaterialExpressionMultiply, -700, -520)
-        mel.connect_material_expressions(tex_param, "RGB", mul_tint, "A")
-        mel.connect_material_expressions(primary_col, "", mul_tint, "B")
-        albedo_source_node = mul_tint
+        lerp_tint = mel.create_material_expression(mat, unreal.MaterialExpressionLinearInterpolate, -700, -520)
+        lerp_tint.set_editor_property("const_alpha", 0.15)
+        mel.connect_material_expressions(tex_param, "RGB", lerp_tint, "A")
+        mel.connect_material_expressions(primary_col, "", lerp_tint, "B")
+        albedo_source_node = lerp_tint
 
     custom_node = mel.create_material_expression(mat, unreal.MaterialExpressionCustom, -260, -80)
     custom_node.set_editor_property("description", "M_FighterKit_Cloth (Retro 90s Jacquard Anisotropy + Street-Ink)")
@@ -924,12 +929,307 @@ def configure_chaos_cloth_on_skeletal_mesh(skel_mesh: "unreal.SkeletalMesh") -> 
                     )
 
 
+FIGHTER_MATERIAL_SPECS = {
+    "FENOMENO_BR": {
+        "country": "Brazil",
+        "kit_tex": "T_Kit_Brazil_Albedo",
+        "primary": (0.96, 0.80, 0.08, 1.0),
+        "secondary": (0.04, 0.42, 0.20, 1.0),
+        "rim": (1.00, 0.90, 0.42, 1.0),
+        "skin": (0.58, 0.38, 0.26, 1.0),
+        "hair_root": (0.03, 0.02, 0.02, 1.0),
+        "hair_tip": (0.08, 0.05, 0.04, 1.0),
+    },
+    "BRUXO_BR": {
+        "country": "Brazil",
+        "kit_tex": "T_Kit_Brazil_Albedo",
+        "primary": (0.96, 0.80, 0.08, 1.0),
+        "secondary": (0.04, 0.42, 0.20, 1.0),
+        "rim": (1.00, 0.88, 0.45, 1.0),
+        "skin": (0.54, 0.35, 0.24, 1.0),
+        "hair_root": (0.03, 0.02, 0.02, 1.0),
+        "hair_tip": (0.10, 0.07, 0.05, 1.0),
+    },
+    "CANON_AR": {
+        "country": "Argentina",
+        "kit_tex": "T_Kit_Argentina_Albedo",
+        "primary": (0.44, 0.72, 0.94, 1.0),
+        "secondary": (0.96, 0.97, 1.00, 1.0),
+        "rim": (0.55, 0.84, 1.00, 1.0),
+        "skin": (0.76, 0.56, 0.44, 1.0),
+        "hair_root": (0.12, 0.07, 0.04, 1.0),
+        "hair_tip": (0.24, 0.15, 0.08, 1.0),
+    },
+    "PULGA_AR": {
+        "country": "Argentina",
+        "kit_tex": "T_Kit_Argentina_Albedo",
+        "primary": (0.44, 0.72, 0.94, 1.0),
+        "secondary": (0.96, 0.97, 1.00, 1.0),
+        "rim": (0.62, 0.88, 1.00, 1.0),
+        "skin": (0.78, 0.58, 0.46, 1.0),
+        "hair_root": (0.08, 0.05, 0.03, 1.0),
+        "hair_tip": (0.18, 0.12, 0.07, 1.0),
+    },
+    "PIBE_CO": {
+        "country": "Colombia",
+        "kit_tex": "T_Kit_Colombia_Albedo",
+        "primary": (0.96, 0.80, 0.08, 1.0),
+        "secondary": (0.04, 0.18, 0.54, 1.0),
+        "rim": (1.00, 0.86, 0.35, 1.0),
+        "skin": (0.68, 0.47, 0.34, 1.0),
+        "hair_root": (0.85, 0.68, 0.18, 1.0),
+        "hair_tip": (0.96, 0.84, 0.32, 1.0),
+    },
+    "LOCO_CO": {
+        "country": "Colombia",
+        "kit_tex": "T_Kit_Colombia_Albedo",
+        "primary": (0.96, 0.80, 0.08, 1.0),
+        "secondary": (0.78, 0.10, 0.14, 1.0),
+        "rim": (1.00, 0.78, 0.38, 1.0),
+        "skin": (0.64, 0.44, 0.31, 1.0),
+        "hair_root": (0.03, 0.02, 0.02, 1.0),
+        "hair_tip": (0.10, 0.07, 0.05, 1.0),
+    },
+    "PISTOLERO_UY": {
+        "country": "Uruguay",
+        "kit_tex": "T_Kit_Uruguay_Albedo",
+        "primary": (0.32, 0.66, 0.92, 1.0),
+        "secondary": (0.06, 0.08, 0.12, 1.0),
+        "rim": (0.48, 0.82, 1.00, 1.0),
+        "skin": (0.75, 0.55, 0.43, 1.0),
+        "hair_root": (0.04, 0.03, 0.02, 1.0),
+        "hair_tip": (0.12, 0.08, 0.06, 1.0),
+    },
+    "MATADOR_UY": {
+        "country": "Uruguay",
+        "kit_tex": "T_Kit_Uruguay_Albedo",
+        "primary": (0.32, 0.66, 0.92, 1.0),
+        "secondary": (0.06, 0.08, 0.12, 1.0),
+        "rim": (0.50, 0.84, 1.00, 1.0),
+        "skin": (0.74, 0.54, 0.42, 1.0),
+        "hair_root": (0.03, 0.02, 0.02, 1.0),
+        "hair_tip": (0.11, 0.08, 0.05, 1.0),
+    },
+    "BAMBAM_CL": {
+        "country": "Chile",
+        "kit_tex": "T_Kit_Chile_Albedo",
+        "primary": (0.84, 0.12, 0.14, 1.0),
+        "secondary": (0.04, 0.22, 0.62, 1.0),
+        "rim": (1.00, 0.52, 0.48, 1.0),
+        "skin": (0.72, 0.51, 0.38, 1.0),
+        "hair_root": (0.04, 0.03, 0.02, 1.0),
+        "hair_tip": (0.12, 0.08, 0.05, 1.0),
+    },
+    "REY_CL": {
+        "country": "Chile",
+        "kit_tex": "T_Kit_Chile_Albedo",
+        "primary": (0.84, 0.12, 0.14, 1.0),
+        "secondary": (0.04, 0.22, 0.62, 1.0),
+        "rim": (1.00, 0.48, 0.44, 1.0),
+        "skin": (0.70, 0.49, 0.36, 1.0),
+        "hair_root": (0.03, 0.02, 0.02, 1.0),
+        "hair_tip": (0.09, 0.06, 0.04, 1.0),
+    },
+    "BULLDOG_PY": {
+        "country": "Paraguay",
+        "kit_tex": "T_Kit_Paraguay_Albedo",
+        "primary": (0.85, 0.12, 0.16, 1.0),
+        "secondary": (0.95, 0.95, 0.96, 1.0),
+        "rim": (0.96, 0.52, 0.56, 1.0),
+        "skin": (0.72, 0.52, 0.39, 1.0),
+        "hair_root": (0.04, 0.03, 0.025, 1.0),
+        "hair_tip": (0.14, 0.10, 0.07, 1.0),
+    },
+    "MAESTRO_PE": {
+        "country": "Peru",
+        "kit_tex": "T_Kit_Peru_Albedo",
+        "primary": (0.94, 0.94, 0.94, 1.0),
+        "secondary": (0.84, 0.08, 0.14, 1.0),
+        "rim": (1.00, 0.64, 0.64, 1.0),
+        "skin": (0.64, 0.44, 0.31, 1.0),
+        "hair_root": (0.03, 0.02, 0.02, 1.0),
+        "hair_tip": (0.10, 0.07, 0.05, 1.0),
+    },
+    "TREN_EC": {
+        "country": "Ecuador",
+        "kit_tex": "T_Kit_Ecuador_Albedo",
+        "primary": (0.96, 0.80, 0.06, 1.0),
+        "secondary": (0.04, 0.22, 0.56, 1.0),
+        "rim": (1.00, 0.86, 0.40, 1.0),
+        "skin": (0.42, 0.26, 0.18, 1.0),
+        "hair_root": (0.02, 0.02, 0.02, 1.0),
+        "hair_tip": (0.06, 0.05, 0.04, 1.0),
+    },
+    "HURACAN_VE": {
+        "country": "Venezuela",
+        "kit_tex": "T_Kit_Venezuela_Albedo",
+        "primary": (0.44, 0.06, 0.15, 1.0),
+        "secondary": (0.90, 0.74, 0.28, 1.0),
+        "rim": (0.95, 0.44, 0.56, 1.0),
+        "skin": (0.66, 0.46, 0.33, 1.0),
+        "hair_root": (0.04, 0.03, 0.025, 1.0),
+        "hair_tip": (0.12, 0.08, 0.06, 1.0),
+    },
+    "DIABLO_BO": {
+        "country": "Bolivia",
+        "kit_tex": "T_Kit_Bolivia_Albedo",
+        "primary": (0.04, 0.46, 0.20, 1.0),
+        "secondary": (0.90, 0.76, 0.12, 1.0),
+        "rim": (0.56, 0.96, 0.62, 1.0),
+        "skin": (0.65, 0.45, 0.32, 1.0),
+        "hair_root": (0.03, 0.02, 0.02, 1.0),
+        "hair_tip": (0.10, 0.07, 0.05, 1.0),
+    },
+    "GENERAL_FR": {
+        "country": "France",
+        "kit_tex": "T_Kit_France_Albedo",
+        "primary": (0.04, 0.16, 0.42, 1.0),
+        "secondary": (0.94, 0.95, 0.98, 1.0),
+        "rim": (0.48, 0.68, 1.00, 1.0),
+        "skin": (0.76, 0.57, 0.45, 1.0),
+        "hair_root": (0.05, 0.04, 0.03, 1.0),
+        "hair_tip": (0.16, 0.12, 0.09, 1.0),
+    },
+    "SUPREME_JUDGE_BOSS": {
+        "country": "VARBoss",
+        "kit_tex": "T_Kit_VARBoss_Albedo",
+        "primary": (0.94, 0.72, 0.10, 1.0),
+        "secondary": (0.10, 0.10, 0.14, 1.0),
+        "rim": (1.00, 0.84, 0.26, 1.0),
+        "skin": (0.68, 0.68, 0.72, 1.0),
+        "hair_root": (0.92, 0.76, 0.24, 1.0),
+        "hair_tip": (1.00, 0.92, 0.54, 1.0),
+    },
+}
+
+STAGE_ENVIRONMENT_SPECS = {
+    "SM_Stage_Maracana_BR": {
+        "stage_id": "STAGE_MARACANA",
+        "rain": 0.10,
+        "celsius": 27.0,
+        "grass_albedo": (0.08, 0.36, 0.11, 1.0),
+        "grass_roughness": 0.58,
+        "puddle_mask": 0.22,
+    },
+    "SM_Stage_Bombonera_AR": {
+        "stage_id": "STAGE_BOMBONERA",
+        "rain": 0.25,
+        "celsius": 22.0,
+        "grass_albedo": (0.09, 0.34, 0.10, 1.0),
+        "grass_roughness": 0.62,
+        "puddle_mask": 0.35,
+    },
+    "SM_Stage_Centenario_UY": {
+        "stage_id": "STAGE_CENTENARIO",
+        "rain": 0.80,
+        "celsius": 14.0,
+        "grass_albedo": (0.07, 0.29, 0.11, 1.0),
+        "grass_roughness": 0.54,
+        "puddle_mask": 0.72,
+    },
+    "SM_Stage_Metropolitano_CO": {
+        "stage_id": "STAGE_METROPOLITANO",
+        "rain": 0.15,
+        "celsius": 40.0,
+        "grass_albedo": (0.14, 0.38, 0.08, 1.0),
+        "grass_roughness": 0.68,
+        "puddle_mask": 0.20,
+    },
+    "SM_Stage_Nunoa_CL": {
+        "stage_id": "STAGE_NUNOA",
+        "rain": 0.20,
+        "celsius": 12.0,
+        "grass_albedo": (0.08, 0.32, 0.12, 1.0),
+        "grass_roughness": 0.60,
+        "puddle_mask": 0.30,
+    },
+    "SM_Stage_Defensores_PY": {
+        "stage_id": "STAGE_DEFENSORES",
+        "rain": 0.72,
+        "celsius": 29.0,
+        "grass_albedo": (0.09, 0.31, 0.09, 1.0),
+        "grass_roughness": 0.56,
+        "puddle_mask": 0.68,
+    },
+    "SM_Stage_NacionalLima_PE": {
+        "stage_id": "STAGE_NACIONAL_LIMA",
+        "rain": 0.80,
+        "celsius": 17.0,
+        "grass_albedo": (0.08, 0.30, 0.12, 1.0),
+        "grass_roughness": 0.52,
+        "puddle_mask": 0.65,
+    },
+    "SM_Stage_Atahualpa_EC": {
+        "stage_id": "STAGE_ATAHUALPA",
+        "rain": 0.55,
+        "celsius": 16.0,
+        "grass_albedo": (0.10, 0.32, 0.09, 1.0),
+        "grass_roughness": 0.60,
+        "puddle_mask": 0.50,
+    },
+    "SM_Stage_Avila_VE": {
+        "stage_id": "STAGE_AVILA",
+        "rain": 0.18,
+        "celsius": 28.0,
+        "grass_albedo": (0.09, 0.35, 0.10, 1.0),
+        "grass_roughness": 0.58,
+        "puddle_mask": 0.25,
+    },
+    "SM_Stage_HernandoSiles_BO": {
+        "stage_id": "STAGE_HERNANDO_SILES",
+        "rain": 0.40,
+        "celsius": 6.0,
+        "grass_albedo": (0.14, 0.34, 0.26, 1.0),
+        "grass_roughness": 0.55,
+        "puddle_mask": 0.42,
+    },
+}
+
+
+def _load_or_create_mic(pkg_path: str, mic_name: str, parent_mat: Any) -> Any:
+    """Carga o crea un `UMaterialInstanceConstant` heredando de `parent_mat`."""
+    full_path = f"{pkg_path}/{mic_name}"
+    mic = None
+    if unreal.EditorAssetLibrary.does_asset_exist(full_path):
+        loaded = unreal.EditorAssetLibrary.load_asset(full_path)
+        if isinstance(loaded, unreal.MaterialInstanceConstant):
+            mic = loaded
+    if mic is None:
+        asset_tools = unreal.AssetToolsHelpers.get_asset_tools()
+        mic_factory = unreal.MaterialInstanceConstantFactoryNew()
+        mic = asset_tools.create_asset(mic_name, pkg_path, unreal.MaterialInstanceConstant, mic_factory)
+    if mic is not None and parent_mat is not None:
+        unreal.MaterialEditingLibrary.set_material_instance_parent(mic, parent_mat)
+    return mic
+
+
+def _resolve_fighter_id_from_mesh(skel_mesh: "unreal.SkeletalMesh") -> str:
+    """Extrae el token canónico de luchador (ej. `FENOMENO_BR`, `SUPREME_JUDGE_BOSS`) desde el nombre o ruta."""
+    haystack = f"{skel_mesh.get_path_name()} {skel_mesh.get_name()}".upper()
+    for fighter_id in sorted(FIGHTER_MATERIAL_SPECS.keys(), key=len, reverse=True):
+        if fighter_id in haystack:
+            return fighter_id
+    return ""
+
+
+def _resolve_stage_spec_from_mesh(static_mesh: "unreal.StaticMesh") -> tuple[str, dict[str, Any] | None]:
+    """Resuelve `(stage_token, spec)` desde la ruta o nombre del `UStaticMesh` del estadio."""
+    haystack = f"{static_mesh.get_path_name()} {static_mesh.get_name()}".lower()
+    for stage_token, spec in STAGE_ENVIRONMENT_SPECS.items():
+        short_name = stage_token.replace("SM_Stage_", "").lower()
+        if stage_token.lower() in haystack or short_name in haystack:
+            return stage_token, spec
+    return "", None
+
+
 def bind_master_materials_to_skeletal_mesh(skel_mesh: "unreal.SkeletalMesh") -> None:
     """
-    Vincula los 3 Materiales Maestros compilados a las ranuras del USkeletalMesh:
-      - M_FighterSkin_Master
-      - M_FighterKit_Cloth
-      - M_FighterHairCards
+    Crea/actualiza las 3 `UMaterialInstanceConstant` por luchador en
+    `/Game/Characters/SouthAmericaRoster/Materials/Instances/`:
+      - `MI_<Fighter>_Kit`  (padre `M_FighterKit_Cloth`, con `KitAlbedoTexture = T_Kit_<Country>_Albedo` + colores país)
+      - `MI_<Fighter>_Skin` (padre `M_FighterSkin_Master`)
+      - `MI_<Fighter>_Hair` (padre `M_FighterHairCards`)
+    y las asigna a las ranuras correspondientes del `USkeletalMesh`.
     """
     if not HAS_UNREAL_EDITOR or skel_mesh is None:
         return
@@ -938,24 +1238,168 @@ def bind_master_materials_to_skeletal_mesh(skel_mesh: "unreal.SkeletalMesh") -> 
     mat_kit = unreal.EditorAssetLibrary.load_asset(MASTER_MAT_KIT)
     mat_hair = unreal.EditorAssetLibrary.load_asset(MASTER_MAT_HAIR)
 
+    mel = unreal.MaterialEditingLibrary
+    fighter_id = _resolve_fighter_id_from_mesh(skel_mesh)
+    spec = FIGHTER_MATERIAL_SPECS.get(fighter_id)
+
+    assigned_skin = mat_skin
+    assigned_kit = mat_kit
+    assigned_hair = mat_hair
+
+    if fighter_id and spec is not None:
+        kit_mic = _load_or_create_mic(UE_FIGHTER_MICS_DEST, f"MI_{fighter_id}_Kit", mat_kit)
+        if kit_mic is not None:
+            kit_tex = unreal.EditorAssetLibrary.load_asset(f"{UE_TEXTURES_DEST}/{spec['kit_tex']}")
+            if isinstance(kit_tex, unreal.Texture2D):
+                mel.set_material_instance_texture_parameter_value(kit_mic, "KitAlbedoTexture", kit_tex)
+            mel.set_material_instance_vector_parameter_value(
+                kit_mic, "TeamPrimaryColor", unreal.LinearColor(*spec["primary"])
+            )
+            mel.set_material_instance_vector_parameter_value(
+                kit_mic, "TeamSecondaryColor", unreal.LinearColor(*spec["secondary"])
+            )
+            mel.set_material_instance_vector_parameter_value(
+                kit_mic, "CompetitiveRimColor", unreal.LinearColor(*spec["rim"])
+            )
+            if hasattr(mel, "update_material_instance"):
+                mel.update_material_instance(kit_mic)
+            unreal.EditorAssetLibrary.save_loaded_asset(kit_mic)
+            assigned_kit = kit_mic
+
+        skin_mic = _load_or_create_mic(UE_FIGHTER_MICS_DEST, f"MI_{fighter_id}_Skin", mat_skin)
+        if skin_mic is not None:
+            mel.set_material_instance_vector_parameter_value(
+                skin_mic, "SkinBaseAlbedo", unreal.LinearColor(*spec["skin"])
+            )
+            mel.set_material_instance_vector_parameter_value(
+                skin_mic, "CompetitiveRimColor", unreal.LinearColor(*spec["rim"])
+            )
+            if hasattr(mel, "update_material_instance"):
+                mel.update_material_instance(skin_mic)
+            unreal.EditorAssetLibrary.save_loaded_asset(skin_mic)
+            assigned_skin = skin_mic
+
+        hair_mic = _load_or_create_mic(UE_FIGHTER_MICS_DEST, f"MI_{fighter_id}_Hair", mat_hair)
+        if hair_mic is not None:
+            mel.set_material_instance_vector_parameter_value(
+                hair_mic, "HairRootColor", unreal.LinearColor(*spec["hair_root"])
+            )
+            mel.set_material_instance_vector_parameter_value(
+                hair_mic, "HairTipColor", unreal.LinearColor(*spec["hair_tip"])
+            )
+            mel.set_material_instance_vector_parameter_value(
+                hair_mic, "CompetitiveRimColor", unreal.LinearColor(*spec["rim"])
+            )
+            if hasattr(mel, "update_material_instance"):
+                mel.update_material_instance(hair_mic)
+            unreal.EditorAssetLibrary.save_loaded_asset(hair_mic)
+            assigned_hair = hair_mic
+
+        unreal.log(
+            f"[LA COPA ETERNA][FIGHTER_MIC] {fighter_id}: MI_{fighter_id}_Kit ({spec['kit_tex']}), "
+            f"MI_{fighter_id}_Skin, MI_{fighter_id}_Hair"
+        )
+
     materials = skel_mesh.get_editor_property("materials")
     updated_materials = []
 
     for idx, skeletal_mat in enumerate(materials):
         slot_name = str(skeletal_mat.get_editor_property("material_slot_name")).lower()
         if "hair" in slot_name or idx == 2:
-            if mat_hair:
-                skeletal_mat.set_editor_property("material_interface", mat_hair)
+            if assigned_hair:
+                skeletal_mat.set_editor_property("material_interface", assigned_hair)
         elif "kit" in slot_name or "cloth" in slot_name or "jersey" in slot_name or idx == 1:
-            if mat_kit:
-                skeletal_mat.set_editor_property("material_interface", mat_kit)
+            if assigned_kit:
+                skeletal_mat.set_editor_property("material_interface", assigned_kit)
         else:
-            if mat_skin:
-                skeletal_mat.set_editor_property("material_interface", mat_skin)
+            if assigned_skin:
+                skeletal_mat.set_editor_property("material_interface", assigned_skin)
 
         updated_materials.append(skeletal_mat)
 
     skel_mesh.set_editor_property("materials", updated_materials)
+
+
+def bind_master_materials_to_stages(stage_meshes: list | None = None) -> list:
+    """
+    Crea/actualiza un `UMaterialInstanceConstant` por cada uno de los 10 estadios CONMEBOL en
+    `/Game/Stages/CONMEBOL/Materials/Instances/MI_<StageID>_Env` heredando de `M_StadiumEnvironment_Master`
+    con `RainIntensity`, `AmbientCelsius` y `BaseGrassAlbedo` calibrados, y lo asigna a las ranuras
+    de césped/cancha (`M_PitchGrass`) de cada `UStaticMesh`.
+    """
+    if not HAS_UNREAL_EDITOR:
+        return [f"{UE_STAGE_MICS_DEST}/MI_{spec['stage_id']}_Env" for spec in STAGE_ENVIRONMENT_SPECS.values()]
+
+    master_env = unreal.EditorAssetLibrary.load_asset(MASTER_MAT_STADIUM_ENV)
+    if master_env is None:
+        unreal.log_warning(f"[LA COPA ETERNA][STAGE_MIC] Falta material maestro: {MASTER_MAT_STADIUM_ENV}")
+        return []
+
+    if stage_meshes is None:
+        stage_meshes = []
+        if unreal.EditorAssetLibrary.does_directory_exist(UE_STAGES_DEST):
+            for apath in unreal.EditorAssetLibrary.list_assets(UE_STAGES_DEST, recursive=True, include_folder=False):
+                loaded = unreal.EditorAssetLibrary.load_asset(apath)
+                if isinstance(loaded, unreal.StaticMesh):
+                    stage_meshes.append(loaded)
+
+    mel = unreal.MaterialEditingLibrary
+    bound_mics = []
+
+    for sm_asset in stage_meshes:
+        if not isinstance(sm_asset, unreal.StaticMesh):
+            continue
+        stage_token, spec = _resolve_stage_spec_from_mesh(sm_asset)
+        if spec is None:
+            continue
+
+        mic_name = f"MI_{spec['stage_id']}_Env"
+        env_mic = _load_or_create_mic(UE_STAGE_MICS_DEST, mic_name, master_env)
+        if env_mic is None:
+            continue
+
+        mel.set_material_instance_scalar_parameter_value(env_mic, "RainIntensity", float(spec["rain"]))
+        mel.set_material_instance_scalar_parameter_value(env_mic, "AmbientCelsius", float(spec["celsius"]))
+        mel.set_material_instance_scalar_parameter_value(
+            env_mic, "BaseGrassRoughness", float(spec["grass_roughness"])
+        )
+        mel.set_material_instance_scalar_parameter_value(
+            env_mic, "PuddleDistributionMask", float(spec["puddle_mask"])
+        )
+        mel.set_material_instance_vector_parameter_value(
+            env_mic, "BaseGrassAlbedo", unreal.LinearColor(*spec["grass_albedo"])
+        )
+        if hasattr(mel, "update_material_instance"):
+            mel.update_material_instance(env_mic)
+        unreal.EditorAssetLibrary.save_loaded_asset(env_mic)
+
+        static_materials = sm_asset.get_editor_property("static_materials")
+        updated_smats = []
+        pitch_slots_bound = 0
+        for idx, smat in enumerate(static_materials):
+            slot_name = str(smat.get_editor_property("material_slot_name")).lower()
+            is_pitch_slot = (
+                "pitchgrass" in slot_name
+                or ("pitch" in slot_name and "lines" not in slot_name)
+                or (idx == 0 and "grass" in slot_name)
+            )
+            if is_pitch_slot:
+                smat.set_editor_property("material_interface", env_mic)
+                if hasattr(sm_asset, "set_material"):
+                    sm_asset.set_material(idx, env_mic)
+                pitch_slots_bound += 1
+            updated_smats.append(smat)
+
+        if pitch_slots_bound > 0:
+            sm_asset.set_editor_property("static_materials", updated_smats)
+            unreal.EditorAssetLibrary.save_loaded_asset(sm_asset)
+        bound_mics.append(env_mic)
+        unreal.log(
+            f"[LA COPA ETERNA][STAGE_MIC] {stage_token} -> {mic_name} "
+            f"(Rain={spec['rain']}, Temp={spec['celsius']}C, PitchSlots={pitch_slots_bound})"
+        )
+
+    return bound_mics
 
 
 def apply_lighting_channel_1_to_character_component(skel_comp: "unreal.SkeletalMeshComponent") -> None:
@@ -1239,20 +1683,283 @@ def import_conmebol_stages_glb_interchange() -> list:
             unreal.EditorAssetLibrary.save_loaded_asset(asset)
             imported_stages.append(asset)
 
+    bind_master_materials_to_stages(imported_stages)
     return imported_stages
 
 
 # ============================================================================
-# 5. IMPORTACIÓN DE DATATABLES JSON (`Data/DT_*.json`)
+# 4B. IMPORTACIÓN DE PROPS 3D (`SM_Ball_TruncatedIcosahedron_32Panels.glb`)
 # ============================================================================
+
+def import_props_glb_interchange() -> list:
+    """
+    Importa `Assets/Models3D/Props/SM_Ball_TruncatedIcosahedron_32Panels.glb` hacia `/Game/Props`
+    como `UStaticMesh` llamado `SM_Ball_TruncatedIcosahedron_32Panels` (usado por `ADeterministicBallProjectile`).
+    """
+    ball_glb = os.path.join(GLB_PROPS_DIR, "SM_Ball_TruncatedIcosahedron_32Panels.glb")
+    prop_glbs = [ball_glb] if os.path.isfile(ball_glb) else sorted(glob.glob(os.path.join(GLB_PROPS_DIR, "*.glb")))
+    if not HAS_UNREAL_EDITOR:
+        return prop_glbs
+
+    asset_tools = unreal.AssetToolsHelpers.get_asset_tools()
+    imported_props = []
+
+    for glb_path in prop_glbs:
+        target_name = os.path.splitext(os.path.basename(glb_path))[0]
+        target_full_path = f"{UE_PROPS_DEST}/{target_name}"
+
+        task = unreal.AssetImportTask()
+        task.filename = glb_path
+        task.destination_path = UE_PROPS_DEST
+        task.destination_name = target_name
+        task.replace_existing = True
+        task.automated = True
+        task.save = True
+
+        if hasattr(unreal, "InterchangeGenericAssetsPipeline"):
+            prop_pipeline = unreal.InterchangeGenericAssetsPipeline()
+            _safe_set_property(prop_pipeline, "use_source_name_for_asset", False)
+            _safe_set_property(prop_pipeline, "scene_name_sub_folder", False)
+            _safe_set_property(prop_pipeline, "asset_type_sub_folders", False)
+            if hasattr(prop_pipeline, "mesh_pipeline"):
+                mesh_p = prop_pipeline.get_editor_property("mesh_pipeline")
+                _safe_set_property(mesh_p, "import_skeletal_meshes", False)
+                _safe_set_property(mesh_p, "import_static_meshes", True)
+                if hasattr(unreal, "InterchangeMeshCollision"):
+                    pass
+            if hasattr(unreal, "InterchangePipelineStackOverride"):
+                stack_override = unreal.InterchangePipelineStackOverride()
+                stack_override.add_pipeline(prop_pipeline)
+                task.options = stack_override
+
+        asset_tools.import_asset_tasks([task])
+
+        resolved_mesh = None
+        if unreal.EditorAssetLibrary.does_asset_exist(target_full_path):
+            loaded = unreal.EditorAssetLibrary.load_asset(target_full_path)
+            if isinstance(loaded, unreal.StaticMesh):
+                resolved_mesh = loaded
+
+        if resolved_mesh is None:
+            for obj_path in task.imported_object_paths:
+                loaded = unreal.EditorAssetLibrary.load_asset(obj_path)
+                if isinstance(loaded, unreal.StaticMesh):
+                    if obj_path != target_full_path and not unreal.EditorAssetLibrary.does_asset_exist(target_full_path):
+                        unreal.EditorAssetLibrary.rename_asset(obj_path, target_full_path)
+                        loaded = unreal.EditorAssetLibrary.load_asset(target_full_path) or loaded
+                    resolved_mesh = loaded
+                    break
+
+        if isinstance(resolved_mesh, unreal.StaticMesh):
+            unreal.EditorAssetLibrary.save_loaded_asset(resolved_mesh)
+            imported_props.append(resolved_mesh)
+            unreal.log(f"[LA COPA ETERNA][PROPS] Prop StaticMesh importado: {resolved_mesh.get_path_name()}")
+
+    return imported_props
+
+
+# ============================================================================
+# 5. IMPORTACIÓN DE DATATABLES JSON (`Data/DT_*.json` -> `/Game/DataTables/`)
+# ============================================================================
+
+def _resolve_datatable_row_struct(candidate_paths: list[str]) -> Any:
+    """Busca y carga el `UScriptStruct` C++ (FTableRowBase) para una DataTable."""
+    if not HAS_UNREAL_EDITOR:
+        return None
+    for struct_path in candidate_paths:
+        obj = None
+        try:
+            obj = unreal.load_object(None, struct_path)
+        except Exception:
+            obj = None
+        if obj is None and hasattr(unreal, "find_object"):
+            try:
+                obj = unreal.find_object(None, struct_path)
+            except Exception:
+                obj = None
+        if obj is not None:
+            return obj
+    return None
+
+
+def _build_datatable_json_rows(dt_filename: str, raw_data: Any) -> list[dict[str, Any]]:
+    """
+    Normaliza cada JSON de `Data/` en una lista de filas planas con clave `"Name"` requerida por `UDataTable`:
+      - `DT_FrameDataUniversal.json`: copia `"MoveID"` -> `"Name"`
+      - `DT_SouthAmericaRoster.json`: ya incluye `"Name"`
+      - `DT_StagesCONMEBOL.json`: copia `"StageID"` -> `"Name"`
+      - `DT_CommentaryAndRivalries.json`: aplana `InterruptStingers`, `GeneralCommentaryLines`,
+        `SignatureMoveTriggers`, `ClassicRivalriesClashIntros` y `StoryModeChapters`
+    """
+    if dt_filename == "DT_FrameDataUniversal.json" and isinstance(raw_data, list):
+        rows = []
+        for idx, item in enumerate(raw_data):
+            if not isinstance(item, dict):
+                continue
+            row = dict(item)
+            row["Name"] = str(row.get("Name") or row.get("MoveID") or f"Move_{idx:03d}")
+            rows.append(row)
+        return rows
+
+    if dt_filename == "DT_SouthAmericaRoster.json" and isinstance(raw_data, list):
+        rows = []
+        for idx, item in enumerate(raw_data):
+            if not isinstance(item, dict):
+                continue
+            row = dict(item)
+            row["Name"] = str(row.get("Name") or row.get("FighterID") or f"Fighter_{idx:02d}")
+            rows.append(row)
+        return rows
+
+    if dt_filename == "DT_StagesCONMEBOL.json" and isinstance(raw_data, list):
+        rows = []
+        for idx, item in enumerate(raw_data):
+            if not isinstance(item, dict):
+                continue
+            row = dict(item)
+            row["Name"] = str(row.get("Name") or row.get("StageID") or f"Stage_{idx:02d}")
+            rows.append(row)
+        return rows
+
+    if dt_filename == "DT_CommentaryAndRivalries.json" and isinstance(raw_data, dict):
+        rows = []
+        booth = raw_data.get("CommentaryBoothSystem", {})
+        for st in booth.get("InterruptStingers", []):
+            row_id = str(st.get("StingerID", ""))
+            if not row_id:
+                continue
+            rows.append({
+                "Name": row_id,
+                "RowID": row_id,
+                "Category": "InterruptStinger",
+                "WwiseEvent": str(st.get("WwiseEvent", "")),
+                "Speaker": str(st.get("Speaker", "")),
+                "Priority": "CriticalMoment",
+                "PriorityScore": 90,
+                "DurationFrames": int(st.get("DurationFrames", 24)),
+                "Title": "",
+                "FighterA": "",
+                "FighterB": "",
+                "StageID": "",
+                "TextES": str(st.get("TextES", "")),
+            })
+
+        for line in booth.get("GeneralCommentaryLines", []):
+            row_id = str(line.get("LineID", ""))
+            if not row_id:
+                continue
+            rows.append({
+                "Name": row_id,
+                "RowID": row_id,
+                "Category": "GeneralCommentary",
+                "WwiseEvent": str(line.get("WwiseEvent", "")),
+                "Speaker": str(line.get("Speaker", "")),
+                "Priority": str(line.get("Priority", "NeutralChatter")),
+                "PriorityScore": int(line.get("PriorityScore", 20)),
+                "DurationFrames": int(line.get("DurationFrames", 120)),
+                "Title": "",
+                "FighterA": "",
+                "FighterB": "",
+                "StageID": "",
+                "TextES": str(line.get("TextES", "")),
+            })
+
+        for trig in booth.get("SignatureMoveTriggers", []):
+            row_id = str(trig.get("TriggerID", ""))
+            if not row_id:
+                continue
+            rows.append({
+                "Name": row_id,
+                "RowID": row_id,
+                "Category": "SignatureMoveTrigger",
+                "WwiseEvent": str(trig.get("WwiseEvent", "")),
+                "Speaker": str(trig.get("Speaker", "")),
+                "Priority": str(trig.get("Priority", "ComboAction")),
+                "PriorityScore": int(trig.get("PriorityScore", 50)),
+                "DurationFrames": 90,
+                "Title": str(trig.get("MoveID", "")),
+                "FighterA": str(trig.get("FighterID", "")),
+                "FighterB": "",
+                "StageID": "",
+                "TextES": str(trig.get("TextES", "")),
+            })
+
+        for riv in raw_data.get("ClassicRivalriesClashIntros", []):
+            row_id = str(riv.get("RivalryID", ""))
+            if not row_id:
+                continue
+            seq = riv.get("DialogueSequence", [])
+            joined_text = " | ".join(
+                f"{d.get('Speaker', '')}: {d.get('TextES', '')}" for d in seq if isinstance(d, dict)
+            )
+            first_wwise = seq[0].get("WwiseEvent", "") if seq and isinstance(seq[0], dict) else ""
+            rows.append({
+                "Name": row_id,
+                "RowID": row_id,
+                "Category": "ClassicRivalry",
+                "WwiseEvent": str(first_wwise),
+                "Speaker": str(riv.get("FighterA", "")),
+                "Priority": "CriticalMoment",
+                "PriorityScore": 80,
+                "DurationFrames": 180,
+                "Title": str(riv.get("Title", "")),
+                "FighterA": str(riv.get("FighterA", "")),
+                "FighterB": str(riv.get("FighterB", "")),
+                "StageID": str(riv.get("StageRecommendation", "")),
+                "TextES": joined_text,
+            })
+
+        for ch in raw_data.get("StoryModeChapters", []):
+            row_id = str(ch.get("ChapterID", ""))
+            if not row_id:
+                continue
+            rows.append({
+                "Name": row_id,
+                "RowID": row_id,
+                "Category": "StoryChapter",
+                "WwiseEvent": "",
+                "Speaker": str(ch.get("PlayableFighter", "")),
+                "Priority": "NeutralChatter",
+                "PriorityScore": 40,
+                "DurationFrames": 180,
+                "Title": str(ch.get("Title", "")),
+                "FighterA": str(ch.get("PlayableFighter", "")),
+                "FighterB": str(ch.get("OpponentFighter", "")),
+                "StageID": str(ch.get("StageID", "")),
+                "TextES": str(ch.get("KeyDialogue", "")),
+            })
+        return rows
+
+    return raw_data if isinstance(raw_data, list) else []
+
+
+DATATABLE_STRUCT_CANDIDATES = {
+    "DT_FrameDataUniversal.json": [
+        "/Script/SouthAmericaFightersCore.MoveFrameDataRow",
+    ],
+    "DT_SouthAmericaRoster.json": [
+        "/Script/SouthAmericaFightersCore.FighterRosterRow",
+        "/Script/SouthAmericaFightersCore.FighterDataRow",
+    ],
+    "DT_StagesCONMEBOL.json": [
+        "/Script/SouthAmericaFightersCore.StageCONMEBOLTableRow",
+        "/Script/SouthAmericaFightersCore.StageDataRow",
+    ],
+    "DT_CommentaryAndRivalries.json": [
+        "/Script/SouthAmericaFightersCore.CommentaryRivalryRow",
+        "/Script/SouthAmericaFightersCore.CommentaryAndRivalryRow",
+        "/Script/SouthAmericaFightersCore.CommentaryRow",
+    ],
+}
+
 
 def import_json_datatables_to_ue5() -> list:
     """
-    Importa las 4 DataTables maestras desde `Data/DT_*.json`:
-      - `DT_SouthAmericaRoster.json`
-      - `DT_StagesCONMEBOL.json`
-      - `DT_FrameDataUniversal.json`
-      - `DT_CommentaryAndRivalries.json`
+    Crea e importa las 4 DataTables reales (`UDataTable`) en `/Game/DataTables/`:
+      - `DT_FrameDataUniversal`     (`MoveFrameDataRow`, mapeando `MoveID` -> `Name`)
+      - `DT_SouthAmericaRoster`     (`FighterRosterRow`)
+      - `DT_StagesCONMEBOL`         (`StageCONMEBOLTableRow`, mapeando `StageID` -> `Name`)
+      - `DT_CommentaryAndRivalries` (filas aplanadas de `InterruptStingers`, `ClassicRivalriesClashIntros`, etc.)
     """
     json_files = sorted(glob.glob(os.path.join(DATATABLES_DIR, "DT_*.json")))
     if not HAS_UNREAL_EDITOR:
@@ -1262,19 +1969,103 @@ def import_json_datatables_to_ue5() -> list:
     imported_tables = []
 
     for json_path in json_files:
+        base_file = os.path.basename(json_path)
+        asset_name = os.path.splitext(base_file)[0]
+        asset_path = f"{UE_DATATABLES_DEST}/{asset_name}"
+
+        with open(json_path, "r", encoding="utf-8") as f:
+            raw_data = json.load(f)
+
+        rows = _build_datatable_json_rows(base_file, raw_data)
+        candidates = list(DATATABLE_STRUCT_CANDIDATES.get(base_file, []))
+        row_struct = _resolve_datatable_row_struct(candidates)
+
+        # Respaldo limpio en caso de que aún no exista un struct dedicado para Commentary/Rivalries
+        payload_rows = rows
+        if row_struct is None:
+            fallback_struct = _resolve_datatable_row_struct(["/Script/GameplayTags.GameplayTagTableRow"])
+            if fallback_struct is not None:
+                row_struct = fallback_struct
+                payload_rows = [
+                    {
+                        "Name": r["Name"],
+                        "Tag": f"LaCopaEterna.{asset_name}.{r['Name']}",
+                        "DevComment": json.dumps(r, ensure_ascii=False),
+                    }
+                    for r in rows
+                ]
+
+        dt_asset = None
+        if row_struct is not None:
+            if unreal.EditorAssetLibrary.does_asset_exist(asset_path):
+                existing = unreal.EditorAssetLibrary.load_asset(asset_path)
+                if isinstance(existing, unreal.DataTable):
+                    existing_struct = None
+                    try:
+                        existing_struct = existing.get_editor_property("row_struct")
+                    except Exception:
+                        pass
+                    if existing_struct == row_struct:
+                        dt_asset = existing
+                    else:
+                        unreal.EditorAssetLibrary.delete_asset(asset_path)
+
+            if dt_asset is None:
+                dt_factory = unreal.DataTableFactory()
+                _safe_set_property(dt_factory, "struct", row_struct)
+                dt_asset = asset_tools.create_asset(asset_name, UE_DATATABLES_DEST, unreal.DataTable, dt_factory)
+                if dt_asset is not None:
+                    _safe_set_property(dt_asset, "row_struct", row_struct)
+
+            if isinstance(dt_asset, unreal.DataTable):
+                json_payload = json.dumps(payload_rows, ensure_ascii=False)
+                filled = False
+                if hasattr(unreal, "DataTableFunctionLibrary") and hasattr(
+                    unreal.DataTableFunctionLibrary, "fill_data_table_from_json_string"
+                ):
+                    filled = bool(
+                        unreal.DataTableFunctionLibrary.fill_data_table_from_json_string(dt_asset, json_payload)
+                    )
+                elif hasattr(dt_asset, "fill_from_json_string"):
+                    filled = bool(dt_asset.fill_from_json_string(json_payload))
+
+                row_count = 0
+                if hasattr(unreal, "DataTableFunctionLibrary") and hasattr(
+                    unreal.DataTableFunctionLibrary, "get_data_table_row_names"
+                ):
+                    row_count = len(unreal.DataTableFunctionLibrary.get_data_table_row_names(dt_asset))
+                elif hasattr(dt_asset, "get_row_names"):
+                    row_count = len(dt_asset.get_row_names())
+
+                unreal.EditorAssetLibrary.save_loaded_asset(dt_asset)
+                imported_tables.append(dt_asset)
+                unreal.log(
+                    f"[LA COPA ETERNA][DATATABLE] {asset_name} -> {row_count} filas "
+                    f"(filled={filled}, RowStruct={row_struct.get_name()})"
+                )
+                continue
+
+        # Último fallback con CSVImportFactory si no se resolvió ningún RowStruct
         task = unreal.AssetImportTask()
         task.filename = json_path
         task.destination_path = UE_DATATABLES_DEST
+        task.destination_name = asset_name
         task.replace_existing = True
         task.automated = True
         task.save = True
+        if hasattr(unreal, "CSVImportFactory"):
+            csv_factory = unreal.CSVImportFactory()
+            if hasattr(csv_factory, "automated_import_settings") and row_struct is not None:
+                settings = csv_factory.get_editor_property("automated_import_settings")
+                _safe_set_property(settings, "import_row_struct", row_struct)
+            task.factory = csv_factory
 
         asset_tools.import_asset_tasks([task])
         for obj_path in task.imported_object_paths:
-            dt_asset = unreal.EditorAssetLibrary.load_asset(obj_path)
-            if dt_asset:
-                unreal.EditorAssetLibrary.save_loaded_asset(dt_asset)
-                imported_tables.append(dt_asset)
+            loaded_dt = unreal.EditorAssetLibrary.load_asset(obj_path)
+            if loaded_dt:
+                unreal.EditorAssetLibrary.save_loaded_asset(loaded_dt)
+                imported_tables.append(loaded_dt)
 
     return imported_tables
 
@@ -1536,6 +2327,9 @@ def run_dry_run_audit() -> int:
     prop_glbs = sorted(glob.glob(os.path.join(GLB_PROPS_DIR, "*.glb"))) + sorted(
         glob.glob(os.path.join(GLB_STAGES_DIR, "SM_Stage_PitchAndDestructibleWalls.glb"))
     )
+    ball_glb = os.path.join(GLB_PROPS_DIR, "SM_Ball_TruncatedIcosahedron_32Panels.glb")
+    if not os.path.isfile(ball_glb):
+        errors.append(f"Falta prop requerido de balón 32 paneles: {ball_glb}")
     for p_glb in prop_glbs:
         inspect_glb_binary_header(p_glb)
     print(f"[OK] Props & Destructible Wall-Break Templates:      {len(prop_glbs)}/{len(prop_glbs)} .glb validados")
@@ -1577,7 +2371,7 @@ def run_dry_run_audit() -> int:
         f"{verified_shaders}/6 .ush + {len(master_mats)} Master Materials + M_PP_SfumatoChiaroscuro listos"
     )
 
-    # 6. Auditar las 18 Texturas PBR (`Assets/TexturesPBR/*.png`)
+    # 6. Auditar las 18 Texturas PBR (`Assets/TexturesPBR/*.png`) y mapeo 17 Fighters / 10 Stages MIC
     pbr_pngs = sorted(glob.glob(os.path.join(PBR_TEXTURES_DIR, "*.png")))
     if len(pbr_pngs) < 18:
         errors.append(f"Se esperaban al menos 18 texturas PBR en Assets/TexturesPBR/, halladas {len(pbr_pngs)}")
@@ -1586,7 +2380,18 @@ def run_dry_run_audit() -> int:
             sig = f.read(8)
             if sig != b"\x89PNG\r\n\x1a\n":
                 errors.append(f"Firma PNG inválida en: {png}")
-    print(f"[OK] PBR Textures (Kits + Jacquard + MicroPores):    {len(pbr_pngs)}/18 .png validados")
+    for fid, fspec in FIGHTER_MATERIAL_SPECS.items():
+        kit_png = os.path.join(PBR_TEXTURES_DIR, f"{fspec['kit_tex']}.png")
+        if not os.path.isfile(kit_png):
+            errors.append(f"Falta textura de kit para {fid}: {kit_png}")
+    if len(FIGHTER_MATERIAL_SPECS) != 17:
+        errors.append(f"Se esperaban 17 specs de MIC de luchadores, hallados {len(FIGHTER_MATERIAL_SPECS)}")
+    if len(STAGE_ENVIRONMENT_SPECS) != 10:
+        errors.append(f"Se esperaban 10 specs de MIC de estadios, hallados {len(STAGE_ENVIRONMENT_SPECS)}")
+    print(
+        f"[OK] PBR Textures (Kits + Jacquard + MicroPores):    "
+        f"{len(pbr_pngs)}/18 .png + 17 Fighter MIC specs + 10 Stage MIC specs validados"
+    )
 
     # 7. Auditar Concept Art 2D & Ilustraciones Renacimiento Sfumato + SVG Master Atlas
     concept_imgs = sorted(glob.glob(os.path.join(CONCEPT_ART_DIR, "*.jpg")))
@@ -1618,10 +2423,18 @@ def run_dry_run_audit() -> int:
     dt_files = sorted(glob.glob(os.path.join(DATATABLES_DIR, "DT_*.json")))
     if len(dt_files) < 4:
         errors.append(f"Se esperaban 4 DataTables JSON en Data/, halladas {len(dt_files)}")
+    dt_total_rows = 0
     for dt_path in dt_files:
         with open(dt_path, "r", encoding="utf-8") as f:
-            json.load(f)
-    print(f"[OK] Competitive JSON DataTables (Data/DT_*.json):   {len(dt_files)}/4 tablas validadas")
+            raw_dt = json.load(f)
+        norm_rows = _build_datatable_json_rows(os.path.basename(dt_path), raw_dt)
+        if not norm_rows or any("Name" not in r for r in norm_rows):
+            errors.append(f"DataTable normalizada sin filas o sin clave 'Name': {dt_path}")
+        dt_total_rows += len(norm_rows)
+    print(
+        f"[OK] Competitive JSON DataTables (Data/DT_*.json):   "
+        f"{len(dt_files)}/4 tablas validadas ({dt_total_rows} filas UE5 DataTable)"
+    )
 
     print("-" * 86)
     if errors:
@@ -1664,7 +2477,8 @@ def main() -> int:
         ("JSON DataTables (/Game/DataTables)", import_json_datatables_to_ue5),
         ("5 Project Master Materials (/Project/*.ush)", create_project_master_materials),
         ("17 Animated Fighters (.glb @ 60.0 FPS)", import_fighters_glb_interchange),
-        ("10 CONMEBOL 3D Stages (.glb)", import_conmebol_stages_glb_interchange),
+        ("10 CONMEBOL 3D Stages (.glb + Env MICs)", import_conmebol_stages_glb_interchange),
+        ("Ball 32-Panel Prop (.glb -> /Game/Props)", import_props_glb_interchange),
         ("Post-Process M_PP_SfumatoChiaroscuro", create_and_wire_sfumato_postprocess_material),
     ]:
         try:

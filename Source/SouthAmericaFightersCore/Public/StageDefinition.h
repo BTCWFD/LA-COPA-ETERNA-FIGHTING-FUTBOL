@@ -95,3 +95,68 @@ struct SOUTHAMERICAFIGHTERSCORE_API FStageDataRow : public FTableRowBase
         return 0.0f;
     }
 };
+
+/**
+ * Fila plana de DataTable importada directamente desde DT_StagesCONMEBOL.json.
+ */
+USTRUCT(BlueprintType)
+struct SOUTHAMERICAFIGHTERSCORE_API FStageCONMEBOLTableRow : public FTableRowBase
+{
+    GENERATED_BODY()
+
+    UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Stage")
+    FName StageID;
+
+    UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Stage")
+    FText DisplayName;
+
+    UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Stage")
+    FString Country;
+
+    UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Stage|Zones")
+    int32 ZoneAWidth = 2400;
+
+    UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Stage|Zones")
+    int32 WallHealth = 3;
+
+    UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Stage|Environment")
+    FString ClimateLighting;
+
+    UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Stage|Audio")
+    float BPM = 120.0f;
+
+    UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Stage|Zones")
+    FString ZoneAName;
+
+    UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Stage|Zones")
+    FString ZoneBName;
+
+    UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Stage|Environment")
+    float AltitudeMeters = 0.0f;
+
+    /** Convierte esta fila de tabla plana en la estructura FStageDataRow con límites Q32.32 Zona A/B. */
+    FStageDataRow ToStageDataRow() const
+    {
+        FStageDataRow OutRow;
+        OutRow.StageID = StageID;
+        OutRow.DisplayName = DisplayName;
+
+        const int64 HalfZoneAMm = static_cast<int64>(FMath::Max(1000, ZoneAWidth)) * 5LL;
+        OutRow.ZoneABounds.LeftWallFixedMm = -HalfZoneAMm;
+        OutRow.ZoneABounds.RightWallFixedMm = HalfZoneAMm;
+        OutRow.ZoneABounds.MaxWallHealth = FMath::Max(1, WallHealth);
+
+        const int64 HalfZoneBMm = HalfZoneAMm + 6000LL;
+        OutRow.ZoneBBounds.LeftWallFixedMm = -HalfZoneBMm;
+        OutRow.ZoneBBounds.RightWallFixedMm = HalfZoneBMm;
+        OutRow.ZoneBBounds.MaxWallHealth = 99;
+
+        OutRow.BaseTempoBPM = (BPM > 0.0f) ? BPM : 120.0f;
+        OutRow.AltitudeMeters = (AltitudeMeters > 0.0f)
+            ? AltitudeMeters
+            : ((StageID == TEXT("STAGE_HERNANDO_SILES") || StageID == TEXT("Stage_LaPaz_3600m"))
+                ? FStageDataRow::LaPazAltitudeMeters
+                : 0.0f);
+        return OutRow;
+    }
+};
