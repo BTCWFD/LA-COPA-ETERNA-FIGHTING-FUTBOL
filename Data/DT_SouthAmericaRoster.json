@@ -9,7 +9,7 @@
     "StunThreshold": 1000,
     "ForwardDashFrames": 15,
     "BackDashFrames": 21,
-    "SignatureMoveNotation": "236+LP/MP/HP",
+    "SignatureMoveNotation": "236+LP",
     "SignatureMoveName": "Pedalada Mortal"
   },
   {
@@ -22,7 +22,7 @@
     "StunThreshold": 950,
     "ForwardDashFrames": 17,
     "BackDashFrames": 20,
-    "SignatureMoveNotation": "41236+MP/HP",
+    "SignatureMoveNotation": "41236+MP",
     "SignatureMoveName": "Elastica"
   },
   {
@@ -48,7 +48,7 @@
     "StunThreshold": 900,
     "ForwardDashFrames": 14,
     "BackDashFrames": 18,
-    "SignatureMoveNotation": "236+LP/MP/HP",
+    "SignatureMoveNotation": "236+MP",
     "SignatureMoveName": "Slalom Imposible"
   },
   {
@@ -87,7 +87,7 @@
     "StunThreshold": 1100,
     "ForwardDashFrames": 20,
     "BackDashFrames": 23,
-    "SignatureMoveNotation": "41236+LP/MP/HP",
+    "SignatureMoveNotation": "41236+LP",
     "SignatureMoveName": "Presion Asfixiante"
   },
   {
@@ -113,7 +113,7 @@
     "StunThreshold": 1000,
     "ForwardDashFrames": 17,
     "BackDashFrames": 20,
-    "SignatureMoveNotation": "j.236+LP/MP/HP",
+    "SignatureMoveNotation": "j.236+MP",
     "SignatureMoveName": "Cabezazo Suspendido"
   },
   {
@@ -126,7 +126,7 @@
     "StunThreshold": 1050,
     "ForwardDashFrames": 16,
     "BackDashFrames": 20,
-    "SignatureMoveNotation": "236+LP/MP/HP",
+    "SignatureMoveNotation": "236+LP",
     "SignatureMoveName": "Trancazo Real"
   },
   {
@@ -152,7 +152,7 @@
     "StunThreshold": 980,
     "ForwardDashFrames": 17,
     "BackDashFrames": 19,
-    "SignatureMoveNotation": "236+SK~8/2",
+    "SignatureMoveNotation": "236+SK~8",
     "SignatureMoveName": "Tiro de Tres Dedos"
   },
   {
@@ -204,7 +204,20 @@
     "StunThreshold": 1000,
     "ForwardDashFrames": 17,
     "BackDashFrames": 20,
-    "SignatureMoveNotation": "236+MP/HP",
+    "SignatureMoveNotation": "236+MP",
     "SignatureMoveName": "Roulette de Marseille"
+  },
+  {
+    "Name": "VAR_ZERO_BOSS",
+    "DisplayName": "El Juez Supremo (V.A.R. - ZERO)",
+    "Country": "Syndicate",
+    "Era": "Timeless",
+    "Archetype": "Boss_Zoner_TimeRewinder",
+    "MaxHealth": 13000,
+    "StunThreshold": 1500,
+    "ForwardDashFrames": 12,
+    "BackDashFrames": 14,
+    "SignatureMoveNotation": "22+GB",
+    "SignatureMoveName": "V.A.R. Rewind (-90f)"
   }
 ]

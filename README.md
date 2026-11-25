@@ -1,6 +1,6 @@
 # ⚽ LA COPA ETERNA: SANGRE Y POTRERO
 **Juego de Pelea 2.5D AAA de las Leyendas del Fútbol Sudamericano (CONMEBOL) — Edición Renacimiento *Sfumato***  
-*Unreal Engine 5.4+ | C++20 Core | Punto Fijo Q32.32 Determinista | GGPO Rollback + EOS Crossplay | Shader `M_PP_SfumatoChiaroscuro` | Audiokinetic Wwise | WebLab 60 FPS*
+*Unreal Engine 5.4+ / 5.8.4 | C++20 Core | Punto Fijo Q32.32 Determinista | GGPO Rollback + EOS Crossplay | Shader `M_PP_SfumatoChiaroscuro` | Audiokinetic Wwise | WebLab 60 FPS*
 
 ![Key Art Renacimiento Sfumato](Assets/ConceptArt/LaCopaEterna_KeyArt_Renaissance.jpg)
 
@@ -14,7 +14,7 @@
 ---
 
 ## 🏆 Visión General y Pilares de Ingeniería ("Garra Charrúa & Jogo Bonito")
-**LA COPA ETERNA: SANGRE Y POTRERO** es un motor y videojuego de lucha competitivo 2.5D a **60 FPS bloqueados (`16.66 ms/frame`)** compatible con **Windows (Steam/Epic), PlayStation 5 y Xbox Series X|S**.
+**LA COPA ETERNA: SANGRE Y POTRERO** es un motor y videojuego de lucha competitivo 2.5D a **60 FPS bloqueados (`16.66 ms/frame`)** desarrollado sobre **Unreal Engine 5.4+ / 5.8.4 (`EngineAssociation: "5.8"`)** y compatible con **Windows (Steam/Epic), PlayStation 5 y Xbox Series X|S**.
 
 1. **Determinismo Matemático Absoluto (`FFixedPoint` Q32.32):**  
    Toda la física de combate, velocidades, gravedad y cajas de colisión AABB (`Pushbox`, `Hurtbox`, `Hitbox`, `ProjectileBox`) operan en enteros de 64 bits (`int64_t`) formato Q32.32, garantizando **0 desincronización** entre compiladores MSVC (PC/Xbox) y Clang (PS5).
@@ -24,47 +24,47 @@
    - **Medidor de Tarjeta de Arbitraje** (Riesgo/Recompensa para golpes sucios y parries desesperados como *La Mano Salvadora*).
 3. **Netcode GGPO Rollback + Epic Online Services (EOS):**  
    Puente UDP P2P directo a 60 Hz con paquetes ultraligeros de 12 bytes (`FGGPOUDPNetworkPacket`), Checksum Fletcher-32 en cada frame, Lobby para 16 jugadores (*"La Concentración"*) y repeticiones deterministas `.safreplay` (`RLE + Zlib < 50 KB`) con **Live Takeover ("Tomar el Control en Vivo")**.
-4. **Arte Técnico "Street-Ink", Shaders HLSL y Chaos Cloth 5.4:**  
-   - Rim Light competitivo en 1 frame (Blanco = Invulnerable, Oro = Super Armor, Carmesí = Guard Crush, Verde = Falta de Aire 3600m).
+4. **Arte Técnico "Street-Ink", Shaders HLSL y Chaos Cloth 5.4+:**  
+   - Rim Light competitivo en 1 frame (Blanco = Invulnerable, Oro = Super Armor, Carmesí = Guard Crush, Verde = Falta de Aire `3,600m`).
    - Post-Proceso de 3 frames `"Impact Ink"` (Kuwahara + Sobel) en Counter Hits y Supers.
    - Simulación de camisetas holgadas de los años 90 con mapas de peso (`MaxDistance: 0.5 cm -> 12.0 cm`) y melenas en **Hair Cards** con cadenas de resortes.
 5. **Audio Reactivo en Audiokinetic Wwise 2023.1+:**  
-   Buses priorizados con **Sidechain Auto-Ducking (`-6.0 dB`)**, cánticos dinámicos de las 10 selecciones CONMEBOL (`RTPC_Crowd_Momentum` y `RTPC_Match_Excitement`) y **Cabina de Relatores Sudamericanos en Vivo** con *Interrupt Stingers*.
+   Buses priorizados con **Sidechain Auto-Ducking (`-6.0 dB` / `-4.5 dB`, `HoldMs: 40ms / 80ms`)**, **19 archivos `.wav` reales (48 kHz 16-bit PCM mono)** que incluyen los **10 stems percusivos nacionales CONMEBOL** a su BPM exacto (`115` a `170 BPM`), atenuación acústica de altitud en La Paz (`3,600m`) y **Cabina de Relatores Sudamericanos en Vivo** con *Interrupt Stingers*.
 
 ---
 
-## 🌎 Plantel Oficial de 16 Luchadores + Jefe Final
+## 🌎 Plantel Oficial de 16 Leyendas + Jefe Final (`17` Luchadores en `DT_SouthAmericaRoster.json`)
 
 ![Character Select](Assets/ConceptArt/CharacterSelect_PortraitSheet_CONMEBOL.jpg)
 
 | # | Leyenda | Selección | Arquetipo | Vida (HP) | Dash | Movimiento Insignia |
 | :-: | :--- | :--- | :--- | :---: | :---: | :--- |
-| 1 | **O Fenômeno** | 🇧🇷 Brasil | Rushdown Explosivo | 10,000 | 15f | *Pedalada Mortal* (`236+LP/MP/HP`) |
-| 2 | **O Bruxo** | 🇧🇷 Brasil | Trickster / Mix-up | 9,500 | 17f | *Elástica & No-Look* (`41236+MP`) |
-| 3 | **El Cañón** | 🇦🇷 Argentina | Powerhouse Shoto | 10,500 | 19f | *Bati-Cañonazo* (`236+[SK]`) |
-| 4 | **La Pulga** | 🇦🇷 Argentina | Pixie / Footsies God | 9,000 | 14f | *Slalom Imposible* (`236+LP/MP/HP`) |
+| 1 | **O Fenômeno** | 🇧🇷 Brasil | Rushdown Explosivo | 10,000 | 15f | *Pedalada Mortal* (`236+LP`) |
+| 2 | **O Bruxo** | 🇧🇷 Brasil | Trickster / Mix-up | 9,500 | 17f | *Elástica* (`41236+MP`) |
+| 3 | **El Cañón** | 🇦🇷 Argentina | Powerhouse Shoto | 10,500 | 19f | *Bati-Cañonazo* (`236+SK`) |
+| 4 | **La Pulga** | 🇦🇷 Argentina | Pixie / Footsies God | 9,000 | 14f | *Slalom Imposible* (`236+MP`) |
 | 5 | **El Pibe** | 🇨🇴 Colombia | Setplay Zoner | 10,000 | 21f | *Pase Filtrado* (`236+SK`) |
 | 6 | **El Loco** | 🇨🇴 Colombia | Counter-Acrobat | 10,200 | 18f | *El Escorpión* (`214+SK`) |
 | 7 | **El Pistolero** | 🇺🇾 Uruguay | Hybrid Grappler / Brawler | 10,800 | 20f | *Presión Asfixiante* (`41236+LP`) |
-| 8 | **El Matador** | 🇺🇾 Uruguay | Long-Range Hybrid | 10,000 | 18f | *Efecto Jabulani* (`236+SK~214+SK`) |
-| 9 | **Bam-Bam** | 🇨🇱 Chile | Air-Dominance / Divekick | 10,000 | 17f | *Cabezazo Suspendido* (`j.236+HP`) |
-| 10 | **El Rey** | 🇨🇱 Chile | Berserker / Rekka Brawler | 10,400 | 16f | *Trancazo Real* (`236+LP/MP/HP x3`) |
+| 8 | **El Matador** | 🇺🇾 Uruguay | Long-Range Hybrid | 10,000 | 18f | *Efecto Jabulani* (`236+SK`) |
+| 9 | **Bam-Bam** | 🇨🇱 Chile | Air-Dominance / Divekick | 10,000 | 17f | *Cabezazo Suspendido* (`j.236+MP`) |
+| 10 | **El Rey** | 🇨🇱 Chile | Berserker / Rekka Brawler | 10,400 | 16f | *Trancazo Real* (`236+LP`) |
 | 11 | **El Bulldog** | 🇵🇾 Paraguay | Big-Body Grappler / Zoner | 11,500 | 23f | *Tiro Libre con Barrera* (`236+SK`) |
-| 12 | **El Maestro** | 🇵🇪 Perú | Technical Footsies | 9,800 | 17f | *Tiro de Tres Dedos* (`236+SK~8/2`) |
+| 12 | **El Maestro** | 🇵🇪 Perú | Technical Footsies | 9,800 | 17f | *Tiro de Tres Dedos* (`236+SK~8`) |
 | 13 | **El Tren Amazónico** | 🇪🇨 Ecuador | Speedster / Run-Cancel | 9,600 | 13f | *Expreso por la Banda* (`236+GB`) |
-| 14 | **El Huracán Vinotinto** | 🇻🇪 Venezuela | Dead-Ball Sniper | 10,200 | 19f | *Zurda Folha Seca* (`236+SK`) |
-| 15 | **El Diablo Andino** | 🇧🇴 Bolivia | Stamina Debuffer (3600m) | 9,800 | 18f | *Balón Pesado 3600m* (`214+SK`) |
+| 14 | **El Huracán Vinotinto** | 🇻🇪 Venezuela | Dead-Ball Sniper | 10,200 | 19f | *Zurda de Oro (Folha Seca)* (`236+SK`) |
+| 15 | **El Diablo Andino** | 🇧🇴 Bolivia | Stamina Debuffer (`3,600m`) | 9,800 | 18f | *Balón Pesado (`3,600m`)* (`214+SK`) |
 | 16 | **Le Général** | 🇫🇷 Francia (Inv.) | Tactical Stance / Counter | 10,000 | 17f | *Roulette de Marseille* (`236+MP`) |
-| 👑 | **El Juez Supremo (V.A.R. - ZERO)** | 🤖 Sindicato Boss | Phase 1 Zoner / Phase 2 Rewind | 13,000 | 12f | *Línea de Offside & V.A.R. Rewind (-90f)* |
+| 👑 | **El Juez Supremo (V.A.R. - ZERO)** | 🤖 Sindicato Boss | Phase 1 Zoner / Phase 2 Rewind | 13,000 | 12f | *V.A.R. Rewind (-90f)* (`22+GB`) |
 
 ---
 
 ## 📂 Arquitectura del Repositorio
 
 ```text
-├── SouthAmericaFighters.uproject       # Proyecto Unreal Engine 5.4+
+├── SouthAmericaFighters.uproject       # Proyecto Unreal Engine 5.4+ / 5.8.4 (EngineAssociation: "5.8")
 ├── Config/                             # Configuración 60 FPS Determinista, Inputs y EOS Crossplay
-├── Data/                               # DataTables JSON (16 Leyendas, 111 Movimientos Frame Data, 10 Estadios, Relatores)
+├── Data/                               # DataTables JSON (17 Luchadores [16+Boss], 117 Movimientos Frame Data, 10 Estadios, Relatores)
 ├── Docs/GDD_LaCopaEterna.md            # Game Design Document (GDD) Maestro
 ├── Source/SouthAmericaFightersCore/    # Módulo C++20 Principal (24 archivos .h/.cpp)
 │   ├── Public/ & Private/
@@ -86,13 +86,13 @@
 │   │   └── FightingUIManagerSubsystem.* # Pila de 4 Capas CommonUI y Dual-Cursor
 ├── Shaders/                            # Shaders HLSL/USH (Rim Light, Impact Ink, Skin Pores, Stadium FX, HUD SDF)
 ├── Assets/
-│   ├── Models3D/                       # 17 Luchadores Skinned (.glb), Balón 32 Paneles (.glb/.obj) y Estadio (.glb)
+│   ├── Models3D/                       # 17 Luchadores Skinned (.glb), Balón 32 Paneles (.glb/.obj) y 10 Estadios (.glb)
 │   ├── TexturesPBR/                    # 18 Texturas PBR (.png 1024x1024): Albedos 90s, Normals Jacquard/Poros y ORM
 │   ├── UI/SVG/                         # Atlas Vectorial Maestro (Glifos PS5/Xbox/FGC y 10 Escudos CONMEBOL)
 │   └── ConceptArt/                     # Key Art promocional y lámina de retratos
 ├── Audio/
 │   ├── WwiseProject/                   # Manifiesto y Master-Mixer Hierarchy (.wwu) con Sidechain Auto-Ducking
-│   └── GeneratedStems/                 # 13 archivos .wav reales (48kHz 16-bit): Golpes, Silbato, Hinchadas y Háptica
+│   └── GeneratedStems/                 # 19 archivos .wav reales (48kHz 16-bit PCM): 8 SFX, 10 Hinchadas CONMEBOL y 1 Háptica
 ├── Backend/                            # Servidor eSports en Go, PostgreSQL (schema.sql), Dockerfile y docker-compose.yml
 ├── Scripts/                            # Generadores 3D/PBR/WAV, importer UE5/Blender y Stress Test Headless GGPO
 └── WebLab/                             # Suite Interactiva HTML5/Canvas a 60 FPS (7 Pestañas + Modo Versus 1v1 Jugable)
@@ -116,9 +116,9 @@ python -m http.server 8080
 - **[Galería de Arte AAA](WebLab/art-gallery.html):** Exposición de los 9 lienzos *Renacimiento Sfumato*, 3 obras *Street-Ink* y Atlas Vectorial SVG.
 - **[Command Center & Modo Versus 1v1 (7 Pestañas)](WebLab/index.html):** Frame Data, Kernel Q32.32, Potrero/GGPO, Shaders/Wwise, Arbitraje eSports, **TAB 06 Versus 1v1 (Luchadores Articulados + Gamepad PS5/Xbox + Input Display FGC + Victoria K.O.)** y **TAB 07 Visor 3D (17 Luchadores Animados + 10 Estadios CONMEBOL `.glb`)**.
 
-### 2. Importación Automática en Unreal Engine 5.4+
-1. Abre **`SouthAmericaFighters.uproject`** en **Unreal Engine 5.4+** (con `PythonScriptPlugin` e `Interchange` ya habilitados).
-2. Ejecuta la auditoría local previa o corre el pipeline dentro del editor UE 5.4+:
+### 2. Importación Automática en Unreal Engine 5.4+ / 5.8.4
+1. Abre **`SouthAmericaFighters.uproject`** en **Unreal Engine 5.4+ / 5.8.4** (configurado con `EngineAssociation: "5.8"`, `PythonScriptPlugin` e `Interchange` habilitados).
+2. Ejecuta la auditoría local previa o corre el pipeline dentro del editor UE:
 ```bash
 python Scripts/ue5_auto_import_pipeline.py --dry-run
 ```

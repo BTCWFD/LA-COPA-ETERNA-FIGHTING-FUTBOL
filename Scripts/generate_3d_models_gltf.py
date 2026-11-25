@@ -366,7 +366,11 @@ def build_fighter_glb(spec: dict, output_path: str) -> dict:
     animations = []
 
     def add_stepped_animation(anim_name: str, frame_indices: list[int], tracks: list[dict]) -> None:
-        times = np.array([f / fps for f in frame_indices], dtype=np.float32)
+        # Muestreo uniforme a 60 FPS exactos (dt = 1/60s en cada frame 0..end_frame) manteniendo retención STEP
+        # para evitar que importadores glTF/Interchange deduzcan 24 FPS o 30 FPS por intervalos dispersos.
+        end_frame = int(frame_indices[-1])
+        dense_frames = list(range(end_frame + 1))
+        times = np.array([f / fps for f in dense_frames], dtype=np.float32)
         bv_t = append_to_blob(times.tobytes())
         acc_t = len(accessors)
         accessors.append({
@@ -379,7 +383,18 @@ def build_fighter_glb(spec: dict, output_path: str) -> dict:
         for tr in tracks:
             bone_id = tr["bone"]
             path = tr["path"]
-            vals = np.array(tr["values"], dtype=np.float32)
+            sparse_vals = tr["values"]
+            dense_vals = []
+            for f in dense_frames:
+                k_idx = 0
+                for idx_pos, kf in enumerate(frame_indices):
+                    if kf <= f:
+                        k_idx = idx_pos
+                    else:
+                        break
+                dense_vals.append(sparse_vals[k_idx])
+
+            vals = np.array(dense_vals, dtype=np.float32)
             bv_v = append_to_blob(vals.tobytes())
             acc_v = len(accessors)
             v_type = "VEC4" if path == "rotation" else "VEC3"
@@ -391,13 +406,14 @@ def build_fighter_glb(spec: dict, output_path: str) -> dict:
 
         animations.append({"name": anim_name, "samplers": samplers, "channels": channels})
 
-    # Clip 1: Anim_Idle (Guardia de potrero a 60Hz, frames 0, 15, 30, 45)
-    add_stepped_animation("Anim_Idle", [0, 15, 30, 45], [
+    # Clip 1: Anim_Idle (Guardia de potrero a 60Hz uniforme, 61 keyframes = 1.00s)
+    add_stepped_animation("Anim_Idle", [0, 15, 30, 45, 60], [
         {"bone": 3, "path": "rotation", "values": [
             euler_xyz_to_quat(4.0, 12.0, 0.0),
             euler_xyz_to_quat(7.0, 12.0, 0.0),
             euler_xyz_to_quat(4.0, 12.0, 0.0),
             euler_xyz_to_quat(2.0, 12.0, 0.0),
+            euler_xyz_to_quat(4.0, 12.0, 0.0),
         ]},
     ])
 

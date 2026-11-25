@@ -14,13 +14,13 @@ struct SOUTHAMERICAFIGHTERSCORE_API FStageZoneBounds
 {
     GENERATED_BODY()
 
-    /** Coordenada X del muro izquierdo expresada en milímetros (punto fijo Q32.32). */
+    /** Coordenada X del muro izquierdo expresada en milímetros (punto fijo Q32.32: -12500 mm = -12.5m / -1250 cm). */
     UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Stage|Bounds")
-    int64 LeftWallFixedMm = -1250000; // -1250.0m / -1250u
+    int64 LeftWallFixedMm = -12500; // -12.5m / -1250 cm
 
-    /** Coordenada X del muro derecho expresada en milímetros (punto fijo Q32.32). */
+    /** Coordenada X del muro derecho expresada en milímetros (punto fijo Q32.32: +12500 mm = +12.5m / +1250 cm). */
     UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Stage|Bounds")
-    int64 RightWallFixedMm = 1250000; // +1250.0m / +1250u
+    int64 RightWallFixedMm = 12500; // +12.5m / +1250 cm
 
     /** Impactos de Wall Splat / Knockback pesado necesarios para producir Wall Break hacia la siguiente zona. */
     UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Stage|Bounds")
@@ -74,4 +74,24 @@ struct SOUTHAMERICAFIGHTERSCORE_API FStageDataRow : public FTableRowBase
     /** Tempo base (BPM) de la percusión del estadio para sincronizar animaciones de hinchada y cánticos. */
     UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Stage|Audio")
     float BaseTempoBPM = 120.0f;
+
+    /** Altitud canónica del Estadio Hernando Siles de La Paz (3600m s.n.m., alineada con DT_StagesCONMEBOL.json y GDD). */
+    static constexpr float LaPazAltitudeMeters = 3600.0f;
+
+    /** Altitud sobre el nivel del mar en metros (3600.0f para STAGE_HERNANDO_SILES en La Paz). */
+    UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Stage|Environment")
+    float AltitudeMeters = 0.0f;
+
+    float GetEffectiveAltitudeMeters() const
+    {
+        if (AltitudeMeters > 0.0f)
+        {
+            return AltitudeMeters;
+        }
+        if (StageID == TEXT("STAGE_HERNANDO_SILES") || StageID == TEXT("Stage_LaPaz_3600m"))
+        {
+            return LaPazAltitudeMeters;
+        }
+        return 0.0f;
+    }
 };

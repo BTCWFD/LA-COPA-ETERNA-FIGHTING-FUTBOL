@@ -125,5 +125,12 @@
   {"MoveID":"GENERAL_VOLEA_GLASGOW","NumpadNotation":"623+SK","StartupFrames":6,"ActiveFrames":8,"RecoveryFrames":27,"AdvantageOnBlock":-15,"AdvantageOnHit":26,"BaseDamage":1350,"CancelFlags":4,"CancelWindowDurationFrames":6},
   {"MoveID":"GENERAL_COUP_DE_TETE","NumpadNotation":"41236+HP","StartupFrames":9,"ActiveFrames":5,"RecoveryFrames":22,"AdvantageOnBlock":-6,"AdvantageOnHit":28,"BaseDamage":1500,"CancelFlags":4,"CancelWindowDurationFrames":6},
   {"MoveID":"GENERAL_SUPER1_MAESTRO_BLEU","NumpadNotation":"236236+SK","StartupFrames":8,"ActiveFrames":18,"RecoveryFrames":31,"AdvantageOnBlock":-16,"AdvantageOnHit":36,"BaseDamage":2500,"CancelFlags":0,"CancelWindowDurationFrames":0},
-  {"MoveID":"GENERAL_ULTIMATE_CHANT_DES_CHAMPS","NumpadNotation":"214214+HP+SK","StartupFrames":5,"ActiveFrames":22,"RecoveryFrames":44,"AdvantageOnBlock":-28,"AdvantageOnHit":63,"BaseDamage":4600,"CancelFlags":0,"CancelWindowDurationFrames":0}
+  {"MoveID":"GENERAL_ULTIMATE_CHANT_DES_CHAMPS","NumpadNotation":"214214+HP+SK","StartupFrames":5,"ActiveFrames":22,"RecoveryFrames":44,"AdvantageOnBlock":-28,"AdvantageOnHit":63,"BaseDamage":4600,"CancelFlags":0,"CancelWindowDurationFrames":0},
+
+  {"MoveID":"VAR_SILBATO_SUPREMO","NumpadNotation":"6+HP","StartupFrames":9,"ActiveFrames":5,"RecoveryFrames":15,"AdvantageOnBlock":2,"AdvantageOnHit":9,"BaseDamage":1200,"CancelFlags":6,"CancelWindowDurationFrames":7},
+  {"MoveID":"VAR_OFFSIDE_TRAP","NumpadNotation":"236+SK","StartupFrames":10,"ActiveFrames":14,"RecoveryFrames":16,"AdvantageOnBlock":4,"AdvantageOnHit":20,"BaseDamage":1400,"CancelFlags":4,"CancelWindowDurationFrames":8},
+  {"MoveID":"VAR_RED_CARD","NumpadNotation":"623+HP","StartupFrames":8,"ActiveFrames":6,"RecoveryFrames":22,"AdvantageOnBlock":6,"AdvantageOnHit":28,"BaseDamage":1850,"CancelFlags":4,"CancelWindowDurationFrames":6},
+  {"MoveID":"VAR_REWIND_90F","NumpadNotation":"22+GB","StartupFrames":3,"ActiveFrames":2,"RecoveryFrames":20,"AdvantageOnBlock":0,"AdvantageOnHit":0,"BaseDamage":0,"CancelFlags":0,"CancelWindowDurationFrames":0},
+  {"MoveID":"VAR_SUPER1_REVISION_TOTAL","NumpadNotation":"236236+SK","StartupFrames":7,"ActiveFrames":20,"RecoveryFrames":30,"AdvantageOnBlock":-14,"AdvantageOnHit":38,"BaseDamage":2800,"CancelFlags":0,"CancelWindowDurationFrames":0},
+  {"MoveID":"VAR_ULTIMATE_PURGA_REGLAMENTARIA","NumpadNotation":"214214+HP+SK","StartupFrames":5,"ActiveFrames":24,"RecoveryFrames":42,"AdvantageOnBlock":-26,"AdvantageOnHit":65,"BaseDamage":5000,"CancelFlags":0,"CancelWindowDurationFrames":0}
 ]

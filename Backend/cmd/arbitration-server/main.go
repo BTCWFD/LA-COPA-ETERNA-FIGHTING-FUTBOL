@@ -4,6 +4,7 @@ package main
 
 import (
 	"bytes"
+	"compress/zlib"
 	"crypto/hmac"
 	"crypto/sha256"
 	"encoding/base64"
@@ -12,10 +13,12 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"io"
 	"log"
 	"math"
 	"net/http"
 	"os"
+	"path/filepath"
 	"sort"
 	"strings"
 	"sync"
@@ -23,13 +26,14 @@ import (
 )
 
 const (
-	ReplayMagicSAFR        uint32  = 0x53414652 // "SAFR"
-	MaxReplayPayloadBytes  int     = 50 * 1024  // < 50 KB por repetición (.safreplay)
-	RageQuitTimeoutSeconds float64 = 4.0        // Ventana de arbitraje de desconexión asimétrica
-	RageQuitLPPenalty      int     = 80         // -80 LP al infractor por abandono intencional
-	ContinentalCupFloorLP  int     = 15000      // Piso anti-smurfing cuando otro personaje alcanza Copa Continental (25,000 LP)
-	ContinentalCupThreshold int    = 25000      // Rango Copa Continental
-	CheckInWindowSeconds   int     = 180        // 3 minutos de check-in en Modo Copa Fin de Semana
+	ReplayMagicSAFR            uint32  = 0x53414652      // "SAFR" en orden de bytes de red ('S','A','F','R')
+	MaxReplayPayloadBytes      int     = 50 * 1024       // < 50 KB por repetición (.safreplay)
+	MaxDecompressedReplayBytes int     = 2 * 1024 * 1024 // Límite anti zip-bomb estricto: 2 MB descomprimidos
+	RageQuitTimeoutSeconds     float64 = 4.0             // Ventana de arbitraje de desconexión asimétrica
+	RageQuitLPPenalty          int     = 80              // -80 LP al infractor por abandono intencional
+	ContinentalCupFloorLP      int     = 15000           // Piso anti-smurfing cuando otro personaje alcanza Copa Continental (25,000 LP)
+	ContinentalCupThreshold    int     = 25000           // Rango Copa Continental
+	CheckInWindowSeconds       int     = 180             // 3 minutos de check-in en Modo Copa Fin de Semana
 )
 
 // Bitmasks de botones idénticos a ECombatInputBits en FightingInputParser.h
@@ -51,6 +55,7 @@ type CharacterMMR struct {
 	GlickoRD         float64   `json:"glicko_rd"`
 	GlickoVolatility float64   `json:"glicko_volatility"`
 	ConductRedCards  int       `json:"conduct_red_cards"`
+	PenaltyQueue     bool      `json:"penalty_queue"`
 	UpdatedAt        time.Time `json:"updated_at"`
 }
 
@@ -65,48 +70,66 @@ type AntiCheatAuditResult struct {
 }
 
 type MatchAuditSubmitRequest struct {
-	MatchUUID                string   `json:"match_uuid"`
-	Region                   string   `json:"region"`
-	PatchVersion             uint16   `json:"patch_version"`
-	Player1ID                string   `json:"player1_id"`
-	Player2ID                string   `json:"player2_id"`
-	Player1CharacterID       string   `json:"player1_character_id"`
-	Player2CharacterID       string   `json:"player2_character_id"`
-	StageID                  string   `json:"stage_id"`
-	WinnerSlot               int      `json:"winner_slot"` // 1 = P1, 2 = P2, 0 = Draw
-	ExpectedFletcher32       uint32   `json:"expected_fletcher32"`
-	ClientHMACSignature      string   `json:"client_hmac_signature"`
-	ReplayPayloadBase64      string   `json:"replay_payload_base64"`
-	P1RawInputs              []uint16 `json:"p1_raw_inputs"`
-	P2RawInputs              []uint16 `json:"p2_raw_inputs"`
-	P1RollbackSpikes         []uint8  `json:"p1_rollback_spikes"`
-	P2RollbackSpikes         []uint8  `json:"p2_rollback_spikes"`
-	P1InHitstunPerFrame      []bool   `json:"p1_in_hitstun_per_frame"`
-	P2InHitstunPerFrame      []bool   `json:"p2_in_hitstun_per_frame"`
-	P1FacedActiveFrame1      []bool   `json:"p1_faced_active_frame1"`
-	P2FacedActiveFrame1      []bool   `json:"p2_faced_active_frame1"`
+	MatchUUID           string   `json:"match_uuid"`
+	Region              string   `json:"region"`
+	PatchVersion        uint16   `json:"patch_version"`
+	Player1ID           string   `json:"player1_id"`
+	Player2ID           string   `json:"player2_id"`
+	Player1CharacterID  string   `json:"player1_character_id"`
+	Player2CharacterID  string   `json:"player2_character_id"`
+	StageID             string   `json:"stage_id"`
+	WinnerSlot          int      `json:"winner_slot"` // 1 = P1, 2 = P2, 0 = Draw
+	ExpectedFletcher32  uint32   `json:"expected_fletcher32"`
+	ClientHMACSignature string   `json:"client_hmac_signature"`
+	ReplayPayloadBase64 string   `json:"replay_payload_base64"`
+	P1RawInputs         []uint16 `json:"p1_raw_inputs"`
+	P2RawInputs         []uint16 `json:"p2_raw_inputs"`
+	P1RollbackSpikes    []uint8  `json:"p1_rollback_spikes"`
+	P2RollbackSpikes    []uint8  `json:"p2_rollback_spikes"`
+	P1InHitstunPerFrame []bool   `json:"p1_in_hitstun_per_frame"`
+	P2InHitstunPerFrame []bool   `json:"p2_in_hitstun_per_frame"`
+	P1FacedActiveFrame1 []bool   `json:"p1_faced_active_frame1"`
+	P2FacedActiveFrame1 []bool   `json:"p2_faced_active_frame1"`
 }
 
 type MatchAuditSubmitResponse struct {
-	MatchUUID       string               `json:"match_uuid"`
-	ChecksumValid   bool                 `json:"checksum_valid"`
-	ReplayS3Key     string               `json:"replay_s3_key"`
-	P1UpdatedMMR    CharacterMMR         `json:"p1_updated_mmr"`
-	P2UpdatedMMR    CharacterMMR         `json:"p2_updated_mmr"`
-	P1AntiCheat     AntiCheatAuditResult `json:"p1_anti_cheat"`
-	P2AntiCheat     AntiCheatAuditResult `json:"p2_anti_cheat"`
-	ProcessedAtUTC  time.Time            `json:"processed_at_utc"`
+	MatchUUID          string               `json:"match_uuid"`
+	Status             string               `json:"status"`
+	AuditReason        string               `json:"audit_reason,omitempty"`
+	ChecksumValid      bool                 `json:"checksum_valid"`
+	ComputedFletcher32 uint32               `json:"computed_fletcher32"`
+	ReplayS3Key        string               `json:"replay_s3_key"`
+	P1UpdatedMMR       CharacterMMR         `json:"p1_updated_mmr"`
+	P2UpdatedMMR       CharacterMMR         `json:"p2_updated_mmr"`
+	P1AntiCheat        AntiCheatAuditResult `json:"p1_anti_cheat"`
+	P2AntiCheat        AntiCheatAuditResult `json:"p2_anti_cheat"`
+	ProcessedAtUTC     time.Time            `json:"processed_at_utc"`
+}
+
+type MatchAuditRecord struct {
+	MatchUUID          string               `json:"match_uuid"`
+	Status             string               `json:"status"`
+	AuditReason        string               `json:"audit_reason,omitempty"`
+	ChecksumValid      bool                 `json:"checksum_valid"`
+	ExpectedFletcher32 uint32               `json:"expected_fletcher32"`
+	ComputedFletcher32 uint32               `json:"computed_fletcher32"`
+	Player1ID          string               `json:"player1_id"`
+	Player2ID          string               `json:"player2_id"`
+	WinnerSlot         int                  `json:"winner_slot"`
+	P1AntiCheat        AntiCheatAuditResult `json:"p1_anti_cheat"`
+	P2AntiCheat        AntiCheatAuditResult `json:"p2_anti_cheat"`
+	RecordedAtUTC      time.Time            `json:"recorded_at_utc"`
 }
 
 type HeartbeatRequest struct {
-	MatchUUID        string  `json:"match_uuid"`
-	ReportingPlayer  string  `json:"reporting_player_id"`
-	OpponentPlayer   string  `json:"opponent_player_id"`
-	OpponentCharID   string  `json:"opponent_character_id"`
-	Region           string  `json:"region"`
-	CurrentFrame     uint32  `json:"current_frame"`
-	SilenceSeconds   float64 `json:"opponent_silence_seconds"`
-	OpponentInCombo  bool    `json:"opponent_in_hitstun_or_super"`
+	MatchUUID       string  `json:"match_uuid"`
+	ReportingPlayer string  `json:"reporting_player_id"`
+	OpponentPlayer  string  `json:"opponent_player_id"`
+	OpponentCharID  string  `json:"opponent_character_id"`
+	Region          string  `json:"region"`
+	CurrentFrame    uint32  `json:"current_frame"`
+	SilenceSeconds  float64 `json:"opponent_silence_seconds"`
+	OpponentInCombo bool    `json:"opponent_in_hitstun_or_super"`
 }
 
 type HeartbeatResponse struct {
@@ -119,13 +142,13 @@ type HeartbeatResponse struct {
 }
 
 type WeekendCupBracketNode struct {
-	MatchSlot   int      `json:"match_slot"`
-	RoundNumber int      `json:"round_number"`
-	PlayerA     string   `json:"player_a"`
-	PlayerB     string   `json:"player_b"`
-	CheckedInA  bool     `json:"checked_in_a"`
-	CheckedInB  bool     `json:"checked_in_b"`
-	WinnerID    string   `json:"winner_id,omitempty"`
+	MatchSlot   int    `json:"match_slot"`
+	RoundNumber int    `json:"round_number"`
+	PlayerA     string `json:"player_a"`
+	PlayerB     string `json:"player_b"`
+	CheckedInA  bool   `json:"checked_in_a"`
+	CheckedInB  bool   `json:"checked_in_b"`
+	WinnerID    string `json:"winner_id,omitempty"`
 }
 
 type WeekendCupTournament struct {
@@ -138,28 +161,151 @@ type WeekendCupTournament struct {
 }
 
 // ----------------------------------------------------------------------------
-// Almacenamiento en Memoria Thread-Safe (Espejo de PostgreSQL + Redis + S3/R2)
+// Almacenamiento Thread-Safe con Persistencia Snapshot Opcional + Hook PostgreSQL
 // ----------------------------------------------------------------------------
 
+type storeDiskSnapshot struct {
+	MMRByKey         map[string]*CharacterMMR         `json:"mmr_by_key"`
+	PlayerHighest    map[string]int                   `json:"player_highest"`
+	Replays          map[string][]byte                `json:"replays"`
+	Tournaments      map[string]*WeekendCupTournament `json:"tournaments"`
+	ProcessedMatches map[string]MatchAuditRecord      `json:"processed_matches"`
+	AuditEvents      []MatchAuditRecord               `json:"audit_events"`
+	SavedAtUTC       time.Time                        `json:"saved_at_utc"`
+}
+
 type ArbitrationStore struct {
-	mu           sync.RWMutex
-	mmrByKey     map[string]*CharacterMMR // key: playerID + ":" + charID
-	playerHighest map[string]int          // playerID -> máximo LP alcanzado con cualquier personaje
-	replays      map[string][]byte        // matchUUID -> binario .safreplay (< 50 KB)
-	tournaments  map[string]*WeekendCupTournament
-	hmacSecret   []byte
+	mu               sync.RWMutex
+	mmrByKey         map[string]*CharacterMMR         // key: playerID + ":" + charID
+	playerHighest    map[string]int                   // playerID -> máximo LP alcanzado con cualquier personaje
+	replays          map[string][]byte                // matchUUID -> binario .safreplay verificado (< 50 KB)
+	tournaments      map[string]*WeekendCupTournament // tournamentID -> bracket activo
+	processedMatches map[string]MatchAuditRecord      // matchUUID -> registro idempotente de arbitraje
+	auditEvents      []MatchAuditRecord               // bitácora de auditoría (desyncs, anti-cheat, partidas válidas)
+	hmacSecret       []byte
+	stateFilePath    string
+	databaseURL      string
 }
 
 func NewArbitrationStore(secret string) *ArbitrationStore {
-	store := &ArbitrationStore{
-		mmrByKey:      make(map[string]*CharacterMMR),
-		playerHighest: make(map[string]int),
-		replays:       make(map[string][]byte),
-		tournaments:   make(map[string]*WeekendCupTournament),
-		hmacSecret:    []byte(secret),
+	stateFile := strings.TrimSpace(os.Getenv("SAF_STATE_FILE"))
+	dbURL := strings.TrimSpace(os.Getenv("DATABASE_URL"))
+	if dbURL == "" {
+		dbURL = strings.TrimSpace(os.Getenv("POSTGRES_DSN"))
 	}
-	store.seedInitialLeaderboardAndBrackets()
+	return NewArbitrationStoreWithConfig(secret, stateFile, dbURL)
+}
+
+func NewArbitrationStoreWithConfig(secret, stateFilePath, databaseURL string) *ArbitrationStore {
+	store := &ArbitrationStore{
+		mmrByKey:         make(map[string]*CharacterMMR),
+		playerHighest:    make(map[string]int),
+		replays:          make(map[string][]byte),
+		tournaments:      make(map[string]*WeekendCupTournament),
+		processedMatches: make(map[string]MatchAuditRecord),
+		auditEvents:      make([]MatchAuditRecord, 0),
+		hmacSecret:       []byte(secret),
+		stateFilePath:    strings.TrimSpace(stateFilePath),
+		databaseURL:      strings.TrimSpace(databaseURL),
+	}
+
+	if store.stateFilePath != "" {
+		if loaded, err := store.loadSnapshotLocked(); err != nil {
+			log.Printf("[SAF Persistence] Error cargando snapshot %q: %v (iniciando semilla limpia)", store.stateFilePath, err)
+			store.seedInitialLeaderboardAndBrackets()
+		} else if !loaded {
+			store.seedInitialLeaderboardAndBrackets()
+			if err := store.saveSnapshotLocked(); err != nil {
+				log.Printf("[SAF Persistence] No se pudo escribir snapshot inicial en %q: %v", store.stateFilePath, err)
+			}
+		}
+	} else {
+		store.seedInitialLeaderboardAndBrackets()
+	}
+
 	return store
+}
+
+func (s *ArbitrationStore) PersistenceMode() string {
+	switch {
+	case s.databaseURL != "" && s.stateFilePath != "":
+		return "postgres_hook+disk_snapshot"
+	case s.databaseURL != "":
+		return "postgres_hook"
+	case s.stateFilePath != "":
+		return "disk_snapshot"
+	default:
+		return "memory"
+	}
+}
+
+func (s *ArbitrationStore) loadSnapshotLocked() (bool, error) {
+	raw, err := os.ReadFile(s.stateFilePath)
+	if err != nil {
+		if errors.Is(err, os.ErrNotExist) {
+			return false, nil
+		}
+		return false, err
+	}
+	if len(bytes.TrimSpace(raw)) == 0 {
+		return false, nil
+	}
+
+	var snap storeDiskSnapshot
+	if err := json.Unmarshal(raw, &snap); err != nil {
+		return false, err
+	}
+	if snap.MMRByKey != nil {
+		s.mmrByKey = snap.MMRByKey
+	}
+	if snap.PlayerHighest != nil {
+		s.playerHighest = snap.PlayerHighest
+	}
+	if snap.Replays != nil {
+		s.replays = snap.Replays
+	}
+	if snap.Tournaments != nil {
+		s.tournaments = snap.Tournaments
+	}
+	if snap.ProcessedMatches != nil {
+		s.processedMatches = snap.ProcessedMatches
+	}
+	if snap.AuditEvents != nil {
+		s.auditEvents = snap.AuditEvents
+	}
+	return true, nil
+}
+
+func (s *ArbitrationStore) saveSnapshotLocked() error {
+	if s.stateFilePath == "" {
+		return nil
+	}
+	dir := filepath.Dir(s.stateFilePath)
+	if dir != "" && dir != "." {
+		if err := os.MkdirAll(dir, 0o755); err != nil {
+			return err
+		}
+	}
+
+	snap := storeDiskSnapshot{
+		MMRByKey:         s.mmrByKey,
+		PlayerHighest:    s.playerHighest,
+		Replays:          s.replays,
+		Tournaments:      s.tournaments,
+		ProcessedMatches: s.processedMatches,
+		AuditEvents:      s.auditEvents,
+		SavedAtUTC:       time.Now().UTC(),
+	}
+	encoded, err := json.MarshalIndent(snap, "", "  ")
+	if err != nil {
+		return err
+	}
+
+	tmpPath := s.stateFilePath + ".tmp"
+	if err := os.WriteFile(tmpPath, encoded, 0o600); err != nil {
+		return err
+	}
+	return os.Rename(tmpPath, s.stateFilePath)
 }
 
 func (s *ArbitrationStore) seedInitialLeaderboardAndBrackets() {
@@ -255,12 +401,41 @@ func (s *ArbitrationStore) getOrCreateMMR(playerID, charID, region string) *Char
 }
 
 // ----------------------------------------------------------------------------
-// Algoritmos Matemáticos: Fletcher-32, Glicko-2 y Auditoría Anti-Cheat
+// Seguridad Criptográfica, Fletcher-32, Validación .safreplay, Glicko-2 y Anti-Cheat
 // ----------------------------------------------------------------------------
 
-func computeFletcher32(data []byte) uint32 {
+// ComputeMatchHMACSignature calcula la firma HMAC-SHA256 canónica en hexadecimal minúscula
+// sobre (matchUUID || replayPayload) para clientes UE5 y suites de integración E2E.
+func ComputeMatchHMACSignature(secret []byte, matchUUID string, replayPayload []byte) string {
+	mac := hmac.New(sha256.New, secret)
+	mac.Write([]byte(matchUUID))
+	mac.Write(replayPayload)
+	return hex.EncodeToString(mac.Sum(nil))
+}
+
+func verifyMatchHMACSignature(secret []byte, matchUUID string, replayPayload []byte, providedHexSig string) bool {
+	trimmed := strings.TrimSpace(providedHexSig)
+	if trimmed == "" {
+		return false
+	}
+	providedMAC, err := hex.DecodeString(trimmed)
+	if err != nil {
+		return false
+	}
+	mac := hmac.New(sha256.New, secret)
+	mac.Write([]byte(matchUUID))
+	mac.Write(replayPayload)
+	expectedMAC := mac.Sum(nil)
+	return hmac.Equal(providedMAC, expectedMAC)
+}
+
+// ComputeFletcher32 calcula el checksum determinista Fletcher-32 en orden Little-Endian.
+func ComputeFletcher32(raw []byte) uint32 {
+	data := raw
 	if len(data)%2 != 0 {
-		data = append(data, 0)
+		padded := make([]byte, len(data)+1)
+		copy(padded, data)
+		data = padded
 	}
 	var sum1 uint32 = 0xFFFF
 	var sum2 uint32 = 0xFFFF
@@ -287,9 +462,14 @@ func computeFletcher32(data []byte) uint32 {
 	return (sum2 << 16) | sum1
 }
 
-// inspectAndValidateReplay verifica el tamaño (<50KB) y la firma mágica "SAFR" si el payload viene sin comprimir
-// o con prefijo de longitud de Unreal FCompression.
-func inspectAndValidateReplay(rawPayload []byte) error {
+func computeFletcher32(data []byte) uint32 {
+	return ComputeFletcher32(data)
+}
+
+// InspectAndValidateReplay exige tamaño <= 50 KB, cabecera mágica exacta "SAFR" en los primeros 4 bytes
+// y, si contiene un stream comprimido Zlib tras "SAFR" + 4 bytes de metadatos (0x78), verifica que
+// la descompresión Zlib sea íntegra y no supere el límite anti zip-bomb de 2 MB.
+func InspectAndValidateReplay(rawPayload []byte) error {
 	if len(rawPayload) == 0 {
 		return errors.New("replay payload vacío")
 	}
@@ -297,15 +477,42 @@ func inspectAndValidateReplay(rawPayload []byte) error {
 		return fmt.Errorf("el replay excede el límite estricto de 50 KB (%d bytes)", len(rawPayload))
 	}
 	if len(rawPayload) < 8 {
-		return errors.New("cabecera de replay truncada")
+		return errors.New("cabecera de replay truncada (< 8 bytes)")
 	}
 
-	// Si los primeros 4 bytes son directamente "SAFR" (0x53414652) o un entero de tamaño descomprimido válido (> 0)
-	firstWord := binary.LittleEndian.Uint32(rawPayload[0:4])
-	if firstWord != ReplayMagicSAFR && int32(firstWord) == 0 {
-		return errors.New("prefijo de replay inválido")
+	// Exigir estrictamente "SAFR" (0x53414652: 'S','A','F','R') en los primeros 4 bytes
+	if rawPayload[0] != 'S' || rawPayload[1] != 'A' || rawPayload[2] != 'F' || rawPayload[3] != 'R' {
+		return errors.New("firma mágica de replay inválida: se requiere cabecera exacta \"SAFR\" (0x53414652)")
 	}
+
+	// Soporte de stream Zlib opcional tras "SAFR" (4B) + metadatos de longitud/parche (4B)
+	if len(rawPayload) > 8 && rawPayload[8] == 0x78 {
+		zr, err := zlib.NewReader(bytes.NewReader(rawPayload[8:]))
+		if err != nil {
+			return fmt.Errorf("cabecera Zlib inválida tras prefijo SAFR: %w", err)
+		}
+		limited := io.LimitReader(zr, int64(MaxDecompressedReplayBytes)+1)
+		decompressed, readErr := io.ReadAll(limited)
+		closeErr := zr.Close()
+		if readErr != nil {
+			return fmt.Errorf("datos Zlib corruptos en replay SAFR: %w", readErr)
+		}
+		if len(decompressed) > MaxDecompressedReplayBytes {
+			return fmt.Errorf("zip-bomb detectado: el replay descomprimido excede el máximo de 2 MB (%d bytes)", MaxDecompressedReplayBytes)
+		}
+		if closeErr != nil {
+			return fmt.Errorf("falló cierre/checksum Adler-32 de stream Zlib: %w", closeErr)
+		}
+		if len(decompressed) == 0 {
+			return errors.New("stream Zlib de replay descomprimió 0 bytes")
+		}
+	}
+
 	return nil
+}
+
+func inspectAndValidateReplay(rawPayload []byte) error {
+	return InspectAndValidateReplay(rawPayload)
 }
 
 // updateGlicko2 ejecuta el paso matemático oficial de Glicko-2 (escala 173.7178) y aplica piso Anti-Smurfing.
@@ -463,29 +670,57 @@ func (s *ArbitrationStore) handleAuditAndSubmit(w http.ResponseWriter, r *http.R
 		return
 	}
 
+	req.MatchUUID = strings.TrimSpace(req.MatchUUID)
+	req.Player1ID = strings.TrimSpace(req.Player1ID)
+	req.Player2ID = strings.TrimSpace(req.Player2ID)
+	req.Player1CharacterID = strings.TrimSpace(req.Player1CharacterID)
+	req.Player2CharacterID = strings.TrimSpace(req.Player2CharacterID)
+	req.Region = strings.TrimSpace(req.Region)
+	if req.Region == "" {
+		req.Region = "SA-EAST"
+	}
+	if req.Player1CharacterID == "" {
+		req.Player1CharacterID = "CHR_DEFAULT"
+	}
+	if req.Player2CharacterID == "" {
+		req.Player2CharacterID = "CHR_DEFAULT"
+	}
+
+	// Validación estricta de límites de entrada e identidad de jugadores
+	if req.MatchUUID == "" {
+		writeJSONError(w, http.StatusBadRequest, "match_uuid es obligatorio")
+		return
+	}
+	if req.Player1ID == "" || req.Player2ID == "" {
+		writeJSONError(w, http.StatusBadRequest, "player1_id y player2_id son obligatorios")
+		return
+	}
+	if strings.EqualFold(req.Player1ID, req.Player2ID) {
+		writeJSONError(w, http.StatusBadRequest, "player1_id y player2_id no pueden ser el mismo jugador")
+		return
+	}
+	if req.WinnerSlot < 0 || req.WinnerSlot > 2 {
+		writeJSONError(w, http.StatusBadRequest, fmt.Sprintf("winner_slot inválido (%d): debe pertenecer a {0, 1, 2}", req.WinnerSlot))
+		return
+	}
+
 	replayBytes, err := base64.StdEncoding.DecodeString(req.ReplayPayloadBase64)
 	if err != nil {
 		writeJSONError(w, http.StatusBadRequest, "replay_payload_base64 inválido")
 		return
 	}
-	if err := inspectAndValidateReplay(replayBytes); err != nil {
+	if err := InspectAndValidateReplay(replayBytes); err != nil {
 		writeJSONError(w, http.StatusBadRequest, err.Error())
 		return
 	}
 
-	// Verificación de firma HMAC-SHA256 si fue provista por el cliente
-	if req.ClientHMACSignature != "" {
-		mac := hmac.New(sha256.New, s.hmacSecret)
-		mac.Write([]byte(req.MatchUUID))
-		mac.Write(replayBytes)
-		expectedSig := hex.EncodeToString(mac.Sum(nil))
-		if !hmac.Equal([]byte(strings.ToLower(req.ClientHMACSignature)), []byte(expectedSig)) {
-			writeJSONError(w, http.StatusUnauthorized, "firma HMAC-SHA256 del paquete de combate inválida")
-			return
-		}
+	// Autenticación HMAC-SHA256 obligatoria (sin bypass de cadena vacía)
+	if !verifyMatchHMACSignature(s.hmacSecret, req.MatchUUID, replayBytes, req.ClientHMACSignature) {
+		writeJSONError(w, http.StatusUnauthorized, "firma HMAC-SHA256 obligatoria ausente o inválida")
+		return
 	}
 
-	computedChecksum := computeFletcher32(replayBytes)
+	computedChecksum := ComputeFletcher32(replayBytes)
 	checksumValid := req.ExpectedFletcher32 == 0 || req.ExpectedFletcher32 == computedChecksum
 
 	p1Audit := runHeuristicAntiCheat(req.P1RawInputs, req.P1RollbackSpikes, req.P1InHitstunPerFrame, req.P1FacedActiveFrame1)
@@ -494,9 +729,108 @@ func (s *ArbitrationStore) handleAuditAndSubmit(w http.ResponseWriter, r *http.R
 	s.mu.Lock()
 	defer s.mu.Unlock()
 
+	// Protección de idempotencia contra reenvío de match_uuid duplicados
+	if _, exists := s.processedMatches[req.MatchUUID]; exists {
+		writeJSONError(w, http.StatusConflict, fmt.Sprintf("match_uuid %q ya fue procesado anteriormente", req.MatchUUID))
+		return
+	}
+	if _, exists := s.replays[req.MatchUUID]; exists {
+		writeJSONError(w, http.StatusConflict, fmt.Sprintf("match_uuid %q ya posee un replay registrado", req.MatchUUID))
+		return
+	}
+
 	p1MMR := s.getOrCreateMMR(req.Player1ID, req.Player1CharacterID, req.Region)
 	p2MMR := s.getOrCreateMMR(req.Player2ID, req.Player2CharacterID, req.Region)
+	nowUTC := time.Now().UTC()
 
+	// 1. Veredicto de Desync Determinista (Fletcher-32 divergente): 0 LP, no guardar replay corrupto, HTTP 422
+	if !checksumValid {
+		auditRec := MatchAuditRecord{
+			MatchUUID:          req.MatchUUID,
+			Status:             "DESYNC_REJECTED",
+			AuditReason:        "discrepancia de checksum Fletcher-32 detectada: partida anulada sin cambios de LP/MMR ni almacenamiento de replay",
+			ChecksumValid:      false,
+			ExpectedFletcher32: req.ExpectedFletcher32,
+			ComputedFletcher32: computedChecksum,
+			Player1ID:          req.Player1ID,
+			Player2ID:          req.Player2ID,
+			WinnerSlot:         req.WinnerSlot,
+			P1AntiCheat:        p1Audit,
+			P2AntiCheat:        p2Audit,
+			RecordedAtUTC:      nowUTC,
+		}
+		s.processedMatches[req.MatchUUID] = auditRec
+		s.auditEvents = append(s.auditEvents, auditRec)
+		if err := s.saveSnapshotLocked(); err != nil {
+			log.Printf("[SAF Persistence] Error guardando snapshot tras desync: %v", err)
+		}
+
+		writeJSON(w, http.StatusUnprocessableEntity, MatchAuditSubmitResponse{
+			MatchUUID:          req.MatchUUID,
+			Status:             auditRec.Status,
+			AuditReason:        auditRec.AuditReason,
+			ChecksumValid:      false,
+			ComputedFletcher32: computedChecksum,
+			ReplayS3Key:        "",
+			P1UpdatedMMR:       *p1MMR,
+			P2UpdatedMMR:       *p2MMR,
+			P1AntiCheat:        p1Audit,
+			P2AntiCheat:        p2Audit,
+			ProcessedAtUTC:     nowUTC,
+		})
+		return
+	}
+
+	// 2. Veredicto Anti-Cheat: 0 LP de ganancia al tramposo + Tarjeta Roja/Cola de Penalización, rival limpio intacto, HTTP 422
+	if p1Audit.FlaggedForPenaltyQueue || p2Audit.FlaggedForPenaltyQueue {
+		if p1Audit.FlaggedForPenaltyQueue {
+			p1MMR.ConductRedCards++
+			p1MMR.PenaltyQueue = true
+			p1MMR.UpdatedAt = nowUTC
+		}
+		if p2Audit.FlaggedForPenaltyQueue {
+			p2MMR.ConductRedCards++
+			p2MMR.PenaltyQueue = true
+			p2MMR.UpdatedAt = nowUTC
+		}
+
+		auditRec := MatchAuditRecord{
+			MatchUUID:          req.MatchUUID,
+			Status:             "ANTICHEAT_QUARANTINED",
+			AuditReason:        "infracción heurística anti-cheat detectada: 0 LP otorgados al infractor, tarjeta roja aplicada y rival limpio sin penalización",
+			ChecksumValid:      true,
+			ExpectedFletcher32: req.ExpectedFletcher32,
+			ComputedFletcher32: computedChecksum,
+			Player1ID:          req.Player1ID,
+			Player2ID:          req.Player2ID,
+			WinnerSlot:         req.WinnerSlot,
+			P1AntiCheat:        p1Audit,
+			P2AntiCheat:        p2Audit,
+			RecordedAtUTC:      nowUTC,
+		}
+		s.processedMatches[req.MatchUUID] = auditRec
+		s.auditEvents = append(s.auditEvents, auditRec)
+		if err := s.saveSnapshotLocked(); err != nil {
+			log.Printf("[SAF Persistence] Error guardando snapshot tras cuarentena anti-cheat: %v", err)
+		}
+
+		writeJSON(w, http.StatusUnprocessableEntity, MatchAuditSubmitResponse{
+			MatchUUID:          req.MatchUUID,
+			Status:             auditRec.Status,
+			AuditReason:        auditRec.AuditReason,
+			ChecksumValid:      true,
+			ComputedFletcher32: computedChecksum,
+			ReplayS3Key:        "",
+			P1UpdatedMMR:       *p1MMR,
+			P2UpdatedMMR:       *p2MMR,
+			P1AntiCheat:        p1Audit,
+			P2AntiCheat:        p2Audit,
+			ProcessedAtUTC:     nowUTC,
+		})
+		return
+	}
+
+	// 3. Partida limpia y verificada: actualizar Glicko-2 + LP y publicar .safreplay en el Teatro de Repeticiones
 	p1PrevRating, p1PrevRD := p1MMR.GlickoRating, p1MMR.GlickoRD
 	p2PrevRating, p2PrevRD := p2MMR.GlickoRating, p2MMR.GlickoRD
 
@@ -517,25 +851,39 @@ func (s *ArbitrationStore) handleAuditAndSubmit(w http.ResponseWriter, r *http.R
 		s.playerHighest[req.Player2ID] = p2MMR.LeaguePoints
 	}
 
-	if p1Audit.FlaggedForPenaltyQueue {
-		p1MMR.ConductRedCards++
-	}
-	if p2Audit.FlaggedForPenaltyQueue {
-		p2MMR.ConductRedCards++
-	}
-
 	s.replays[req.MatchUUID] = replayBytes
-	s3Key := fmt.Sprintf("s3://saf-replays-%s/%s/%s.safreplay", strings.ToLower(req.Region), time.Now().UTC().Format("2006-01-02"), req.MatchUUID)
+	s3Key := fmt.Sprintf("s3://saf-replays-%s/%s/%s.safreplay", strings.ToLower(req.Region), nowUTC.Format("2006-01-02"), req.MatchUUID)
+
+	auditRec := MatchAuditRecord{
+		MatchUUID:          req.MatchUUID,
+		Status:             "ACCEPTED",
+		ChecksumValid:      true,
+		ExpectedFletcher32: req.ExpectedFletcher32,
+		ComputedFletcher32: computedChecksum,
+		Player1ID:          req.Player1ID,
+		Player2ID:          req.Player2ID,
+		WinnerSlot:         req.WinnerSlot,
+		P1AntiCheat:        p1Audit,
+		P2AntiCheat:        p2Audit,
+		RecordedAtUTC:      nowUTC,
+	}
+	s.processedMatches[req.MatchUUID] = auditRec
+	s.auditEvents = append(s.auditEvents, auditRec)
+	if err := s.saveSnapshotLocked(); err != nil {
+		log.Printf("[SAF Persistence] Error guardando snapshot tras partida aceptada: %v", err)
+	}
 
 	resp := MatchAuditSubmitResponse{
-		MatchUUID:      req.MatchUUID,
-		ChecksumValid:  checksumValid,
-		ReplayS3Key:    s3Key,
-		P1UpdatedMMR:   *p1MMR,
-		P2UpdatedMMR:   *p2MMR,
-		P1AntiCheat:    p1Audit,
-		P2AntiCheat:    p2Audit,
-		ProcessedAtUTC: time.Now().UTC(),
+		MatchUUID:          req.MatchUUID,
+		Status:             "ACCEPTED",
+		ChecksumValid:      true,
+		ComputedFletcher32: computedChecksum,
+		ReplayS3Key:        s3Key,
+		P1UpdatedMMR:       *p1MMR,
+		P2UpdatedMMR:       *p2MMR,
+		P1AntiCheat:        p1Audit,
+		P2AntiCheat:        p2Audit,
+		ProcessedAtUTC:     nowUTC,
 	}
 	writeJSON(w, http.StatusOK, resp)
 }
@@ -544,6 +892,26 @@ func (s *ArbitrationStore) handleHeartbeatArbitration(w http.ResponseWriter, r *
 	var req HeartbeatRequest
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
 		writeJSONError(w, http.StatusBadRequest, "JSON inválido: "+err.Error())
+		return
+	}
+
+	req.MatchUUID = strings.TrimSpace(req.MatchUUID)
+	req.ReportingPlayer = strings.TrimSpace(req.ReportingPlayer)
+	req.OpponentPlayer = strings.TrimSpace(req.OpponentPlayer)
+	req.OpponentCharID = strings.TrimSpace(req.OpponentCharID)
+	req.Region = strings.TrimSpace(req.Region)
+	if req.Region == "" {
+		req.Region = "SA-EAST"
+	}
+	if req.OpponentCharID == "" {
+		req.OpponentCharID = "CHR_DEFAULT"
+	}
+	if req.MatchUUID == "" || req.OpponentPlayer == "" {
+		writeJSONError(w, http.StatusBadRequest, "match_uuid y opponent_player_id son obligatorios")
+		return
+	}
+	if req.ReportingPlayer != "" && strings.EqualFold(req.ReportingPlayer, req.OpponentPlayer) {
+		writeJSONError(w, http.StatusBadRequest, "reporting_player_id y opponent_player_id no pueden coincidir")
 		return
 	}
 
@@ -559,6 +927,9 @@ func (s *ArbitrationStore) handleHeartbeatArbitration(w http.ResponseWriter, r *
 		offenderMMR := s.getOrCreateMMR(req.OpponentPlayer, req.OpponentCharID, req.Region)
 		offenderMMR.LeaguePoints = maxInt(0, offenderMMR.LeaguePoints-RageQuitLPPenalty)
 		offenderMMR.ConductRedCards++
+		if offenderMMR.ConductRedCards >= 2 {
+			offenderMMR.PenaltyQueue = true
+		}
 		offenderMMR.UpdatedAt = time.Now().UTC()
 
 		resp.RageQuitConfirmed = true
@@ -566,6 +937,10 @@ func (s *ArbitrationStore) handleHeartbeatArbitration(w http.ResponseWriter, r *
 		resp.AppliedLPPenalty = RageQuitLPPenalty
 		resp.TotalConductRedCards = offenderMMR.ConductRedCards
 		resp.RestrictedQueueApplied = offenderMMR.ConductRedCards >= 2
+
+		if err := s.saveSnapshotLocked(); err != nil {
+			log.Printf("[SAF Persistence] Error guardando snapshot tras rage quit: %v", err)
+		}
 	}
 
 	writeJSON(w, http.StatusOK, resp)
@@ -615,7 +990,7 @@ func (s *ArbitrationStore) handleDownloadReplay(w http.ResponseWriter, r *http.R
 
 	w.Header().Set("Content-Type", "application/octet-stream")
 	w.Header().Set("Content-Disposition", fmt.Sprintf("attachment; filename=\"%s.safreplay\"", matchUUID))
-	w.Header().Set("X-SAF-Fletcher32", fmt.Sprintf("0x%08X", computeFletcher32(payload)))
+	w.Header().Set("X-SAF-Fletcher32", fmt.Sprintf("0x%08X", ComputeFletcher32(payload)))
 	w.WriteHeader(http.StatusOK)
 	_, _ = bytes.NewReader(payload).WriteTo(w)
 }
@@ -646,7 +1021,11 @@ func writeJSONError(w http.ResponseWriter, status int, message string) {
 func BuildRouter(store *ArbitrationStore) *http.ServeMux {
 	mux := http.NewServeMux()
 	mux.HandleFunc("GET /healthz", func(w http.ResponseWriter, r *http.Request) {
-		writeJSON(w, http.StatusOK, map[string]string{"status": "ok", "service": "saf-arbitration-gateway"})
+		writeJSON(w, http.StatusOK, map[string]string{
+			"status":           "ok",
+			"service":          "saf-arbitration-gateway",
+			"persistence_mode": store.PersistenceMode(),
+		})
 	})
 	mux.HandleFunc("POST /api/v1/matches/audit-and-submit", store.handleAuditAndSubmit)
 	mux.HandleFunc("POST /api/v1/matches/heartbeat", store.handleHeartbeatArbitration)
@@ -677,7 +1056,7 @@ func main() {
 		WriteTimeout:      10 * time.Second,
 	}
 
-	log.Printf("[SAF Arbitration Server] Escuchando en :%s (Glicko-2 + Anti-Cheat + Replay Theater activo)", port)
+	log.Printf("[SAF Arbitration Server] Escuchando en :%s (modo persistencia: %s, Glicko-2 + Anti-Cheat + Replay Theater activo)", port, store.PersistenceMode())
 	if err := srv.ListenAndServe(); err != nil && !errors.Is(err, http.ErrServerClosed) {
 		log.Fatalf("Error fatal en el servidor: %v", err)
 	}

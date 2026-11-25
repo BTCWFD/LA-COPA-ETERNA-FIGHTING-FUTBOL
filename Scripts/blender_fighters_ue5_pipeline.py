@@ -53,6 +53,7 @@ SHOWCASE_BLEND_PATH = os.path.join(OUTPUT_FIGHTERS_DIR, "Master_17Fighters_Showc
 MANIFEST_PATH = os.path.join(OUTPUT_FIGHTERS_DIR, "BlenderFighters_Manifest.json")
 
 CHAOS_CLOTH_VG_NAME = "ChaosCloth_Jersey_Weight"
+CHAOS_CLOTH_HELPER_BONE = "cloth_jersey_weight"
 CHAOS_CLOTH_MAX_DISTANCE_CM = 12.0
 
 COUNTRY_CODE_TO_KIT_ALBEDO: dict[str, str] = {
@@ -163,19 +164,19 @@ def bind_pbr_materials(
                 nt.links.new(tex_albedo.outputs["Color"], bsdf.inputs["Base Color"])
                 bound_textures["kit_albedo"] = os.path.basename(kit_albedo_path)
 
-            # ORM: Roughness (G) and Metallic (B)
+            # ORM: Connect T_FighterKit_ORM.png directly to Principled BSDF Roughness & Metallic sockets
+            # so Blender 5.2's PrincipledBSDFWrapper / FBX exporter exports and embeds T_FighterKit_ORM.png
+            # inside every .fbx file (intermediate SeparateColor nodes are ignored by io_scene_fbx).
             if kit_orm_path:
                 tex_orm = nt.nodes.new("ShaderNodeTexImage")
+                tex_orm.name = "Kit_ORM"
                 tex_orm.label = "Kit_ORM"
                 tex_orm.location = (-500, 0)
                 tex_orm.image = load_image_cached(kit_orm_path, "Non-Color")
-                sep = nt.nodes.new("ShaderNodeSeparateColor")
-                sep.location = (-220, 0)
-                nt.links.new(tex_orm.outputs["Color"], sep.inputs["Color"])
                 if "Roughness" in bsdf.inputs:
-                    nt.links.new(sep.outputs["Green"], bsdf.inputs["Roughness"])
+                    nt.links.new(tex_orm.outputs["Color"], bsdf.inputs["Roughness"])
                 if "Metallic" in bsdf.inputs:
-                    nt.links.new(sep.outputs["Blue"], bsdf.inputs["Metallic"])
+                    nt.links.new(tex_orm.outputs["Color"], bsdf.inputs["Metallic"])
                 bound_textures["kit_orm"] = os.path.basename(kit_orm_path)
 
             # Normal: Retro 90s Jacquard Normal
@@ -265,6 +266,39 @@ def apply_subsurf_and_smooth(mesh_obj: bpy.types.Object, arm_obj: bpy.types.Obje
 
     arm_obj.data.pose_position = prev_pose_pos
     bpy.context.view_layer.update()
+
+
+def ensure_chaos_cloth_helper_bones(arm_obj: bpy.types.Object) -> list[str]:
+    """
+    Add non-deforming helper bones (`cloth_jersey_weight` and `ChaosCloth_Jersey_Weight`, both with
+    `use_deform = False` parented to `spine_03`) so Blender 5.2's FBX exporter writes a SubDeformer
+    Cluster preserving the `ChaosCloth_Jersey_Weight` vertex group in all 17 exported `.fbx` files
+    without affecting armature skinning deformation.
+    """
+    bpy.ops.object.select_all(action="DESELECT")
+    arm_obj.select_set(True)
+    bpy.context.view_layer.objects.active = arm_obj
+    bpy.ops.object.mode_set(mode="EDIT")
+
+    ebones = arm_obj.data.edit_bones
+    parent_ebone = ebones.get("spine_03") or ebones.get("spine_01") or ebones.get("root")
+    base_head = Vector(parent_ebone.head) if parent_ebone is not None else Vector((0.0, 0.0, 1.15))
+
+    helper_names = [CHAOS_CLOTH_HELPER_BONE, CHAOS_CLOTH_VG_NAME]
+    for idx, bname in enumerate(helper_names):
+        eb = ebones.get(bname)
+        if eb is None:
+            eb = ebones.new(bname)
+        eb.head = base_head + Vector((0.0, 0.02 * (idx + 1), 0.0))
+        eb.tail = eb.head + Vector((0.0, 0.0, 0.08))
+        eb.use_connect = False
+        eb.use_deform = False
+        if parent_ebone is not None:
+            eb.parent = parent_ebone
+
+    bpy.ops.object.mode_set(mode="OBJECT")
+    bpy.context.view_layer.update()
+    return helper_names
 
 
 def paint_chaos_cloth_jersey_weight(mesh_obj: bpy.types.Object) -> dict[str, Any]:
@@ -384,8 +418,10 @@ def enhance_imported_fighter(
     pre_faces = len(mesh_obj.data.polygons)
 
     apply_subsurf_and_smooth(mesh_obj, arm_obj)
+    helper_bones = ensure_chaos_cloth_helper_bones(arm_obj)
     bound_textures = bind_pbr_materials(mesh_obj, fighter_stem, unique_suffix=unique_material_suffix)
     cloth_info = paint_chaos_cloth_jersey_weight(mesh_obj)
+    cloth_info["helper_bones"] = helper_bones
 
     post_verts = len(mesh_obj.data.vertices)
     post_faces = len(mesh_obj.data.polygons)

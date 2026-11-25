@@ -9,6 +9,12 @@
 
 DEFINE_LOG_CATEGORY_STATIC(LogCombatAudioDirector, Log, All);
 
+namespace CombatAudioConstants
+{
+    // Altitud canónica del Estadio Hernando Siles (La Paz - 3600m), alineada con DT_StagesCONMEBOL.json y GDD.
+    static constexpr float LaPazAltitudeMeters = 3600.0f;
+}
+
 void UWwiseCombatAudioDirector::Initialize(FSubsystemCollectionBase& Collection)
 {
     Super::Initialize(Collection);
@@ -33,7 +39,22 @@ void UWwiseCombatAudioDirector::InitializeMatchAudioEnvironment(
 {
     CurrentStageSwitch = StageAcousticSwitch;
     HomeFighterID = LocalHomeFighterID;
-    StageAltitudeMeters = FMath::Max(0.0f, AltitudeMeters);
+
+    const FString StageNameStr = StageAcousticSwitch.ToString();
+    const bool bIsLaPazStage =
+        StageAcousticSwitch == TEXT("STAGE_HERNANDO_SILES") ||
+        StageAcousticSwitch == TEXT("Stage_LaPaz_3600m") ||
+        StageNameStr.Contains(TEXT("HERNANDO_SILES")) ||
+        StageNameStr.Contains(TEXT("LaPaz"));
+
+    if (bIsLaPazStage && (AltitudeMeters <= 0.0f || FMath::IsNearlyEqual(AltitudeMeters, 3640.0f, 1.0f)))
+    {
+        StageAltitudeMeters = CombatAudioConstants::LaPazAltitudeMeters; // 3600m
+    }
+    else
+    {
+        StageAltitudeMeters = FMath::Max(0.0f, AltitudeMeters);
+    }
 
     CurrentMatchExcitement = 20.0f;
     CurrentCrowdMomentum = 0.0f;

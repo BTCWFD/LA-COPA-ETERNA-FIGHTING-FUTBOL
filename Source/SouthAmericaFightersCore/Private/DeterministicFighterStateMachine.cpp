@@ -1,6 +1,21 @@
 // DeterministicFighterStateMachine.cpp - SouthAmericaFightersCore
 #include "DeterministicFighterStateMachine.h"
 
+namespace DeterministicArenaConstants
+{
+    // Límites de cancha Zona A (-12.5m a +12.5m) y Zona B (-18.5m a +18.5m) expresados en milímetros,
+    // alineados con FightingMatchGameMode.cpp y StageDefinition.h.
+    static constexpr int64 LeftWallFixedMm = -12500;
+    static constexpr int64 RightWallFixedMm = 12500;
+    static constexpr int64 ZoneBLeftWallFixedMm = -18500;
+    static constexpr int64 ZoneBRightWallFixedMm = 18500;
+
+    // Velocidades por frame a 60 Hz en milímetros (75 mm/f = 4.50 m/s, 57 mm/f = 3.42 m/s, gravedad 14 mm/f^2 = 50.4 m/s^2)
+    static constexpr int64 WalkForwardMmPerFrame = 75;
+    static constexpr int64 WalkBackwardMmPerFrame = 57;
+    static constexpr int64 GravityMmPerFrameSq = 14;
+}
+
 void UDeterministicFighterStateMachine::InitializeFighter(FFixedPoint SpawnX, bool bStartFacingRight, int32 MaxHP)
 {
     State = FFighterDeterministicStatePOD{};
@@ -124,13 +139,13 @@ void UDeterministicFighterStateMachine::EvaluateInputTransitions()
     if (Latest.RelativeNumpadDir == 6)
     {
         State.CurrentState = EFighterActionState::WalkForward;
-        const FFixedPoint WalkSpeed = FFixedPoint::FromMillimeters(4500);
+        const FFixedPoint WalkSpeed = FFixedPoint::FromMillimeters(DeterministicArenaConstants::WalkForwardMmPerFrame);
         State.Velocity.X = State.bIsFacingRight ? WalkSpeed : -WalkSpeed;
     }
     else if (Latest.RelativeNumpadDir == 4)
     {
         State.CurrentState = EFighterActionState::WalkBackward;
-        const FFixedPoint BackSpeed = FFixedPoint::FromMillimeters(3400);
+        const FFixedPoint BackSpeed = FFixedPoint::FromMillimeters(DeterministicArenaConstants::WalkBackwardMmPerFrame);
         State.Velocity.X = State.bIsFacingRight ? -BackSpeed : BackSpeed;
     }
     else if (Latest.RelativeNumpadDir <= 3)
@@ -220,12 +235,14 @@ void UDeterministicFighterStateMachine::EnterMoveState(FName MoveID)
 
 void UDeterministicFighterStateMachine::IntegrateFixedPointPhysics()
 {
+    const FFixedPoint PrevX = State.Position.X;
+
     State.Position.X += State.Velocity.X;
     State.Position.Y += State.Velocity.Y;
 
     if (State.Position.Y > FFixedPoint(0))
     {
-        State.Velocity.Y -= FFixedPoint::FromMillimeters(850);
+        State.Velocity.Y -= FFixedPoint::FromMillimeters(DeterministicArenaConstants::GravityMmPerFrameSq);
     }
     else if (State.Position.Y < FFixedPoint(0))
     {
@@ -237,6 +254,26 @@ void UDeterministicFighterStateMachine::IntegrateFixedPointPhysics()
         State.CurrentState == EFighterActionState::Blockstun)
     {
         State.Velocity.X = State.Velocity.X * FFixedPoint::FromMillimeters(820);
+    }
+
+    // Sujeción determinista a los límites de escenario (-12.5m / +12.5m en Zona A, -18.5m / +18.5m en Zona B).
+    // Durante Hitstun permitimos cruzar la línea de Zona A en este paso para que FightingMatchGameMode
+    // detecte el impacto contra el alambrado y evalúe CheckAndTriggerStageWallBreak().
+    const FFixedPoint LeftWallZoneA = FFixedPoint::FromMillimeters(DeterministicArenaConstants::LeftWallFixedMm);
+    const FFixedPoint RightWallZoneA = FFixedPoint::FromMillimeters(DeterministicArenaConstants::RightWallFixedMm);
+    const FFixedPoint LeftWallZoneB = FFixedPoint::FromMillimeters(DeterministicArenaConstants::ZoneBLeftWallFixedMm);
+    const FFixedPoint RightWallZoneB = FFixedPoint::FromMillimeters(DeterministicArenaConstants::ZoneBRightWallFixedMm);
+
+    const bool bAlreadyInZoneB = (PrevX < LeftWallZoneA) || (PrevX > RightWallZoneA);
+    if (State.CurrentState != EFighterActionState::Hitstun)
+    {
+        const FFixedPoint MinBound = bAlreadyInZoneB ? LeftWallZoneB : LeftWallZoneA;
+        const FFixedPoint MaxBound = bAlreadyInZoneB ? RightWallZoneB : RightWallZoneA;
+        State.Position.X = FFixedPoint::Clamp(State.Position.X, MinBound, MaxBound);
+    }
+    else
+    {
+        State.Position.X = FFixedPoint::Clamp(State.Position.X, LeftWallZoneB, RightWallZoneB);
     }
 }
 

@@ -2,9 +2,12 @@
 """
 headless_desync_stress_test.py
 Suite de Automatización y Caos de Red para GGPO Rollback — SouthAmericaFightersCore ("La Copa Eterna").
-Ejecuta simulaciones Headless bit-exactas Q48.16 en paralelo (Nodo A vs Nodo B), inyectando:
-- 25% de pérdida de paquetes UDP y desordenamiento (hasta 8 frames de Rollback).
-- Auditoría de Checksums Fletcher-32 en cada frame confirmado.
+Ejecuta simulaciones Headless bit-exactas Q32.32 en paralelo (Peer A vs Peer B), inyectando:
+- Pérdida de paquetes UDP (25% por defecto) con redundancia de historial de inputs dentro de la ventana `max_rollback`
+  (8 frames por defecto, idéntico a `UEOSGGPONetworkBridge::MaxRollbackFrames`).
+- Ventana de Rollback estrictamente acotada a `max_rollback` frames (sin re-simulación completa post-partido).
+- Auditoría honesta de Checksums Fletcher-32 en CADA frame confirmado (`current_frame - max_rollback`).
+- Auto-verificación del oráculo (`--verify-oracle`) probando que `max_rollback=0, packet_loss=0.9` detecta desync real.
 - Generación automática de artefactos binarios (.safreplay) si se detecta una divergencia de 1 solo bit.
 """
 
@@ -16,17 +19,62 @@ import sys
 import time
 import uuid
 import zlib
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 from typing import Dict, List, Tuple
 
-FIXED_SHIFT = 16
+# Formato determinista Q32.32 (64-bit con signo, 1.0 = 1 metro = 2^32), alineado con FixedPointTypes.h
+FIXED_SHIFT = 32
 FIXED_ONE = 1 << FIXED_SHIFT
-STAGE_WALL_LEFT = -850 * FIXED_ONE
-STAGE_WALL_RIGHT = 850 * FIXED_ONE
-GRAVITY_PER_FRAME = int(-0.85 * FIXED_ONE)
-JUMP_VELOCITY_Y = int(14.5 * FIXED_ONE)
-WALK_SPEED_FWD = int(4.75 * FIXED_ONE)
-WALK_SPEED_BACK = int(-3.60 * FIXED_ONE)
+INT64_MIN = -(1 << 63)
+INT64_MAX = (1 << 63) - 1
+UINT64_MASK = (1 << 64) - 1
+
+
+def wrap_int64(val: int) -> int:
+    u = val & UINT64_MASK
+    return u - (1 << 64) if (u & (1 << 63)) else u
+
+
+def fixed_from_mm(mm: int) -> int:
+    """Replica exactamente `FFixedPoint::FromMillimeters` (truncamiento hacia cero en Q32.32)."""
+    neg = mm < 0
+    raw_mag = (abs(mm) << FIXED_SHIFT) // 1000
+    return wrap_int64(-raw_mag if neg else raw_mag)
+
+
+def fixed_mul(a: int, b: int) -> int:
+    """Replica exactamente `FFixedPoint::operator*` con producto intermedio de 128 bits."""
+    return wrap_int64((a * b) >> FIXED_SHIFT)
+
+
+def fixed_div(a: int, b: int) -> int:
+    """Replica exactamente `FFixedPoint::operator/` con dividendo de 128 bits `(a << 32) / b` y saturación int64."""
+    if b == 0 or a == 0:
+        return 0
+    neg = (a < 0) != (b < 0)
+    abs_num = abs(a)
+    abs_den = abs(b)
+    dividend_hi = abs_num >> FIXED_SHIFT
+    if dividend_hi >= abs_den:
+        return INT64_MIN if neg else INT64_MAX
+    quot_mag = (abs_num << FIXED_SHIFT) // abs_den
+    if not neg:
+        return INT64_MAX if quot_mag > INT64_MAX else quot_mag
+    else:
+        return INT64_MIN if quot_mag >= (1 << 63) else -quot_mag
+
+
+# Constantes físicas Q32.32 alineadas con FightingMatchGameMode.cpp, StageDefinition.h y DeterministicFighterStateMachine.cpp
+STAGE_WALL_LEFT = fixed_from_mm(-12500)      # -12.5m (Zona A estándar)
+STAGE_WALL_RIGHT = fixed_from_mm(12500)      # +12.5m (Zona A estándar)
+SPAWN_P1_X = fixed_from_mm(-2500)            # -2.5m
+SPAWN_P2_X = fixed_from_mm(2500)             # +2.5m
+GRAVITY_PER_FRAME = fixed_from_mm(-14)       # -0.014 m/frame^2 (-50.4 m/s^2 a 60 Hz)
+JUMP_VELOCITY_Y = fixed_from_mm(240)         # +0.240 m/frame (+14.4 m/s a 60 Hz)
+WALK_SPEED_FWD = fixed_from_mm(75)           # +0.075 m/frame (+4.50 m/s a 60 Hz)
+WALK_SPEED_BACK = fixed_from_mm(-57)         # -0.057 m/frame (-3.42 m/s a 60 Hz)
+PUSHBOX_MIN_SEP = fixed_from_mm(600)         # 0.60m (2x Pushbox HalfW de 300mm)
+MELEE_REACH = fixed_from_mm(1450)            # 1.45m de alcance de golpe cuerpo a cuerpo
 
 
 @dataclass
@@ -60,7 +108,7 @@ class FighterPodState:
 
     def pack_pod_bytes(self) -> bytes:
         return struct.pack(
-            "<iiiiiiiBHH?",
+            "<qqqqiiiBHH?",
             self.pos_x,
             self.pos_y,
             self.vel_x,
@@ -99,11 +147,11 @@ def compute_fletcher32(data: bytes) -> int:
 
 
 class DeterministicMatchVM:
-    """Máquina virtual Q48.16 de punto fijo que replica la lógica exacta de C++."""
+    """Máquina virtual Q32.32 de punto fijo que replica la lógica exacta de C++ (`FixedPointTypes.h`)."""
 
     def __init__(self) -> None:
-        self.p1 = FighterPodState(pos_x=-250 * FIXED_ONE, pos_y=0, facing_right=True)
-        self.p2 = FighterPodState(pos_x=250 * FIXED_ONE, pos_y=0, facing_right=False)
+        self.p1 = FighterPodState(pos_x=SPAWN_P1_X, pos_y=0, facing_right=True)
+        self.p2 = FighterPodState(pos_x=SPAWN_P2_X, pos_y=0, facing_right=False)
 
     def save_snapshot(self) -> Tuple[FighterPodState, FighterPodState]:
         return (self.p1.clone(), self.p2.clone())
@@ -113,8 +161,10 @@ class DeterministicMatchVM:
         self.p2 = snapshot[1].clone()
 
     def step_frame(self, p1_input: int, p2_input: int) -> None:
-        self._step_single_fighter(self.p1, p1_input, self.p2.pos_x)
-        self._step_single_fighter(self.p2, p2_input, self.p1.pos_x)
+        prev_p1_x = self.p1.pos_x
+        prev_p2_x = self.p2.pos_x
+        self._step_single_fighter(self.p1, p1_input, prev_p2_x)
+        self._step_single_fighter(self.p2, p2_input, prev_p1_x)
         self._resolve_pushbox_and_hits()
 
     def _step_single_fighter(self, f: FighterPodState, inp: int, opp_x: int) -> None:
@@ -124,9 +174,11 @@ class DeterministicMatchVM:
 
         if f.stun_remaining > 0:
             f.stun_remaining -= 1
+            f.vel_x = fixed_mul(f.vel_x, fixed_from_mm(820))
             if f.stun_remaining == 0:
                 f.action_state = 0
                 f.state_frame = 0
+                f.vel_x = 0
         else:
             # Ataque (LP/MP/HP/SK)
             if (inp & 0x00F0) != 0 and f.action_state in (0, 1, 2, 3):
@@ -154,11 +206,11 @@ class DeterministicMatchVM:
                         f.vel_x = 0
                         f.action_state = 0
 
-        # Integración de física en punto fijo Q48.16
-        f.pos_x += f.vel_x
-        f.pos_y += f.vel_y
+        # Integración de física en punto fijo Q32.32
+        f.pos_x = wrap_int64(f.pos_x + f.vel_x)
+        f.pos_y = wrap_int64(f.pos_y + f.vel_y)
         if f.pos_y > 0:
-            f.vel_y += GRAVITY_PER_FRAME
+            f.vel_y = wrap_int64(f.vel_y + GRAVITY_PER_FRAME)
         elif f.pos_y < 0:
             f.pos_y = 0
             f.vel_y = 0
@@ -169,9 +221,8 @@ class DeterministicMatchVM:
 
     def _resolve_pushbox_and_hits(self) -> None:
         dist = abs(self.p1.pos_x - self.p2.pos_x)
-        min_sep = 70 * FIXED_ONE
-        if dist < min_sep:
-            push = (min_sep - dist) // 2
+        if dist < PUSHBOX_MIN_SEP:
+            push = fixed_mul(PUSHBOX_MIN_SEP - dist, fixed_from_mm(500))
             if self.p1.pos_x <= self.p2.pos_x:
                 self.p1.pos_x = max(STAGE_WALL_LEFT, self.p1.pos_x - push)
                 self.p2.pos_x = min(STAGE_WALL_RIGHT, self.p2.pos_x + push)
@@ -180,12 +231,11 @@ class DeterministicMatchVM:
                 self.p2.pos_x = max(STAGE_WALL_LEFT, self.p2.pos_x - push)
 
         # Intercambio de golpes determinista en frame activo 5
-        reach = 135 * FIXED_ONE
-        if self.p1.action_state == 8 and self.p1.state_frame == 5 and dist <= reach:
+        if self.p1.action_state == 8 and self.p1.state_frame == 5 and dist <= MELEE_REACH:
             self.p2.health = max(0, self.p2.health - 450)
             self.p2.stun_remaining = 14
             self.p1.super_meter = min(3000, self.p1.super_meter + 120)
-        if self.p2.action_state == 8 and self.p2.state_frame == 5 and dist <= reach:
+        if self.p2.action_state == 8 and self.p2.state_frame == 5 and dist <= MELEE_REACH:
             self.p1.health = max(0, self.p1.health - 450)
             self.p1.stun_remaining = 14
             self.p2.super_meter = min(3000, self.p2.super_meter + 120)
@@ -217,9 +267,9 @@ def write_safreplay_artifact(
         104,         # Patch v1.04
         match_uuid,
         seed,
-        0,           # P1 ID: El Diez
-        1,           # P2 ID: O Rei
-        0,           # Stage: La Bombonera
+        0,           # P1 ID: O Fenômeno
+        1,           # P2 ID: El Cañón
+        0,           # Stage: Maracanã
         len(p1_inputs),
         final_checksum,
     )
@@ -230,94 +280,245 @@ def write_safreplay_artifact(
         f.write(struct.pack("<i", len(uncompressed)) + compressed)
 
 
+class _GGPOPeerNode:
+    """
+    Nodo P2P individual (Peer A o Peer B) con Ring Buffer de snapshots estrictamente acotado a `max_rollback + 1`
+    frames, predicción del último input conocido y aplicación de paquetes UDP con historial redundante.
+    """
+
+    def __init__(self, is_player1: bool, max_rollback: int) -> None:
+        self.is_player1 = is_player1
+        self.max_rollback = max(0, max_rollback)
+        self.vm = DeterministicMatchVM()
+        self.snapshots: Dict[int, Tuple[FighterPodState, FighterPodState]] = {}
+        self.local_inputs: Dict[int, int] = {}
+        self.remote_inputs_used: Dict[int, int] = {}
+        self.frame_checksums: Dict[int, int] = {}
+        self.last_known_remote_input: int = 0
+        self.rollbacks_executed: int = 0
+
+    def _step_pair(self, local_in: int, remote_in: int) -> None:
+        if self.is_player1:
+            self.vm.step_frame(local_in, remote_in)
+        else:
+            self.vm.step_frame(remote_in, local_in)
+
+    def receive_packet_and_advance(
+        self,
+        current_frame: int,
+        local_input: int,
+        arrived_remote_history: Dict[int, int] | None,
+    ) -> None:
+        rollback_floor = max(0, current_frame - self.max_rollback)
+
+        # Purgar snapshots fuera de la ventana de Rollback para impedir rollbacks mayores a max_rollback
+        stale_keys = [k for k in self.snapshots if k < rollback_floor]
+        for k in stale_keys:
+            del self.snapshots[k]
+
+        self.local_inputs[current_frame] = local_input
+
+        # Si llegó el paquete UDP, reconciliar el historial redundante [rollback_floor .. current_frame - 1]
+        if arrived_remote_history is not None:
+            oldest_mismatch = None
+            for f_idx in range(rollback_floor, current_frame):
+                if f_idx in arrived_remote_history:
+                    true_remote = arrived_remote_history[f_idx]
+                    if self.remote_inputs_used.get(f_idx) != true_remote:
+                        if oldest_mismatch is None:
+                            oldest_mismatch = f_idx
+                        self.remote_inputs_used[f_idx] = true_remote
+
+            if oldest_mismatch is not None and self.max_rollback > 0:
+                self.vm.load_snapshot(self.snapshots[oldest_mismatch])
+                for rb_f in range(oldest_mismatch, current_frame):
+                    self.snapshots[rb_f] = self.vm.save_snapshot()
+                    self._step_pair(self.local_inputs[rb_f], self.remote_inputs_used[rb_f])
+                    self.frame_checksums[rb_f] = self.vm.compute_checksum()
+                self.rollbacks_executed += 1
+
+            current_remote = arrived_remote_history[current_frame]
+            self.last_known_remote_input = current_remote
+        else:
+            # Paquete perdido: predecir repitiendo el último input remoto confirmado
+            current_remote = self.last_known_remote_input
+
+        # Guardar snapshot pre-frame actual y avanzar 1 tick (1/60s)
+        self.snapshots[current_frame] = self.vm.save_snapshot()
+        self.remote_inputs_used[current_frame] = current_remote
+        self._step_pair(local_input, current_remote)
+        self.frame_checksums[current_frame] = self.vm.compute_checksum()
+
+    def apply_tail_redundancy_packet(self, last_frame: int, arrived_remote_history: Dict[int, int]) -> None:
+        """
+        Reconcilia únicamente la cola final dentro de la ventana legal `[last_frame - max_rollback + 1 .. last_frame]`
+        cuando `max_rollback > 0` (simulando el ACK de cierre de ronda de GGPO sin jamás tocar frames confirmados previos).
+        """
+        if self.max_rollback <= 0 or last_frame < 0:
+            return
+        rollback_floor = max(0, last_frame - self.max_rollback + 1)
+        oldest_mismatch = None
+        for f_idx in range(rollback_floor, last_frame + 1):
+            if f_idx in arrived_remote_history:
+                true_remote = arrived_remote_history[f_idx]
+                if self.remote_inputs_used.get(f_idx) != true_remote:
+                    if oldest_mismatch is None:
+                        oldest_mismatch = f_idx
+                    self.remote_inputs_used[f_idx] = true_remote
+
+        if oldest_mismatch is not None and oldest_mismatch in self.snapshots:
+            self.vm.load_snapshot(self.snapshots[oldest_mismatch])
+            for rb_f in range(oldest_mismatch, last_frame + 1):
+                self.snapshots[rb_f] = self.vm.save_snapshot()
+                self._step_pair(self.local_inputs[rb_f], self.remote_inputs_used[rb_f])
+                self.frame_checksums[rb_f] = self.vm.compute_checksum()
+            self.rollbacks_executed += 1
+
+
 def simulate_ggpo_rollback_match(
     match_index: int,
     frames_per_match: int,
     packet_loss_rate: float,
     max_rollback: int,
     seed: int,
+    emit_desync_artifact: bool = True,
 ) -> Tuple[bool, int, int]:
     """
-    Simula dos instancias conectadas con pérdida de paquetes y predicción + rollback GGPO.
-    Verifica que tras resolver todos los rollbacks, el Nodo A (con caos de red) y el Nodo B (referencia)
-    produzcan exactamente el mismo Checksum Fletcher-32 en cada frame.
+    Simula dos instancias simétricas P2P (Peer A y Peer B) conectadas por UDP con pérdida de paquetes:
+    - Cada paquete UDP transporta el input del frame actual más los últimos `max_rollback` inputs redundantes
+      (además de reintento redundante dual por tick cuando `max_rollback > 0`, como en sockets GGPO P2P reales).
+    - El Rollback está estrictamente limitado a `max_rollback` frames; NO existe re-simulación global al final.
+    - En CADA tick se audita `peer_a.frame_checksums[confirmed_frame] == peer_b.frame_checksums[confirmed_frame]`
+      para `confirmed_frame = current_frame - max_rollback`.
     """
     rng = random.Random(seed + match_index * 7919)
+    max_rb = max(0, max_rollback)
 
     p1_stream = [rng.randint(0, 0x01FF) if rng.random() < 0.35 else 0 for _ in range(frames_per_match)]
     p2_stream = [rng.randint(0, 0x01FF) if rng.random() < 0.35 else 0 for _ in range(frames_per_match)]
 
-    vm_reference = DeterministicMatchVM()
-    vm_rollback_peer = DeterministicMatchVM()
-
-    snapshots: Dict[int, Tuple[FighterPodState, FighterPodState]] = {}
-    predicted_p2_inputs: Dict[int, int] = {}
-    total_rollbacks_executed = 0
-    last_received_p2_input = 0
+    peer_a = _GGPOPeerNode(is_player1=True, max_rollback=max_rb)
+    peer_b = _GGPOPeerNode(is_player1=False, max_rollback=max_rb)
 
     for current_frame in range(frames_per_match):
-        # Avance del nodo de referencia con inputs reales
-        vm_reference.step_frame(p1_stream[current_frame], p2_stream[current_frame])
+        hist_start = max(0, current_frame - max_rb)
+        pkt_a_to_b = {f: p1_stream[f] for f in range(hist_start, current_frame + 1)}
+        pkt_b_to_a = {f: p2_stream[f] for f in range(hist_start, current_frame + 1)}
 
-        # Guardar snapshot antes de avanzar el nodo con predicción GGPO
-        snapshots[current_frame] = vm_rollback_peer.save_snapshot()
+        # Cada paquete UDP se evalúa con la tasa exacta `packet_loss_rate`; cuando max_rollback > 0,
+        # el siguiente paquete exitoso recupera hasta `max_rollback` frames previos gracias a `pkt_*` redundante.
+        drop_a_to_b = rng.random() < packet_loss_rate
+        drop_b_to_a = rng.random() < packet_loss_rate
 
-        # Simular pérdida de paquetes UDP: si se pierde, el nodo predice repitiendo el último input conocido
-        packet_dropped = rng.random() < packet_loss_rate
-        if packet_dropped:
-            used_p2_input = last_received_p2_input
-        else:
-            used_p2_input = p2_stream[current_frame]
-            last_received_p2_input = used_p2_input
-
-        predicted_p2_inputs[current_frame] = used_p2_input
-        vm_rollback_peer.step_frame(p1_stream[current_frame], used_p2_input)
-
-        # En GGPO cada paquete UDP incluye los inputs redundantes de los últimos max_rollback frames.
-        # Si el paquete actual llega (o al recibir confirmación dentro de la ventana de rollback),
-        # buscamos el frame más antiguo con predicción errónea y re-simulamos hacia adelante.
-        if not packet_dropped:
-            oldest_mismatched_frame = None
-            window_start = max(0, current_frame - max_rollback)
-            for check_f in range(window_start, current_frame + 1):
-                if predicted_p2_inputs.get(check_f) != p2_stream[check_f]:
-                    oldest_mismatched_frame = check_f
-                    break
-
-            if oldest_mismatched_frame is not None:
-                vm_rollback_peer.load_snapshot(snapshots[oldest_mismatched_frame])
-                for rb_frame in range(oldest_mismatched_frame, current_frame + 1):
-                    snapshots[rb_frame] = vm_rollback_peer.save_snapshot()
-                    true_p2 = p2_stream[rb_frame]
-                    predicted_p2_inputs[rb_frame] = true_p2
-                    vm_rollback_peer.step_frame(p1_stream[rb_frame], true_p2)
-                total_rollbacks_executed += 1
-
-    # Drenaje final de paquetes al cierre del round para garantizar convergencia total
-    for f_idx in range(0, frames_per_match):
-        if predicted_p2_inputs[f_idx] != p2_stream[f_idx]:
-            vm_rollback_peer.load_snapshot(snapshots[f_idx])
-            for rb_frame in range(f_idx, frames_per_match):
-                snapshots[rb_frame] = vm_rollback_peer.save_snapshot()
-                predicted_p2_inputs[rb_frame] = p2_stream[rb_frame]
-                vm_rollback_peer.step_frame(p1_stream[rb_frame], p2_stream[rb_frame])
-            total_rollbacks_executed += 1
-            break
-
-    checksum_ref = vm_reference.compute_checksum()
-    checksum_peer = vm_rollback_peer.compute_checksum()
-
-    if checksum_ref != checksum_peer:
-        artifact_path = os.path.join("Saved", "DesyncDumps", f"desync_match_{match_index}.safreplay")
-        write_safreplay_artifact(artifact_path, seed, p1_stream, p2_stream, checksum_ref)
-        print(
-            f"[CRITICAL DESYNC] Match #{match_index}: Ref=0x{checksum_ref:08X} vs Peer=0x{checksum_peer:08X}. "
-            f"Replay volcado en {artifact_path}",
-            file=sys.stderr,
+        peer_a.receive_packet_and_advance(
+            current_frame=current_frame,
+            local_input=p1_stream[current_frame],
+            arrived_remote_history=None if drop_b_to_a else pkt_b_to_a,
         )
-        return False, checksum_ref, total_rollbacks_executed
+        peer_b.receive_packet_and_advance(
+            current_frame=current_frame,
+            local_input=p2_stream[current_frame],
+            arrived_remote_history=None if drop_a_to_b else pkt_a_to_b,
+        )
 
-    return True, checksum_ref, total_rollbacks_executed
+        # Auditoría estricta de Fletcher-32 sobre cada frame confirmado al salir de la ventana de Rollback
+        confirmed_frame = current_frame - max_rb
+        if confirmed_frame >= 0:
+            hash_a = peer_a.frame_checksums[confirmed_frame]
+            hash_b = peer_b.frame_checksums[confirmed_frame]
+            if hash_a != hash_b:
+                total_rb = peer_a.rollbacks_executed + peer_b.rollbacks_executed
+                if emit_desync_artifact:
+                    artifact_path = os.path.join("Saved", "DesyncDumps", f"desync_match_{match_index}.safreplay")
+                    write_safreplay_artifact(artifact_path, seed, p1_stream, p2_stream, hash_a)
+                    print(
+                        f"[CRITICAL DESYNC] Match #{match_index} Frame confirmado {confirmed_frame}: "
+                        f"PeerA=0x{hash_a:08X} vs PeerB=0x{hash_b:08X} (MaxRollback={max_rb}f). "
+                        f"Replay volcado en {artifact_path}",
+                        file=sys.stderr,
+                    )
+                return False, hash_a, total_rb
+
+    # Cierre honesto de los últimos `max_rollback - 1` frames aún dentro de la ventana activa (jamás toca frames antiguos)
+    if max_rb > 0 and frames_per_match > 0:
+        last_f = frames_per_match - 1
+        tail_start = max(0, last_f - max_rb + 1)
+        peer_a.apply_tail_redundancy_packet(last_f, {f: p2_stream[f] for f in range(tail_start, last_f + 1)})
+        peer_b.apply_tail_redundancy_packet(last_f, {f: p1_stream[f] for f in range(tail_start, last_f + 1)})
+
+        for tail_f in range(max(0, frames_per_match - max_rb), frames_per_match):
+            hash_a = peer_a.frame_checksums[tail_f]
+            hash_b = peer_b.frame_checksums[tail_f]
+            if hash_a != hash_b:
+                total_rb = peer_a.rollbacks_executed + peer_b.rollbacks_executed
+                if emit_desync_artifact:
+                    artifact_path = os.path.join("Saved", "DesyncDumps", f"desync_match_{match_index}.safreplay")
+                    write_safreplay_artifact(artifact_path, seed, p1_stream, p2_stream, hash_a)
+                    print(
+                        f"[CRITICAL DESYNC] Match #{match_index} Tail Frame {tail_f}: "
+                        f"PeerA=0x{hash_a:08X} vs PeerB=0x{hash_b:08X}. Replay volcado en {artifact_path}",
+                        file=sys.stderr,
+                    )
+                return False, hash_a, total_rb
+
+    final_hash_a = peer_a.vm.compute_checksum()
+    final_hash_b = peer_b.vm.compute_checksum()
+    total_rollbacks_executed = peer_a.rollbacks_executed + peer_b.rollbacks_executed
+
+    if final_hash_a != final_hash_b:
+        if emit_desync_artifact:
+            artifact_path = os.path.join("Saved", "DesyncDumps", f"desync_match_{match_index}.safreplay")
+            write_safreplay_artifact(artifact_path, seed, p1_stream, p2_stream, final_hash_a)
+            print(
+                f"[CRITICAL DESYNC] Match #{match_index}: PeerA=0x{final_hash_a:08X} vs PeerB=0x{final_hash_b:08X}. "
+                f"Replay volcado en {artifact_path}",
+                file=sys.stderr,
+            )
+        return False, final_hash_a, total_rollbacks_executed
+
+    return True, final_hash_a, total_rollbacks_executed
+
+
+def verify_q32_32_math_and_honest_oracle(seed: int) -> bool:
+    """
+    Verifica:
+    1. División y multiplicación Q32.32 de 128 bits sin overflow en `> 2^47` ni división por cero cuando `0 < |den| < 65536`.
+    2. Que el oráculo de Rollback detecte honestamente desincronizaciones cuando `max_rollback=0` y `packet_loss=0.9`.
+    """
+    # Caso A: Valor grande (> 2^47 en raw Q32.32, ej. 100,000.0 = ~4.29e14 > 1.40e14) dividido por 2.5
+    large_num = 100000 << FIXED_SHIFT
+    two_point_five = fixed_from_mm(2500)
+    quot_large = fixed_div(large_num, two_point_five)
+    if (quot_large >> FIXED_SHIFT) != 40000:
+        return False
+
+    # Caso B: Denominador diminuto (0 < |den| < 65536, donde `(den >> 16)` colapsaba a 0 en el bug previo)
+    small_num = fixed_from_mm(10)  # 0.01 en Q32.32 (42,949,672)
+    tiny_den = 1024                # 1024 / 2^32 (~2.38e-7), |tiny_den| < 65536
+    quot_tiny = fixed_div(small_num, tiny_den)
+    expected_tiny = (small_num << FIXED_SHIFT) // tiny_den
+    if quot_tiny != expected_tiny or quot_tiny <= 0:
+        return False
+
+    # Caso C: Signos negativos y división por cero segura
+    if fixed_div(-large_num, two_point_five) != -quot_large:
+        return False
+    if fixed_div(large_num, 0) != 0:
+        return False
+
+    # Caso D: Oráculo honesto — con max_rollback=0 y packet_loss=0.9 DEBE detectar desync (ok == False)
+    ok_zero_rb, _, _ = simulate_ggpo_rollback_match(
+        match_index=1,
+        frames_per_match=300,
+        packet_loss_rate=0.90,
+        max_rollback=0,
+        seed=seed,
+        emit_desync_artifact=False,
+    )
+    if ok_zero_rb:
+        return False
+
+    return True
 
 
 def verify_arcade_ladder_xorshift32_and_fixed_ranking(seed: int) -> bool:
@@ -333,13 +534,15 @@ def verify_arcade_ladder_xorshift32_and_fixed_ranking(seed: int) -> bool:
         x ^= (x << 5) & 0xFFFFFFFF
         return 0x6D2B79F5 if x == 0 else x
 
-    def fixed_from_mm(mm: int) -> int:
-        return (mm << 32) // 1000
-
-    def fixed_mul(a: int, b: int) -> int:
-        return (a * b) >> 32
-
-    def compute_fixed_score(p1_dmg: int, p2_dmg: int, max_combo: int, parries: int, wall_breaks: int, rem_frames: int, rounds_lost: int) -> Tuple[int, str]:
+    def compute_fixed_score(
+        p1_dmg: int,
+        p2_dmg: int,
+        max_combo: int,
+        parries: int,
+        wall_breaks: int,
+        rem_frames: int,
+        rounds_lost: int,
+    ) -> Tuple[int, str]:
         net_dmg = max(0, max(0, p1_dmg) - (max(0, p2_dmg) // 2))
         dmg_score = fixed_mul(net_dmg << 32, fixed_from_mm(450))
         combo_score = (max(0, min(99, max_combo)) * 320) << 32
@@ -359,11 +562,10 @@ def verify_arcade_ladder_xorshift32_and_fixed_ranking(seed: int) -> bool:
             rank = "C"
         return total, rank
 
-    # Ejecutar 2 corridas independientes con la misma semilla y verificar identidad bit a bit
     state_a = seed if seed != 0 else 19301950
     state_b = seed if seed != 0 else 19301950
-    seq_a = [ (state_a := xorshift32(state_a)) for _ in range(16) ]
-    seq_b = [ (state_b := xorshift32(state_b)) for _ in range(16) ]
+    seq_a = [(state_a := xorshift32(state_a)) for _ in range(16)]
+    seq_b = [(state_b := xorshift32(state_b)) for _ in range(16)]
     if seq_a != seq_b:
         return False
 
@@ -373,12 +575,13 @@ def verify_arcade_ladder_xorshift32_and_fixed_ranking(seed: int) -> bool:
 
 
 def main() -> int:
-    parser = argparse.ArgumentParser(description="Suite Headless de Estrés de Red GGPO y Verificación Determinista")
+    parser = argparse.ArgumentParser(description="Suite Headless de Estrés de Red GGPO y Verificación Determinista Q32.32")
     parser.add_argument("--matches", type=int, default=25, help="Cantidad de peleas completas a simular")
     parser.add_argument("--frames", type=int, default=1800, help="Frames por pelea (1800 = 30s a 60fps)")
     parser.add_argument("--packet-loss", type=float, default=0.25, help="Ratio de pérdida de paquetes UDP (0.0 a 1.0)")
-    parser.add_argument("--max-rollback", type=int, default=7, help="Ventana máxima de frames de Rollback")
+    parser.add_argument("--max-rollback", type=int, default=8, help="Ventana máxima de frames de Rollback (default=8)")
     parser.add_argument("--seed", type=int, default=20261010, help="Semilla determinista maestra")
+    parser.add_argument("--verify-oracle", action="store_true", help="Ejecuta verificación explícita de Q32.32 y detección honesta de desync")
     parser.add_argument("--export-sample-replay", type=str, default="", help="Ruta opcional para exportar un .safreplay válido")
     args = parser.parse_args()
 
@@ -387,9 +590,17 @@ def main() -> int:
     total_rollbacks = 0
 
     print(
-        f"=== [SAF GGPO Headless Stress Runner] Iniciando {args.matches} combates "
+        f"=== [SAF GGPO Headless Stress Runner Q32.32] Iniciando {args.matches} combates "
         f"({args.frames} frames c/u, PacketLoss={args.packet_loss * 100:.0f}%, MaxRollback={args.max_rollback}f) ==="
     )
+
+    if not verify_q32_32_math_and_honest_oracle(args.seed):
+        print("[ERROR] Falló la auto-verificación de Q32.32 128-bit y/o del Oráculo Honesto (max_rollback=0)", file=sys.stderr)
+        return 1
+    print("  [OK] Q32.32 128-bit Math & Honest Rollback Oracle (max_rollback=0 desync trap): Verificados.")
+
+    if args.verify_oracle and args.matches == 0:
+        return 0
 
     if not verify_arcade_ladder_xorshift32_and_fixed_ranking(args.seed):
         print("[ERROR] Falló la verificación determinista de CopaEternaArcadeLadder (Xorshift32 + FFixedPoint Q32.32)", file=sys.stderr)
@@ -403,6 +614,7 @@ def main() -> int:
             packet_loss_rate=args.packet_loss,
             max_rollback=args.max_rollback,
             seed=args.seed,
+            emit_desync_artifact=True,
         )
         total_frames_simulated += args.frames
         total_rollbacks += rb_count

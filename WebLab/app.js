@@ -144,13 +144,18 @@
     }
   }
 
-  // Sintetizador Rítmico Procedural de Hinchadas CONMEBOL (Batucada, Bombo, Candombe, Tambora, Andino)
+  // Sintetizador Rítmico Procedural de las 10 Hinchadas CONMEBOL (BPM exactos de DT_StagesCONMEBOL.json)
   const CHANT_PATTERNS = {
-    SAMBA:       { bpm: 118, low: [1,0,0,1, 1,0,1,0], mid: [0,1,1,0, 0,1,1,1], agogo: [1,0,1,1, 0,1,0,1] },
-    BOMBO_AR:    { bpm: 128, low: [1,0,1,0, 1,1,0,1], mid: [0,0,1,0, 0,0,1,0], agogo: [1,1,0,1, 1,0,1,0] },
-    CANDOMBE_UY: { bpm: 122, low: [1,0,0,1, 0,1,1,0], mid: [1,1,0,1, 1,0,1,1], agogo: [0,1,1,0, 1,0,1,0] },
-    TAMBORA_CO:  { bpm: 132, low: [1,0,1,1, 0,1,1,0], mid: [0,1,0,1, 1,0,1,1], agogo: [1,1,1,0, 1,1,0,1] },
-    ANDINO_BO:   { bpm: 112, low: [1,0,0,1, 1,0,0,1], mid: [0,0,1,0, 0,1,1,0], agogo: [0,1,0,1, 0,1,0,1] }
+    SAMBA:         { bpm: 115, label: '🇧🇷 Brasil — Batucada de Samba (115 BPM)',          low: [1,0,0,1, 1,0,1,0], mid: [0,1,1,0, 0,1,1,1], agogo: [1,0,1,1, 0,1,0,1] },
+    BOMBO_AR:      { bpm: 128, label: '🇦🇷 Argentina — Bombo con Platillo Murga (128 BPM)', low: [1,0,1,0, 1,1,0,1], mid: [0,0,1,0, 0,0,1,0], agogo: [1,1,0,1, 1,0,1,0] },
+    CANDOMBE_UY:   { bpm: 120, label: '🇺🇾 Uruguay — Cuerda de Candombe (120 BPM)',         low: [1,0,0,1, 0,1,1,0], mid: [1,1,0,1, 1,0,1,1], agogo: [0,1,1,0, 1,0,1,0] },
+    TAMBORA_CO:    { bpm: 130, label: '🇨🇴 Colombia — Tambora Caribeña (130 BPM)',          low: [1,0,1,1, 0,1,1,0], mid: [0,1,0,1, 1,0,1,1], agogo: [1,1,1,0, 1,1,0,1] },
+    CUECA_CL:      { bpm: 125, label: '🇨🇱 Chile — Cueca Brava & Bombo (125 BPM)',          low: [1,0,1,0, 1,0,1,1], mid: [0,1,1,0, 0,1,1,0], agogo: [1,0,1,0, 1,1,0,1] },
+    POLKA_PY:      { bpm: 120, label: '🇵🇾 Paraguay — Polka Guaraní (120 BPM)',             low: [1,0,0,1, 1,0,1,0], mid: [0,1,0,1, 0,1,1,0], agogo: [1,1,0,1, 0,1,1,0] },
+    CAJON_PE:      { bpm: 118, label: '🇵🇪 Perú — Cajón Criollo & Quijada (118 BPM)',       low: [1,0,0,1, 0,0,1,0], mid: [0,1,1,0, 1,1,0,1], agogo: [1,0,1,1, 0,1,0,1] },
+    SANJUANITO_EC: { bpm: 135, label: '🇪🇨 Ecuador — San Juanito Andino (135 BPM)',         low: [1,0,1,0, 1,0,1,0], mid: [0,1,1,0, 0,1,1,1], agogo: [1,1,0,1, 1,0,1,1] },
+    JOROPO_VE:     { bpm: 170, label: '🇻🇪 Venezuela — Joropo & Tambor Urbano (170 BPM)',   low: [1,0,1,1, 0,1,0,1], mid: [0,1,0,1, 1,0,1,1], agogo: [1,1,1,0, 1,1,1,0] },
+    ANDINO_BO:     { bpm: 110, label: '🇧🇴 Bolivia — Bombo Legüero 3,600m (110 BPM)',       low: [1,0,0,1, 1,0,0,1], mid: [0,0,1,0, 0,1,1,0], agogo: [0,1,0,1, 0,1,0,1] }
   };
 
   function playPercussionStep() {
@@ -316,11 +321,12 @@
     {
       Name: 'FENOMENO_BR', DisplayName: 'O Fenômeno', Country: 'Brasil 🇧🇷', Era: '1994-2006',
       Archetype: 'Rushdown Explosivo', MaxHealth: 10000, StunThreshold: 1000, ForwardDashFrames: 15, BackDashFrames: 21,
+      SignatureMoveNotation: '236+LP',
       PassiveTitle: 'Pasiva: Arrancada Imparable (Super Armor)',
       PassiveDesc: 'Los primeros 4 frames de su Forward Dash absorben 1 impacto ligero o proyectil sin detener su carrera.',
       ColorPrimary: '#f5c451', ColorSecondary: '#00a859',
       SpecificMoves: [
-        { MoveID: 'FEN_PEDALADA', Numpad: '236+LP', Name: 'Pedalada Stance (Finta)', S: 11, A: 0, R: 12, Block: 0, Hit: 0, Dmg: 0, Flags: 2, Win: 8, Invuln: 'High-Crush F4-10', BoxType: 'stance' },
+        { MoveID: 'FEN_PEDALADA', Numpad: '236+LP', Name: 'Pedalada Mortal (Stance)', S: 11, A: 0, R: 12, Block: 0, Hit: 0, Dmg: 0, Flags: 2, Win: 8, Invuln: 'High-Crush F4-10', BoxType: 'stance' },
         { MoveID: 'FEN_FRENO', Numpad: '236+LP~LP', Name: 'Freno en Seco (Plus Frame)', S: 6, A: 3, R: 10, Block: 2, Hit: 6, Dmg: 400, Flags: 6, Win: 6, Invuln: 'Ninguna', BoxType: 'melee' },
         { MoveID: 'FEN_SOMBRERO', Numpad: '236+LP~MP', Name: 'Sombrero Overhead', S: 18, A: 4, R: 15, Block: -3, Hit: 5, Dmg: 900, Flags: 4, Win: 5, Invuln: 'Low-Crush F6-18', BoxType: 'overhead' },
         { MoveID: 'FEN_CORTEBAJO', Numpad: '236+LP~HP', Name: 'Corte Bajo (Hard Knockdown)', S: 12, A: 3, R: 20, Block: -8, Hit: 18, Dmg: 850, Flags: 4, Win: 5, Invuln: 'Ninguna', BoxType: 'low' },
@@ -331,19 +337,22 @@
     {
       Name: 'BRUXO_BR', DisplayName: 'O Bruxo', Country: 'Brasil 🇧🇷', Era: '2000-2010',
       Archetype: 'Trickster / Mix-up', MaxHealth: 9500, StunThreshold: 950, ForwardDashFrames: 17, BackDashFrames: 20,
+      SignatureMoveNotation: '41236+MP',
       PassiveTitle: 'Pasiva: Sonrisa de Carnaval (Ritmo de Samba)',
       PassiveDesc: 'Cada finta exitosa con Gambeta incrementa +15% la ganancia de Super Meter durante 6 segundos.',
       ColorPrimary: '#ffe07d', ColorSecondary: '#1b5e20',
       SpecificMoves: [
-        { MoveID: 'BRUXO_ELASTICA', Numpad: '41236+MP', Name: 'Elástica de Caño (Cross-up)', S: 13, A: 5, R: 14, Block: -2, Hit: 8, Dmg: 850, Flags: 6, Win: 7, Invuln: 'Projectile Invuln F4-12', BoxType: 'melee' },
-        { MoveID: 'BRUXO_NOLOOK', Numpad: '236+SK', Name: 'Pase No-Look (Ángulo Falso)', S: 15, A: 14, R: 19, Block: 3, Hit: 10, Dmg: 750, Flags: 4, Win: 6, Invuln: 'Ninguna', BoxType: 'projectile' },
-        { MoveID: 'BRUXO_ESPALDINHA', Numpad: '214+HP', Name: 'Espaldinha Anti-Aérea', S: 8, A: 6, R: 18, Block: -6, Hit: 16, Dmg: 980, Flags: 4, Win: 5, Invuln: 'Air Invuln F1-8', BoxType: 'antiair' },
-        { MoveID: 'BRUXO_ULTIMATE', Numpad: '214214+HP+SK', Name: 'Magia en el Bernabéu (Nv.3)', S: 6, A: 20, R: 40, Block: -26, Hit: 58, Dmg: 4400, Flags: 0, Win: 0, Invuln: 'Full Invuln F1-10', BoxType: 'ultimate' }
+        { MoveID: 'BRUXO_ELASTICA_MP', Numpad: '41236+MP', Name: 'Elástica de Caño (Cross-up)', S: 14, A: 5, R: 15, Block: -2, Hit: 8, Dmg: 950, Flags: 4, Win: 6, Invuln: 'Projectile Invuln F4-12', BoxType: 'melee' },
+        { MoveID: 'BRUXO_ELASTICA_HP', Numpad: '41236+HP', Name: 'Elástica Pesada (Plus on Block)', S: 19, A: 5, R: 14, Block: 2, Hit: 15, Dmg: 1150, Flags: 4, Win: 6, Invuln: 'Projectile Invuln F4-14', BoxType: 'melee' },
+        { MoveID: 'BRUXO_NOLOOK_PASS', Numpad: '236+SK', Name: 'Pase No-Look (Ángulo Falso)', S: 13, A: 10, R: 20, Block: 3, Hit: 9, Dmg: 850, Flags: 4, Win: 5, Invuln: 'Ninguna', BoxType: 'projectile' },
+        { MoveID: 'BRUXO_ESPALDINHA', Numpad: '4+MP', Name: 'Espaldinha Táctica', S: 8, A: 4, R: 13, Block: 1, Hit: 6, Dmg: 680, Flags: 6, Win: 6, Invuln: 'Air Invuln F1-8', BoxType: 'antiair' },
+        { MoveID: 'BRUXO_ULTIMATE_JOGA_BONITO', Numpad: '214214+HP+SK', Name: 'Joga Bonito Eterno (Nv.3)', S: 6, A: 22, R: 44, Block: -28, Hit: 62, Dmg: 4400, Flags: 0, Win: 0, Invuln: 'Full Invuln F1-10', BoxType: 'ultimate' }
       ]
     },
     {
       Name: 'CANON_AR', DisplayName: 'El Cañón', Country: 'Argentina 🇦🇷', Era: '1990-2002',
       Archetype: 'Power Shoto', MaxHealth: 10500, StunThreshold: 1050, ForwardDashFrames: 19, BackDashFrames: 22,
+      SignatureMoveNotation: '236+SK',
       PassiveTitle: 'Pasiva: Artillería Pesada (Chip Damage +25%)',
       PassiveDesc: 'Sus disparos de balón causan 25% más daño gris en bloqueo y empujan el doble hacia la red.',
       ColorPrimary: '#74acdf', ColorSecondary: '#ffffff',
@@ -351,12 +360,13 @@
         { MoveID: 'CANON_BATI', Numpad: '236+SK', Name: 'Bati-Cañonazo Recto', S: 14, A: 12, R: 24, Block: -3, Hit: 2, Dmg: 1100, Flags: 4, Win: 6, Invuln: 'Ninguna', BoxType: 'projectile' },
         { MoveID: 'CANON_BATI_CHARGED', Numpad: '236+[SK]', Name: 'Bati-Cañonazo Cargado (Guard Crush)', S: 28, A: 14, R: 18, Block: 4, Hit: 25, Dmg: 1650, Flags: 4, Win: 8, Invuln: 'Super Armor F8-22', BoxType: 'projectile' },
         { MoveID: 'CANON_VOLEA', Numpad: '623+HP', Name: 'Volea de Media Vuelta (DP)', S: 5, A: 10, R: 30, Block: -20, Hit: 28, Dmg: 1400, Flags: 4, Win: 6, Invuln: 'Full Invuln F1-6', BoxType: 'antiair' },
-        { MoveID: 'CANON_ULTIMATE', Numpad: '214214+HP+SK', Name: 'Romperredes del 98 (Nv.3)', S: 6, A: 22, R: 42, Block: -28, Hit: 62, Dmg: 4700, Flags: 0, Win: 0, Invuln: 'Full Invuln F1-11', BoxType: 'ultimate' }
+        { MoveID: 'CANON_ULTIMATE_ANGULO_ETERNO', Numpad: '214214+HP+SK', Name: 'Ángulo Eterno del 98 (Nv.3)', S: 6, A: 20, R: 46, Block: -32, Hit: 64, Dmg: 4700, Flags: 0, Win: 0, Invuln: 'Full Invuln F1-11', BoxType: 'ultimate' }
       ]
     },
     {
       Name: 'PULGA_AR', DisplayName: 'La Pulga', Country: 'Argentina 🇦🇷', Era: '2005-Presente',
       Archetype: 'Pixie / Footsies', MaxHealth: 9000, StunThreshold: 900, ForwardDashFrames: 14, BackDashFrames: 18,
+      SignatureMoveNotation: '236+MP',
       PassiveTitle: 'Pasiva: Pelota Pegada al Pie (Micro-Hurtbox)',
       PassiveDesc: 'Su Hurtbox superior es 18% más baja durante desplazamientos y sus cambios de dirección no tienen fricción.',
       ColorPrimary: '#00e5ff', ColorSecondary: '#f5c451',
@@ -372,143 +382,168 @@
     {
       Name: 'PIBE_CO', DisplayName: 'El Pibe', Country: 'Colombia 🇨🇴', Era: '1990-2000',
       Archetype: 'Setplay Zoner', MaxHealth: 10000, StunThreshold: 1000, ForwardDashFrames: 21, BackDashFrames: 23,
+      SignatureMoveNotation: '236+SK',
       PassiveTitle: 'Pasiva: Visión Periférica Total (Trampas de Balón)',
       PassiveDesc: 'Puede mantener hasta 2 balones flotando en cancha que detonan al contacto o mediante comando 22+SK.',
       ColorPrimary: '#ffeb3b', ColorSecondary: '#1976d2',
       SpecificMoves: [
-        { MoveID: 'PIBE_PASE', Numpad: '236+SK', Name: 'Pase Filtrado al Vacío', S: 16, A: 18, R: 20, Block: 2, Hit: 12, Dmg: 800, Flags: 4, Win: 6, Invuln: 'Ninguna', BoxType: 'projectile' },
-        { MoveID: 'PIBE_DETONAR', Numpad: '22+SK', Name: 'Activación Táctica de Esférico', S: 8, A: 10, R: 15, Block: 4, Hit: 18, Dmg: 950, Flags: 4, Win: 6, Invuln: 'Ninguna', BoxType: 'projectile' },
-        { MoveID: 'PIBE_MELENA', Numpad: '623+MP', Name: 'Giro de Melena Dorada', S: 7, A: 6, R: 19, Block: -7, Hit: 14, Dmg: 900, Flags: 4, Win: 5, Invuln: 'Head Invuln F1-7', BoxType: 'antiair' }
+        { MoveID: 'PIBE_PASE_FILTRADO', Numpad: '236+SK', Name: 'Pase Filtrado al Vacío', S: 15, A: 14, R: 22, Block: 2, Hit: 10, Dmg: 900, Flags: 4, Win: 6, Invuln: 'Ninguna', BoxType: 'projectile' },
+        { MoveID: 'PIBE_BALON_SUSPENDIDO', Numpad: '214+SK', Name: 'Balón Suspendido (Setplay)', S: 17, A: 30, R: 19, Block: 6, Hit: 16, Dmg: 800, Flags: 4, Win: 5, Invuln: 'Ninguna', BoxType: 'projectile' },
+        { MoveID: 'PIBE_DETONAR_PASE', Numpad: '22+SK', Name: 'Activación Táctica de Esférico', S: 8, A: 8, R: 16, Block: 4, Hit: 20, Dmg: 1050, Flags: 4, Win: 6, Invuln: 'Ninguna', BoxType: 'projectile' },
+        { MoveID: 'PIBE_ULTIMATE_CINCO_A_CERO', Numpad: '214214+HP+SK', Name: 'Cinco a Cero Monumental (Nv.3)', S: 6, A: 24, R: 42, Block: -26, Hit: 60, Dmg: 4450, Flags: 0, Win: 0, Invuln: 'Full Invuln F1-10', BoxType: 'ultimate' }
       ]
     },
     {
       Name: 'LOCO_CO', DisplayName: 'El Loco', Country: 'Colombia 🇨🇴', Era: '1990-2000',
       Archetype: 'Counter-Acrobat', MaxHealth: 10200, StunThreshold: 1050, ForwardDashFrames: 18, BackDashFrames: 20,
+      SignatureMoveNotation: '214+SK',
       PassiveTitle: 'Pasiva: Arquero Líbero (Furia Fuera del Área)',
       PassiveDesc: 'Mientras está de la mitad de la cancha hacia adelante gana +12% velocidad y daño en saltos acrobáticos.',
       ColorPrimary: '#00e5ff', ColorSecondary: '#ffeb3b',
       SpecificMoves: [
         { MoveID: 'LOCO_ESCORPION', Numpad: '214+SK', Name: 'El Escorpión (High-Crush Counter)', S: 16, A: 8, R: 22, Block: -4, Hit: 24, Dmg: 1250, Flags: 4, Win: 6, Invuln: 'Upper Invuln F1-16', BoxType: 'antiair' },
-        { MoveID: 'LOCO_DESPEJE', Numpad: '623+HP', Name: 'Despeje de Puños Volador', S: 5, A: 7, R: 29, Block: -18, Hit: 26, Dmg: 1300, Flags: 4, Win: 6, Invuln: 'Full Invuln F1-6', BoxType: 'antiair' }
+        { MoveID: 'LOCO_DESPEJE', Numpad: '623+HP', Name: 'Despeje de Puños Volador', S: 5, A: 7, R: 29, Block: -18, Hit: 26, Dmg: 1300, Flags: 4, Win: 6, Invuln: 'Full Invuln F1-6', BoxType: 'antiair' },
+        { MoveID: 'LOCO_SALIDA_AREA', Numpad: '236+MP', Name: 'Salida del Área Líbero', S: 12, A: 6, R: 17, Block: -3, Hit: 15, Dmg: 1000, Flags: 4, Win: 6, Invuln: 'Ninguna', BoxType: 'melee' },
+        { MoveID: 'LOCO_ULTIMATE_WEMBLEY_ETERNO', Numpad: '214214+HP+SK', Name: 'Wembley Eterno 95 (Nv.3)', S: 5, A: 22, R: 44, Block: -28, Hit: 62, Dmg: 4550, Flags: 0, Win: 0, Invuln: 'Full Invuln F1-10', BoxType: 'ultimate' }
       ]
     },
     {
       Name: 'PISTOLERO_UY', DisplayName: 'El Pistolero', Country: 'Uruguay 🇺🇾', Era: '2007-Presente',
       Archetype: 'Hybrid Grappler', MaxHealth: 10800, StunThreshold: 1100, ForwardDashFrames: 20, BackDashFrames: 23,
+      SignatureMoveNotation: '41236+LP',
       PassiveTitle: 'Pasiva: Garra Charrúa (Desperation Boost)',
       PassiveDesc: 'Al bajar del 30% de vida sus Command Grabs ganan alcance extra y su daño base sube un 15%.',
       ColorPrimary: '#4fc3f7', ColorSecondary: '#ffffff',
       SpecificMoves: [
         { MoveID: 'PISTOLERO_MORDISCO', Numpad: '41236+LP', Name: 'Presión Asfixiante (Command Grab)', S: 6, A: 3, R: 28, Block: 0, Hit: 30, Dmg: 1800, Flags: 0, Win: 0, Invuln: 'Throw Invuln F1-6', BoxType: 'grab' },
-        { MoveID: 'PISTOLERO_MANOSALVADORA', Numpad: '22+GB', Name: 'La Mano Salvadora (Parry 1f)', S: 1, A: 16, R: 26, Block: 0, Hit: 16, Dmg: 0, Flags: 8, Win: 10, Invuln: 'Parry Stance F1-16', BoxType: 'stance' }
+        { MoveID: 'PISTOLERO_MANOSALVADORA', Numpad: '22+GB', Name: 'La Mano Salvadora (Parry 1f)', S: 1, A: 16, R: 26, Block: 0, Hit: 16, Dmg: 0, Flags: 8, Win: 10, Invuln: 'Parry Stance F1-16', BoxType: 'stance' },
+        { MoveID: 'PISTOLERO_ULTIMATE_GARRA_CHARRUA', Numpad: '214214+HP+SK', Name: 'Garra Charrúa Inmortal (Nv.3)', S: 5, A: 20, R: 45, Block: -30, Hit: 64, Dmg: 4650, Flags: 0, Win: 0, Invuln: 'Full Invuln F1-10', BoxType: 'ultimate' }
       ]
     },
     {
       Name: 'MATADOR_UY', DisplayName: 'El Matador', Country: 'Uruguay 🇺🇾', Era: '2000-2018',
       Archetype: 'Long-Range Hybrid', MaxHealth: 10000, StunThreshold: 1000, ForwardDashFrames: 18, BackDashFrames: 21,
+      SignatureMoveNotation: '236+SK',
       PassiveTitle: 'Pasiva: Francotirador Ambidiestro',
       PassiveDesc: 'Puede cancelar cualquier tiro de balón en otro disparo con pierna opuesta consumiendo 250 de Gambeta.',
       ColorPrimary: '#81d4fa', ColorSecondary: '#f5c451',
       SpecificMoves: [
-        { MoveID: 'MATADOR_JABULANI', Numpad: '236+SK', Name: 'Efecto Jabulani (Curva Errática)', S: 15, A: 15, R: 22, Block: -1, Hit: 14, Dmg: 1050, Flags: 4, Win: 7, Invuln: 'Ninguna', BoxType: 'projectile' },
-        { MoveID: 'MATADOR_PALOMITA', Numpad: '[4]6+HP', Name: 'Cabezazo en Plancha (Charge)', S: 10, A: 8, R: 18, Block: -4, Hit: 20, Dmg: 1200, Flags: 4, Win: 6, Invuln: 'Projectile Invuln F3-12', BoxType: 'melee' }
+        { MoveID: 'MATADOR_EFECTO_JABULANI', Numpad: '236+SK', Name: 'Efecto Jabulani (Curva Errática)', S: 15, A: 14, R: 21, Block: 1, Hit: 14, Dmg: 1100, Flags: 4, Win: 6, Invuln: 'Ninguna', BoxType: 'projectile' },
+        { MoveID: 'MATADOR_CABEZAZO_PLANCHA', Numpad: '[4]6+HP', Name: 'Cabezazo en Plancha (Charge)', S: 11, A: 7, R: 19, Block: -4, Hit: 22, Dmg: 1250, Flags: 4, Win: 6, Invuln: 'Projectile Invuln F3-12', BoxType: 'melee' },
+        { MoveID: 'MATADOR_ULTIMATE_BALON_DE_ORO', Numpad: '214214+HP+SK', Name: 'Balón de Oro Sudáfrica (Nv.3)', S: 6, A: 22, R: 44, Block: -29, Hit: 62, Dmg: 4550, Flags: 0, Win: 0, Invuln: 'Full Invuln F1-10', BoxType: 'ultimate' }
       ]
     },
     {
       Name: 'BAMBAM_CL', DisplayName: 'Bam-Bam', Country: 'Chile 🇨🇱', Era: '1990-2002',
       Archetype: 'Air-Dominance', MaxHealth: 10000, StunThreshold: 1000, ForwardDashFrames: 17, BackDashFrames: 20,
+      SignatureMoveNotation: 'j.236+MP',
       PassiveTitle: 'Pasiva: El Helicóptero (Suspend Air-Stall)',
       PassiveDesc: 'Puede suspenderse 18 frames en el punto máximo de su salto para alterar el timing de sus Divekicks.',
       ColorPrimary: '#ff2a54', ColorSecondary: '#1976d2',
       SpecificMoves: [
-        { MoveID: 'BAMBAM_CABEZAZO', Numpad: 'j.236+HP', Name: 'Cabezazo Suspendido (Overhead)', S: 9, A: 7, R: 14, Block: 3, Hit: 16, Dmg: 1100, Flags: 4, Win: 6, Invuln: 'Throw Invuln Air', BoxType: 'overhead' },
-        { MoveID: 'BAMBAM_DIVEKICK', Numpad: 'j.214+SK', Name: 'Chilena en Picada', S: 11, A: 8, R: 16, Block: 1, Hit: 18, Dmg: 950, Flags: 4, Win: 6, Invuln: 'Ninguna', BoxType: 'melee' }
+        { MoveID: 'BAMBAM_CABEZAZO_PICADA', Numpad: 'j.236+MP', Name: 'Cabezazo Suspendido (Overhead)', S: 9, A: 8, R: 14, Block: 2, Hit: 12, Dmg: 950, Flags: 4, Win: 6, Invuln: 'Throw Invuln Air', BoxType: 'overhead' },
+        { MoveID: 'BAMBAM_HELICOPTERO_AA', Numpad: '623+HP', Name: 'El Helicóptero Anti-Aéreo', S: 5, A: 9, R: 28, Block: -17, Hit: 26, Dmg: 1300, Flags: 4, Win: 6, Invuln: 'Full Invuln F1-6', BoxType: 'antiair' },
+        { MoveID: 'BAMBAM_TIJERA_CHILENA', Numpad: '214+SK', Name: 'Tijera Chilena', S: 14, A: 6, R: 21, Block: -6, Hit: 22, Dmg: 1200, Flags: 4, Win: 6, Invuln: 'Ninguna', BoxType: 'melee' }
       ]
     },
     {
       Name: 'REY_CL', DisplayName: 'El Rey', Country: 'Chile 🇨🇱', Era: '2007-Presente',
       Archetype: 'Berserker Rekka', MaxHealth: 10400, StunThreshold: 1050, ForwardDashFrames: 16, BackDashFrames: 20,
+      SignatureMoveNotation: '236+LP',
       PassiveTitle: 'Pasiva: Pulmón de Acero (Gambeta Cost -20%)',
       PassiveDesc: 'Sus cancelaciones de barrida y Rekkas consumen 20% menos barra de Gambeta.',
       ColorPrimary: '#ff5252', ColorSecondary: '#ffffff',
       SpecificMoves: [
-        { MoveID: 'REY_TRANCAZO1', Numpad: '236+LP', Name: 'Trancazo Real (Rekka 1/3)', S: 10, A: 4, R: 16, Block: -3, Hit: 6, Dmg: 650, Flags: 6, Win: 8, Invuln: 'Ninguna', BoxType: 'melee' },
-        { MoveID: 'REY_BARRIDA', Numpad: '214+HP', Name: 'Barrida Kamikaze Con Todo', S: 13, A: 6, R: 22, Block: -10, Hit: 22, Dmg: 1150, Flags: 4, Win: 5, Invuln: 'High-Crush F3-15', BoxType: 'low' }
+        { MoveID: 'REY_TRANCAZO_REKKA_1', Numpad: '236+LP', Name: 'Trancazo Real (Rekka 1/3)', S: 10, A: 4, R: 16, Block: -2, Hit: 4, Dmg: 600, Flags: 2, Win: 8, Invuln: 'Ninguna', BoxType: 'melee' },
+        { MoveID: 'REY_TRANCAZO_REKKA_2', Numpad: '236+LP~MP', Name: 'Trancazo Real (Rekka 2/3)', S: 8, A: 4, R: 18, Block: -4, Hit: 6, Dmg: 650, Flags: 2, Win: 8, Invuln: 'Ninguna', BoxType: 'melee' },
+        { MoveID: 'REY_BARRIDA_REAL', Numpad: '3+HP', Name: 'Barrida Real Con Todo', S: 10, A: 5, R: 18, Block: -4, Hit: 18, Dmg: 1000, Flags: 6, Win: 6, Invuln: 'High-Crush F3-12', BoxType: 'low' }
       ]
     },
     {
       Name: 'BULLDOG_PY', DisplayName: 'El Bulldog', Country: 'Paraguay 🇵🇾', Era: '1990-2003',
       Archetype: 'Big-Body Grappler / Zoner', MaxHealth: 11500, StunThreshold: 1200, ForwardDashFrames: 23, BackDashFrames: 25,
+      SignatureMoveNotation: '236+SK',
       PassiveTitle: 'Pasiva: Intimidación Guaraní (11,500 HP + Hyper Armor)',
-      PassiveDesc: 'Mayor vitalidad del juego. Sus tiros libres convocan una barrera espectral que absorbe 1 ataque.',
+      PassiveDesc: 'Mayor vitalidad entre las leyendas jugables. Sus tiros libres convocan una barrera espectral.',
       ColorPrimary: '#ff2a54', ColorSecondary: '#4fc3f7',
       SpecificMoves: [
-        { MoveID: 'BULLDOG_TIROLIBRE', Numpad: '236+SK', Name: 'Tiro Libre con Barrera', S: 18, A: 16, R: 24, Block: 5, Hit: 22, Dmg: 1350, Flags: 4, Win: 6, Invuln: 'Armor F6-18', BoxType: 'projectile' },
-        { MoveID: 'BULLDOG_CUELLO', Numpad: '41236+HP', Name: 'Agarre del Cuello (Command Throw)', S: 5, A: 3, R: 32, Block: 0, Hit: 35, Dmg: 2100, Flags: 0, Win: 0, Invuln: 'Throw Invuln F1-5', BoxType: 'grab' }
+        { MoveID: 'BULLDOG_TIRO_LIBRE_BARRERA', Numpad: '236+SK', Name: 'Tiro Libre con Barrera', S: 18, A: 16, R: 22, Block: 4, Hit: 18, Dmg: 1350, Flags: 4, Win: 6, Invuln: 'Armor F6-18', BoxType: 'projectile' },
+        { MoveID: 'BULLDOG_AGARRE_CUELLO', Numpad: '41236+HP', Name: 'Agarre del Cuello (Command Throw)', S: 7, A: 3, R: 30, Block: 0, Hit: 32, Dmg: 2000, Flags: 0, Win: 0, Invuln: 'Throw Invuln F1-7', BoxType: 'grab' }
       ]
     },
     {
       Name: 'MAESTRO_PE', DisplayName: 'El Maestro', Country: 'Perú 🇵🇪', Era: 'Clásico-Moderno',
       Archetype: 'Technical Footsies', MaxHealth: 9800, StunThreshold: 980, ForwardDashFrames: 17, BackDashFrames: 19,
+      SignatureMoveNotation: '236+SK~8',
       PassiveTitle: 'Pasiva: Toque de Seda Peruano',
       PassiveDesc: 'Sus ataques normales medios tienen +2 frames adicionales de ventana de cancelación a Especiales.',
       ColorPrimary: '#ffffff', ColorSecondary: '#ff2a54',
       SpecificMoves: [
-        { MoveID: 'MAESTRO_TRESDEDOS', Numpad: '236+SK~8/2', Name: 'Tiro de Tres Dedos (Curva Tardía)', S: 15, A: 14, R: 20, Block: 2, Hit: 12, Dmg: 980, Flags: 4, Win: 6, Invuln: 'Ninguna', BoxType: 'projectile' },
-        { MoveID: 'MAESTRO_CANO', Numpad: '214+MP', Name: 'Caño Elegante de Cambio de Lado', S: 11, A: 4, R: 16, Block: -2, Hit: 9, Dmg: 800, Flags: 6, Win: 6, Invuln: 'Strike Pass F4-10', BoxType: 'melee' }
+        { MoveID: 'MAESTRO_TRES_DEDOS_ALTO', Numpad: '236+SK~8', Name: 'Tiro de Tres Dedos (Curva Alta)', S: 15, A: 12, R: 20, Block: 2, Hit: 12, Dmg: 1000, Flags: 4, Win: 6, Invuln: 'Ninguna', BoxType: 'projectile' },
+        { MoveID: 'MAESTRO_TRES_DEDOS_BAJO', Numpad: '236+SK~2', Name: 'Tiro de Tres Dedos (Curva Baja)', S: 15, A: 12, R: 20, Block: 2, Hit: 14, Dmg: 1000, Flags: 4, Win: 6, Invuln: 'Ninguna', BoxType: 'projectile' },
+        { MoveID: 'MAESTRO_HUACHA_SIDESWAP', Numpad: '214+LP', Name: 'Huacha Elegante de Cambio de Lado', S: 11, A: 4, R: 15, Block: -2, Hit: 8, Dmg: 750, Flags: 4, Win: 6, Invuln: 'Strike Pass F4-10', BoxType: 'melee' }
       ]
     },
     {
       Name: 'TREN_EC', DisplayName: 'El Tren Amazónico', Country: 'Ecuador 🇪🇨', Era: '2002-2020',
       Archetype: 'Speedster / Run-Cancel', MaxHealth: 9600, StunThreshold: 950, ForwardDashFrames: 13, BackDashFrames: 18,
+      SignatureMoveNotation: '236+GB',
       PassiveTitle: 'Pasiva: Locomotora por la Banda (Dash 13f)',
-      PassiveDesc: 'El Forward Dash más veloz del roster (13 frames); permite Run-Cancel dejando sus presiones en +3 on block.',
+      PassiveDesc: 'El Forward Dash más veloz de las leyendas (13 frames); permite Run-Cancel dejando sus presiones en +3 on block.',
       ColorPrimary: '#ffd600', ColorSecondary: '#2962ff',
       SpecificMoves: [
-        { MoveID: 'TREN_EXPRESO', Numpad: '236+GB', Name: 'Expreso por la Banda (Run-Cancel)', S: 8, A: 6, R: 12, Block: 3, Hit: 8, Dmg: 700, Flags: 14, Win: 8, Invuln: 'Projectile Invuln F2-8', BoxType: 'melee' },
-        { MoveID: 'TREN_CENTRO', Numpad: '236+SK', Name: 'Centro Rasante Buscapiés', S: 12, A: 10, R: 19, Block: -4, Hit: 15, Dmg: 900, Flags: 4, Win: 6, Invuln: 'Ninguna', BoxType: 'low' }
+        { MoveID: 'TREN_EXPRESO_BANDA', Numpad: '236+GB', Name: 'Expreso por la Banda (Run-Cancel)', S: 8, A: 0, R: 9, Block: 3, Hit: 7, Dmg: 0, Flags: 6, Win: 8, Invuln: 'Projectile Invuln F2-8', BoxType: 'stance' },
+        { MoveID: 'TREN_CENTRO_RASANTE', Numpad: '236+SK', Name: 'Centro Rasante Buscapiés', S: 12, A: 10, R: 19, Block: -1, Hit: 14, Dmg: 950, Flags: 4, Win: 6, Invuln: 'Ninguna', BoxType: 'low' }
       ]
     },
     {
       Name: 'HURACAN_VE', DisplayName: 'El Huracán Vinotinto', Country: 'Venezuela 🇻🇪', Era: '2000-Presente',
       Archetype: 'Dead-Ball Sniper', MaxHealth: 10200, StunThreshold: 1020, ForwardDashFrames: 19, BackDashFrames: 21,
+      SignatureMoveNotation: '236+SK',
       PassiveTitle: 'Pasiva: Zurda de Oro (Sin Escalado a Distancia)',
       PassiveDesc: 'Sus proyectiles de balón no sufren reducción de daño por distancia y caen en picada (Folha Seca).',
       ColorPrimary: '#ad1457', ColorSecondary: '#f5c451',
       SpecificMoves: [
-        { MoveID: 'HURACAN_FOLHASECA', Numpad: '236+SK', Name: 'Zurda de Oro (Folha Seca Overhead)', S: 17, A: 12, R: 21, Block: 2, Hit: 18, Dmg: 1200, Flags: 4, Win: 6, Invuln: 'Ninguna', BoxType: 'projectile' }
+        { MoveID: 'HURACAN_ZURDA_FOLHA_SECA', Numpad: '236+SK', Name: 'Zurda de Oro (Folha Seca)', S: 16, A: 14, R: 21, Block: 3, Hit: 16, Dmg: 1250, Flags: 4, Win: 6, Invuln: 'Ninguna', BoxType: 'projectile' },
+        { MoveID: 'HURACAN_CORNER_OLIMPICO', Numpad: '214+SK', Name: 'Córner Olímpico Vinotinto', S: 19, A: 16, R: 22, Block: 4, Hit: 18, Dmg: 1200, Flags: 4, Win: 6, Invuln: 'Ninguna', BoxType: 'projectile' }
       ]
     },
     {
       Name: 'DIABLO_BO', DisplayName: 'El Diablo Andino', Country: 'Bolivia 🇧🇴', Era: '1990-2000',
       Archetype: 'Stamina Debuffer', MaxHealth: 9800, StunThreshold: 960, ForwardDashFrames: 18, BackDashFrames: 20,
+      SignatureMoveNotation: '214+SK',
       PassiveTitle: 'Pasiva: Mal de Altura (3,600m Debuff)',
       PassiveDesc: 'Sus impactos especiales aplican "Falta de Aire", reduciendo la regeneración de Gambeta del rival en 30%.',
       ColorPrimary: '#00e676', ColorSecondary: '#ff2a54',
       SpecificMoves: [
-        { MoveID: 'DIABLO_BALONPESADO', Numpad: '214+SK', Name: 'Balón Pesado (3600m Hipoxia)', S: 15, A: 12, R: 20, Block: 3, Hit: 16, Dmg: 950, Flags: 4, Win: 6, Invuln: 'Ninguna', BoxType: 'projectile' }
+        { MoveID: 'DIABLO_BALON_PESADO_3600M', Numpad: '214+SK', Name: 'Balón Pesado (3,600m Hipoxia)', S: 15, A: 12, R: 20, Block: 3, Hit: 15, Dmg: 1050, Flags: 4, Win: 6, Invuln: 'Ninguna', BoxType: 'projectile' },
+        { MoveID: 'DIABLO_REMATE_SOROCHE', Numpad: '236+MP', Name: 'Remate Soroche Altiplano', S: 12, A: 5, R: 17, Block: -2, Hit: 16, Dmg: 1000, Flags: 4, Win: 6, Invuln: 'Ninguna', BoxType: 'melee' }
       ]
     },
     {
       Name: 'GENERAL_FR', DisplayName: 'Le Général (Invitado)', Country: 'Francia 🇫🇷', Era: '1996-2006',
       Archetype: 'Tactical Stance', MaxHealth: 10000, StunThreshold: 1000, ForwardDashFrames: 17, BackDashFrames: 20,
+      SignatureMoveNotation: '236+MP',
       PassiveTitle: 'Pasiva: Maestro de la Orquesta',
       PassiveDesc: 'La Roulette de Marseille atraviesa ataques de golpe alto y deja al rival de espaldas.',
       ColorPrimary: '#2979ff', ColorSecondary: '#ffffff',
       SpecificMoves: [
-        { MoveID: 'GEN_ROULETTE', Numpad: '236+MP', Name: 'Roulette de Marseille (Stance Evade)', S: 9, A: 5, R: 14, Block: 1, Hit: 12, Dmg: 950, Flags: 6, Win: 7, Invuln: 'Strike Invuln F3-9', BoxType: 'melee' },
-        { MoveID: 'GEN_TESTAZO', Numpad: '623+HP', Name: 'Coup de Tête Final (Armor Break)', S: 7, A: 6, R: 26, Block: -14, Hit: 32, Dmg: 1550, Flags: 4, Win: 5, Invuln: 'Super Armor F1-7', BoxType: 'antiair' }
+        { MoveID: 'GENERAL_ROULETTE_MARSEILLE', Numpad: '236+MP', Name: 'Roulette de Marseille (Stance Evade)', S: 11, A: 6, R: 15, Block: -1, Hit: 10, Dmg: 950, Flags: 4, Win: 6, Invuln: 'Strike Invuln F3-9', BoxType: 'melee' },
+        { MoveID: 'GENERAL_COUP_DE_TETE', Numpad: '41236+HP', Name: 'Coup de Tête Final (Armor Break)', S: 9, A: 5, R: 22, Block: -6, Hit: 28, Dmg: 1500, Flags: 4, Win: 6, Invuln: 'Super Armor F1-7', BoxType: 'antiair' }
       ]
     },
     {
-      Name: 'VAR_ZERO_BOSS', DisplayName: 'Juez Supremo (V.A.R.-ZERO)', Country: 'BOSS FINAL ⚠️', Era: 'Atemporal',
-      Archetype: 'Boss Zoner / Time Rewinder', MaxHealth: 14000, StunThreshold: 1500, ForwardDashFrames: 12, BackDashFrames: 14,
+      Name: 'VAR_ZERO_BOSS', DisplayName: 'El Juez Supremo (V.A.R. - ZERO)', Country: 'BOSS FINAL ⚠️', Era: 'Atemporal',
+      Archetype: 'Boss Zoner / Time Rewinder', MaxHealth: 13000, StunThreshold: 1500, ForwardDashFrames: 12, BackDashFrames: 14,
+      SignatureMoveNotation: '22+GB',
       PassiveTitle: 'Pasiva Boss: Revisión de Cuadro (V.A.R. Rewind 90f)',
       PassiveDesc: 'Rebobina 90 frames del Ring Buffer GGPO. Vulnerable a System Overload tras 3 Gambetas Perfectas.',
       ColorPrimary: '#ff2a54', ColorSecondary: '#00e5ff',
       SpecificMoves: [
-        { MoveID: 'VAR_OFFSIDE', Numpad: '236+SK', Name: 'Láser de Línea de Offside', S: 10, A: 14, R: 16, Block: 4, Hit: 20, Dmg: 1400, Flags: 4, Win: 8, Invuln: 'Ninguna', BoxType: 'projectile' },
-        { MoveID: 'VAR_REWIND', Numpad: '22+GB', Name: 'V.A.R. Rewind (-90 Frames GGPO)', S: 3, A: 2, R: 20, Block: 0, Hit: 0, Dmg: 0, Flags: 0, Win: 0, Invuln: 'Full Invuln F1-15', BoxType: 'ultimate' }
+        { MoveID: 'VAR_OFFSIDE_TRAP', Numpad: '236+SK', Name: 'Láser de Línea de Offside', S: 10, A: 14, R: 16, Block: 4, Hit: 20, Dmg: 1400, Flags: 4, Win: 8, Invuln: 'Ninguna', BoxType: 'projectile' },
+        { MoveID: 'VAR_RED_CARD', Numpad: '623+HP', Name: 'Sentencia de Tarjeta Roja (Guard Crush)', S: 8, A: 6, R: 22, Block: 6, Hit: 28, Dmg: 1850, Flags: 4, Win: 6, Invuln: 'Super Armor F1-8', BoxType: 'antiair' },
+        { MoveID: 'VAR_REWIND_90F', Numpad: '22+GB', Name: 'V.A.R. Rewind (-90 Frames GGPO)', S: 3, A: 2, R: 20, Block: 0, Hit: 0, Dmg: 0, Flags: 0, Win: 0, Invuln: 'Full Invuln F1-15', BoxType: 'ultimate' },
+        { MoveID: 'VAR_ULTIMATE_PURGA_REGLAMENTARIA', Numpad: '214214+HP+SK', Name: 'Purga Reglamentaria Total (Nv.3)', S: 5, A: 24, R: 42, Block: -26, Hit: 65, Dmg: 5000, Flags: 0, Win: 0, Invuln: 'Full Invuln F1-12', BoxType: 'ultimate' }
       ]
     }
   ];
@@ -1660,6 +1695,9 @@
   }
   const t4ChantsSel = document.getElementById('t4-sel-chants');
   if (t4ChantsSel) {
+    t4ChantsSel.innerHTML = Object.entries(CHANT_PATTERNS)
+      .map(([key, cfg]) => `<option value="${key}">${cfg.label}</option>`)
+      .join('');
     t4ChantsSel.addEventListener('change', () => {
       const pat = CHANT_PATTERNS[t4ChantsSel.value] || CHANT_PATTERNS.SAMBA;
       const isAltiplano = t4ChantsSel.value === 'ANDINO_BO';
@@ -2083,6 +2121,8 @@
     bannerTimer: 90,
     bannerColor: '#ffe07d',
     keysDown: {},
+    uiMoveHeld: null,
+    latchedBtn: '',
     lastTapDir: 0,
     lastTapTime: 0,
     matchEnded: false,
@@ -2109,7 +2149,7 @@
   function pushT6InputHistory(dir, btn = '') {
     const log = t6State.inputLog;
     const latest = log[0];
-    if (latest && latest.dir === dir && latest.btn === btn && !btn) {
+    if (latest && latest.dir === dir && latest.btn === btn) {
       latest.frames = Math.min(999, latest.frames + 1);
     } else {
       log.unshift({ dir, btn, frames: 1 });
@@ -2426,8 +2466,7 @@
     fighter.vx = 0;
 
     if (fighter.isP1) {
-      const curDir = t6State.inputLog[0] ? t6State.inputLog[0].dir : 5;
-      pushT6InputHistory(curDir, moveKey);
+      t6State.latchedBtn = moveKey;
     }
 
     if (mv.vy && fighter.y === 0) {
@@ -2488,18 +2527,44 @@
 
   // Botones en pantalla de Tab 6
   document.querySelectorAll('.t6-move-btn').forEach((btn) => {
-    btn.addEventListener('mousedown', () => triggerFighterMovement(t6State.p1, btn.dataset.move));
+    btn.addEventListener('mousedown', () => {
+      t6State.uiMoveHeld = btn.dataset.move;
+      triggerFighterMovement(t6State.p1, btn.dataset.move);
+    });
     btn.addEventListener('mouseup', () => {
+      t6State.uiMoveHeld = null;
+      const stillCrouching = Boolean(t6State.keysDown['KeyS'] || t6State.keysDown['ArrowDown']);
       if (['WALK_F', 'WALK_B', 'CROUCH'].includes(t6State.p1.state)) {
-        t6State.p1.state = 'IDLE';
-        t6State.p1.vx = 0;
+        if (stillCrouching && t6State.p1.y === 0) {
+          t6State.p1.state = 'CROUCH';
+          t6State.p1.vx = 0;
+        } else {
+          t6State.p1.state = 'IDLE';
+          t6State.p1.vx = 0;
+        }
       }
+    });
+    btn.addEventListener('mouseleave', () => {
+      t6State.uiMoveHeld = null;
     });
   });
 
   document.querySelectorAll('.t6-act-btn').forEach((btn) => {
     btn.addEventListener('click', () => startFighterMove(t6State.p1, btn.dataset.act));
   });
+
+  const T6_ATTACK_KEY_MAP = {
+    KeyJ: 'LP',
+    KeyK: 'MP',
+    KeyL: 'HP',
+    KeyU: 'SK',
+    KeyI: 'GB',
+    Digit1: 'SP_236',
+    Digit2: 'SP_623',
+    Digit3: 'SP_41236',
+    Digit4: 'SUPER_1',
+    Digit5: 'ULT_3'
+  };
 
   // Controles de Teclado en Tiempo Real para Tab 6
   window.addEventListener('keydown', (e) => {
@@ -2535,30 +2600,32 @@
       triggerFighterMovement(t6State.p1, 'CROUCH');
     }
 
-    const attackKeyMap = {
-      KeyJ: 'LP',
-      KeyK: 'MP',
-      KeyL: 'HP',
-      KeyU: 'SK',
-      KeyI: 'GB',
-      Digit1: 'SP_236',
-      Digit2: 'SP_623',
-      Digit3: 'SP_41236',
-      Digit4: 'SUPER_1',
-      Digit5: 'ULT_3'
-    };
-    if (attackKeyMap[e.code] && !e.repeat) {
+    if (T6_ATTACK_KEY_MAP[e.code] && !e.repeat) {
       e.preventDefault();
-      startFighterMove(t6State.p1, attackKeyMap[e.code]);
+      startFighterMove(t6State.p1, T6_ATTACK_KEY_MAP[e.code]);
     }
   });
 
   window.addEventListener('keyup', (e) => {
     delete t6State.keysDown[e.code];
     if (activeTab !== 'tab6') return;
+
+    const stillCrouching = Boolean(t6State.keysDown['KeyS'] || t6State.keysDown['ArrowDown']);
+    const stillLeft = Boolean(t6State.keysDown['KeyA'] || t6State.keysDown['ArrowLeft']);
+    const stillRight = Boolean(t6State.keysDown['KeyD'] || t6State.keysDown['ArrowRight']);
+
     if (['WALK_F', 'WALK_B', 'CROUCH'].includes(t6State.p1.state)) {
-      t6State.p1.state = 'IDLE';
-      t6State.p1.vx = 0;
+      if (stillCrouching && t6State.p1.y === 0) {
+        t6State.p1.state = 'CROUCH';
+        t6State.p1.vx = 0;
+      } else if (stillLeft && !stillRight && t6State.p1.y === 0) {
+        triggerFighterMovement(t6State.p1, 'LEFT');
+      } else if (stillRight && !stillLeft && t6State.p1.y === 0) {
+        triggerFighterMovement(t6State.p1, 'RIGHT');
+      } else {
+        t6State.p1.state = 'IDLE';
+        t6State.p1.vx = 0;
+      }
     }
   });
 
@@ -2875,7 +2942,8 @@
   }
 
   function pollT6GamepadInput() {
-    if (!navigator.getGamepads) return;
+    const emptyGp = { active: false, up: false, down: false, left: false, right: false, dir: 5, heldBtn: '', risingActs: [], startPressed: false };
+    if (!navigator.getGamepads) return emptyGp;
     const pads = navigator.getGamepads();
     let activePad = null;
     for (let i = 0; i < pads.length; i++) {
@@ -2887,7 +2955,7 @@
     const statusEl = document.getElementById('t6-gamepad-status');
     if (!activePad) {
       if (statusEl) statusEl.textContent = '🎮 Gamepad: Esperando...';
-      return;
+      return emptyGp;
     }
     if (statusEl) {
       statusEl.textContent = '🎮 Gamepad Conectado';
@@ -2895,28 +2963,18 @@
       statusEl.style.color = '#00e676';
     }
 
-    const p1 = t6State.p1;
     const axX = activePad.axes[0] || 0;
     const axY = activePad.axes[1] || 0;
-    const dUp = activePad.buttons[12]?.pressed || axY < -0.55;
-    const dDown = activePad.buttons[13]?.pressed || axY > 0.55;
-    const dLeft = activePad.buttons[14]?.pressed || axX < -0.45;
-    const dRight = activePad.buttons[15]?.pressed || axX > 0.45;
+    const dUp = Boolean(activePad.buttons[12]?.pressed || axY < -0.55);
+    const dDown = Boolean(activePad.buttons[13]?.pressed || axY > 0.55);
+    const dLeft = Boolean(activePad.buttons[14]?.pressed || axX < -0.45);
+    const dRight = Boolean(activePad.buttons[15]?.pressed || axX > 0.45);
 
     let gpDir = 5;
-    if (dUp) gpDir = dRight ? 9 : (dLeft ? 7 : 8);
-    else if (dDown) gpDir = dRight ? 3 : (dLeft ? 1 : 2);
-    else if (dRight) gpDir = 6;
-    else if (dLeft) gpDir = 4;
-
-    if (gpDir !== 5) {
-      pushT6InputHistory(gpDir, '');
-    }
-
-    if (dUp && p1.y === 0) triggerFighterMovement(p1, 'JUMP');
-    else if (dDown && p1.y === 0) triggerFighterMovement(p1, 'CROUCH');
-    else if (dLeft) triggerFighterMovement(p1, 'LEFT');
-    else if (dRight) triggerFighterMovement(p1, 'RIGHT');
+    if (dUp && !dDown) gpDir = (dRight && !dLeft) ? 9 : ((dLeft && !dRight) ? 7 : 8);
+    else if (dDown && !dUp) gpDir = (dRight && !dLeft) ? 3 : ((dLeft && !dRight) ? 1 : 2);
+    else if (dRight && !dLeft) gpDir = 6;
+    else if (dLeft && !dRight) gpDir = 4;
 
     const btnMap = [
       { idx: 0, act: 'LP' },
@@ -2929,28 +2987,67 @@
       { idx: 7, act: 'ULT_3' }
     ];
 
+    let heldBtn = '';
+    const risingActs = [];
     btnMap.forEach(({ idx, act }) => {
       const pressed = Boolean(activePad.buttons[idx]?.pressed);
+      if (pressed && !heldBtn) heldBtn = act;
       if (pressed && !t6State.gpPrevButtons[idx]) {
-        startFighterMove(p1, act);
+        risingActs.push(act);
       }
       t6State.gpPrevButtons[idx] = pressed;
     });
 
     // Botón Start (9) para Reset / Rematch inmediato
-    const startPressed = Boolean(activePad.buttons[9]?.pressed);
-    if (startPressed && !t6State.gpPrevButtons[9]) {
-      resetTab6Match();
-    }
-    t6State.gpPrevButtons[9] = startPressed;
+    const startNow = Boolean(activePad.buttons[9]?.pressed);
+    const startJustPressed = startNow && !t6State.gpPrevButtons[9];
+    t6State.gpPrevButtons[9] = startNow;
+
+    return {
+      active: true,
+      up: dUp,
+      down: dDown,
+      left: dLeft,
+      right: dRight,
+      dir: gpDir,
+      heldBtn,
+      risingActs,
+      startPressed: startJustPressed
+    };
   }
 
   function stepTab6VersusSimulation() {
     const p1 = t6State.p1;
     const p2 = t6State.p2;
 
-    // 0. Polling de Web Gamepad API @ 60Hz
-    pollT6GamepadInput();
+    // 0. Polling Unificado (Gamepad + Teclado + UI) @ 60Hz con limpieza SOCD
+    const gp = pollT6GamepadInput();
+    if (gp.startPressed) {
+      resetTab6Match();
+      return;
+    }
+
+    const kUp = Boolean(t6State.keysDown['KeyW'] || t6State.keysDown['ArrowUp'] || t6State.uiMoveHeld === 'JUMP');
+    const kDown = Boolean(t6State.keysDown['KeyS'] || t6State.keysDown['ArrowDown'] || t6State.uiMoveHeld === 'CROUCH');
+    const kLeft = Boolean(t6State.keysDown['KeyA'] || t6State.keysDown['ArrowLeft'] || t6State.uiMoveHeld === 'LEFT');
+    const kRight = Boolean(t6State.keysDown['KeyD'] || t6State.keysDown['ArrowRight'] || t6State.uiMoveHeld === 'RIGHT');
+
+    const rawUp = kUp || gp.up;
+    const rawDown = kDown || gp.down;
+    const rawLeft = kLeft || gp.left;
+    const rawRight = kRight || gp.right;
+
+    // Limpieza SOCD Neutral (Arriba+Abajo = Neutro, Izquierda+Derecha = Neutro)
+    const uUp = rawUp && !rawDown;
+    const uDown = rawDown && !rawUp;
+    const uLeft = rawLeft && !rawRight;
+    const uRight = rawRight && !rawLeft;
+
+    let curDir = 5;
+    if (uUp) curDir = uRight ? 9 : (uLeft ? 7 : 8);
+    else if (uDown) curDir = uRight ? 3 : (uLeft ? 1 : 2);
+    else if (uRight) curDir = 6;
+    else if (uLeft) curDir = 4;
 
     if (t6State.bannerTimer > 0) t6State.bannerTimer--;
     if (t6State.impactInkFrames > 0) t6State.impactInkFrames--;
@@ -2974,25 +3071,36 @@
       }
     }
 
-    // Lectura continua de teclas presionadas para caminar en P1 y alimentar Input History
-    const kUp = Boolean(t6State.keysDown['KeyW'] || t6State.keysDown['ArrowUp']);
-    const kDown = Boolean(t6State.keysDown['KeyS'] || t6State.keysDown['ArrowDown']);
-    const kLeft = Boolean(t6State.keysDown['KeyA'] || t6State.keysDown['ArrowLeft']);
-    const kRight = Boolean(t6State.keysDown['KeyD'] || t6State.keysDown['ArrowRight']);
+    // Ejecutar ataques recién presionados desde Gamepad en este frame
+    gp.risingActs.forEach((act) => {
+      startFighterMove(p1, act);
+    });
 
-    let curDir = 5;
-    if (kUp) curDir = kRight ? 9 : (kLeft ? 7 : 8);
-    else if (kDown) curDir = kRight ? 3 : (kLeft ? 1 : 2);
-    else if (kRight) curDir = 6;
-    else if (kLeft) curDir = 4;
-    pushT6InputHistory(curDir, '');
+    // Fusionar botón activo (pulso de ataque del frame, tecla sostenida o botón de Gamepad)
+    let heldKeyBtn = '';
+    for (const [code, act] of Object.entries(T6_ATTACK_KEY_MAP)) {
+      if (t6State.keysDown[code]) {
+        heldKeyBtn = act;
+        break;
+      }
+    }
+    const unifiedBtn = t6State.latchedBtn || gp.heldBtn || heldKeyBtn;
+    t6State.latchedBtn = '';
 
-    if (['IDLE', 'WALK_F', 'WALK_B'].includes(p1.state) && p1.y === 0) {
-      if (kLeft) {
+    // Único registro determinista por frame en el Input History FGC
+    pushT6InputHistory(curDir, unifiedBtn);
+
+    // Aplicar movimiento direccional unificado (Gamepad + Teclado) respetando agachado sostenido
+    if (uUp && p1.y === 0) {
+      triggerFighterMovement(p1, 'JUMP');
+    } else if (['IDLE', 'WALK_F', 'WALK_B', 'CROUCH'].includes(p1.state) && p1.y === 0) {
+      if (uDown) {
+        triggerFighterMovement(p1, 'CROUCH');
+      } else if (uLeft) {
         triggerFighterMovement(p1, 'LEFT');
-      } else if (kRight) {
+      } else if (uRight) {
         triggerFighterMovement(p1, 'RIGHT');
-      } else {
+      } else if (t6State.uiMoveHeld !== 'DASH_F' && t6State.uiMoveHeld !== 'DASH_B') {
         p1.vx = 0;
         p1.state = 'IDLE';
       }

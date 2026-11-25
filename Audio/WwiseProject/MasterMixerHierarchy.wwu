@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <WwiseDocument Type="WorkUnit" ID="{9CE6AF36-3DF7-4DA3-8BF5-0AFD8736C22D}" SchemaVersion="119">
 	<Busses>
-		<WorkUnit Name="MasterMixerHierarchy" ID="{19301950-CA4A-4B10-9F00-CONMEBOL2026}" PersistMode="Standalone">
+		<WorkUnit Name="MasterMixerHierarchy" ID="{19301950-CA4A-4B10-9F00-C0A4EB012026}" PersistMode="Standalone">
 			<ChildrenList>
 				<Bus Name="Master_Audio_Bus" ID="{A0000001-0000-4000-8000-000000000001}">
 					<PropertyList>
@@ -28,6 +28,7 @@
 								<Property Name="MaxDuckVolume" Type="Real64" Value="-96"/>
 								<Property Name="Priority" Type="int16" Value="100"/>
 								<Property Name="RecoveryTime" Type="Real64" Value="0.18"/>
+								<Property Name="HoldMs" Type="int32" Value="40"/>
 							</PropertyList>
 							<DuckingList>
 								<DuckItem>
@@ -36,6 +37,7 @@
 										<Volume>-6.0</Volume>
 										<FadeOutTime>0.005</FadeOutTime>
 										<FadeInTime>0.180</FadeInTime>
+										<HoldMs>40</HoldMs>
 										<FadeCurve>FadeLog3</FadeCurve>
 									</DuckingParam>
 								</DuckItem>
@@ -45,6 +47,7 @@
 										<Volume>-6.0</Volume>
 										<FadeOutTime>0.005</FadeOutTime>
 										<FadeInTime>0.180</FadeInTime>
+										<HoldMs>40</HoldMs>
 										<FadeCurve>FadeLog3</FadeCurve>
 									</DuckingParam>
 								</DuckItem>
@@ -54,6 +57,7 @@
 							<PropertyList>
 								<Property Name="Priority" Type="int16" Value="85"/>
 								<Property Name="RecoveryTime" Type="Real64" Value="0.35"/>
+								<Property Name="HoldMs" Type="int32" Value="80"/>
 							</PropertyList>
 							<DuckingList>
 								<DuckItem>
@@ -62,6 +66,7 @@
 										<Volume>-4.5</Volume>
 										<FadeOutTime>0.020</FadeOutTime>
 										<FadeInTime>0.350</FadeInTime>
+										<HoldMs>80</HoldMs>
 										<FadeCurve>FadeSCurve</FadeCurve>
 									</DuckingParam>
 								</DuckItem>
@@ -71,6 +76,7 @@
 										<Volume>-4.5</Volume>
 										<FadeOutTime>0.020</FadeOutTime>
 										<FadeInTime>0.350</FadeInTime>
+										<HoldMs>80</HoldMs>
 										<FadeCurve>FadeSCurve</FadeCurve>
 									</DuckingParam>
 								</DuckItem>

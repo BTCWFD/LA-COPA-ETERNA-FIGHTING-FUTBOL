@@ -45,7 +45,7 @@ struct SOUTHAMERICAFIGHTERSCORE_API FCombatFrameSnapshot
     int32 P1Health = 10000;
 
     UPROPERTY(SaveGame, BlueprintReadOnly, Category = "VAR|Snapshot")
-    int32 P2Health = 12000;
+    int32 P2Health = 13000;
 
     UPROPERTY(SaveGame, BlueprintReadOnly, Category = "VAR|Snapshot")
     int32 P1SuperMeter = 0;
@@ -90,6 +90,14 @@ public:
     static constexpr int32 HistoryCapacityFrames = 120; // 2.0 segundos exactos a 60 Hz
     static constexpr int32 DefaultRewindFrames = 90;    // 1.5 segundos exactos a 60 Hz
     static constexpr int32 OutplaysRequiredForOverload = 3;
+    static constexpr int32 DefaultBossMaxHealth = 13000;
+
+    /** Reconoce ambos identificadores canónicos del Jefe Final ("BOSS_VAR_ZERO" en DataTables/Arcade y "VAR_ZERO_BOSS" en UI/Roster). */
+    UFUNCTION(BlueprintPure, Category = "BossAI|Identity")
+    static bool IsBossFighterID(FName FighterID)
+    {
+        return FighterID == TEXT("BOSS_VAR_ZERO") || FighterID == TEXT("VAR_ZERO_BOSS");
+    }
 
     ABossAIController();
 
@@ -138,9 +146,13 @@ public:
     UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "BossAI|Fairness", meta = (ClampMin = "8", ClampMax = "30"))
     int32 ReactionDelayFrames = 16;
 
-    /** Umbral de salud en el que V.A.R. - ZERO activa Fase 2 (Tiempo de Descuento Infinito). */
+    /**Salud máxima canónica del Jefe Final V.A.R. - ZERO (13,000 HP). */
     UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "BossAI|Config")
-    int32 PhaseTwoHealthThreshold = 6000;
+    int32 BossMaxHealth = DefaultBossMaxHealth;
+
+    /** Umbral de salud en el que V.A.R. - ZERO activa Fase 2 (50% de 13,000 HP = 6,500 HP). */
+    UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "BossAI|Config")
+    int32 PhaseTwoHealthThreshold = 6500;
 
     /** Cooldown mínimo en frames entre activaciones de V.A.R. Rewind (600 frames = 10 segundos). */
     UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "BossAI|Config")

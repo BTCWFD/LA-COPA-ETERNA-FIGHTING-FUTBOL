@@ -1,6 +1,7 @@
 {
   "WwiseProjectVersion": "2023.1.4.8496",
   "ProjectName": "SouthAmericaFighters_WwiseProject",
+  "WorkUnitID": "{19301950-CA4A-4B10-9F00-C0A4EB012026}",
   "LoudnessTargetStandard": {
     "IntegratedLUFS": -14.0,
     "TruePeakCeilingdBFS": -1.0,
@@ -97,19 +98,44 @@
       "SwitchGroup": "SWG_National_Team_Chant",
       "TransitionRule": "Next_Bar_With_Percussion_Fill",
       "NationalTeams": [
-        {"SwitchState": "Brazil", "PrimaryPercussion": "Surdo & Repinique Batucada", "BaseBPM": 115.0, "StemFile": "Stem_Crowd_Brazil_Batucada_115BPM.wav"},
-        {"SwitchState": "Argentina", "PrimaryPercussion": "Bombo con Platillo de Murga", "BaseBPM": 128.0, "StemFile": "Stem_Crowd_Argentina_BomboMurga_128BPM.wav"},
-        {"SwitchState": "Uruguay", "PrimaryPercussion": "Cuerda de Tambores Candombe (Chico, Repique, Piano)", "BaseBPM": 120.0, "StemFile": "Stem_Crowd_Uruguay_Candombe_120BPM.wav"},
-        {"SwitchState": "Colombia", "PrimaryPercussion": "Tambora Caribeña, Alegre y Maracón", "BaseBPM": 130.0, "StemFile": "Stem_Crowd_Colombia_CumbiaTambora_130BPM.wav"},
-        {"SwitchState": "Chile", "PrimaryPercussion": "Bombo de Estadio y Trompetas Cordilleranas", "BaseBPM": 125.0, "StemFile": "Stem_Crowd_Andes_BomboLeguero_110BPM.wav"},
-        {"SwitchState": "Paraguay", "PrimaryPercussion": "Polka Guaraní de Bronces y Redoblante", "BaseBPM": 120.0, "StemFile": "Stem_Crowd_Argentina_BomboMurga_128BPM.wav"},
-        {"SwitchState": "Peru", "PrimaryPercussion": "Cajón Peruano Afro-Costeño y Quijada", "BaseBPM": 118.0, "StemFile": "Stem_Crowd_Colombia_CumbiaTambora_130BPM.wav"},
-        {"SwitchState": "Ecuador", "PrimaryPercussion": "Marimba Esmeraldeña y Bombo Andino", "BaseBPM": 135.0, "StemFile": "Stem_Crowd_Colombia_CumbiaTambora_130BPM.wav"},
-        {"SwitchState": "Venezuela", "PrimaryPercussion": "Cumaco, Tambor Urbano y Charrasca", "BaseBPM": 170.0, "StemFile": "Stem_Crowd_Brazil_Batucada_115BPM.wav"},
-        {"SwitchState": "Bolivia", "PrimaryPercussion": "Bombo Legüero, Zampoñas (Sikus) y Tarka", "BaseBPM": 110.0, "StemFile": "Stem_Crowd_Andes_BomboLeguero_110BPM.wav"}
+        {"SwitchState": "Brazil", "StageID": "STAGE_MARACANA", "AltitudeMeters": 10.0, "PrimaryPercussion": "Surdo & Repinique Batucada", "BaseBPM": 115.0, "StemFile": "Stem_Crowd_Brazil_Batucada_115BPM.wav"},
+        {"SwitchState": "Argentina", "StageID": "STAGE_BOMBONERA", "AltitudeMeters": 25.0, "PrimaryPercussion": "Bombo con Platillo de Murga", "BaseBPM": 128.0, "StemFile": "Stem_Crowd_Argentina_BomboMurga_128BPM.wav"},
+        {"SwitchState": "Uruguay", "StageID": "STAGE_CENTENARIO", "AltitudeMeters": 40.0, "PrimaryPercussion": "Cuerda de Tambores Candombe (Chico, Repique, Piano)", "BaseBPM": 120.0, "StemFile": "Stem_Crowd_Uruguay_Candombe_120BPM.wav"},
+        {"SwitchState": "Colombia", "StageID": "STAGE_METROPOLITANO", "AltitudeMeters": 18.0, "PrimaryPercussion": "Tambora Caribeña, Alegre y Maracón", "BaseBPM": 130.0, "StemFile": "Stem_Crowd_Colombia_CumbiaTambora_130BPM.wav"},
+        {"SwitchState": "Chile", "StageID": "STAGE_NUNOA", "AltitudeMeters": 570.0, "PrimaryPercussion": "Bombo de Cueca Brava y Trompetas Cordilleranas", "BaseBPM": 125.0, "StemFile": "Stem_Crowd_Chile_CuecaBombo_125BPM.wav"},
+        {"SwitchState": "Paraguay", "StageID": "STAGE_DEFENSORES", "AltitudeMeters": 50.0, "PrimaryPercussion": "Polka Guaraní 6/8 de Bronces y Redoblante", "BaseBPM": 120.0, "StemFile": "Stem_Crowd_Paraguay_PolkaGuarani_120BPM.wav"},
+        {"SwitchState": "Peru", "StageID": "STAGE_NACIONAL_LIMA", "AltitudeMeters": 150.0, "PrimaryPercussion": "Cajón Peruano Afro-Costeño y Quijada", "BaseBPM": 118.0, "StemFile": "Stem_Crowd_Peru_CajonCriollo_118BPM.wav"},
+        {"SwitchState": "Ecuador", "StageID": "STAGE_ATAHUALPA", "AltitudeMeters": 2850.0, "PrimaryPercussion": "San Juanito Andino, Marimba y Bombo", "BaseBPM": 135.0, "StemFile": "Stem_Crowd_Ecuador_SanJuanitoAndino_135BPM.wav"},
+        {"SwitchState": "Venezuela", "StageID": "STAGE_AVILA", "AltitudeMeters": 900.0, "PrimaryPercussion": "Joropo de Cumaco, Tambor Urbano y Charrasca", "BaseBPM": 170.0, "StemFile": "Stem_Crowd_Venezuela_JoropoTambor_170BPM.wav"},
+        {"SwitchState": "Bolivia", "StageID": "STAGE_HERNANDO_SILES", "AltitudeMeters": 3600.0, "PrimaryPercussion": "Bombo Legüero, Zampoñas (Sikus) y Tarka (3600m)", "BaseBPM": 110.0, "StemFile": "Stem_Crowd_Andes_BomboLeguero_110BPM.wav"}
       ]
     }
   },
+  "EventMappings": [
+    {"EventName": "Play_SFX_Hit_Light_Jab", "TargetBus": "BUS_COMBAT_CRITICAL", "StemFile": "SFX_Hit_Light_Jab.wav"},
+    {"EventName": "Play_SFX_Hit_Heavy_Counter", "TargetBus": "BUS_COMBAT_CRITICAL", "StemFile": "SFX_Hit_Heavy_Counter.wav"},
+    {"EventName": "Play_SFX_Block_Shield_Plus", "TargetBus": "BUS_COMBAT_CRITICAL", "StemFile": "SFX_Block_Shield_Plus.wav"},
+    {"EventName": "Play_SFX_Gambeta_Whoosh_Parry", "TargetBus": "BUS_COMBAT_CRITICAL", "StemFile": "SFX_Gambeta_Whoosh_Parry.wav"},
+    {"EventName": "Play_SFX_Referee_Whistle_Start", "TargetBus": "BUS_COMBAT_CRITICAL", "StemFile": "SFX_Referee_Whistle_Start.wav"},
+    {"EventName": "Play_SFX_Crossbar_Metallic_Clank", "TargetBus": "BUS_COMBAT_CRITICAL", "StemFile": "SFX_Crossbar_Metallic_Clank.wav"},
+    {"EventName": "Play_Stage_WallBreak_FenceShatter_LFE", "TargetBus": "BUS_COMBAT_CRITICAL", "StemFile": "SFX_Crossbar_Metallic_Clank.wav"},
+    {"EventName": "Play_SFX_VAR_Glitch_Rewind", "TargetBus": "BUS_COMBAT_CRITICAL", "StemFile": "SFX_VAR_Glitch_Rewind.wav"},
+    {"EventName": "Play_Crowd_Chant_Ole_Swell", "TargetBus": "BUS_STADIUM_CROWD_3D", "StemFile": "SFX_Crowd_Ole_Chant.wav"},
+    {"EventName": "Play_Haptic_DualSense_TurfSlide", "TargetBus": "BUS_HARDWARE_AUX", "StemFile": "Haptic_DualSense_SubBass_TurfSlide.wav"},
+    {"EventName": "Play_Stadium_Ambience_Master", "TargetBus": "BUS_STADIUM_CROWD_3D", "ContainerRef": "SC_National_Crowd_Performer"},
+    {"EventName": "Play_Interactive_Match_Music", "TargetBus": "BUS_INTERACTIVE_MUSIC", "ContainerRef": "MSC_Stadium_Music_And_Crowd"},
+    {"EventName": "Stop_Active_Commentary_Immediate", "TargetBus": "BUS_COMMENTARY_BOOTH", "ActionType": "StopBus"},
+    {"EventName": "Play_Commentary_Stinger_ActionInterrupt", "TargetBus": "BUS_COMMENTARY_BOOTH", "DataTableRef": "DT_CommentaryAndRivalries.InterruptStingers"},
+    {"EventName": "Play_Commentary_Stinger_GoalInterrupt", "TargetBus": "BUS_COMMENTARY_BOOTH", "DataTableRef": "DT_CommentaryAndRivalries.InterruptStingers"},
+    {"EventName": "Play_VO_Commentary_WallBreak_Shatter", "TargetBus": "BUS_COMMENTARY_BOOTH", "DataTableRef": "COM_L3_CRITICAL_WALLBREAK"},
+    {"EventName": "Play_VO_Sig_Loco_Escorpion", "TargetBus": "BUS_COMMENTARY_BOOTH", "DataTableRef": "TRIG_LOCO_ESCORPION"},
+    {"EventName": "Play_VO_Sig_Pulga_Coronacion", "TargetBus": "BUS_COMMENTARY_BOOTH", "DataTableRef": "TRIG_PULGA_CORONACION"},
+    {"EventName": "Play_VO_Sig_Pistolero_ManoSalvadora", "TargetBus": "BUS_COMMENTARY_BOOTH", "DataTableRef": "TRIG_PISTOLERO_MANOSALVADORA"},
+    {"EventName": "Play_VO_Sig_Canon_BatiCanonazo", "TargetBus": "BUS_COMMENTARY_BOOTH", "DataTableRef": "TRIG_CANON_BATI_CHARGED"},
+    {"EventName": "Play_VO_Sig_Maestro_TresDedos", "TargetBus": "BUS_COMMENTARY_BOOTH", "DataTableRef": "TRIG_MAESTRO_TRES_DEDOS"},
+    {"EventName": "Play_VO_Sig_Fenomeno_Pedalada", "TargetBus": "BUS_COMMENTARY_BOOTH", "DataTableRef": "TRIG_FENOMENO_PEDALADA"},
+    {"EventName": "Play_VO_Boss_VAR_Rewind", "TargetBus": "BUS_COMMENTARY_BOOTH", "DataTableRef": "TRIG_BOSS_VAR_REWIND"}
+  ],
   "RTPCCurves": [
     {
       "RTPCName": "RTPC_Match_Excitement",
@@ -165,7 +191,7 @@
         {
           "Target": "BUS_STADIUM_CROWD_3D",
           "Property": "HighPassFilter_ThinAir",
-          "Points": [[0.0, 0.0], [2500.0, 18.0], [3640.0, 42.0], [4000.0, 50.0]]
+          "Points": [[0.0, 0.0], [2500.0, 18.0], [3600.0, 42.0], [4000.0, 50.0]]
         }
       ]
     }

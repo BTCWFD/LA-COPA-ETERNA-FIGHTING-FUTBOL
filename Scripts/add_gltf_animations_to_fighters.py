@@ -601,22 +601,160 @@ def build_clip_tracks(
     raise ValueError(f"Unknown clip name: {clip_name}")
 
 
+def _read_accessor_floats(gltf: dict[str, Any], bin_chunk: bytes | bytearray, acc_idx: int) -> np.ndarray:
+    acc = gltf["accessors"][acc_idx]
+    bv = gltf["bufferViews"][acc["bufferView"]]
+    byte_off = int(bv.get("byteOffset", 0)) + int(acc.get("byteOffset", 0))
+    count = int(acc["count"])
+    num_comp = {"SCALAR": 1, "VEC2": 2, "VEC3": 3, "VEC4": 4, "MAT4": 16}[acc["type"]]
+    raw = bin_chunk[byte_off:byte_off + count * num_comp * 4]
+    arr = np.frombuffer(bytes(raw), dtype=np.float32).copy()
+    return arr if num_comp == 1 else arr.reshape((count, num_comp))
+
+
+def _compact_geometry_and_skin_buffers(
+    gltf: dict[str, Any],
+    old_bin: bytearray,
+) -> tuple[list[dict[str, Any]], list[dict[str, Any]], bytearray]:
+    """
+    Preserve all mesh primitive attribute/index accessors and skin inverseBindMatrices accessors
+    while stripping stale animation accessors/bufferViews so re-runs stay compact and deterministic.
+    """
+    used_acc_indices: set[int] = set()
+    for mesh in gltf.get("meshes", []):
+        for prim in mesh.get("primitives", []):
+            for acc_i in prim.get("attributes", {}).values():
+                used_acc_indices.add(int(acc_i))
+            if "indices" in prim:
+                used_acc_indices.add(int(prim["indices"]))
+    for skin in gltf.get("skins", []):
+        if "inverseBindMatrices" in skin:
+            used_acc_indices.add(int(skin["inverseBindMatrices"]))
+
+    ordered_old_accs = sorted(used_acc_indices)
+    acc_remap: dict[int, int] = {}
+    new_bvs: list[dict[str, Any]] = []
+    new_accs: list[dict[str, Any]] = []
+    new_bin = bytearray()
+
+    for old_acc_idx in ordered_old_accs:
+        old_acc = dict(gltf["accessors"][old_acc_idx])
+        old_bv = gltf["bufferViews"][old_acc["bufferView"]]
+        b_off = int(old_bv.get("byteOffset", 0))
+        b_len = int(old_bv["byteLength"])
+        chunk_bytes = bytes(old_bin[b_off:b_off + b_len])
+
+        while len(new_bin) % 4 != 0:
+            new_bin.append(0)
+        new_off = len(new_bin)
+        new_bin.extend(chunk_bytes)
+
+        bv_entry: dict[str, Any] = {
+            "buffer": 0,
+            "byteOffset": new_off,
+            "byteLength": len(chunk_bytes),
+        }
+        if "target" in old_bv:
+            bv_entry["target"] = old_bv["target"]
+        if "byteStride" in old_bv:
+            bv_entry["byteStride"] = old_bv["byteStride"]
+
+        new_bv_idx = len(new_bvs)
+        new_bvs.append(bv_entry)
+
+        old_acc["bufferView"] = new_bv_idx
+        new_acc_idx = len(new_accs)
+        new_accs.append(old_acc)
+        acc_remap[old_acc_idx] = new_acc_idx
+
+    for mesh in gltf.get("meshes", []):
+        for prim in mesh.get("primitives", []):
+            prim["attributes"] = {k: acc_remap[int(v)] for k, v in prim.get("attributes", {}).items()}
+            if "indices" in prim:
+                prim["indices"] = acc_remap[int(prim["indices"])]
+    for skin in gltf.get("skins", []):
+        if "inverseBindMatrices" in skin:
+            skin["inverseBindMatrices"] = acc_remap[int(skin["inverseBindMatrices"])]
+
+    return new_bvs, new_accs, new_bin
+
+
+def _extract_and_resample_stepped_clip_60fps(
+    anim: dict[str, Any],
+    gltf: dict[str, Any],
+    old_bin: bytearray,
+) -> tuple[np.ndarray, list[dict[str, Any]], str]:
+    """
+    Resample an existing combat clip (such as `Anim_Idle` or `Anim_623HP_BicycleKick`) onto a uniform
+    60 FPS grid (`dt = 1/60s` on every integer frame `0..end_frame`) so UE5 Interchange & Blender 5.2
+    never infer 24 FPS or 30 FPS from sparse keyframe intervals (e.g. 0.25s or 5/60s = 1/12s).
+    """
+    anim_name = anim["name"]
+    samplers = anim["samplers"]
+    channels = anim["channels"]
+    interp = samplers[0].get("interpolation", "STEP") if samplers else "STEP"
+
+    first_in = _read_accessor_floats(gltf, old_bin, samplers[0]["input"])
+    end_frame = int(round(float(first_in[-1]) * FPS))
+    if anim_name == "Anim_Idle" and end_frame < 60:
+        end_frame = 60  # Complete 1.00s 60-frame guard loop at uniform 60 FPS
+    end_frame = max(1, end_frame)
+
+    dense_frames = list(range(end_frame + 1))
+    dense_times = np.array([f / FPS for f in dense_frames], dtype=np.float32)
+
+    resampled_tracks: list[dict[str, Any]] = []
+    for ch in channels:
+        samp = samplers[ch["sampler"]]
+        in_times = _read_accessor_floats(gltf, old_bin, samp["input"])
+        out_vals = _read_accessor_floats(gltf, old_bin, samp["output"])
+        key_frames = [int(round(float(t) * FPS)) for t in in_times]
+
+        # For Anim_Idle looping to frame 60, return cleanly to frame 0 guard pose at frame 60
+        if anim_name == "Anim_Idle" and key_frames[-1] < end_frame:
+            key_frames = key_frames + [end_frame]
+            out_vals = np.vstack([out_vals, out_vals[0:1]])
+
+        dense_vals = []
+        for f in dense_frames:
+            k_idx = 0
+            for idx_pos, kf in enumerate(key_frames):
+                if kf <= f:
+                    k_idx = idx_pos
+                else:
+                    break
+            dense_vals.append(out_vals[k_idx].tolist())
+
+        resampled_tracks.append({
+            "node": int(ch["target"]["node"]),
+            "path": ch["target"]["path"],
+            "values": dense_vals,
+        })
+
+    return dense_times, resampled_tracks, interp
+
+
 def upgrade_fighter_glb(glb_path: str) -> dict[str, Any]:
     filename = os.path.basename(glb_path)
     is_boss = (filename == "SK_SUPREME_JUDGE_BOSS.glb")
 
-    gltf, bin_chunk = read_glb(glb_path)
+    gltf, old_bin_chunk = read_glb(glb_path)
     node_map = get_node_map(gltf)
 
     if "animations" not in gltf:
         gltf["animations"] = []
 
-    # Remove any previous versions of TARGET_CLIPS to keep reruns clean
-    existing_anims = [a for a in gltf["animations"] if a.get("name") not in TARGET_CLIPS]
-    gltf["animations"] = existing_anims
+    # Extract existing base combat clips BEFORE compacting animation buffers
+    preserved_combat_anims = [a for a in gltf["animations"] if a.get("name") not in TARGET_CLIPS]
+    resampled_combat_inputs = [
+        (a["name"], *_extract_and_resample_stepped_clip_60fps(a, gltf, old_bin_chunk))
+        for a in preserved_combat_anims
+    ]
 
-    buffer_views = gltf["bufferViews"]
-    accessors = gltf["accessors"]
+    buffer_views, accessors, bin_chunk = _compact_geometry_and_skin_buffers(gltf, old_bin_chunk)
+    gltf["bufferViews"] = buffer_views
+    gltf["accessors"] = accessors
+    gltf["animations"] = []
 
     def append_bin(raw_bytes: bytes) -> int:
         while len(bin_chunk) % 4 != 0:
@@ -631,12 +769,13 @@ def upgrade_fighter_glb(glb_path: str) -> dict[str, Any]:
         })
         return bv_idx
 
-    clip_summaries = []
-
-    for clip_name in TARGET_CLIPS:
-        times, tracks = build_clip_tracks(clip_name, gltf, node_map, is_boss)
-        times_arr = np.array(times, dtype=np.float32)
-
+    def write_animation_clip(
+        clip_name: str,
+        times_arr: np.ndarray,
+        tracks: list[dict[str, Any]],
+        interpolation: str,
+        special_desc: str,
+    ) -> dict[str, Any]:
         bv_t = append_bin(times_arr.tobytes())
         acc_t = len(accessors)
         accessors.append({
@@ -650,7 +789,6 @@ def upgrade_fighter_glb(glb_path: str) -> dict[str, Any]:
 
         samplers = []
         channels = []
-
         for tr in tracks:
             path = tr["path"]
             vals_arr = np.array(tr["values"], dtype=np.float32)
@@ -667,7 +805,7 @@ def upgrade_fighter_glb(glb_path: str) -> dict[str, Any]:
             s_idx = len(samplers)
             samplers.append({
                 "input": acc_t,
-                "interpolation": "LINEAR",
+                "interpolation": interpolation,
                 "output": acc_v,
             })
             channels.append({
@@ -683,23 +821,46 @@ def upgrade_fighter_glb(glb_path: str) -> dict[str, Any]:
             "samplers": samplers,
             "channels": channels,
         })
-
-        clip_summaries.append({
+        return {
             "ClipName": clip_name,
             "DurationSeconds": round(float(times_arr[-1]), 4),
             "FPS": int(FPS),
+            "UniformFrameStepSeconds": round(1.0 / FPS, 6),
             "KeyframeCount": int(len(times_arr)),
             "ChannelCount": len(channels),
             "SamplerCount": len(samplers),
-            "Interpolation": "LINEAR",
-            "SpecialFeatures": (
-                "Hovering levitation + dual counter-rotating astrolabe halo motion"
-                if (is_boss and clip_name == "Victory_Pose")
-                else ("Hovering idle + orbital astrolabe halo rotation"
-                      if (is_boss and clip_name == "Idle_Breath")
-                      else "Full-body 60 FPS keyframe animation")
-            ),
-        })
+            "Interpolation": interpolation,
+            "SpecialFeatures": special_desc,
+        }
+
+    all_clip_summaries = []
+    upgraded_clip_summaries = []
+
+    # 1. Re-emit the 5 stepped combat clips resampled to uniform 60 FPS (dt = 1/60s)
+    for c_name, c_times, c_tracks, c_interp in resampled_combat_inputs:
+        info = write_animation_clip(
+            c_name,
+            c_times,
+            c_tracks,
+            c_interp,
+            "Uniform 60 FPS stepped competitive frame-data animation (dt = 1/60s)",
+        )
+        all_clip_summaries.append(info)
+
+    # 2. Emit the 5 full-body linear 60 FPS clips (dt = 1/60s)
+    for clip_name in TARGET_CLIPS:
+        times, tracks = build_clip_tracks(clip_name, gltf, node_map, is_boss)
+        times_arr = np.array(times, dtype=np.float32)
+        special_feat = (
+            "Hovering levitation + dual counter-rotating astrolabe halo motion"
+            if (is_boss and clip_name == "Victory_Pose")
+            else ("Hovering idle + orbital astrolabe halo rotation"
+                  if (is_boss and clip_name == "Idle_Breath")
+                  else "Full-body 60 FPS keyframe animation")
+        )
+        info = write_animation_clip(clip_name, times_arr, tracks, "LINEAR", special_feat)
+        upgraded_clip_summaries.append(info)
+        all_clip_summaries.append(info)
 
     write_glb(glb_path, gltf, bin_chunk)
 
@@ -710,7 +871,9 @@ def upgrade_fighter_glb(glb_path: str) -> dict[str, Any]:
         "FileSizeBytes": os.path.getsize(glb_path),
         "TotalAnimationsInGLB": len(gltf["animations"]),
         "AllAnimationNames": [a["name"] for a in gltf["animations"]],
-        "UpgradedClips": clip_summaries,
+        "AllClipsUniform60FPS": True,
+        "AllClips": all_clip_summaries,
+        "UpgradedClips": upgraded_clip_summaries,
     }
 
 
@@ -740,10 +903,14 @@ def validate_fighter_glb(glb_path: str) -> dict[str, Any]:
     buffer_views = gltf["bufferViews"]
     nodes = gltf["nodes"]
     anims_by_name = {a["name"]: a for a in gltf.get("animations", [])}
+    bin_bytes = raw[bin_hdr_off + 8:bin_hdr_off + 8 + blen]
+    expected_dt = 1.0 / FPS
 
+    assert len(anims_by_name) == 10, f"{glb_path}: expected 10 animations, found {len(anims_by_name)}"
     for clip_name in TARGET_CLIPS:
         assert clip_name in anims_by_name, f"{glb_path}: missing required clip '{clip_name}'"
-        anim = anims_by_name[clip_name]
+
+    for clip_name, anim in anims_by_name.items():
         samplers = anim["samplers"]
         channels = anim["channels"]
         assert len(samplers) > 0 and len(channels) > 0, f"{glb_path}/{clip_name}: empty samplers/channels"
@@ -767,6 +934,7 @@ def validate_fighter_glb(glb_path: str) -> dict[str, Any]:
             assert in_acc["type"] == "SCALAR" and in_acc["componentType"] == FLOAT
             assert "min" in in_acc and "max" in in_acc
             assert in_acc["count"] == out_acc["count"], f"{glb_path}/{clip_name}: keyframe count mismatch"
+            assert in_acc["count"] >= 2, f"{glb_path}/{clip_name}: expected >=2 keyframes"
             expected_type = "VEC4" if t_path == "rotation" else "VEC3"
             assert out_acc["type"] == expected_type and out_acc["componentType"] == FLOAT
 
@@ -777,6 +945,16 @@ def validate_fighter_glb(glb_path: str) -> dict[str, Any]:
                 assert bv["byteOffset"] % 4 == 0
                 assert bv["byteOffset"] + bv["byteLength"] <= blen
 
+            # Verify uniform 60 FPS spacing (dt = 1/60s) on every single clip in the GLB
+            in_bv = buffer_views[in_acc["bufferView"]]
+            ts = np.frombuffer(
+                bin_bytes[in_bv["byteOffset"]:in_bv["byteOffset"] + in_bv["byteLength"]],
+                dtype=np.float32,
+            )
+            diffs = np.diff(ts)
+            max_err = float(np.max(np.abs(diffs - expected_dt)))
+            assert max_err < 1e-4, f"{glb_path}/{clip_name}: non-60FPS dt detected (max_err={max_err})"
+
     return {
         "File": os.path.basename(glb_path),
         "Valid": True,
@@ -784,7 +962,7 @@ def validate_fighter_glb(glb_path: str) -> dict[str, Any]:
         "JSONChunkBytes": jlen,
         "BINChunkBytes": blen,
         "TotalAnimations": len(anims_by_name),
-        "VerifiedClips": TARGET_CLIPS,
+        "VerifiedUniform60FPSClips": list(anims_by_name.keys()),
     }
 
 
@@ -810,18 +988,74 @@ def main() -> None:
         )
 
     manifest = {
-        "SchemaVersion": "2.0.0-UE5.4-GLTF2-Animations",
+        "SchemaVersion": "2.1.0-UE5.4-GLTF2-Uniform60FPS",
         "Project": "LA COPA ETERNA: SANGRE Y POTRERO",
         "TargetFormat": "glTF 2.0 Binary (.glb)",
         "SampleRateFPS": int(FPS),
+        "UniformFrameStepSeconds": round(1.0 / FPS, 6),
+        "All10ClipsUniform60FPS": True,
+        "SteppedCombatClipNames": [
+            "Anim_Idle",
+            "Anim_5LP_Jab4f",
+            "Anim_236SK_Shot",
+            "Anim_623HP_BicycleKick",
+            "Anim_214SK_Scorpion",
+        ],
         "UpgradedClipNames": TARGET_CLIPS,
         "TotalFightersUpgraded": len(fighter_entries),
         "ValidationPassed": all(v["Valid"] for v in validation_results),
         "ClipCatalog": [
             {
+                "ClipName": "Anim_Idle",
+                "DurationSeconds": 1.0,
+                "KeyframeCount": 61,
+                "FPS": 60,
+                "Interpolation": "STEP",
+                "Looping": True,
+                "Description": "Uniform 60 FPS stepped street-guard loop (dt = 1/60s across frames 0..60)",
+            },
+            {
+                "ClipName": "Anim_5LP_Jab4f",
+                "DurationSeconds": 0.2333,
+                "KeyframeCount": 15,
+                "FPS": 60,
+                "Interpolation": "STEP",
+                "Looping": False,
+                "Description": "Uniform 60 FPS stepped 4-frame startup jab (frames 0..14, dt = 1/60s)",
+            },
+            {
+                "ClipName": "Anim_236SK_Shot",
+                "DurationSeconds": 0.6333,
+                "KeyframeCount": 39,
+                "FPS": 60,
+                "Interpolation": "STEP",
+                "Looping": False,
+                "Description": "Uniform 60 FPS stepped special ball shot (frames 0..38, dt = 1/60s)",
+            },
+            {
+                "ClipName": "Anim_623HP_BicycleKick",
+                "DurationSeconds": 0.5833,
+                "KeyframeCount": 36,
+                "FPS": 60,
+                "Interpolation": "STEP",
+                "Looping": False,
+                "Description": "Uniform 60 FPS stepped anti-air bicycle kick with 1.25x shin/boot active scale (frames 0..35, dt = 1/60s)",
+            },
+            {
+                "ClipName": "Anim_214SK_Scorpion",
+                "DurationSeconds": 0.7,
+                "KeyframeCount": 43,
+                "FPS": 60,
+                "Interpolation": "STEP",
+                "Looping": False,
+                "Description": "Uniform 60 FPS stepped scorpion reflect kick (frames 0..42, dt = 1/60s)",
+            },
+            {
                 "ClipName": "Idle_Breath",
                 "DurationSeconds": 2.0,
                 "KeyframeCount": 121,
+                "FPS": 60,
+                "Interpolation": "LINEAR",
                 "Looping": True,
                 "Description": "60 FPS looping breathing & fighting guard sway (plus hovering + orbital astrolabe halo on SK_SUPREME_JUDGE_BOSS)",
             },
@@ -829,6 +1063,8 @@ def main() -> None:
                 "ClipName": "Dash_Forward",
                 "DurationSeconds": 0.6,
                 "KeyframeCount": 37,
+                "FPS": 60,
+                "Interpolation": "LINEAR",
                 "Looping": False,
                 "Description": "Explosive forward sprint lean with root translation burst, torso pitch, arm drive, and hair wind-drag",
             },
@@ -836,6 +1072,8 @@ def main() -> None:
                 "ClipName": "Kick_High",
                 "DurationSeconds": 0.8,
                 "KeyframeCount": 49,
+                "FPS": 60,
+                "Interpolation": "LINEAR",
                 "Looping": False,
                 "Description": "Dynamic high leg/body strike rotation & forward lunge with 1.18x anime impact exaggeration on striking shin/boot",
             },
@@ -843,6 +1081,8 @@ def main() -> None:
                 "ClipName": "Special_Chilena",
                 "DurationSeconds": 1.2,
                 "KeyframeCount": 73,
+                "FPS": 60,
+                "Interpolation": "LINEAR",
                 "Looping": False,
                 "Description": "Acrobatic 360-degree overhead bicycle-kick arc with parabolic leap, scissor-kick whip, and 1.25x apex strike scale",
             },
@@ -850,6 +1090,8 @@ def main() -> None:
                 "ClipName": "Victory_Pose",
                 "DurationSeconds": 1.5,
                 "KeyframeCount": 91,
+                "FPS": 60,
+                "Interpolation": "LINEAR",
                 "Looping": False,
                 "Description": "Triumphant championship celebration salute (SK_SUPREME_JUDGE_BOSS features hovering levitation + dual counter-rotating astrolabe halo)",
             },

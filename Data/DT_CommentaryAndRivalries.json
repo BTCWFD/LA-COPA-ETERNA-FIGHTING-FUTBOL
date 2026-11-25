@@ -216,17 +216,17 @@
       {
         "TriggerID": "TRIG_FENOMENO_PEDALADA",
         "FighterID": "FENOMENO_BR",
-        "MoveID": "FEN_ULTIMATE",
-        "WwiseEvent": "Play_VO_Sig_Fenomeno_Ultimate",
-        "Priority": "UltimateGoalKO",
-        "PriorityScore": 100,
-        "TTLMs": 0,
+        "MoveID": "FEN_PEDALADA",
+        "WwiseEvent": "Play_VO_Sig_Fenomeno_Pedalada",
+        "Priority": "ComboAction",
+        "PriorityScore": 50,
+        "TTLMs": 150,
         "Speaker": "Relator_PlayByPlay",
-        "TextES": "¡IMPACTO FENOMENAL! ¡Bicicleta, recorte al arquero y definición de otro planeta!"
+        "TextES": "¡PEDALADA MORTAL! ¡Bicicleta endiablada, recorte al arquero y la defensa queda desparramada!"
       },
       {
         "TriggerID": "TRIG_BOSS_VAR_REWIND",
-        "FighterID": "BOSS_VAR_ZERO",
+        "FighterID": "VAR_ZERO_BOSS",
         "MoveID": "VAR_REWIND_90F",
         "WwiseEvent": "Play_VO_Boss_VAR_Rewind",
         "Priority": "UltimateGoalKO",
@@ -462,11 +462,11 @@
     },
     {
       "ChapterNumber": 11,
-      "ChapterID": "CH11_LA_ LEY_DE_HIERRO_DEL_VAR",
+      "ChapterID": "CH11_LA_LEY_DE_HIERRO_DEL_VAR",
       "Title": "Capítulo 11: La Ley de Hierro del V.A.R.",
       "StageID": "STAGE_MARACANA",
       "PlayableFighter": "FENOMENO_BR",
-      "OpponentFighter": "BOSS_VAR_ZERO",
+      "OpponentFighter": "VAR_ZERO_BOSS",
       "Synopsis": "V.A.R. - ZERO desciende sobre la cancha proyectando láseres milimétricos de fuera de juego y anulando cada ataque predecible. Las leyendas descubren que solo el caos improvisado del potrero puede quebrar su lectura.",
       "KeyDialogue": "INFRACCIÓN DETECTADA: EXCESO DE PASIÓN SUDAMERICANA. INICIANDO PURGA REGLAMENTARIA."
     },
@@ -476,7 +476,7 @@
       "Title": "Capítulo 12: Tiempo de Descuento Infinito (La Copa Eterna)",
       "StageID": "STAGE_BOMBONERA",
       "PlayableFighter": "PULGA_AR",
-      "OpponentFighter": "BOSS_VAR_ZERO",
+      "OpponentFighter": "VAR_ZERO_BOSS",
       "Synopsis": "En Fase 2, V.A.R. - ZERO rebobina el tiempo 90 frames para borrar la derrota. Tras encadenar tres Gambetas Perfectas de puro potrero, el sistema entra en cortocircuito y las 10 naciones CONMEBOL se unen en el Grito Sagrado definitivo.",
       "KeyDialogue": "¡Rebobiná todas las veces que quieras, máquina! ¡En el potrero te vamos a volver a gambetear!"
     }

@@ -1,7 +1,7 @@
 {
   "project": "LA COPA ETERNA: SANGRE Y POTRERO",
   "pipeline": "blender_fighters_ue5_pipeline.py",
-  "generated_at_utc": "2026-11-24T03:19:01.499749+00:00",
+  "generated_at_utc": "2026-11-25T17:12:32.744096+00:00",
   "blender_version": "5.2.1 LTS",
   "blender_version_tuple": [
     5,
@@ -24,7 +24,7 @@
   "all_chaos_cloth_verified": true,
   "showcase_blend": {
     "path": "Assets/BlenderProduction/Fighters/Master_17Fighters_Showcase.blend",
-    "size_bytes": 5968497
+    "size_bytes": 5996166
   },
   "fighters": [
     {
@@ -32,7 +32,7 @@
       "source_glb": "Assets/Models3D/Fighters/SK_BAMBAM_CL.glb",
       "armature_name": "SK_BAMBAM_CL",
       "mesh_name": "Mesh_BAMBAM_CL",
-      "bone_count": 38,
+      "bone_count": 40,
       "action_count": 10,
       "actions": [
         "Anim_214SK_Scorpion",
@@ -77,17 +77,21 @@
         "jersey_z_range_m": [
           0.8811,
           1.3795
+        ],
+        "helper_bones": [
+          "cloth_jersey_weight",
+          "ChaosCloth_Jersey_Weight"
         ]
       },
       "output_fbx": "Assets/BlenderProduction/Fighters/SK_BAMBAM_CL.fbx",
-      "fbx_size_bytes": 4009740
+      "fbx_size_bytes": 4245036
     },
     {
       "fighter": "SK_BRUXO_BR",
       "source_glb": "Assets/Models3D/Fighters/SK_BRUXO_BR.glb",
       "armature_name": "SK_BRUXO_BR",
       "mesh_name": "Mesh_BRUXO_BR",
-      "bone_count": 38,
+      "bone_count": 40,
       "action_count": 10,
       "actions": [
         "Anim_214SK_Scorpion",
@@ -132,17 +136,21 @@
         "jersey_z_range_m": [
           0.8615,
           1.4105
+        ],
+        "helper_bones": [
+          "cloth_jersey_weight",
+          "ChaosCloth_Jersey_Weight"
         ]
       },
       "output_fbx": "Assets/BlenderProduction/Fighters/SK_BRUXO_BR.fbx",
-      "fbx_size_bytes": 4039052
+      "fbx_size_bytes": 4274284
     },
     {
       "fighter": "SK_BULLDOG_PY",
       "source_glb": "Assets/Models3D/Fighters/SK_BULLDOG_PY.glb",
       "armature_name": "SK_BULLDOG_PY",
       "mesh_name": "Mesh_BULLDOG_PY",
-      "bone_count": 38,
+      "bone_count": 40,
       "action_count": 10,
       "actions": [
         "Anim_214SK_Scorpion",
@@ -187,17 +195,21 @@
         "jersey_z_range_m": [
           0.9088,
           1.488
+        ],
+        "helper_bones": [
+          "cloth_jersey_weight",
+          "ChaosCloth_Jersey_Weight"
         ]
       },
       "output_fbx": "Assets/BlenderProduction/Fighters/SK_BULLDOG_PY.fbx",
-      "fbx_size_bytes": 4079052
+      "fbx_size_bytes": 4314204
     },
     {
       "fighter": "SK_CANON_AR",
       "source_glb": "Assets/Models3D/Fighters/SK_CANON_AR.glb",
       "armature_name": "SK_CANON_AR",
       "mesh_name": "Mesh_CANON_AR",
-      "bone_count": 38,
+      "bone_count": 40,
       "action_count": 10,
       "actions": [
         "Anim_214SK_Scorpion",
@@ -242,17 +254,21 @@
         "jersey_z_range_m": [
           0.8757,
           1.4338
+        ],
+        "helper_bones": [
+          "cloth_jersey_weight",
+          "ChaosCloth_Jersey_Weight"
         ]
       },
       "output_fbx": "Assets/BlenderProduction/Fighters/SK_CANON_AR.fbx",
-      "fbx_size_bytes": 4194412
+      "fbx_size_bytes": 4429660
     },
     {
       "fighter": "SK_DIABLO_BO",
       "source_glb": "Assets/Models3D/Fighters/SK_DIABLO_BO.glb",
       "armature_name": "SK_DIABLO_BO",
       "mesh_name": "Mesh_DIABLO_BO",
-      "bone_count": 38,
+      "bone_count": 40,
       "action_count": 10,
       "actions": [
         "Anim_214SK_Scorpion",
@@ -297,17 +313,21 @@
         "jersey_z_range_m": [
           0.8712,
           1.364
+        ],
+        "helper_bones": [
+          "cloth_jersey_weight",
+          "ChaosCloth_Jersey_Weight"
         ]
       },
       "output_fbx": "Assets/BlenderProduction/Fighters/SK_DIABLO_BO.fbx",
-      "fbx_size_bytes": 4013932
+      "fbx_size_bytes": 4249228
     },
     {
       "fighter": "SK_FENOMENO_BR",
       "source_glb": "Assets/Models3D/Fighters/SK_FENOMENO_BR.glb",
       "armature_name": "SK_FENOMENO_BR",
       "mesh_name": "Mesh_FENOMENO_BR",
-      "bone_count": 38,
+      "bone_count": 40,
       "action_count": 10,
       "actions": [
         "Anim_214SK_Scorpion",
@@ -352,17 +372,21 @@
         "jersey_z_range_m": [
           0.8662,
           1.4183
+        ],
+        "helper_bones": [
+          "cloth_jersey_weight",
+          "ChaosCloth_Jersey_Weight"
         ]
       },
       "output_fbx": "Assets/BlenderProduction/Fighters/SK_FENOMENO_BR.fbx",
-      "fbx_size_bytes": 4037084
+      "fbx_size_bytes": 4272268
     },
     {
       "fighter": "SK_GENERAL_FR",
       "source_glb": "Assets/Models3D/Fighters/SK_GENERAL_FR.glb",
       "armature_name": "SK_GENERAL_FR",
       "mesh_name": "Mesh_GENERAL_FR",
-      "bone_count": 38,
+      "bone_count": 40,
       "action_count": 10,
       "actions": [
         "Anim_214SK_Scorpion",
@@ -407,17 +431,21 @@
         "jersey_z_range_m": [
           0.8757,
           1.4338
+        ],
+        "helper_bones": [
+          "cloth_jersey_weight",
+          "ChaosCloth_Jersey_Weight"
         ]
       },
       "output_fbx": "Assets/BlenderProduction/Fighters/SK_GENERAL_FR.fbx",
-      "fbx_size_bytes": 3989356
+      "fbx_size_bytes": 4224620
     },
     {
       "fighter": "SK_HURACAN_VE",
       "source_glb": "Assets/Models3D/Fighters/SK_HURACAN_VE.glb",
       "armature_name": "SK_HURACAN_VE",
       "mesh_name": "Mesh_HURACAN_VE",
-      "bone_count": 38,
+      "bone_count": 40,
       "action_count": 10,
       "actions": [
         "Anim_214SK_Scorpion",
@@ -462,17 +490,21 @@
         "jersey_z_range_m": [
           0.852,
           1.395
+        ],
+        "helper_bones": [
+          "cloth_jersey_weight",
+          "ChaosCloth_Jersey_Weight"
         ]
       },
       "output_fbx": "Assets/BlenderProduction/Fighters/SK_HURACAN_VE.fbx",
-      "fbx_size_bytes": 3995756
+      "fbx_size_bytes": 4230956
     },
     {
       "fighter": "SK_LOCO_CO",
       "source_glb": "Assets/Models3D/Fighters/SK_LOCO_CO.glb",
       "armature_name": "SK_LOCO_CO",
       "mesh_name": "Mesh_LOCO_CO",
-      "bone_count": 38,
+      "bone_count": 40,
       "action_count": 10,
       "actions": [
         "Anim_214SK_Scorpion",
@@ -517,17 +549,21 @@
         "jersey_z_range_m": [
           0.8712,
           1.364
+        ],
+        "helper_bones": [
+          "cloth_jersey_weight",
+          "ChaosCloth_Jersey_Weight"
         ]
       },
       "output_fbx": "Assets/BlenderProduction/Fighters/SK_LOCO_CO.fbx",
-      "fbx_size_bytes": 4107324
+      "fbx_size_bytes": 4342604
     },
     {
       "fighter": "SK_MAESTRO_PE",
       "source_glb": "Assets/Models3D/Fighters/SK_MAESTRO_PE.glb",
       "armature_name": "SK_MAESTRO_PE",
       "mesh_name": "Mesh_MAESTRO_PE",
-      "bone_count": 38,
+      "bone_count": 40,
       "action_count": 10,
       "actions": [
         "Anim_214SK_Scorpion",
@@ -572,17 +608,21 @@
         "jersey_z_range_m": [
           0.8762,
           1.3718
+        ],
+        "helper_bones": [
+          "cloth_jersey_weight",
+          "ChaosCloth_Jersey_Weight"
         ]
       },
       "output_fbx": "Assets/BlenderProduction/Fighters/SK_MAESTRO_PE.fbx",
-      "fbx_size_bytes": 4023660
+      "fbx_size_bytes": 4258940
     },
     {
       "fighter": "SK_MATADOR_UY",
       "source_glb": "Assets/Models3D/Fighters/SK_MATADOR_UY.glb",
       "armature_name": "SK_MATADOR_UY",
       "mesh_name": "Mesh_MATADOR_UY",
-      "bone_count": 38,
+      "bone_count": 40,
       "action_count": 10,
       "actions": [
         "Anim_214SK_Scorpion",
@@ -627,17 +667,21 @@
         "jersey_z_range_m": [
           0.852,
           1.395
+        ],
+        "helper_bones": [
+          "cloth_jersey_weight",
+          "ChaosCloth_Jersey_Weight"
         ]
       },
       "output_fbx": "Assets/BlenderProduction/Fighters/SK_MATADOR_UY.fbx",
-      "fbx_size_bytes": 4119804
+      "fbx_size_bytes": 4354988
     },
     {
       "fighter": "SK_PIBE_CO",
       "source_glb": "Assets/Models3D/Fighters/SK_PIBE_CO.glb",
       "armature_name": "SK_PIBE_CO",
       "mesh_name": "Mesh_PIBE_CO",
-      "bone_count": 38,
+      "bone_count": 40,
       "action_count": 10,
       "actions": [
         "Anim_214SK_Scorpion",
@@ -682,17 +726,21 @@
         "jersey_z_range_m": [
           0.8712,
           1.364
+        ],
+        "helper_bones": [
+          "cloth_jersey_weight",
+          "ChaosCloth_Jersey_Weight"
         ]
       },
       "output_fbx": "Assets/BlenderProduction/Fighters/SK_PIBE_CO.fbx",
-      "fbx_size_bytes": 4107724
+      "fbx_size_bytes": 4343020
     },
     {
       "fighter": "SK_PISTOLERO_UY",
       "source_glb": "Assets/Models3D/Fighters/SK_PISTOLERO_UY.glb",
       "armature_name": "SK_PISTOLERO_UY",
       "mesh_name": "Mesh_PISTOLERO_UY",
-      "bone_count": 38,
+      "bone_count": 40,
       "action_count": 10,
       "actions": [
         "Anim_214SK_Scorpion",
@@ -737,17 +785,21 @@
         "jersey_z_range_m": [
           0.8615,
           1.4105
+        ],
+        "helper_bones": [
+          "cloth_jersey_weight",
+          "ChaosCloth_Jersey_Weight"
         ]
       },
       "output_fbx": "Assets/BlenderProduction/Fighters/SK_PISTOLERO_UY.fbx",
-      "fbx_size_bytes": 4120876
+      "fbx_size_bytes": 4356140
     },
     {
       "fighter": "SK_PULGA_AR",
       "source_glb": "Assets/Models3D/Fighters/SK_PULGA_AR.glb",
       "armature_name": "SK_PULGA_AR",
       "mesh_name": "Mesh_PULGA_AR",
-      "bone_count": 38,
+      "bone_count": 40,
       "action_count": 10,
       "actions": [
         "Anim_214SK_Scorpion",
@@ -792,17 +844,21 @@
         "jersey_z_range_m": [
           0.8507,
           1.3175
+        ],
+        "helper_bones": [
+          "cloth_jersey_weight",
+          "ChaosCloth_Jersey_Weight"
         ]
       },
       "output_fbx": "Assets/BlenderProduction/Fighters/SK_PULGA_AR.fbx",
-      "fbx_size_bytes": 4194076
+      "fbx_size_bytes": 4429132
     },
     {
       "fighter": "SK_REY_CL",
       "source_glb": "Assets/Models3D/Fighters/SK_REY_CL.glb",
       "armature_name": "SK_REY_CL",
       "mesh_name": "Mesh_REY_CL",
-      "bone_count": 38,
+      "bone_count": 40,
       "action_count": 10,
       "actions": [
         "Anim_214SK_Scorpion",
@@ -847,17 +903,21 @@
         "jersey_z_range_m": [
           0.852,
           1.395
+        ],
+        "helper_bones": [
+          "cloth_jersey_weight",
+          "ChaosCloth_Jersey_Weight"
         ]
       },
       "output_fbx": "Assets/BlenderProduction/Fighters/SK_REY_CL.fbx",
-      "fbx_size_bytes": 4005916
+      "fbx_size_bytes": 4241100
     },
     {
       "fighter": "SK_SUPREME_JUDGE_BOSS",
       "source_glb": "Assets/Models3D/Fighters/SK_SUPREME_JUDGE_BOSS.glb",
       "armature_name": "SK_SUPREME_JUDGE_BOSS",
       "mesh_name": "Mesh_SUPREME_JUDGE_BOSS",
-      "bone_count": 38,
+      "bone_count": 40,
       "action_count": 10,
       "actions": [
         "Anim_214SK_Scorpion",
@@ -902,17 +962,21 @@
         "jersey_z_range_m": [
           0.8815,
           1.6663
+        ],
+        "helper_bones": [
+          "cloth_jersey_weight",
+          "ChaosCloth_Jersey_Weight"
         ]
       },
       "output_fbx": "Assets/BlenderProduction/Fighters/SK_SUPREME_JUDGE_BOSS.fbx",
-      "fbx_size_bytes": 3983548
+      "fbx_size_bytes": 4221004
     },
     {
       "fighter": "SK_TREN_EC",
       "source_glb": "Assets/Models3D/Fighters/SK_TREN_EC.glb",
       "armature_name": "SK_TREN_EC",
       "mesh_name": "Mesh_TREN_EC",
-      "bone_count": 38,
+      "bone_count": 40,
       "action_count": 10,
       "actions": [
         "Anim_214SK_Scorpion",
@@ -957,10 +1021,14 @@
         "jersey_z_range_m": [
           0.886,
           1.3873
+        ],
+        "helper_bones": [
+          "cloth_jersey_weight",
+          "ChaosCloth_Jersey_Weight"
         ]
       },
       "output_fbx": "Assets/BlenderProduction/Fighters/SK_TREN_EC.fbx",
-      "fbx_size_bytes": 4026556
+      "fbx_size_bytes": 4261692
     }
   ]
 }
