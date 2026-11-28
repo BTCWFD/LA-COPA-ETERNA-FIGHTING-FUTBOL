@@ -227,6 +227,7 @@
   layout(location = 2) in vec4 aColor;
   layout(location = 3) in vec4 aJoints;
   layout(location = 4) in vec4 aWeights;
+  layout(location = 5) in vec2 aUv;
 
   uniform mat4 uModel;
   uniform mat4 uView;
@@ -243,6 +244,7 @@
   out vec3 vNormal;
   out vec4 vColor;
   out vec3 vLocalPos;
+  out vec2 vUv;
 
   void main() {
     vec4 pos = vec4(aPosition, 1.0);
@@ -282,6 +284,7 @@
     vNormal = normalize(mat3(uModel) * norm);
     vColor = aColor;
     vLocalPos = pos.xyz;
+    vUv = aUv;
     gl_Position = uProj * uView * world;
   }`;
 
@@ -292,6 +295,7 @@
   in vec3 vNormal;
   in vec4 vColor;
   in vec3 vLocalPos;
+  in vec2 vUv;
 
   uniform vec3 uCameraPos;
   uniform vec4 uBaseColor;
@@ -299,6 +303,8 @@
   uniform float uMetallic;
   uniform float uRoughness;
   uniform int uHasVertexColor;
+  uniform sampler2D uBaseColorTex;
+  uniform int uHasBaseColorTex;
   uniform int uLightingMode; // 0: SFUMATO, 1: STREET_INK
   uniform int uRenderMode;   // 0: SHADED, 1: SKELETON, 2: CLOTH, 3: SMEAR
   uniform int uHasSkin;
@@ -320,12 +326,19 @@
     vec3 V = normalize(uCameraPos - vWorldPos);
     float ndotv = max(dot(N, V), 0.0);
 
-    vec4 vertCol = uHasVertexColor == 1 ? vColor : vec4(1.0);
-    vec3 albedo = uBaseColor.rgb * vertCol.rgb;
+    vec4 texSample = uHasBaseColorTex == 1 ? texture(uBaseColorTex, vUv) : vec4(1.0);
+    // Skinned fighters store Chaos Cloth weights in COLOR_0 ([cw, 0.85, 0.15, 1.0]);
+    // never tint albedo with COLOR_0 when textured or skinned.
+    bool useVertColForAlbedo = (uHasVertexColor == 1) && (uHasBaseColorTex == 0) && (uHasSkin == 0);
+    vec4 vertCol = useVertColForAlbedo ? vColor : vec4(1.0);
+    vec3 albedo = uBaseColor.rgb * texSample.rgb * vertCol.rgb;
 
     if (uRenderMode == 2) {
       float normY = clamp(vLocalPos.y / max(0.4, uModelHeight), 0.0, 1.0);
-      float freedom = uHasSkin == 1 ? clamp(1.0 - normY * 0.95, 0.0, 1.0) : clamp(abs(vLocalPos.x) / max(1.0, uModelHeight), 0.0, 1.0);
+      float fallbackFreedom = uHasSkin == 1
+        ? clamp(1.0 - normY * 0.95, 0.0, 1.0)
+        : clamp(abs(vLocalPos.x) / max(1.0, uModelHeight), 0.0, 1.0);
+      float freedom = (uHasVertexColor == 1) ? clamp(vColor.r, 0.0, 1.0) : fallbackFreedom;
       vec3 heat = clothHeatmap(freedom);
       float diff = max(dot(N, normalize(vec3(0.5, 0.85, 0.4))), 0.0) * 0.65 + 0.35;
       fragColor = vec4(heat * diff + vec3(0.08) * pow(1.0 - ndotv, 2.5), 1.0);
@@ -334,53 +347,64 @@
 
     vec3 keyDir;
     vec3 keyColor;
-    vec3 fillDir = normalize(vec3(-0.6, 0.35, -0.7));
+    vec3 fillDir = normalize(vec3(-0.65, 0.38, -0.65));
     vec3 fillColor;
-    vec3 ambientColor;
+    vec3 skyAmbient;
+    vec3 groundAmbient;
     vec3 rimColor;
     float rimPow;
+    float rimStrength;
 
     if (uLightingMode == 0) {
-      // Renacimiento Sfumato (Da Vinci golden-amber chiaroscuro + olive/ochre ambient)
-      keyDir = normalize(vec3(0.65, 0.82, 0.55));
-      keyColor = vec3(1.18, 0.96, 0.66);
-      fillColor = vec3(0.24, 0.28, 0.16);
-      ambientColor = vec3(0.20, 0.17, 0.10);
-      rimColor = vec3(1.0, 0.86, 0.52);
-      rimPow = 2.6;
+      // Renacimiento Sfumato (soft golden chiaroscuro + warm hemisphere bounce)
+      keyDir = normalize(vec3(0.58, 0.80, 0.62));
+      keyColor = vec3(1.06, 0.94, 0.78);
+      fillColor = vec3(0.24, 0.25, 0.22);
+      skyAmbient = vec3(0.29, 0.26, 0.22);
+      groundAmbient = vec3(0.16, 0.12, 0.08);
+      rimColor = vec3(1.0, 0.86, 0.56);
+      rimPow = 2.8;
+      rimStrength = 0.38;
     } else {
-      // Street-Ink AAA (Stadium floodlight + high-contrast cyan/white rim)
-      keyDir = normalize(vec3(-0.45, 0.90, 0.65));
-      keyColor = vec3(1.05, 1.12, 1.25);
-      fillColor = vec3(0.14, 0.24, 0.38);
-      ambientColor = vec3(0.10, 0.14, 0.22);
-      rimColor = vec3(0.15, 0.92, 1.0);
-      rimPow = 2.2;
+      // Street-Ink AAA (Stadium floodlight + cool hemisphere bounce + crisp cyan rim)
+      keyDir = normalize(vec3(-0.45, 0.88, 0.68));
+      keyColor = vec3(1.02, 1.06, 1.14);
+      fillColor = vec3(0.18, 0.26, 0.38);
+      skyAmbient = vec3(0.22, 0.27, 0.36);
+      groundAmbient = vec3(0.10, 0.13, 0.18);
+      rimColor = vec3(0.18, 0.92, 1.0);
+      rimPow = 2.4;
+      rimStrength = 0.44;
     }
+
+    float hemi = clamp(N.y * 0.5 + 0.5, 0.0, 1.0);
+    vec3 ambientColor = mix(groundAmbient, skyAmbient, hemi);
 
     float nDotL = max(dot(N, keyDir), 0.0);
     float nDotFill = max(dot(N, fillDir), 0.0);
     vec3 H = normalize(keyDir + V);
-    float specPower = mix(84.0, 10.0, clamp(uRoughness, 0.05, 1.0));
-    float spec = pow(max(dot(N, H), 0.0), specPower) * mix(0.28, 0.85, uMetallic);
+    float rough = clamp(uRoughness, 0.06, 1.0);
+    float specPower = mix(96.0, 12.0, rough);
+    float specMask = mix(0.16, 0.75, uMetallic) * (1.0 - rough * 0.62);
+    float spec = pow(max(dot(N, H), 0.0), specPower) * specMask;
     float rim = pow(1.0 - ndotv, rimPow);
 
     // Subtle stepped ink shadow accent in Street-Ink or SMEAR mode
     if (uLightingMode == 1 || uRenderMode == 3) {
-      nDotL = mix(nDotL, floor(nDotL * 3.5 + 0.35) / 3.5, 0.45);
+      nDotL = mix(nDotL, floor(nDotL * 3.5 + 0.35) / 3.5, 0.38);
     }
 
     vec3 lit =
       albedo * (ambientColor + keyColor * nDotL + fillColor * nDotFill) +
       keyColor * spec +
-      rimColor * rim * 0.58 +
+      rimColor * rim * rimStrength +
       uEmissive;
 
-    // Gentle tone mapping + gamma feel
-    lit = lit / (lit + vec3(0.65));
-    lit = pow(max(lit, vec3(0.0)), vec3(0.92));
+    // Gentle shoulder tone mapping without washed-out clipping
+    lit = (lit * 1.32) / (lit + vec3(0.68));
+    lit = clamp(pow(max(lit, vec3(0.0)), vec3(0.94)), 0.0, 1.0);
 
-    float alpha = uRenderMode == 1 ? 0.24 : uBaseColor.a;
+    float alpha = uRenderMode == 1 ? 0.24 : (uBaseColor.a * texSample.a);
     fragColor = vec4(lit, alpha);
   }`;
 
@@ -441,6 +465,9 @@
     lineProg: null,
     meshLocs: {},
     lineLocs: {},
+    whiteTex: null,
+    anisoExt: null,
+    maxAniso: 1,
     gridVAO: null,
     gridVertexCount: 0,
     lineBuf: null,
@@ -451,16 +478,33 @@
     lastStats: {
       loaded: false,
       file: '',
+      byteLength: 0,
       verts: 0,
       tris: 0,
       joints: 0,
+      materials: 0,
       clips: 0,
+      heightM: 0,
       curKf: 1,
       totalKf: 1,
       fps: 60.0
     },
     _lastFrameTime: 0
   };
+
+  function createWhiteTexture(gl) {
+    const tex = gl.createTexture();
+    gl.bindTexture(gl.TEXTURE_2D, tex);
+    // glTF 2.0 UV (0,0) = top-left of image memory -> UNPACK_FLIP_Y_WEBGL = false
+    gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, false);
+    gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, 1, 1, 0, gl.RGBA, gl.UNSIGNED_BYTE, new Uint8Array([255, 255, 255, 255]));
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.REPEAT);
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.REPEAT);
+    gl.bindTexture(gl.TEXTURE_2D, null);
+    return tex;
+  }
 
   function buildGridBuffer(gl) {
     const verts = [];
@@ -495,13 +539,78 @@
     viewer.lineBuf = vbo;
   }
 
-  function uploadGLBToGPU(gl, parsed) {
+  function uploadGLBToGPU(gl, parsed, byteLength = 0) {
     const { gltf, binBuffer } = parsed;
+
+    // Parse glTF 2.0 samplers, embedded images (bufferView/uri), and textures
+    const samplers = (gltf.samplers || []).map((s) => ({
+      magFilter: s.magFilter || gl.LINEAR,
+      minFilter: s.minFilter || gl.LINEAR_MIPMAP_LINEAR,
+      wrapS: s.wrapS || gl.REPEAT,
+      wrapT: s.wrapT || gl.REPEAT
+    }));
+
+    const images = (gltf.images || []).map((imgDef) => {
+      const imgEntry = { img: null, ready: false, blobUrl: null };
+      if (imgDef.bufferView !== undefined && gltf.bufferViews && gltf.bufferViews[imgDef.bufferView]) {
+        const bv = gltf.bufferViews[imgDef.bufferView];
+        const bOff = bv.byteOffset || 0;
+        const bLen = bv.byteLength || 0;
+        const imgBytes = binBuffer.subarray(bOff, bOff + bLen);
+        const blob = new Blob([imgBytes], { type: imgDef.mimeType || 'image/png' });
+        imgEntry.blobUrl = URL.createObjectURL(blob);
+        const img = new Image();
+        img.onload = () => {
+          imgEntry.ready = true;
+          if (imgEntry.blobUrl) {
+            URL.revokeObjectURL(imgEntry.blobUrl);
+            imgEntry.blobUrl = null;
+          }
+        };
+        img.onerror = () => {
+          if (imgEntry.blobUrl) {
+            URL.revokeObjectURL(imgEntry.blobUrl);
+            imgEntry.blobUrl = null;
+          }
+        };
+        img.src = imgEntry.blobUrl;
+        imgEntry.img = img;
+      } else if (imgDef.uri) {
+        const img = new Image();
+        img.onload = () => { imgEntry.ready = true; };
+        img.src = imgDef.uri;
+        imgEntry.img = img;
+      }
+      return imgEntry;
+    });
+
+    const textures = (gltf.textures || []).map((texDef) => {
+      const glTex = gl.createTexture();
+      const smp = texDef.sampler !== undefined && samplers[texDef.sampler]
+        ? samplers[texDef.sampler]
+        : { magFilter: gl.LINEAR, minFilter: gl.LINEAR_MIPMAP_LINEAR, wrapS: gl.REPEAT, wrapT: gl.REPEAT };
+      const imgEntry = texDef.source !== undefined ? images[texDef.source] : null;
+
+      // Seed with 1x1 white placeholder so texture unit stays renderable while async decode completes
+      gl.bindTexture(gl.TEXTURE_2D, glTex);
+      gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, false);
+      gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, 1, 1, 0, gl.RGBA, gl.UNSIGNED_BYTE, new Uint8Array([255, 255, 255, 255]));
+      gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, smp.wrapS);
+      gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, smp.wrapT);
+      gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
+      gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, smp.magFilter);
+      gl.bindTexture(gl.TEXTURE_2D, null);
+
+      return { glTex, sampler: smp, imgEntry, uploaded: false };
+    });
+
     const materials = (gltf.materials || []).map((m) => {
       const pbr = m.pbrMetallicRoughness || {};
+      const bct = pbr.baseColorTexture;
       return {
         name: m.name || 'Mat',
-        baseColorFactor: pbr.baseColorFactor ? Float32Array.from(pbr.baseColorFactor) : new Float32Array([0.85, 0.85, 0.85, 1.0]),
+        baseColorFactor: pbr.baseColorFactor ? Float32Array.from(pbr.baseColorFactor) : new Float32Array([1.0, 1.0, 1.0, 1.0]),
+        baseColorTexIndex: bct && bct.index !== undefined ? bct.index : -1,
         metallicFactor: pbr.metallicFactor !== undefined ? pbr.metallicFactor : 0.1,
         roughnessFactor: pbr.roughnessFactor !== undefined ? pbr.roughnessFactor : 0.6,
         emissiveFactor: m.emissiveFactor ? Float32Array.from(m.emissiveFactor) : new Float32Array([0, 0, 0])
@@ -633,6 +742,20 @@
           for (let i = 0; i < rawW.length; i++) weights[i] = rawW[i] * scale;
         }
 
+        let hasUv = 0;
+        const uv = new Float32Array(vertCount * 2);
+        if (attrs.TEXCOORD_0 !== undefined) {
+          hasUv = 1;
+          const rawUv = readAccessor(gltf, binBuffer, attrs.TEXCOORD_0);
+          const uvAcc = gltf.accessors[attrs.TEXCOORD_0];
+          const comp = GLTF_TYPE_COMPONENTS[uvAcc.type] || 2;
+          const scale = uvAcc.componentType === 5121 ? (1 / 255) : (uvAcc.componentType === 5123 ? (1 / 65535) : 1);
+          for (let i = 0; i < vertCount; i++) {
+            uv[i * 2] = rawUv[i * comp] * scale;
+            uv[i * 2 + 1] = rawUv[i * comp + 1] * scale;
+          }
+        }
+
         let indices;
         let indexType = gl.UNSIGNED_SHORT;
         if (prim.indices !== undefined) {
@@ -676,6 +799,7 @@
         bindAttr(2, color, 4);
         bindAttr(3, joints, 4);
         bindAttr(4, weights, 4);
+        bindAttr(5, uv, 2);
 
         const ibo = gl.createBuffer();
         gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, ibo);
@@ -704,6 +828,7 @@
           indexType,
           materialIndex: prim.material !== undefined ? prim.material : 0,
           hasVertexColor,
+          hasUv,
           primIndex: pIdx
         };
       });
@@ -727,7 +852,9 @@
       skins,
       animations,
       materials,
+      textures,
       meshes,
+      byteLength,
       bounds: {
         min: minB,
         max: maxB,
@@ -744,13 +871,13 @@
     };
   }
 
-  function requestModel(url) {
-    if (!url) return null;
-    const cached = viewer.modelCache.get(url);
+  function requestModel(url, ctx = viewer) {
+    if (!url || !ctx.gl) return null;
+    const cached = ctx.modelCache.get(url);
     if (cached) return cached;
 
     const entry = { status: 'loading', data: null };
-    viewer.modelCache.set(url, entry);
+    ctx.modelCache.set(url, entry);
 
     fetch(url)
       .then((res) => {
@@ -759,7 +886,7 @@
       })
       .then((buf) => {
         const parsed = parseGLB(buf);
-        entry.data = uploadGLBToGPU(viewer.gl, parsed);
+        entry.data = uploadGLBToGPU(ctx.gl, parsed, buf.byteLength);
         entry.status = 'ready';
       })
       .catch((err) => {
@@ -773,7 +900,7 @@
   // --------------------------------------------------------------------------
   // Animation & Skeleton Pose Evaluation
   // --------------------------------------------------------------------------
-  function evaluateAnimation(model, clipName, animClockFrames) {
+  function evaluateAnimation(model, clipName, animClockFrames, loop = true) {
     const nodeCount = model.nodes.length;
     const localT = model.nodes.map((n) => Float32Array.from(n.translation));
     const localR = model.nodes.map((n) => Float32Array.from(n.rotation));
@@ -784,12 +911,14 @@
     let totalKf = 1;
 
     if (clip && clip.duration > 0) {
-      const timeSecRaw = animClockFrames / 60.0;
-      const t = timeSecRaw % clip.duration;
+      const timeSecRaw = Math.max(0, animClockFrames) / 60.0;
+      const t = loop ? (timeSecRaw % clip.duration) : Math.min(timeSecRaw, Math.max(0, clip.duration - 0.0001));
       const firstSmp = clip.samplers[0];
       if (firstSmp && firstSmp.input.length > 0) {
         totalKf = firstSmp.input.length;
-        curKf = (Math.floor(animClockFrames) % totalKf) + 1;
+        curKf = loop
+          ? ((Math.floor(animClockFrames) % totalKf) + 1)
+          : Math.min(totalKf, Math.max(1, Math.floor(animClockFrames) + 1));
       }
 
       for (let c = 0; c < clip.channels.length; c++) {
@@ -875,37 +1004,37 @@
   // --------------------------------------------------------------------------
   // Drawing Helpers
   // --------------------------------------------------------------------------
-  function drawLines(mvp, vertsArray, color, mode, pointSize = 5.0) {
-    const gl = viewer.gl;
+  function drawLines(mvp, vertsArray, color, mode, pointSize = 5.0, ctx = viewer) {
+    const gl = ctx.gl;
     if (!vertsArray || vertsArray.length === 0) return;
-    gl.useProgram(viewer.lineProg);
-    gl.uniformMatrix4fv(viewer.lineLocs.uMVP, false, mvp);
-    gl.uniform4fv(viewer.lineLocs.uColor, color);
-    gl.uniform1f(viewer.lineLocs.uPointSize, pointSize);
+    gl.useProgram(ctx.lineProg);
+    gl.uniformMatrix4fv(ctx.lineLocs.uMVP, false, mvp);
+    gl.uniform4fv(ctx.lineLocs.uColor, color);
+    gl.uniform1f(ctx.lineLocs.uPointSize, pointSize);
 
-    gl.bindVertexArray(viewer.lineVAO);
-    gl.bindBuffer(gl.ARRAY_BUFFER, viewer.lineBuf);
+    gl.bindVertexArray(ctx.lineVAO);
+    gl.bindBuffer(gl.ARRAY_BUFFER, ctx.lineBuf);
     gl.bufferData(gl.ARRAY_BUFFER, vertsArray instanceof Float32Array ? vertsArray : new Float32Array(vertsArray), gl.DYNAMIC_DRAW);
     gl.drawArrays(mode, 0, vertsArray.length / 3);
     gl.bindVertexArray(null);
   }
 
-  function drawModel(model, modelMatrix, viewProj, view, proj, cameraPos, state, poseEval) {
-    const gl = viewer.gl;
+  function drawModel(model, modelMatrix, viewProj, view, proj, cameraPos, state, poseEval, ctx = viewer, extraEmissive = null) {
+    const gl = ctx.gl;
     const renderModeMap = { SHADED: 0, SKELETON: 1, CLOTH: 2, SMEAR: 3 };
     const rMode = renderModeMap[state.mode] ?? 0;
     const lMode = state.lighting === 'SFUMATO' ? 0 : 1;
 
-    gl.useProgram(viewer.meshProg);
-    gl.uniformMatrix4fv(viewer.meshLocs.uView, false, view);
-    gl.uniformMatrix4fv(viewer.meshLocs.uProj, false, proj);
-    gl.uniform3fv(viewer.meshLocs.uCameraPos, cameraPos);
-    gl.uniform1i(viewer.meshLocs.uLightingMode, lMode);
-    gl.uniform1i(viewer.meshLocs.uRenderMode, rMode);
-    gl.uniform1f(viewer.meshLocs.uWindPct, (state.windPct || 0) / 100);
-    gl.uniform1f(viewer.meshLocs.uTime, (state.tick || 0) / 60.0);
-    gl.uniform1f(viewer.meshLocs.uSmearScale, state.smearScale || 1.0);
-    gl.uniform1f(viewer.meshLocs.uModelHeight, model.bounds.size[1] || 1.8);
+    gl.useProgram(ctx.meshProg);
+    gl.uniformMatrix4fv(ctx.meshLocs.uView, false, view);
+    gl.uniformMatrix4fv(ctx.meshLocs.uProj, false, proj);
+    gl.uniform3fv(ctx.meshLocs.uCameraPos, cameraPos);
+    gl.uniform1i(ctx.meshLocs.uLightingMode, lMode);
+    gl.uniform1i(ctx.meshLocs.uRenderMode, rMode);
+    gl.uniform1f(ctx.meshLocs.uWindPct, (state.windPct || 0) / 100);
+    gl.uniform1f(ctx.meshLocs.uTime, (state.tick || 0) / 60.0);
+    gl.uniform1f(ctx.meshLocs.uSmearScale, state.smearScale || 1.0);
+    gl.uniform1f(ctx.meshLocs.uModelHeight, model.bounds.size[1] || 1.8);
 
     // Prepare joint matrix buffer if skinned
     const jointBuffer = new Float32Array(64 * 16);
@@ -932,13 +1061,13 @@
           const jWorld = poseEval.worldMats[jNode] || mat4Identity();
           mat4Multiply(jointBuffer.subarray(j * 16, j * 16 + 16), jWorld, skin.ibms[j]);
         }
-        gl.uniformMatrix4fv(viewer.meshLocs.uJointMatrices, false, jointBuffer);
+        gl.uniformMatrix4fv(ctx.meshLocs.uJointMatrices, false, jointBuffer);
       } else {
         mat4Multiply(fullModel, modelMatrix, nodeWorld);
       }
 
-      gl.uniform1i(viewer.meshLocs.uHasSkin, hasSkin);
-      gl.uniformMatrix4fv(viewer.meshLocs.uModel, false, fullModel);
+      gl.uniform1i(ctx.meshLocs.uHasSkin, hasSkin);
+      gl.uniformMatrix4fv(ctx.meshLocs.uModel, false, fullModel);
 
       if (rMode === 1) {
         gl.enable(gl.BLEND);
@@ -949,18 +1078,52 @@
       for (let p = 0; p < mesh.primitives.length; p++) {
         const prim = mesh.primitives[p];
         const mat = model.materials[prim.materialIndex] || {
-          baseColorFactor: new Float32Array([0.85, 0.85, 0.85, 1.0]),
+          baseColorFactor: new Float32Array([1.0, 1.0, 1.0, 1.0]),
+          baseColorTexIndex: -1,
           emissiveFactor: new Float32Array([0, 0, 0]),
           metallicFactor: 0.1,
           roughnessFactor: 0.6
         };
 
-        gl.uniform4fv(viewer.meshLocs.uBaseColor, mat.baseColorFactor);
-        gl.uniform3fv(viewer.meshLocs.uEmissive, mat.emissiveFactor);
-        gl.uniform1f(viewer.meshLocs.uMetallic, mat.metallicFactor);
-        gl.uniform1f(viewer.meshLocs.uRoughness, mat.roughnessFactor);
-        gl.uniform1i(viewer.meshLocs.uHasVertexColor, prim.hasVertexColor);
-        gl.uniform1i(viewer.meshLocs.uPrimIndex, prim.primIndex);
+        const texEntry = (mat.baseColorTexIndex >= 0 && model.textures && model.textures[mat.baseColorTexIndex])
+          ? model.textures[mat.baseColorTexIndex]
+          : null;
+
+        gl.activeTexture(gl.TEXTURE0);
+        if (texEntry && texEntry.glTex) {
+          gl.bindTexture(gl.TEXTURE_2D, texEntry.glTex);
+          if (!texEntry.uploaded && texEntry.imgEntry && texEntry.imgEntry.ready && texEntry.imgEntry.img) {
+            // glTF 2.0 spec: UV (0,0) is TOP-LEFT of PNG/JPEG image memory,
+            // so UNPACK_FLIP_Y_WEBGL MUST be false to match Blender/glTF TEXCOORD_0.
+            gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, false);
+            gl.pixelStorei(gl.UNPACK_PREMULTIPLY_ALPHA_WEBGL, false);
+            gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, texEntry.imgEntry.img);
+            gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, texEntry.sampler.wrapS);
+            gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, texEntry.sampler.wrapT);
+            gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, texEntry.sampler.magFilter);
+            gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, texEntry.sampler.minFilter);
+            gl.generateMipmap(gl.TEXTURE_2D);
+            if (ctx.anisoExt) {
+              gl.texParameterf(gl.TEXTURE_2D, ctx.anisoExt.TEXTURE_MAX_ANISOTROPY_EXT, Math.min(8, ctx.maxAniso || 4));
+            }
+            texEntry.uploaded = true;
+          }
+        } else {
+          gl.bindTexture(gl.TEXTURE_2D, ctx.whiteTex);
+        }
+
+        const hasBaseColorTex = (texEntry && texEntry.uploaded && prim.hasUv) ? 1 : 0;
+        const em = extraEmissive
+          ? [mat.emissiveFactor[0] + extraEmissive[0], mat.emissiveFactor[1] + extraEmissive[1], mat.emissiveFactor[2] + extraEmissive[2]]
+          : mat.emissiveFactor;
+        gl.uniform1i(ctx.meshLocs.uBaseColorTex, 0);
+        gl.uniform1i(ctx.meshLocs.uHasBaseColorTex, hasBaseColorTex);
+        gl.uniform4fv(ctx.meshLocs.uBaseColor, mat.baseColorFactor);
+        gl.uniform3fv(ctx.meshLocs.uEmissive, em);
+        gl.uniform1f(ctx.meshLocs.uMetallic, mat.metallicFactor);
+        gl.uniform1f(ctx.meshLocs.uRoughness, mat.roughnessFactor);
+        gl.uniform1i(ctx.meshLocs.uHasVertexColor, prim.hasVertexColor);
+        gl.uniform1i(ctx.meshLocs.uPrimIndex, prim.primIndex);
 
         gl.bindVertexArray(prim.vao);
         gl.drawElements(gl.TRIANGLES, prim.indexCount, prim.indexType, 0);
@@ -974,9 +1137,9 @@
         // Draw structural wireframe over ghosted mesh in SKELETON mode
         const mvp = new Float32Array(16);
         mat4Multiply(mvp, viewProj, fullModel);
-        gl.useProgram(viewer.lineProg);
-        gl.uniformMatrix4fv(viewer.lineLocs.uMVP, false, mvp);
-        gl.uniform4fv(viewer.lineLocs.uColor, hasSkin ? [0.0, 0.90, 1.0, 0.32] : [0.96, 0.77, 0.32, 0.55]);
+        gl.useProgram(ctx.lineProg);
+        gl.uniformMatrix4fv(ctx.lineLocs.uMVP, false, mvp);
+        gl.uniform4fv(ctx.lineLocs.uColor, hasSkin ? [0.0, 0.90, 1.0, 0.32] : [0.96, 0.77, 0.32, 0.55]);
         for (let p = 0; p < mesh.primitives.length; p++) {
           const prim = mesh.primitives[p];
           if (!hasSkin) {
@@ -1012,8 +1175,8 @@
       const mvp = new Float32Array(16);
       mat4Multiply(mvp, viewProj, modelMatrix);
       gl.disable(gl.DEPTH_TEST);
-      drawLines(mvp, boneLines, [0.96, 0.77, 0.32, 1.0], gl.LINES);
-      drawLines(mvp, jointPts, [0.0, 0.90, 1.0, 1.0], gl.POINTS, 6.0);
+      drawLines(mvp, boneLines, [0.96, 0.77, 0.32, 1.0], gl.LINES, 5.0, ctx);
+      drawLines(mvp, jointPts, [0.0, 0.90, 1.0, 1.0], gl.POINTS, 6.0, ctx);
       gl.enable(gl.DEPTH_TEST);
     }
 
@@ -1044,8 +1207,22 @@
     init(canvas) {
       if (!canvas) return false;
       try {
-        const gl = canvas.getContext('webgl2', { antialias: true, alpha: false, preserveDrawingBuffer: false });
-        if (!gl || !(gl instanceof WebGL2RenderingContext)) {
+        // Probe WebGL2 + GLSL compilation on a disposable offscreen canvas first so
+        // an unsupported environment never locks `canvas` away from getContext('2d').
+        const probe = document.createElement('canvas');
+        const probeGl = probe.getContext('webgl2');
+        if (!probeGl || !(probeGl instanceof WebGL2RenderingContext)) {
+          return false;
+        }
+        const testMeshProg = createProgram(probeGl, MESH_VERT_SRC, MESH_FRAG_SRC);
+        const testLineProg = createProgram(probeGl, LINE_VERT_SRC, LINE_FRAG_SRC);
+        probeGl.deleteProgram(testMeshProg);
+        probeGl.deleteProgram(testLineProg);
+        const loseExt = probeGl.getExtension('WEBGL_lose_context');
+        if (loseExt) loseExt.loseContext();
+
+        const gl = canvas.getContext('webgl2', { antialias: true, alpha: false, preserveDrawingBuffer: true });
+        if (!gl || !(gl instanceof WebGL2RenderingContext) || gl.isContextLost()) {
           return false;
         }
         viewer.canvas = canvas;
@@ -1058,7 +1235,8 @@
           'uModel', 'uView', 'uProj', 'uHasSkin', 'uJointMatrices', 'uRenderMode',
           'uWindPct', 'uTime', 'uSmearScale', 'uPrimIndex', 'uCameraPos',
           'uBaseColor', 'uEmissive', 'uMetallic', 'uRoughness',
-          'uHasVertexColor', 'uLightingMode', 'uModelHeight'
+          'uHasVertexColor', 'uBaseColorTex', 'uHasBaseColorTex',
+          'uLightingMode', 'uModelHeight'
         ].forEach((name) => {
           viewer.meshLocs[name] = gl.getUniformLocation(viewer.meshProg, name);
         });
@@ -1066,6 +1244,10 @@
         ['uMVP', 'uColor', 'uPointSize'].forEach((name) => {
           viewer.lineLocs[name] = gl.getUniformLocation(viewer.lineProg, name);
         });
+
+        viewer.whiteTex = createWhiteTexture(gl);
+        viewer.anisoExt = gl.getExtension('EXT_texture_filter_anisotropic');
+        viewer.maxAniso = viewer.anisoExt ? gl.getParameter(viewer.anisoExt.MAX_TEXTURE_MAX_ANISOTROPY_EXT) : 1;
 
         buildGridBuffer(gl);
         buildDynamicLineVAO(gl);
@@ -1079,7 +1261,7 @@
     },
 
     isReady() {
-      return Boolean(viewer.gl && viewer.gl instanceof WebGL2RenderingContext);
+      return Boolean(viewer.gl && viewer.gl instanceof WebGL2RenderingContext && !viewer.gl.isContextLost());
     },
 
     getStats() {
@@ -1168,6 +1350,13 @@
       if (!entry || entry.status !== 'ready' || !entry.data) {
         viewer.lastStats.loaded = false;
         viewer.lastStats.file = url.split('/').pop();
+        viewer.lastStats.byteLength = 0;
+        viewer.lastStats.verts = 0;
+        viewer.lastStats.tris = 0;
+        viewer.lastStats.joints = 0;
+        viewer.lastStats.materials = 0;
+        viewer.lastStats.clips = 0;
+        viewer.lastStats.heightM = 0;
         return true;
       }
 
@@ -1196,10 +1385,13 @@
       viewer.lastStats = {
         loaded: true,
         file: url.split('/').pop(),
+        byteLength: model.byteLength || 0,
         verts: model.totalVerts,
         tris: model.totalTris,
         joints: model.skins.length ? model.skins[0].joints.length : 0,
+        materials: model.materials.length,
         clips: model.animations.size,
+        heightM: model.bounds.size[1] || 0,
         curKf: poseEval.curKf,
         totalKf: poseEval.totalKf,
         fps: viewer.lastStats.fps
@@ -1209,5 +1401,479 @@
     }
   };
 
+  // ==========================================================================
+  // SAFWglArena: Real-Time 2.5D Playable Combat WebGL2 Renderer (TAB 06)
+  // Renders P1 SK_*.glb + P2 SK_*.glb + Active SM_Stage_*.glb + 3D Balls
+  // ==========================================================================
+  const arena = {
+    gl: null,
+    canvas: null,
+    meshProg: null,
+    lineProg: null,
+    meshLocs: {},
+    lineLocs: {},
+    whiteTex: null,
+    anisoExt: null,
+    maxAniso: 1,
+    lineBuf: null,
+    lineVAO: null,
+    pitchVAO: null,
+    pitchIndexCount: 0,
+    pitchLinesVAO: null,
+    pitchLinesCount: 0,
+    shadowVAO: null,
+    shadowVertCount: 0,
+    modelCache: new Map(),
+    ballUrl: '../Assets/Models3D/Props/SM_Ball_TruncatedIcosahedron_32Panels.glb',
+    lastViewProj: new Float32Array(16),
+    lastWidth: 1080,
+    lastHeight: 460,
+    lastStatus: {
+      ready: false,
+      p1Loaded: false,
+      p2Loaded: false,
+      stageLoaded: false,
+      p1Clip: 'Idle_Breath',
+      p2Clip: 'Idle_Breath',
+      p1Tris: 0,
+      p2Tris: 0
+    }
+  };
+
+  function mat4FromYRotScaleTrans(tx, ty, tz, ryRad, sx, sy, sz) {
+    const out = new Float32Array(16);
+    const c = Math.cos(ryRad);
+    const s = Math.sin(ryRad);
+    out[0] = c * sx;  out[1] = 0;  out[2] = -s * sx; out[3] = 0;
+    out[4] = 0;       out[5] = sy; out[6] = 0;       out[7] = 0;
+    out[8] = s * sz;  out[9] = 0;  out[10] = c * sz; out[11] = 0;
+    out[12] = tx;     out[13] = ty; out[14] = tz;    out[15] = 1;
+    return out;
+  }
+
+  function buildArenaPitchBuffers(gl) {
+    // 1. Striped procedural grass quad mesh (24 stripes x -18..+18, z -14..+6)
+    const positions = [];
+    const normals = [];
+    const colors = [];
+    const uvs = [];
+    const joints = [];
+    const weights = [];
+    const indices = [];
+    const stripes = 24;
+    const xStart = -18.0, xEnd = 18.0;
+    const stripeW = (xEnd - xStart) / stripes;
+    let vOff = 0;
+
+    for (let i = 0; i < stripes; i++) {
+      const x0 = xStart + i * stripeW;
+      const x1 = x0 + stripeW;
+      const even = (i % 2 === 0);
+      const col = even ? [0.16, 0.42, 0.19, 1.0] : [0.12, 0.34, 0.15, 1.0];
+
+      const quad = [
+        [x0, 0.0, 5.5],
+        [x1, 0.0, 5.5],
+        [x1, 0.0, -14.0],
+        [x0, 0.0, -14.0]
+      ];
+      for (let k = 0; k < 4; k++) {
+        positions.push(quad[k][0], quad[k][1], quad[k][2]);
+        normals.push(0, 1, 0);
+        colors.push(col[0], col[1], col[2], col[3]);
+        uvs.push(k === 1 || k === 2 ? 1 : 0, k >= 2 ? 1 : 0);
+        joints.push(0, 0, 0, 0);
+        weights.push(1, 0, 0, 0);
+      }
+      indices.push(vOff, vOff + 1, vOff + 2, vOff, vOff + 2, vOff + 3);
+      vOff += 4;
+    }
+
+    const vao = gl.createVertexArray();
+    gl.bindVertexArray(vao);
+    const pushAttr = (loc, arr, size) => {
+      const buf = gl.createBuffer();
+      gl.bindBuffer(gl.ARRAY_BUFFER, buf);
+      gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(arr), gl.STATIC_DRAW);
+      gl.enableVertexAttribArray(loc);
+      gl.vertexAttribPointer(loc, size, gl.FLOAT, false, 0, 0);
+    };
+    pushAttr(0, positions, 3);
+    pushAttr(1, normals, 3);
+    pushAttr(2, colors, 4);
+    pushAttr(3, joints, 4);
+    pushAttr(4, weights, 4);
+    pushAttr(5, uvs, 2);
+    const ibo = gl.createBuffer();
+    gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, ibo);
+    gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, new Uint16Array(indices), gl.STATIC_DRAW);
+    gl.bindVertexArray(null);
+    arena.pitchVAO = vao;
+    arena.pitchIndexCount = indices.length;
+
+    // 2. White pitch chalk markings (touchlines, halfway line, center circle, penalty box arcs)
+    const chalk = [
+      // Midfield line & bounds
+      0, 0.008, -10.0,  0, 0.008, 3.2,
+      -8.5, 0.008, 2.2,  8.5, 0.008, 2.2,
+      -8.5, 0.008, -9.5, 8.5, 0.008, -9.5,
+      -4.5, 0.008, -3.5, -4.5, 0.008, 2.2,
+      4.5, 0.008, -3.5,  4.5, 0.008, 2.2
+    ];
+    for (let s = 0; s < 32; s++) {
+      const a0 = (s / 32) * Math.PI * 2;
+      const a1 = ((s + 1) / 32) * Math.PI * 2;
+      chalk.push(
+        Math.cos(a0) * 1.45, 0.008, -2.5 + Math.sin(a0) * 1.15,
+        Math.cos(a1) * 1.45, 0.008, -2.5 + Math.sin(a1) * 1.15
+      );
+    }
+    const lineVao = gl.createVertexArray();
+    gl.bindVertexArray(lineVao);
+    const lBuf = gl.createBuffer();
+    gl.bindBuffer(gl.ARRAY_BUFFER, lBuf);
+    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(chalk), gl.STATIC_DRAW);
+    gl.enableVertexAttribArray(0);
+    gl.vertexAttribPointer(0, 3, gl.FLOAT, false, 0, 0);
+    gl.bindVertexArray(null);
+    arena.pitchLinesVAO = lineVao;
+    arena.pitchLinesCount = chalk.length / 3;
+
+    // 3. Soft elliptical ground shadow disc (TRIANGLE_FAN unit circle)
+    const segs = 24;
+    const sPos = [0, 0.012, 0];
+    const sNorm = [0, 1, 0];
+    const sCol = [0.02, 0.03, 0.02, 0.65];
+    const sUv = [0.5, 0.5];
+    const sJnt = [0, 0, 0, 0];
+    const sWgt = [1, 0, 0, 0];
+    for (let i = 0; i <= segs; i++) {
+      const a = (i / segs) * Math.PI * 2;
+      sPos.push(Math.cos(a) * 0.48, 0.012, Math.sin(a) * 0.30);
+      sNorm.push(0, 1, 0);
+      sCol.push(0.02, 0.03, 0.02, 0.0);
+      sUv.push(0.5, 0.5);
+      sJnt.push(0, 0, 0, 0);
+      sWgt.push(1, 0, 0, 0);
+    }
+    const sVao = gl.createVertexArray();
+    gl.bindVertexArray(sVao);
+    pushAttr(0, sPos, 3);
+    pushAttr(1, sNorm, 3);
+    pushAttr(2, sCol, 4);
+    pushAttr(3, sJnt, 4);
+    pushAttr(4, sWgt, 4);
+    pushAttr(5, sUv, 2);
+    gl.bindVertexArray(null);
+    arena.shadowVAO = sVao;
+    arena.shadowVertCount = segs + 2;
+  }
+
+  function resolveFighterClipAndClock(model, actor, matchEnded, isWinner) {
+    const pickClip = (candidates) => {
+      for (let i = 0; i < candidates.length; i++) {
+        if (model.animations.has(candidates[i])) return candidates[i];
+      }
+      return model.animations.keys().next().value || 'Idle_Breath';
+    };
+
+    if (actor.state === 'KO') {
+      return { clip: pickClip(['Mocap_KO_Knockdown', 'Mocap_Hitstun_Knockback', 'Idle_Breath']), frame: actor.stateFrame, loop: false };
+    }
+    if (matchEnded && isWinner) {
+      return { clip: pickClip(['Victory_Pose', 'Idle_Breath']), frame: actor.stateFrame || 0, loop: true };
+    }
+
+    switch (actor.state) {
+      case 'WALK_F':
+        return { clip: pickClip(['Mocap_Walk_Forward', 'Dash_Forward', 'Idle_Breath']), frame: actor.stateFrame, loop: true };
+      case 'WALK_B':
+        return { clip: pickClip(['Mocap_Backdash_Dodge', 'Mocap_Walk_Forward', 'Idle_Breath']), frame: actor.stateFrame, loop: true };
+      case 'DASH_F':
+        return { clip: pickClip(['Dash_Forward', 'Mocap_Walk_Forward']), frame: actor.stateFrame * 1.4, loop: true };
+      case 'DASH_B':
+        return { clip: pickClip(['Mocap_Backdash_Dodge', 'Idle_Breath']), frame: actor.stateFrame * 1.3, loop: false };
+      case 'CROUCH':
+        return { clip: pickClip(['Mocap_Block_Guard', 'Idle_Breath']), frame: 10, loop: false };
+      case 'JUMP':
+        return { clip: pickClip(['Special_Chilena', 'Anim_623HP_BicycleKick', 'Idle_Breath']), frame: Math.min(28, actor.stateFrame * 1.2), loop: false };
+      case 'BLOCKSTUN':
+      case 'PARRY':
+        return { clip: pickClip(['Mocap_Block_Guard', 'Anim_Idle']), frame: actor.stateFrame, loop: false };
+      case 'HITSTUN':
+        return { clip: pickClip(['Mocap_Hitstun_Knockback', 'Idle_Breath']), frame: actor.stateFrame * 1.3, loop: false };
+      case 'STARTUP':
+      case 'ACTIVE':
+      case 'RECOVERY': {
+        const mv = actor.activeMoveKey || 'LP';
+        const mapMove = {
+          LP: ['Anim_5LP_Jab4f', 'Kick_High'],
+          MP: ['Kick_High', 'Anim_5LP_Jab4f'],
+          HP: ['Kick_High', 'Anim_623HP_BicycleKick'],
+          SK: ['Anim_236SK_Shot', 'Kick_High'],
+          GB: ['Mocap_Block_Guard'],
+          SP_236: ['Anim_236SK_Shot', 'Kick_High'],
+          SP_623: ['Anim_623HP_BicycleKick', 'Special_Chilena'],
+          SP_41236: ['Anim_214SK_Scorpion', 'Special_Chilena'],
+          SUPER_1: ['Mocap_Super_Potrero', 'Special_Chilena'],
+          ULT_3: ['Special_Chilena', 'Mocap_Super_Potrero']
+        };
+        return { clip: pickClip(mapMove[mv] || ['Kick_High', 'Idle_Breath']), frame: actor.stateFrame * 1.35, loop: false };
+      }
+      default:
+        return { clip: pickClip(['Idle_Breath', 'Anim_Idle']), frame: actor.stateFrame || 0, loop: true };
+    }
+  }
+
+  const SAFWglArena = {
+    init(canvas) {
+      if (!canvas) return false;
+      try {
+        const probe = document.createElement('canvas');
+        const probeGl = probe.getContext('webgl2');
+        if (!probeGl || !(probeGl instanceof WebGL2RenderingContext)) return false;
+        const tMesh = createProgram(probeGl, MESH_VERT_SRC, MESH_FRAG_SRC);
+        const tLine = createProgram(probeGl, LINE_VERT_SRC, LINE_FRAG_SRC);
+        probeGl.deleteProgram(tMesh);
+        probeGl.deleteProgram(tLine);
+        const loseExt = probeGl.getExtension('WEBGL_lose_context');
+        if (loseExt) loseExt.loseContext();
+
+        const gl = canvas.getContext('webgl2', { antialias: true, alpha: false, preserveDrawingBuffer: false });
+        if (!gl || !(gl instanceof WebGL2RenderingContext) || gl.isContextLost()) return false;
+
+        arena.gl = gl;
+        arena.canvas = canvas;
+        arena.meshProg = createProgram(gl, MESH_VERT_SRC, MESH_FRAG_SRC);
+        arena.lineProg = createProgram(gl, LINE_VERT_SRC, LINE_FRAG_SRC);
+
+        [
+          'uModel', 'uView', 'uProj', 'uHasSkin', 'uJointMatrices', 'uRenderMode',
+          'uWindPct', 'uTime', 'uSmearScale', 'uPrimIndex', 'uCameraPos',
+          'uBaseColor', 'uEmissive', 'uMetallic', 'uRoughness',
+          'uHasVertexColor', 'uBaseColorTex', 'uHasBaseColorTex',
+          'uLightingMode', 'uModelHeight'
+        ].forEach((name) => {
+          arena.meshLocs[name] = gl.getUniformLocation(arena.meshProg, name);
+        });
+
+        ['uMVP', 'uColor', 'uPointSize'].forEach((name) => {
+          arena.lineLocs[name] = gl.getUniformLocation(arena.lineProg, name);
+        });
+
+        arena.whiteTex = createWhiteTexture(gl);
+        arena.anisoExt = gl.getExtension('EXT_texture_filter_anisotropic');
+        arena.maxAniso = arena.anisoExt ? gl.getParameter(arena.anisoExt.MAX_TEXTURE_MAX_ANISOTROPY_EXT) : 1;
+
+        const lineVao = gl.createVertexArray();
+        gl.bindVertexArray(lineVao);
+        const lBuf = gl.createBuffer();
+        gl.bindBuffer(gl.ARRAY_BUFFER, lBuf);
+        gl.enableVertexAttribArray(0);
+        gl.vertexAttribPointer(0, 3, gl.FLOAT, false, 0, 0);
+        gl.bindVertexArray(null);
+        arena.lineVAO = lineVao;
+        arena.lineBuf = lBuf;
+
+        buildArenaPitchBuffers(gl);
+        arena.lastStatus.ready = true;
+        return true;
+      } catch (err) {
+        console.warn('[SAFWglArena] WebGL2 Arena initialization fallback:', err);
+        arena.gl = null;
+        arena.lastStatus.ready = false;
+        return false;
+      }
+    },
+
+    isReady() {
+      return Boolean(arena.gl && arena.gl instanceof WebGL2RenderingContext && !arena.gl.isContextLost());
+    },
+
+    preload(urls) {
+      if (!this.isReady() || !Array.isArray(urls)) return;
+      requestModel(arena.ballUrl, arena);
+      urls.forEach((u) => { if (u) requestModel(u, arena); });
+    },
+
+    getStatus() {
+      return arena.lastStatus;
+    },
+
+    projectToCanvas(wx, wy, wz) {
+      const vp = arena.lastViewProj;
+      const cx = vp[0] * wx + vp[4] * wy + vp[8] * wz + vp[12];
+      const cy = vp[1] * wx + vp[5] * wy + vp[9] * wz + vp[13];
+      const cw = vp[3] * wx + vp[7] * wy + vp[11] * wz + vp[15];
+      if (Math.abs(cw) < 1e-5) return [arena.lastWidth * 0.5, arena.lastHeight * 0.5];
+      const ndcX = cx / cw;
+      const ndcY = cy / cw;
+      return [
+        (ndcX * 0.5 + 0.5) * arena.lastWidth,
+        (0.5 - ndcY * 0.5) * arena.lastHeight
+      ];
+    },
+
+    renderFrame(spec) {
+      const gl = arena.gl;
+      if (!gl) return false;
+
+      const w = arena.canvas.width;
+      const h = arena.canvas.height;
+      arena.lastWidth = w;
+      arena.lastHeight = h;
+      gl.viewport(0, 0, w, h);
+      gl.enable(gl.DEPTH_TEST);
+      gl.disable(gl.CULL_FACE);
+
+      const isSfumato = spec.lighting === 'SFUMATO';
+      if (spec.impactInkFrames > 0) {
+        const flash = spec.impactInkFrames % 2 === 0;
+        gl.clearColor(flash ? 0.92 : 0.03, flash ? 0.84 : 0.04, flash ? 0.58 : 0.07, 1.0);
+      } else if (isSfumato) {
+        gl.clearColor(spec.inZoneB ? 0.14 : 0.12, spec.inZoneB ? 0.07 : 0.11, spec.inZoneB ? 0.04 : 0.08, 1.0);
+      } else {
+        gl.clearColor(spec.inZoneB ? 0.10 : 0.03, spec.inZoneB ? 0.04 : 0.07, spec.inZoneB ? 0.12 : 0.14, 1.0);
+      }
+      gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
+
+      const p1Wx = (spec.p1.x - 540) / 145.0;
+      const p1Wy = Math.max(0, -spec.p1.y / 145.0);
+      const p2Wx = (spec.p2.x - 540) / 145.0;
+      const p2Wy = Math.max(0, -spec.p2.y / 145.0);
+
+      const midX = (p1Wx + p2Wx) * 0.5;
+      const dist = Math.abs(p1Wx - p2Wx);
+      const camX = midX * 0.35 + ((spec.shakeX || 0) / 160.0);
+      const camY = 1.48 + ((spec.shakeY || 0) / 160.0);
+      const camZ = Math.min(7.8, Math.max(4.6, 4.35 + dist * 0.42));
+      const eye = [camX, camY, camZ];
+      const target = [midX * 0.52, 0.98, -0.6];
+
+      const proj = new Float32Array(16);
+      const view = new Float32Array(16);
+      const viewProj = new Float32Array(16);
+      mat4Perspective(proj, (38 * Math.PI) / 180, w / Math.max(1, h), 0.1, 200.0);
+      mat4LookAt(view, eye, target, [0, 1, 0]);
+      mat4Multiply(viewProj, proj, view);
+      arena.lastViewProj.set(viewProj);
+
+      // 1. Render 3D Grass Pitch + Chalk Markings
+      const identityMat = mat4Identity();
+      gl.useProgram(arena.meshProg);
+      gl.uniformMatrix4fv(arena.meshLocs.uModel, false, identityMat);
+      gl.uniformMatrix4fv(arena.meshLocs.uView, false, view);
+      gl.uniformMatrix4fv(arena.meshLocs.uProj, false, proj);
+      gl.uniform3fv(arena.meshLocs.uCameraPos, eye);
+      gl.uniform1i(arena.meshLocs.uHasSkin, 0);
+      gl.uniform1i(arena.meshLocs.uLightingMode, isSfumato ? 0 : 1);
+      gl.uniform1i(arena.meshLocs.uRenderMode, 0);
+      gl.uniform1i(arena.meshLocs.uHasBaseColorTex, 0);
+      gl.uniform1i(arena.meshLocs.uHasVertexColor, 1);
+      gl.uniform4fv(arena.meshLocs.uBaseColor, isSfumato ? [0.92, 0.88, 0.72, 1.0] : [0.85, 1.0, 0.92, 1.0]);
+      gl.uniform3fv(arena.meshLocs.uEmissive, [0, 0, 0]);
+      gl.uniform1f(arena.meshLocs.uMetallic, 0.0);
+      gl.uniform1f(arena.meshLocs.uRoughness, 0.88);
+      gl.bindTexture(gl.TEXTURE_2D, arena.whiteTex);
+      gl.bindVertexArray(arena.pitchVAO);
+      gl.drawElements(gl.TRIANGLES, arena.pitchIndexCount, gl.UNSIGNED_SHORT, 0);
+      gl.bindVertexArray(null);
+
+      gl.useProgram(arena.lineProg);
+      gl.uniformMatrix4fv(arena.lineLocs.uMVP, false, viewProj);
+      gl.uniform4fv(arena.lineLocs.uColor, isSfumato ? [0.94, 0.87, 0.68, 0.78] : [0.95, 0.98, 1.0, 0.85]);
+      gl.bindVertexArray(arena.pitchLinesVAO);
+      gl.drawArrays(gl.LINES, 0, arena.pitchLinesCount);
+      gl.bindVertexArray(null);
+
+      // 2. Render 3D Stadium Backdrop (`SM_Stage_*.glb`)
+      const stageEntry = spec.stageGlbUrl ? requestModel(spec.stageGlbUrl, arena) : null;
+      if (stageEntry && stageEntry.status === 'ready' && stageEntry.data) {
+        const sMod = stageEntry.data;
+        const sScale = 24.0 / Math.max(20.0, sMod.bounds.maxSpan || 60.0);
+        const sMat = mat4FromYRotScaleTrans(0.0, -0.04, -12.5, 0.0, sScale, sScale, sScale);
+        const sEval = evaluateAnimation(sMod, '', 0, false);
+        drawModel(sMod, sMat, viewProj, view, proj, eye, { mode: 'SHADED', lighting: spec.lighting, tick: spec.clockFrames || 0 }, sEval, arena, null);
+        arena.lastStatus.stageLoaded = true;
+      } else {
+        arena.lastStatus.stageLoaded = false;
+      }
+
+      // 3. Soft Ground Shadows beneath P1 & P2
+      gl.enable(gl.BLEND);
+      gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
+      gl.depthMask(false);
+      gl.useProgram(arena.meshProg);
+      gl.uniform1i(arena.meshLocs.uHasSkin, 0);
+      gl.uniform1i(arena.meshLocs.uHasBaseColorTex, 0);
+      gl.uniform1i(arena.meshLocs.uHasVertexColor, 1);
+      gl.uniform4fv(arena.meshLocs.uBaseColor, [0.02, 0.02, 0.02, 0.58]);
+      gl.uniform3fv(arena.meshLocs.uEmissive, [0, 0, 0]);
+      gl.bindTexture(gl.TEXTURE_2D, arena.whiteTex);
+      gl.bindVertexArray(arena.shadowVAO);
+      [[p1Wx, 0.08], [p2Wx, -0.08]].forEach(([sx, sz]) => {
+        const shMat = mat4FromYRotScaleTrans(sx, 0.0, sz, 0, 1.0, 1.0, 1.0);
+        gl.uniformMatrix4fv(arena.meshLocs.uModel, false, shMat);
+        gl.drawArrays(gl.TRIANGLE_FAN, 0, arena.shadowVertCount);
+      });
+      gl.bindVertexArray(null);
+      gl.depthMask(true);
+      gl.disable(gl.BLEND);
+
+      // 4. Render 3D Fighter P1 & Fighter P2
+      const renderActor = (actor, wx, wy, wz, isP1) => {
+        const entry = actor.glbUrl ? requestModel(actor.glbUrl, arena) : null;
+        if (!entry || entry.status !== 'ready' || !entry.data) return { loaded: false, clip: 'Loading', tris: 0 };
+        const mod = entry.data;
+        const isWinner = spec.matchEnded && ((isP1 && spec.winnerIsP1) || (!isP1 && !spec.winnerIsP1));
+        const animPick = resolveFighterClipAndClock(mod, actor, spec.matchEnded, isWinner);
+        const poseEval = evaluateAnimation(mod, animPick.clip, animPick.frame, animPick.loop);
+        const ry = actor.facingRight ? (Math.PI * 0.5) : (-Math.PI * 0.5);
+        const crouchSy = actor.state === 'CROUCH' ? 0.78 : 1.0;
+        const modMat = mat4FromYRotScaleTrans(wx, wy, wz, ry, 1.0, crouchSy, 1.0);
+        const hitEm = actor.state === 'HITSTUN' ? [0.45, 0.08, 0.06] : (actor.state === 'PARRY' ? [0.05, 0.38, 0.45] : null);
+        drawModel(mod, modMat, viewProj, view, proj, eye, {
+          mode: 'SHADED',
+          lighting: spec.lighting,
+          windPct: 75,
+          tick: spec.clockFrames || 0,
+          smearScale: actor.state === 'ACTIVE' ? 1.12 : 1.0
+        }, poseEval, arena, hitEm);
+        return { loaded: true, clip: animPick.clip, tris: mod.totalTris };
+      };
+
+      const p1Res = renderActor(spec.p1, p1Wx, p1Wy, 0.06, true);
+      const p2Res = renderActor(spec.p2, p2Wx, p2Wy, -0.06, false);
+
+      // 5. Render 3D Match Ball Projectiles (`SM_Ball_TruncatedIcosahedron_32Panels.glb`)
+      const ballEntry = requestModel(arena.ballUrl, arena);
+      if (ballEntry && ballEntry.status === 'ready' && ballEntry.data && Array.isArray(spec.projectiles)) {
+        const bMod = ballEntry.data;
+        const bEval = evaluateAnimation(bMod, '', 0, false);
+        const spin = ((spec.clockFrames || 0) * 0.25);
+        spec.projectiles.forEach((pr) => {
+          const bwx = (pr.x - 540) / 145.0;
+          const bwy = Math.max(0.18, (390 - pr.y) / 145.0);
+          const bScale = 1.65;
+          const bMat = mat4FromYRotScaleTrans(bwx, bwy, 0.0, spin * (pr.vx >= 0 ? 1 : -1), bScale, bScale, bScale);
+          drawModel(bMod, bMat, viewProj, view, proj, eye, { mode: 'SHADED', lighting: spec.lighting, tick: spec.clockFrames || 0 }, bEval, arena, [0.35, 0.28, 0.05]);
+        });
+      }
+
+      arena.lastStatus = {
+        ready: true,
+        p1Loaded: p1Res.loaded,
+        p2Loaded: p2Res.loaded,
+        stageLoaded: arena.lastStatus.stageLoaded,
+        p1Clip: p1Res.clip,
+        p2Clip: p2Res.clip,
+        p1Tris: p1Res.tris,
+        p2Tris: p2Res.tris
+      };
+      return true;
+    }
+  };
+
   global.SAFWglViewer = SAFWglViewer;
+  global.SAFWglArena = SAFWglArena;
 })(window);

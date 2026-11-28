@@ -959,7 +959,7 @@
                 <option value="CPU_PRO">🤖 CPU Competitiva CONMEBOL</option>
                 <option value="LOCAL_2P">👥 2 Jugadores Locales (P1 WASD vs P2 Flechas + Numpad)</option>
                 <option value="BOSS_VAR">👁️ Boss Final: V.A.R.-ZERO (Fase 1 & 2 Rewind)</option>
-                <option value="DUMMY">🎯 Training Dummy (Práctica)</option>
+                <option value="DUMMY">🎯 Modo Entrenamiento (Training Dummy)</option>
               </select>
               <label style="font-size:11px; color:var(--turf);">Estadio:</label>
               <select id="t6-sel-stage"></select>
@@ -969,15 +969,18 @@
                 <option value="STREET_INK">⚡ Street-Ink AAA (Neón & Tinta)</option>
               </select>
               <span class="telemetry-pill" id="t6-gamepad-status" style="padding:3px 8px; font-size:10.5px;">🎮 Gamepad: Esperando...</span>
+              <button class="btn btn-gold btn-sm" id="t6-btn-3d-mode" title="Alternar Renderizado Real en Tiempo Real con los 17 Modelos 3D (.glb) y Estadios 3D">🧊 Motor 3D: AUTO</button>
               <button class="btn btn-cyan btn-sm" id="t6-btn-input-display" title="Mostrar/Ocultar Historial de Inputs FGC en Vivo">📋 Input Display: ON</button>
               <button class="btn btn-gold btn-sm" id="t6-btn-restart">🔄 ¡Pitazo Inicial! (Reset)</button>
               <button class="btn btn-crimson btn-sm" id="t6-btn-demo-ko" title="Disparar K.O. Instantáneo para probar Pantalla de Victoria">🏆 Demo Victoria / K.O.</button>
             </div>
           </div>
 
-          <!-- Canvas Jugable 1v1 a 60 FPS + Input History FGC + Overlay Post-Partido de Victoria / K.O. -->
+          <!-- Canvas Jugable 1v1 a 60 FPS (Motor WebGL2 3D con los 17 SK_*.glb + Overlay HUD/VFX) -->
           <div class="canvas-wrap" style="border-color:var(--gold); position:relative;">
-            <canvas id="t6-canvas" width="1080" height="460"></canvas>
+            <canvas id="t6-webgl-canvas" width="1080" height="460" style="position:absolute; inset:0; width:100%; height:100%; display:block; z-index:0;"></canvas>
+            <canvas id="t6-canvas" width="1080" height="460" style="position:relative; z-index:1; background:transparent;"></canvas>
+            <div class="webgl-hud" id="t6-webgl-hud" style="display:none; left:12px; right:auto; bottom:48px; z-index:2; pointer-events:none;"></div>
 
             <!-- Columna de Historial de Inputs FGC en Tiempo Real (Últimos 10 comandos) -->
             <div class="t6-input-history" id="t6-input-history"></div>
@@ -1028,6 +1031,7 @@
 
                 <div class="t6-vic-actions">
                   <a href="tournament.html" class="btn btn-gold" id="t6-btn-tourney-next" style="display:none; text-decoration:none; box-shadow:0 0 18px rgba(245,196,81,0.6);">🏆 Volver a la Llave Copa Eterna →</a>
+                  <a href="story.html" class="btn btn-cyan" id="t6-btn-story-next" style="display:none; text-decoration:none; box-shadow:0 0 18px rgba(0,229,255,0.5);">📖 Volver al Modo Historia →</a>
                   <button class="btn btn-gold" id="t6-btn-rematch">⚔️ Revancha Inmediata (Rematch)</button>
                   <a href="character-select.html" class="btn btn-turf" style="text-decoration:none;">👥 Cambiar Leyendas (16+1)</a>
                   <a href="main-menu.html" class="btn btn-cyan" style="text-decoration:none;">🏛️ Menú Principal</a>
@@ -1238,23 +1242,31 @@
             </div>
           </div>
 
-          <!-- 3. Selector de los 10 Clips de Animación glTF 2.0 + Controles de Reproducción -->
+          <!-- 3. Selector de los 16 Clips de Animación glTF 2.0 + Mocap 60 FPS -->
           <div class="slot-card">
-            <label style="font-size:11px; color:var(--turf); font-weight:700;">3. CLIPS DE ANIMACIÓN glTF 2.0 (10 CLIPS @ 60 FPS):</label>
+            <label style="font-size:11px; color:var(--turf); font-weight:700;">3. CLIPS DE ANIMACIÓN glTF 2.0 & MOCAP (16 CLIPS @ 60 FPS):</label>
             <select id="t7-sel-pose" style="width:100%; margin-top:4px;">
-              <optgroup label="🌟 Clips 60 FPS Full-Body (Upgraded LINEAR)">
+              <optgroup label="🌟 Clips 60 FPS Full-Body (LINEAR)">
                 <option value="Idle_Breath" selected>01. Idle_Breath (2.0s • 121 Keyframes • Looping Guard)</option>
                 <option value="Dash_Forward">02. Dash_Forward (0.6s • 37 Keyframes • Sprint Burst)</option>
                 <option value="Kick_High">03. Kick_High (0.8s • 49 Keyframes • 1.18x Shin Smear)</option>
                 <option value="Special_Chilena">04. Special_Chilena (1.2s • 73 Keyframes • 360° Bicycle Kick)</option>
                 <option value="Victory_Pose">05. Victory_Pose (1.5s • 91 Keyframes • Saludo Campeón / Halo)</option>
               </optgroup>
+              <optgroup label="🎬 Suite Mocap Completa (Locomoción, Defensa & Supers @ 60 FPS)">
+                <option value="Mocap_Walk_Forward">06. Mocap_Walk_Forward (1.0s • 61 KF • Zancada Atlética)</option>
+                <option value="Mocap_Backdash_Dodge">07. Mocap_Backdash_Dodge (0.45s • 28 KF • Evasión Explosiva)</option>
+                <option value="Mocap_Block_Guard">08. Mocap_Block_Guard (0.8s • 49 KF • Guardia FGC Cerrada)</option>
+                <option value="Mocap_Hitstun_Knockback">09. Mocap_Hitstun_Knockback (0.5s • 31 KF • Impacto + Hitstop Shake)</option>
+                <option value="Mocap_Super_Potrero">10. Mocap_Super_Potrero (1.4s • 85 KF • Super Hinchada Nivel 3)</option>
+                <option value="Mocap_KO_Knockdown">11. Mocap_KO_Knockdown (1.2s • 73 KF • Caída K.O. & Rebote)</option>
+              </optgroup>
               <optgroup label="⚡ Clips Stepped FGC (60Hz Pure STEP)">
-                <option value="Anim_Idle">06. Anim_Idle (Guardia de Potrero Stepped)</option>
-                <option value="Anim_5LP_Jab4f">07. Anim_5LP_Jab4f (Startup 4f — Twist Forearm)</option>
-                <option value="Anim_236SK_Shot">08. Anim_236SK_Shot (Bati-Cañonazo — Smear 1.25x)</option>
-                <option value="Anim_623HP_BicycleKick">09. Anim_623HP_BicycleKick (Chilena pelvis_visual_offset)</option>
-                <option value="Anim_214SK_Scorpion">10. Anim_214SK_Scorpion (El Escorpión High-Crush Azul)</option>
+                <option value="Anim_Idle">12. Anim_Idle (Guardia de Potrero Stepped)</option>
+                <option value="Anim_5LP_Jab4f">13. Anim_5LP_Jab4f (Startup 4f — Twist Forearm)</option>
+                <option value="Anim_236SK_Shot">14. Anim_236SK_Shot (Bati-Cañonazo — Smear 1.25x)</option>
+                <option value="Anim_623HP_BicycleKick">15. Anim_623HP_BicycleKick (Chilena pelvis_visual_offset)</option>
+                <option value="Anim_214SK_Scorpion">16. Anim_214SK_Scorpion (El Escorpión High-Crush Azul)</option>
               </optgroup>
             </select>
 
@@ -1288,6 +1300,48 @@
 
         <!-- Columna Central: Viewport 3D Orbital 360° en Tiempo Real (60 FPS) -->
         <div class="panel">
+          <style>
+            .t7-viewport-split {
+              display: grid;
+              grid-template-columns: 1fr;
+              gap: 10px;
+              align-items: stretch;
+            }
+            .t7-viewport-split.with-turnaround {
+              grid-template-columns: 1.25fr 0.75fr;
+            }
+            @media (max-width: 1200px) {
+              .t7-viewport-split.with-turnaround {
+                grid-template-columns: 1fr;
+              }
+            }
+            .t7-turnaround-card {
+              background: var(--bg-card);
+              border: 1px solid rgba(0, 229, 255, 0.45);
+              border-radius: 7px;
+              padding: 10px;
+              display: flex;
+              flex-direction: column;
+              justify-content: space-between;
+              gap: 8px;
+            }
+            .t7-turnaround-frame {
+              background: #383B42;
+              border: 1px solid rgba(245, 196, 81, 0.35);
+              border-radius: 6px;
+              overflow: hidden;
+              display: flex;
+              align-items: center;
+              justify-content: center;
+              min-height: 210px;
+            }
+            .t7-turnaround-frame img {
+              width: 100%;
+              height: auto;
+              display: block;
+              object-fit: contain;
+            }
+          </style>
           <div class="panel-header">
             <div>
               <div class="panel-title">🌐 Viewport 3D Orbital 360° (Arrastra con el Ratón para Rotar | Rueda = Zoom)</div>
@@ -1297,12 +1351,33 @@
               <button class="btn btn-gold btn-sm" id="t7-btn-autorotate">🔄 Auto-Giro: ON</button>
               <button class="btn btn-cyan btn-sm" id="t7-btn-reset-cam">🎯 Reset Cámara</button>
               <button class="btn btn-turf btn-sm" id="t7-btn-kick-ball">⚽ Patear Balón 32-Paneles</button>
+              <button class="btn btn-cyan btn-sm" id="t7-btn-toggle-turnaround">📐 Referencia Turnaround 2D: ON</button>
             </div>
           </div>
 
-          <div class="canvas-wrap" style="border-color:var(--purple); cursor:grab;" id="t7-canvas-wrap">
-            <canvas id="t7-canvas" width="760" height="440"></canvas>
-            <div class="t7-webgl-hud" id="t7-webgl-hud"></div>
+          <div class="t7-viewport-split with-turnaround" id="t7-viewport-split">
+            <div class="canvas-wrap" style="border-color:var(--purple); cursor:grab;" id="t7-canvas-wrap">
+              <canvas id="t7-canvas" width="760" height="440"></canvas>
+              <div class="t7-webgl-hud" id="t7-webgl-hud"></div>
+            </div>
+
+            <aside class="t7-turnaround-card" id="t7-turnaround-card">
+              <div style="display:flex; justify-content:space-between; align-items:center; gap:6px; flex-wrap:wrap;">
+                <div style="font-size:11px; font-weight:800; color:var(--cyan);">
+                  📐 Referencia Turnaround 2D
+                </div>
+                <span class="badge-engine" id="t7-turnaround-badge" style="font-size:9.5px;">Turnaround_PIBE_CO.png</span>
+              </div>
+              <div class="t7-turnaround-frame">
+                <a id="t7-turnaround-zoom" href="../Assets/Design3D_Turnarounds/Turnaround_PIBE_CO.png" target="_blank" title="Abrir lámina Turnaround 2D en resolución completa" style="display:block; width:100%;">
+                  <img id="t7-turnaround-img" src="../Assets/Design3D_Turnarounds/Turnaround_PIBE_CO.png" alt="Referencia Turnaround 2D del Luchador" />
+                </a>
+              </div>
+              <div style="display:flex; justify-content:space-between; align-items:center; gap:6px; flex-wrap:wrap; font-size:10.5px; color:var(--text-muted);">
+                <span id="t7-turnaround-caption">El Pibe (PIBE_CO) • A-Pose / Perfil / Espalda / 3/4</span>
+                <a href="design-3d-brief.html" class="btn btn-sm btn-gold" style="text-decoration:none;">📦 Brief 3D (17/17) ▶</a>
+              </div>
+            </aside>
           </div>
 
           <div class="box-legend">
@@ -1320,7 +1395,7 @@
               <div class="panel-title">🔬 Inspector Técnico glTF 2.0 & Pipeline UE 5.4+</div>
               <div class="panel-subtitle" id="t7-manifest-source">Animations3D_TechnicalManifest.json • Validated</div>
             </div>
-            <span class="badge-engine" id="t7-insp-size">155.9 KB</span>
+            <span class="badge-engine" id="t7-insp-size">530.7 KB</span>
           </div>
 
           <!-- Inspector en Vivo de Geometría, Bounds, Clips y Flags UE 5.4 -->
@@ -1334,7 +1409,7 @@
             </div>
             <div class="kv-row">
               <span>Geometría Base glTF (Vértices / Triángulos):</span>
-              <span id="t7-insp-geo" style="color:var(--turf);">528 Verts / 264 Tris (LOD0 Target: 65k)</span>
+              <span id="t7-insp-geo" style="color:var(--turf);">4,356 Verts / 6,336 Tris (LOD0 Target: 65k)</span>
             </div>
             <div class="kv-row">
               <span>Dimensiones / Bounding Box (Metros):</span>
@@ -1391,6 +1466,10 @@
               <a href="../Assets/Models3D/Props/SM_Ball_TruncatedIcosahedron_32Panels.glb" download class="btn btn-sm" style="justify-content:space-between;">
                 <span>⚽ SM_Ball_TruncatedIcosahedron_32Panels.glb</span>
                 <span style="color:var(--gold);">561 Verts / 1,024 Tris</span>
+              </a>
+              <a href="design-3d-brief.html" class="btn btn-sm btn-cyan" style="justify-content:space-between;">
+                <span>📦 Entregable Diseño 3D &amp; Turnarounds (17 Personajes)</span>
+                <span style="color:var(--gold-bright);">Abrir Brief ▶</span>
               </a>
               <a href="art-gallery.html" class="btn btn-sm" style="justify-content:space-between;">
                 <span>🖼️ Galería de Arte Renacimiento Sfumato & Street-Ink</span>
@@ -1461,7 +1540,7 @@
     </div>
   </div>
 
-  <script src="webgl-viewer.js"></script>
-  <script src="app.js"></script>
+  <script src="webgl-viewer.js?v=6"></script>
+  <script src="app.js?v=6"></script>
 </body>
 </html>

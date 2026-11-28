@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>LA COPA ETERNA — Entregable Oficial para Diseño & Esculpido 3D (17 Personajes)</title>
+  <link rel="stylesheet" href="styles.css" />
+  <style>
+    :root {
+      --sfumato-gold: #d4a347;
+      --sfumato-gold-bright: #ffe299;
+      --sfumato-crimson: #9e2222;
+      --sfumato-emerald: #00c864;
+      --sfumato-panel: rgba(20, 14, 9, 0.92);
+      --sfumato-border: rgba(212, 163, 71, 0.55);
+      --font-display: 'Georgia', 'Times New Roman', serif;
+    }
+
+    body {
+      margin: 0;
+      padding: 0;
+      background: #0c0805;
+      color: #f5ebd7;
+      font-family: var(--font-ui);
+    }
+
+    .topbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 14px 28px;
+      background: rgba(16, 10, 6, 0.96);
+      border-bottom: 1px solid var(--sfumato-border);
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+
+    .container {
+      max-width: 1520px;
+      margin: 0 auto;
+      padding: 22px 26px 48px;
+      display: flex;
+      flex-direction: column;
+      gap: 22px;
+    }
+
+    .section-card {
+      background: var(--sfumato-panel);
+      border: 1.5px solid var(--sfumato-border);
+      border-radius: 12px;
+      padding: 18px 20px;
+      box-shadow: 0 14px 36px rgba(0, 0, 0, 0.75);
+    }
+
+    .section-card h2 {
+      font-family: var(--font-display);
+      color: var(--sfumato-gold-bright);
+      margin: 0 0 10px;
+      font-size: 1.25rem;
+    }
+
+    .turnaround-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(430px, 1fr));
+      gap: 16px;
+    }
+
+    .tcard {
+      background: #140d08;
+      border: 1px solid rgba(212, 163, 71, 0.4);
+      border-radius: 10px;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .tcard img {
+      width: 100%;
+      height: auto;
+      display: block;
+      background: #383B42;
+    }
+
+    .tcard-meta {
+      padding: 12px 14px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .specs-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 12px;
+    }
+
+    .spec-pill {
+      background: rgba(12, 8, 5, 0.85);
+      border-left: 3px solid var(--sfumato-gold-bright);
+      padding: 10px 12px;
+      border-radius: 6px;
+      font-size: 0.84rem;
+      line-height: 1.45;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.82rem;
+    }
+
+    th, td {
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+      padding: 8px 10px;
+      text-align: left;
+      vertical-align: top;
+    }
+
+    th {
+      color: var(--sfumato-gold-bright);
+      font-family: var(--font-mono);
+      font-size: 0.76rem;
+      text-transform: uppercase;
+    }
+
+    .badge-ok { color: #00e676; font-weight: 800; font-family: var(--font-mono); }
+    .badge-pend { color: #ffe07d; font-weight: 800; font-family: var(--font-mono); }
+  </style>
+</head>
+<body>
+
+  <header class="topbar">
+    <div>
+      <div style="font-family:var(--font-display); font-weight:900; font-size:16px; color:var(--sfumato-gold-bright);">
+        📦 ENTREGABLE OFICIAL — DISEÑO & ESCULPIDO 3D (UE 5.8.4 + BLENDER 5.2)
+      </div>
+      <div style="font-family:var(--font-mono); font-size:11px; color:#cbbba2;">
+        LA COPA ETERNA: SANGRE Y POTRERO • Hojas Turnaround Fotorrealistas, Topología, Huesos, Chaos Cloth & Prompts
+      </div>
+    </div>
+
+    <div class="btn-group">
+      <a href="index.html#tab-6" class="btn btn-crimson btn-sm" style="text-decoration:none; box-shadow:0 0 14px rgba(255,42,84,0.45);">🎮 ¡Jugar en Arena 3D (17 Modelos)!</a>
+      <a href="index.html#tab-7" class="btn btn-gold btn-sm" style="text-decoration:none;">🧊 Abrir Visor 3D WebGL2 (TAB 07)</a>
+      <a href="../Docs/ENTREGABLE_DISENO_3D.md" target="_blank" class="btn btn-cyan btn-sm" style="text-decoration:none;">📄 Ver Documento Técnico (.md)</a>
+      <a href="main-menu.html" class="btn btn-turf btn-sm" style="text-decoration:none;">🏛️ Menú Principal</a>
+    </div>
+  </header>
+
+  <main class="container">
+
+    <section class="section-card">
+      <h2>1. Hojas de Referencia Fotorrealista (17/17 Completas — <em>Character Turnaround Sheets</em>)</h2>
+      <p style="font-size:0.86rem; color:#d6c5ad; margin-top:0;">
+        Generadas en Google Gemini sobre fondo neutro <code>#383B42</code> (A-Pose Frente, Perfil Lateral, Espalda y Close-up Facial 3/4) listas como planos de escultura en ZBrush / Blender 5.2.
+      </p>
+
+      <div class="turnaround-grid" id="turnaround-grid"></div>
+    </section>
+
+    <section class="section-card">
+      <h2>2. Requisitos Técnicos Obligatorios de Entrega para el Equipo 3D</h2>
+      <div class="specs-grid">
+        <div class="spec-pill">
+          <strong>🦴 Esqueleto &amp; Hitstop (38–40 huesos):</strong><br />
+          Conservar exactamente <code>root → pelvis → pelvis_visual_offset</code>, twist bones (<code>lowerarm_twist_01</code>, <code>calf_twist_01</code>) y cadenas <code>hair_chain_01..06</code> + <code>kit_hem_01..04</code>.
+        </div>
+        <div class="spec-pill">
+          <strong>👕 Chaos Cloth 5.4 (<code>COLOR_0.R</code>):</strong><br />
+          Pintar vértices de camiseta: <code>0.0</code> fijo en cuello/hombros (<code>0.5 cm</code>), gradiente suave hasta <code>1.0</code> en faldón/mangas (<code>12.0 cm</code> max distance).
+        </div>
+        <div class="spec-pill">
+          <strong>🎨 3 Slots de Material PBR (UE 5.8):</strong><br />
+          0: <code>M_FighterSkin_SSS</code> (poros + SSS) • 1: <code>M_FighterKit_Retro90s_Cloth</code> (Albedo/ORM/Jacquard Normal) • 2: <code>M_FighterHairCards_And_Eyes</code>. <strong>Nanite OFF</strong> en SkeletalMesh.
+        </div>
+        <div class="spec-pill">
+          <strong>🎬 LOD0, Morph Targets &amp; 16 Clips @ 60 FPS:</strong><br />
+          LOD0 target hasta 65k tris (malla anatómica esculpida actual 14.5k–17.6k tris desde HP 80.3k–99.1k tris con 51 texturas PBR embebidas), 4 <em>Shape Keys</em> mínimos (<code>Smile_Victory</code>, <code>Battle_Roar</code>, <code>Pain_Hitstun</code>, <code>Effort_Sprint</code>) y 16 animaciones a 60 Hz exactos.
+        </div>
+      </div>
+    </section>
+
+    <section class="section-card">
+      <h2>3. Matriz Completa del Roster (17 Luchadores + Referencias 3D)</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>Código</th>
+            <th>Personaje</th>
+            <th>País / Arquetipo</th>
+            <th>Escala</th>
+            <th>Estado Turnaround</th>
+            <th>Modelo Base Rig (.glb)</th>
+          </tr>
+        </thead>
+        <tbody id="roster-table-body"></tbody>
+      </table>
+    </section>
+
+  </main>
+
+  <script>
+    (() => {
+      const ROSTER_BRIEF = [
+        { code: 'FENOMENO_BR', name: 'O Fenômeno', meta: 'Brasil 🇧🇷 • Rushdown Explosivo', scale: '1.83m / Bulk 1.06x', status: '✅ Guardada', ok: true, glb: 'SK_FENOMENO_BR.glb' },
+        { code: 'BRUXO_BR', name: 'O Bruxo', meta: 'Brasil 🇧🇷 • Trickster', scale: '1.82m / Bulk 0.98x', status: '✅ Guardada', ok: true, glb: 'SK_BRUXO_BR.glb' },
+        { code: 'CANON_AR', name: 'El Cañón', meta: 'Argentina 🇦🇷 • Power Shoto', scale: '1.85m / Bulk 1.10x', status: '✅ Guardada', ok: true, glb: 'SK_CANON_AR.glb' },
+        { code: 'PULGA_AR', name: 'La Pulga', meta: 'Argentina 🇦🇷 • Pixie Footsies', scale: '1.70m / Bulk 0.92x', status: '✅ Guardada', ok: true, glb: 'SK_PULGA_AR.glb' },
+        { code: 'PIBE_CO', name: 'El Pibe', meta: 'Colombia 🇨🇴 • Setplay Zoner', scale: '1.76m / Bulk 1.00x', status: '✅ Guardada', ok: true, glb: 'SK_PIBE_CO.glb' },
+        { code: 'LOCO_CO', name: 'El Loco', meta: 'Colombia 🇨🇴 • Counter-Acrobat', scale: '1.76m / Bulk 1.04x', status: '✅ Guardada', ok: true, glb: 'SK_LOCO_CO.glb' },
+        { code: 'PISTOLERO_UY', name: 'El Pistolero', meta: 'Uruguay 🇺🇾 • Hybrid Grappler', scale: '1.82m / Bulk 1.08x', status: '✅ Guardada', ok: true, glb: 'SK_PISTOLERO_UY.glb' },
+        { code: 'MATADOR_UY', name: 'El Matador', meta: 'Uruguay 🇺🇾 • Long-Range Hybrid', scale: '1.80m / Bulk 1.02x', status: '✅ Guardada', ok: true, glb: 'SK_MATADOR_UY.glb' },
+        { code: 'BAMBAM_CL', name: 'Bam-Bam', meta: 'Chile 🇨🇱 • Air-Dominance', scale: '1.78m / Bulk 1.03x', status: '✅ Guardada', ok: true, glb: 'SK_BAMBAM_CL.glb' },
+        { code: 'REY_CL', name: 'El Rey', meta: 'Chile 🇨🇱 • Berserker Rekka', scale: '1.80m / Bulk 1.07x', status: '✅ Guardada', ok: true, glb: 'SK_REY_CL.glb' },
+        { code: 'BULLDOG_PY', name: 'El Bulldog', meta: 'Paraguay 🇵🇾 • Big-Body', scale: '1.92m / Bulk 1.24x', status: '✅ Guardada', ok: true, glb: 'SK_BULLDOG_PY.glb' },
+        { code: 'MAESTRO_PE', name: 'El Maestro', meta: 'Perú 🇵🇪 • Technical Footsies', scale: '1.77m / Bulk 0.96x', status: '✅ Guardada', ok: true, glb: 'SK_MAESTRO_PE.glb' },
+        { code: 'TREN_EC', name: 'El Tren Amazónico', meta: 'Ecuador 🇪🇨 • Speedster', scale: '1.79m / Bulk 1.08x', status: '✅ Guardada', ok: true, glb: 'SK_TREN_EC.glb' },
+        { code: 'HURACAN_VE', name: 'El Huracán Vinotinto', meta: 'Venezuela 🇻🇪 • Dead-Ball Sniper', scale: '1.80m / Bulk 1.01x', status: '✅ Guardada', ok: true, glb: 'SK_HURACAN_VE.glb' },
+        { code: 'DIABLO_BO', name: 'El Diablo Andino', meta: 'Bolivia 🇧🇴 • Stamina Debuffer', scale: '1.76m / Bulk 0.99x', status: '✅ Guardada', ok: true, glb: 'SK_DIABLO_BO.glb' },
+        { code: 'GENERAL_FR', name: 'Le Général', meta: 'Francia 🇫🇷 • Tactical Stance', scale: '1.85m / Bulk 1.04x', status: '✅ Guardada', ok: true, glb: 'SK_GENERAL_FR.glb' },
+        { code: 'VAR_ZERO_BOSS', name: 'El Juez Supremo (V.A.R.-ZERO)', meta: 'Boss Final ⚠️ • Time Rewinder', scale: '2.15m / Bulk 1.28x', status: '✅ Guardada', ok: true, glb: 'SK_SUPREME_JUDGE_BOSS.glb' }
+      ];
+
+      const grid = document.getElementById('turnaround-grid');
+      const tbody = document.getElementById('roster-table-body');
+
+      ROSTER_BRIEF.forEach((r, idx) => {
+        const pngHref = `../Assets/Design3D_Turnarounds/Turnaround_${r.code}.png`;
+        const isBoss = r.code === 'VAR_ZERO_BOSS';
+        const rivalIdx = isBoss ? 0 : 16;
+        const playHref = `index.html#tab-6&p1=${idx}&p2=${rivalIdx}&stage=${Math.min(9, Math.floor(idx / 2))}`;
+
+        const card = document.createElement('article');
+        card.className = 'tcard';
+        card.innerHTML = `
+          <img src="${pngHref}" alt="Turnaround ${r.name} (${r.code})" loading="lazy" />
+          <div class="tcard-meta">
+            <div>
+              <strong>${r.name} (${r.code})</strong><br />
+              <span style="font-size:0.78rem; color:#cbbba2;">${r.meta} • ${r.scale}</span>
+            </div>
+            <div style="display:flex; gap:6px; flex-wrap:wrap;">
+              <a href="${playHref}" class="btn btn-sm btn-turf" style="text-decoration:none;">🎮 Jugar 3D</a>
+              <a href="${pngHref}" download class="btn btn-sm btn-cyan" style="text-decoration:none;">🖼️ PNG</a>
+              <a href="../Assets/Models3D/Fighters/${r.glb}" download class="btn btn-sm ${isBoss ? 'btn-crimson' : 'btn-gold'}" style="text-decoration:none;">📥 ${r.glb}</a>
+            </div>
+          </div>
+        `;
+        grid.appendChild(card);
+
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td><code>${r.code}</code></td>
+          <td><strong>${r.name}</strong></td>
+          <td>${r.meta}</td>
+          <td>${r.scale}</td>
+          <td class="badge-ok"><a href="${pngHref}" target="_blank" style="color:#00e676; text-decoration:none;">${r.status}</a></td>
+          <td>
+            <a href="${playHref}" style="color:#00e676; font-weight:800; margin-right:8px; text-decoration:none;">🎮 Jugar 3D</a>
+            <a href="../Assets/Models3D/Fighters/${r.glb}" download style="color:var(--sfumato-gold-bright);">${r.glb}</a>
+          </td>
+        `;
+        tbody.appendChild(tr);
+      });
+    })();
+  </script>
+</body>
+</html>

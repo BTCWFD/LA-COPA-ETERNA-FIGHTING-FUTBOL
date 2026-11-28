@@ -1,0 +1,933 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>LA COPA ETERNA — Modo Historia: Crónicas del Potrero (6 Capítulos)</title>
+  <link rel="stylesheet" href="styles.css" />
+  <style>
+    :root {
+      --sfumato-gold: #d4a347;
+      --sfumato-gold-bright: #ffe299;
+      --sfumato-crimson: #9e2222;
+      --sfumato-crimson-bright: #e03a3a;
+      --sfumato-emerald: #00c864;
+      --sfumato-azure: #38b6ff;
+      --sfumato-wood: #1c120a;
+      --sfumato-panel: rgba(20, 14, 9, 0.92);
+      --sfumato-panel-soft: rgba(28, 19, 12, 0.8);
+      --sfumato-border: rgba(212, 163, 71, 0.55);
+      --font-display: 'Georgia', 'Times New Roman', serif;
+    }
+
+    body.theme-street-ink {
+      --sfumato-gold: #00e5ff;
+      --sfumato-gold-bright: #00e676;
+      --sfumato-crimson: #ff2a54;
+      --sfumato-crimson-bright: #ff5c7c;
+      --sfumato-wood: #060911;
+      --sfumato-panel: rgba(10, 15, 25, 0.93);
+      --sfumato-panel-soft: rgba(15, 23, 38, 0.84);
+      --sfumato-border: rgba(0, 229, 255, 0.55);
+      --font-display: 'Segoe UI', system-ui, sans-serif;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      padding: 0;
+      min-height: 100vh;
+      overflow-x: hidden;
+      background-color: #0b0704;
+      color: #f5ebd7;
+      font-family: var(--font-ui);
+      position: relative;
+      user-select: none;
+    }
+
+    .hero-bg {
+      position: fixed;
+      inset: 0;
+      background-image: url('../Assets/ConceptArt/LaCopaEterna_KeyArt_RosterClash.jpg');
+      background-size: cover;
+      background-position: center;
+      filter: sepia(0.42) contrast(1.16) brightness(0.30);
+      transform: scale(1.03);
+      transition: filter 0.45s ease, background-image 0.4s ease;
+      z-index: 0;
+    }
+
+    body.theme-street-ink .hero-bg {
+      filter: saturate(1.35) contrast(1.22) brightness(0.26);
+    }
+
+    .chiaroscuro-vignette {
+      position: fixed;
+      inset: 0;
+      background:
+        radial-gradient(circle at 50% 25%, rgba(212, 163, 71, 0.16) 0%, rgba(14, 9, 5, 0.88) 68%, rgba(6, 4, 2, 0.97) 100%),
+        linear-gradient(180deg, rgba(12, 8, 4, 0.9) 0%, rgba(18, 12, 6, 0.68) 50%, rgba(10, 6, 3, 0.95) 100%);
+      pointer-events: none;
+      z-index: 1;
+    }
+
+    #embers-canvas {
+      position: fixed;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: 2;
+    }
+
+    .story-topbar {
+      position: relative;
+      z-index: 10;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 13px 28px;
+      background: linear-gradient(180deg, rgba(15, 10, 6, 0.96) 0%, rgba(15, 10, 6, 0.65) 100%);
+      border-bottom: 1px solid var(--sfumato-border);
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+
+    .crest-badge {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .crest-medallion {
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      background: radial-gradient(circle, #ffe299 0%, #b8860b 70%, #4a3000 100%);
+      border: 2px solid #fff0c2;
+      box-shadow: 0 0 18px rgba(212, 163, 71, 0.65);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 20px;
+      color: #1a0f05;
+    }
+
+    .story-container {
+      position: relative;
+      z-index: 10;
+      max-width: 1580px;
+      margin: 0 auto;
+      padding: 20px 26px 46px;
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
+    }
+
+    .match-toast {
+      display: none;
+      align-items: center;
+      justify-content: space-between;
+      gap: 14px;
+      padding: 13px 18px;
+      border-radius: 10px;
+      background: linear-gradient(90deg, rgba(0, 200, 100, 0.16), rgba(20, 14, 9, 0.94));
+      border: 1.5px solid var(--sfumato-emerald);
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.7);
+      font-size: 0.92rem;
+      flex-wrap: wrap;
+    }
+    .match-toast.show { display: flex; }
+
+    /* Epílogo Final de Campaña Completada */
+    .epilogue-banner {
+      display: none;
+      background: linear-gradient(135deg, rgba(212, 163, 71, 0.24), rgba(18, 12, 6, 0.96), rgba(0, 200, 100, 0.16));
+      border: 2px solid var(--sfumato-gold-bright);
+      border-radius: 14px;
+      padding: 22px 28px;
+      text-align: center;
+      box-shadow: 0 0 50px rgba(212, 163, 71, 0.35);
+      flex-direction: column;
+      align-items: center;
+      gap: 12px;
+    }
+    .epilogue-banner.show { display: flex; }
+    .epilogue-banner img {
+      width: 280px;
+      height: 165px;
+      object-fit: cover;
+      border-radius: 10px;
+      border: 2px solid var(--sfumato-gold-bright);
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.85);
+    }
+
+    /* Layout Principal: Columna Izquierda (Lista 6 Capítulos) + Columna Derecha (Escena Cinematográfica & Diálogo) */
+    .story-workspace {
+      display: grid;
+      grid-template-columns: 420px 1fr;
+      gap: 20px;
+      align-items: start;
+    }
+
+    @media (max-width: 1120px) {
+      .story-workspace { grid-template-columns: 1fr; }
+    }
+
+    .sfumato-panel {
+      background: var(--sfumato-panel);
+      border: 1.5px solid var(--sfumato-border);
+      border-radius: 12px;
+      padding: 16px 18px;
+      box-shadow: 0 14px 40px rgba(0, 0, 0, 0.78);
+    }
+
+    .panel-kicker {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      font-weight: 800;
+      letter-spacing: 0.9px;
+      text-transform: uppercase;
+      color: var(--sfumato-gold-bright);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 12px;
+    }
+
+    .chapter-list {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .chapter-card {
+      background: var(--sfumato-panel-soft);
+      border: 1px solid rgba(212, 163, 71, 0.3);
+      border-left: 4px solid var(--sfumato-gold);
+      border-radius: 8px;
+      padding: 12px 14px;
+      cursor: pointer;
+      transition: all 0.18s ease;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .chapter-card:hover {
+      transform: translateX(4px);
+      border-color: var(--sfumato-gold-bright);
+    }
+
+    .chapter-card.active {
+      border-color: var(--sfumato-gold-bright);
+      border-left-width: 7px;
+      border-left-color: var(--sfumato-emerald);
+      background: linear-gradient(90deg, rgba(0, 200, 100, 0.14), rgba(20, 14, 9, 0.95));
+      box-shadow: 0 0 20px rgba(212, 163, 71, 0.25);
+    }
+
+    .chapter-card.locked {
+      opacity: 0.56;
+      border-left-color: #6b5f50;
+    }
+
+    .chapter-card.completed {
+      border-left-color: var(--sfumato-emerald);
+    }
+
+    .ch-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-family: var(--font-mono);
+      font-size: 10.5px;
+      color: #d6c5ad;
+    }
+
+    .ch-title {
+      font-family: var(--font-display);
+      font-size: 1rem;
+      font-weight: 800;
+      color: #fff6e0;
+    }
+
+    .ch-sub {
+      font-size: 0.78rem;
+      color: #bcae96;
+    }
+
+    /* Escenario Cinematográfico Derecho */
+    .cinema-stage {
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+
+    .scene-backdrop-box {
+      position: relative;
+      width: 100%;
+      height: 310px;
+      border-radius: 10px;
+      overflow: hidden;
+      border: 1.5px solid var(--sfumato-border);
+      background: #090604;
+    }
+
+    .scene-backdrop-box img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transition: transform 0.5s ease;
+    }
+
+    .scene-backdrop-vignette {
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(180deg, rgba(10, 6, 3, 0.22) 0%, rgba(10, 6, 3, 0.92) 100%);
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      padding: 16px 20px;
+    }
+
+    .scene-badges {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .scene-pill {
+      background: rgba(12, 8, 4, 0.88);
+      border: 1px solid var(--sfumato-gold);
+      color: var(--sfumato-gold-bright);
+      padding: 4px 10px;
+      border-radius: 5px;
+      font-family: var(--font-mono);
+      font-size: 11px;
+      font-weight: 800;
+    }
+
+    .scene-matchup-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-end;
+      gap: 16px;
+      flex-wrap: wrap;
+    }
+
+    .scene-matchup-row h1 {
+      font-family: var(--font-display);
+      font-size: 1.7rem;
+      color: #fff6e0;
+      margin: 0 0 4px;
+      text-shadow: 0 2px 14px rgba(0, 0, 0, 0.95);
+    }
+
+    /* Caja de Diálogo Estilo Novela Visual / Arcade */
+    .dialogue-box {
+      background: rgba(12, 8, 5, 0.92);
+      border: 1.5px solid var(--sfumato-border);
+      border-radius: 10px;
+      padding: 16px;
+      display: grid;
+      grid-template-columns: 96px 1fr;
+      gap: 16px;
+      align-items: center;
+    }
+
+    @media (max-width: 680px) {
+      .dialogue-box { grid-template-columns: 1fr; }
+    }
+
+    .speaker-portrait {
+      width: 96px;
+      height: 96px;
+      border-radius: 8px;
+      border: 2px solid var(--sfumato-gold-bright);
+      background-color: #140d08;
+      background-repeat: no-repeat;
+      flex-shrink: 0;
+      box-shadow: 0 0 18px rgba(212, 163, 71, 0.35);
+    }
+
+    .speaker-name {
+      font-family: var(--font-mono);
+      font-size: 12px;
+      font-weight: 800;
+      color: var(--sfumato-gold-bright);
+      margin-bottom: 5px;
+      display: flex;
+      justify-content: space-between;
+      gap: 10px;
+    }
+
+    .dialogue-text {
+      font-family: var(--font-display);
+      font-size: 1.05rem;
+      line-height: 1.5;
+      color: #f6ead6;
+      min-height: 52px;
+      margin-bottom: 10px;
+    }
+
+    .dialogue-controls {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+
+    .mission-strip {
+      background: rgba(212, 163, 71, 0.08);
+      border-left: 3px solid var(--sfumato-gold-bright);
+      padding: 10px 14px;
+      border-radius: 6px;
+      font-size: 0.85rem;
+      color: #dfd0b8;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .story-dock {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      flex-wrap: wrap;
+      padding-top: 6px;
+      border-top: 1px solid rgba(255, 255, 255, 0.08);
+    }
+  </style>
+</head>
+<body>
+
+  <div class="hero-bg" id="hero-bg"></div>
+  <div class="chiaroscuro-vignette"></div>
+  <canvas id="embers-canvas"></canvas>
+
+  <header class="story-topbar">
+    <div class="crest-badge">
+      <div class="crest-medallion">📖</div>
+      <div>
+        <div style="font-family:var(--font-display); font-weight:900; font-size:15px; color:var(--sfumato-gold-bright); letter-spacing:1px;">
+          MODO HISTORIA — CRÓNICAS DE LA COPA ETERNA (6 CAPÍTULOS)
+        </div>
+        <div style="font-family:var(--font-mono); font-size:11px; color:#b8a68e;">
+          Campaña Narrativa CONMEBOL • Cinemáticas de Potrero + Combates Canónicos a 60 FPS
+        </div>
+      </div>
+    </div>
+
+    <div class="btn-group" style="align-items:center; flex-wrap:wrap;">
+      <button class="btn btn-gold btn-sm" id="btn-theme-toggle">🖼️ Estilo: Renacimiento Sfumato</button>
+      <a href="main-menu.html" class="btn btn-cyan btn-sm" style="text-decoration:none;">🏛️ Menú Principal</a>
+      <a href="tournament.html" class="btn btn-turf btn-sm" style="text-decoration:none;">🏆 Modo Torneo</a>
+      <a href="character-select.html" class="btn btn-gold btn-sm" style="text-decoration:none;">👥 Selección 16+1</a>
+      <a href="art-gallery.html" class="btn btn-crimson btn-sm" style="text-decoration:none;">🎨 Galería de Arte</a>
+    </div>
+  </header>
+
+  <main class="story-container">
+
+    <div class="match-toast" id="match-toast">
+      <div id="match-toast-text"></div>
+      <button class="btn btn-sm btn-gold" id="btn-dismiss-toast">Entendido</button>
+    </div>
+
+    <section class="epilogue-banner" id="epilogue-banner">
+      <div style="font-family:var(--font-mono); font-size:12px; color:#ffe299; letter-spacing:2px; font-weight:800;">
+        ✦ EPÍLOGO CANÓNICO DESBLOQUEADO • LIBERTAD DEL POTRERO SUDAMERICANO ✦
+      </div>
+      <h2 style="font-family:var(--font-display); font-size:1.9rem; color:var(--sfumato-gold-bright); margin:0;">
+        🏆 LA COPA ETERNA HA SIDO LIBERADA 🏆
+      </h2>
+      <img src="../Assets/ConceptArt/Trophy_LaCopaEterna_Renaissance.jpg" alt="Trofeo Oficial La Copa Eterna" />
+      <p id="epilogue-summary" style="max-width:860px; font-size:0.95rem; color:#f3e4cb; margin:0;">
+        Los seis capítulos de La Copa Eterna han concluido: V.A.R.-ZERO fue derrotado con la Gambeta Suprema y el fútbol de potrero vuelve a latir a 60 cuadros por segundo.
+      </p>
+    </section>
+
+    <div class="story-workspace">
+
+      <!-- Columna Izquierda: Línea Temporal de los 6 Capítulos -->
+      <aside class="sfumato-panel">
+        <div class="panel-kicker">
+          <span>📜 CRÓNICA OFICIAL (6 CAPÍTULOS)</span>
+          <span id="story-progress-pill" style="color:var(--sfumato-emerald);">0 / 6 COMPLETADOS</span>
+        </div>
+
+        <div class="chapter-list" id="chapter-list"></div>
+
+        <div style="margin-top:14px; display:flex; justify-content:space-between; align-items:center; gap:8px; flex-wrap:wrap;">
+          <span style="font-family:var(--font-mono); font-size:10.5px; color:#bcae96;">Persistencia: localStorage</span>
+          <button class="btn btn-crimson btn-sm" id="btn-reset-story">🔄 Reiniciar Campaña</button>
+        </div>
+      </aside>
+
+      <!-- Columna Derecha: Escenario Cinematográfico & Diálogo Interactivo -->
+      <section class="sfumato-panel cinema-stage">
+        <div class="panel-kicker">
+          <span id="scene-act-kicker">CAPÍTULO I — ACTO INICIAL</span>
+          <span id="scene-status-tag" style="color:var(--sfumato-gold-bright);">⚔️ LISTO PARA JUGAR</span>
+        </div>
+
+        <div class="scene-backdrop-box">
+          <img id="scene-backdrop-img" src="../Assets/ConceptArt/Stage_MaracanaBombonera_Concept.jpg" alt="Escenario del Capítulo" />
+          <div class="scene-backdrop-vignette">
+            <div class="scene-badges">
+              <span class="scene-pill" id="scene-stage-pill">🏟️ Templo do Maracanã (Brasil 🇧🇷)</span>
+              <span class="scene-pill" id="scene-music-pill">🎵 Wwise: 115 BPM • Sfumato</span>
+            </div>
+
+            <div class="scene-matchup-row">
+              <div>
+                <h1 id="scene-chapter-title">Capítulo I: La Chispa del Potrero</h1>
+                <div style="font-family:var(--font-mono); font-size:12px; color:var(--sfumato-gold-bright);" id="scene-fighters-line">
+                  O Fenômeno (Brasil 🇧🇷) vs El Loco (Colombia 🇨🇴)
+                </div>
+              </div>
+              <span class="scene-pill" id="scene-rank-pill">Rango Mínimo: Libre</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Caja de Diálogo Narrativo Interactivo -->
+        <div class="dialogue-box">
+          <div class="speaker-portrait" id="speaker-portrait"></div>
+          <div>
+            <div class="speaker-name">
+              <span id="speaker-name">O FENÔMENO</span>
+              <span id="dialogue-step-counter" style="color:#bcae96;">Línea 1 / 3</span>
+            </div>
+            <div class="dialogue-text" id="dialogue-text"></div>
+            <div class="dialogue-controls">
+              <button class="btn btn-cyan btn-sm" id="btn-prev-line">◀ Anterior</button>
+              <button class="btn btn-gold btn-sm" id="btn-next-line">Siguiente Línea ▶</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="mission-strip">
+          <div>
+            <strong style="color:var(--sfumato-gold-bright);">🎯 Sinopsis & Objetivo Táctico:</strong>
+            <span id="scene-objective"></span>
+          </div>
+        </div>
+
+        <div class="story-dock">
+          <div style="font-family:var(--font-mono); font-size:11px; color:#cbbba2;" id="story-dock-hint">
+            Completa el combate en TAB 06 para desbloquear el siguiente capítulo canónico.
+          </div>
+          <div class="btn-group">
+            <button class="btn btn-turf" id="btn-demo-complete">⚡ Completar Capítulo (Demo Historia)</button>
+            <button class="btn btn-gold" id="btn-play-chapter" style="font-size:13px; padding:9px 18px;">
+              ⚔️ JUGAR CAPÍTULO EN VIVO (60 FPS)
+            </button>
+          </div>
+        </div>
+      </section>
+
+    </div>
+  </main>
+
+  <script>
+    (() => {
+      'use strict';
+
+      const FIGHTERS = [
+        { idx: 0,  DisplayName: 'O Fenômeno',                 Country: 'Brasil 🇧🇷',     ArtSheet: '../Assets/ConceptArt/VSScreen_Brasil_vs_Argentina_Renaissance.jpg', BgSize: '210% auto', BgPos: '12% 24%' },
+        { idx: 2,  DisplayName: 'El Cañón',                   Country: 'Argentina 🇦🇷',  ArtSheet: '../Assets/ConceptArt/CharacterSelect_PortraitSheet_CONMEBOL.jpg',   BgSize: '310% auto', BgPos: '84% 22%' },
+        { idx: 3,  DisplayName: 'La Pulga',                   Country: 'Argentina 🇦🇷',  ArtSheet: '../Assets/ConceptArt/VSScreen_Brasil_vs_Argentina_Renaissance.jpg', BgSize: '210% auto', BgPos: '88% 24%' },
+        { idx: 5,  DisplayName: 'El Loco',                    Country: 'Colombia 🇨🇴',   ArtSheet: '../Assets/ConceptArt/CharacterSelect_PortraitSheet_CONMEBOL.jpg',   BgSize: '310% auto', BgPos: '48% 22%' },
+        { idx: 6,  DisplayName: 'El Pistolero',               Country: 'Uruguay 🇺🇾',    ArtSheet: '../Assets/ConceptArt/CharacterSelect_PortraitSheet_CONMEBOL.jpg',   BgSize: '310% auto', BgPos: '25% 78%' },
+        { idx: 12, DisplayName: 'El Tren Amazónico',          Country: 'Ecuador 🇪🇨',    ArtSheet: '../Assets/ConceptArt/CharacterSelect_RosterWave2_Renaissance.jpg',  BgSize: '400% auto', BgPos: '6% 86%'  },
+        { idx: 14, DisplayName: 'El Diablo Andino',           Country: 'Bolivia 🇧🇴',    ArtSheet: '../Assets/ConceptArt/CharacterSelect_RosterWave2_Renaissance.jpg',  BgSize: '400% auto', BgPos: '66% 86%' },
+        { idx: 15, DisplayName: 'Le Général',                 Country: 'Francia 🇫🇷',    ArtSheet: '../Assets/ConceptArt/CharacterSelect_RosterWave2_Renaissance.jpg',  BgSize: '400% auto', BgPos: '95% 86%' },
+        { idx: 16, DisplayName: 'Juez Supremo (V.A.R.-ZERO)', Country: 'BOSS FINAL ⚠️', ArtSheet: '../Assets/ConceptArt/Boss_VAR_ZERO_Renaissance.jpg',                BgSize: '135% auto', BgPos: '50% 22%' }
+      ];
+
+      function getFighter(idx) {
+        return FIGHTERS.find((f) => f.idx === idx) || FIGHTERS[0];
+      }
+
+      const CHAPTERS = [
+        {
+          id: 1,
+          roman: 'I',
+          act: 'ACTO I — EL LLAMADO DE LAS CANCHAS',
+          title: 'Capítulo I: La Chispa del Potrero',
+          p1Idx: 0,
+          p2Idx: 5,
+          stageIdx: 0,
+          stageName: 'Templo do Maracanã (Brasil 🇧🇷 • 115 BPM)',
+          backdrop: '../Assets/ConceptArt/Stage_MaracanaBombonera_Concept.jpg',
+          objective: 'Derrota a El Loco en Río para demostrar que el fútbol callejero aún late frente al algoritmo del Juez Supremo.',
+          lines: [
+            { speakerIdx: 5, text: '"¡Escorpión en el aire, parce! Antes de enfrentar al Juez de bronce, demuestra que tu gambeta todavía tiene fuego."' },
+            { speakerIdx: 0, text: '"El algoritmo de V.A.R.-ZERO congeló los estadios, pero en el Maracanã la pelota sigue hablando en 60 cuadros por segundo."' },
+            { speakerIdx: 5, text: '"¡Que ruede el balón entonces! ¡Sin reglas escritas en papel, puro potrero!"' }
+          ],
+          epilogueLine: 'La multitud del Maracanã ruge al unísono: la primera chispa de la rebelión sudamericana acaba de encenderse.'
+        },
+        {
+          id: 2,
+          roman: 'II',
+          act: 'ACTO II — VELOCIDAD EN LA CORDILLERA',
+          title: 'Capítulo II: Duelo en el Volcán',
+          p1Idx: 6,
+          p2Idx: 12,
+          stageIdx: 7,
+          stageName: 'El Volcán de Quito (Ecuador 🇪🇨 • 135 BPM)',
+          backdrop: '../Assets/ConceptArt/Stage_Atahualpa_Ecuador_Renaissance.jpg',
+          objective: 'Frena la arrancada supersónica de El Tren Amazónico a 2.850 metros de altura.',
+          lines: [
+            { speakerIdx: 12, text: '"Aquí arriba el aire quema los pulmones, Pistolero. Si parpadeas un solo frame, ya crucé toda la cancha."' },
+            { speakerIdx: 6, text: '"La garra charrúa no necesita oxígeno extra. Un parry en el instante exacto y te bajo de ese tren."' },
+            { speakerIdx: 12, text: '"¡Acelera el pulso Wwise a 135 BPM! ¡Veamos si tu agarre alcanza mi velocidad!"' }
+          ],
+          epilogueLine: 'Desde las cumbres de Quito, el pacto entre Uruguay y Ecuador queda sellado bajo la ceniza del volcán.'
+        },
+        {
+          id: 3,
+          roman: 'III',
+          act: 'ACTO III — EL TECHO DEL MUNDO',
+          title: 'Capítulo III: La Sombra de los 3600m',
+          p1Idx: 3,
+          p2Idx: 14,
+          stageIdx: 9,
+          stageName: 'Nido del Cóndor 3600m (Bolivia 🇧🇴 • 110 BPM)',
+          backdrop: '../Assets/ConceptArt/Stage_HernandoSiles_Bolivia_Renaissance.jpg',
+          objective: 'Supera la prueba de resistencia y gambeta pura ante El Diablo Andino en el Hernando Siles.',
+          lines: [
+            { speakerIdx: 14, text: '"Cada golpe aquí pesa el doble y la Barra de Gambeta se evapora bajo las nubes de La Paz."' },
+            { speakerIdx: 3, text: '"No vine a resistir por fuerza bruta: la pelota pegada al pie izquierdo encuentra caminos donde otros ven muros."' },
+            { speakerIdx: 14, text: '"Demuéstralo, diez. El sendero hacia el Clásico Eterno pasa por mi altar andino."' }
+          ],
+          epilogueLine: 'La neblina se disipa en La Paz: las leyendas del sur marchan hacia el duelo que el continente entero esperaba.'
+        },
+        {
+          id: 4,
+          roman: 'IV',
+          act: 'ACTO IV — LA CATEDRAL DEL RÍO DE LA PLATA',
+          title: 'Capítulo IV: Clásico de los Siglos',
+          p1Idx: 0,
+          p2Idx: 3,
+          stageIdx: 2,
+          stageName: 'Monumento Centenario (Uruguay 🇺🇾 • 120 BPM)',
+          backdrop: '../Assets/ConceptArt/VSScreen_Brasil_vs_Argentina_Renaissance.jpg',
+          objective: 'Decide quién liderará la ofensiva final de la CONMEBOL contra V.A.R.-ZERO en un duelo Brasil vs Argentina.',
+          lines: [
+            { speakerIdx: 3, text: '"En el Centenario comenzó la historia de las copas. Solo el que domine el footsies perfecto podrá quebrar el reloj arbitral."' },
+            { speakerIdx: 0, text: '"Brasil y Argentina frente a frente una vez más, pero esta vez el ganador llevará el alma de todo el continente."' },
+            { speakerIdx: 3, text: '"Sin piedad, Fenômeno. ¡Que decida el mejor combo de la noche!"' }
+          ],
+          epilogueLine: 'Tras el abrazo final bajo la Torre de los Homenajes, ambos gigantes unen sus estilos contra el tribunal mecánico.'
+        },
+        {
+          id: 5,
+          roman: 'V',
+          act: 'ACTO V — INVASIÓN EN LA CALDERA',
+          title: 'Capítulo V: La Rebelión de La Boca',
+          p1Idx: 2,
+          p2Idx: 15,
+          stageIdx: 1,
+          stageName: 'La Caldera de La Boca (Argentina 🇦🇷 • 128 BPM)',
+          backdrop: '../Assets/ConceptArt/Stage_MaracanaBombonera_Concept.jpg',
+          objective: 'Enfrenta al estratega Le Général antes de que entregue las llaves del estadio al Juez Supremo.',
+          lines: [
+            { speakerIdx: 15, text: '"Vuestro fútbol es pura improvisación romántica. Mi postura táctica neutraliza cada gambeta con precisión matemática."' },
+            { speakerIdx: 2, text: '"La Bombonera tiembla porque tiene corazón, General. ¡Y este cañonazo rompe hasta las estadísticas!"' },
+            { speakerIdx: 15, text: '"¡En guardia! Si superas mi defensa táctica, abriré las puertas al Tribunal de V.A.R.-ZERO."' }
+          ],
+          epilogueLine: 'El telón táctico cae en La Boca. Solo queda una última figura esperando en el círculo central del tiempo.'
+        },
+        {
+          id: 6,
+          roman: 'VI',
+          act: 'ACTO FINAL — JUICIO DE BRONCE Y OBSIDIANA',
+          title: 'Capítulo VI: El Juez Supremo (V.A.R.-ZERO)',
+          p1Idx: 0,
+          p2Idx: 16,
+          stageIdx: 0,
+          stageName: 'Templo do Maracanã — Juicio Final (115 BPM)',
+          backdrop: '../Assets/ConceptArt/Boss_VAR_ZERO_Renaissance.jpg',
+          objective: 'Sobrevive al V.A.R. Rewind (-90 frames GGPO) y derrota a El Juez Supremo para liberar La Copa Eterna.',
+          isBoss: true,
+          lines: [
+            { speakerIdx: 16, text: '"VEREDICTO INICIADO. Todo regate no registrado en el Kernel Q32.32 será anulado por decreto del Tribunal Mecánico."' },
+            { speakerIdx: 0, text: '"Puedes rebobinar noventa cuadros con tu V.A.R. Rewind, pero jamás vas a calcular la magia de la calle."' },
+            { speakerIdx: 16, text: '"ERROR DE SINTAXIS DETECTADO. Ejecutando Fase 1 y Fase 2. ¡QUE COMIENCE EL JUICIO DEFINITIVO!"' }
+          ],
+          epilogueLine: 'El astrolabio de bronce se quiebra en mil chispas doradas: La Copa Eterna regresa a las manos del potrero sudamericano.'
+        }
+      ];
+
+      const STORAGE_KEY = 'copaEternaStory';
+      const LAST_STORY_KEY = 'copaEternaLastStoryMatch';
+
+      let isStreetInk = window.location.hash.includes('STREET_INK');
+      let currentLineIdx = 0;
+
+      function defaultStoryState() {
+        return {
+          selectedChapter: 1,
+          unlockedUpTo: 1,
+          completed: {}, // chapterId -> { rank, score, maxCombo }
+          storyFinished: false
+        };
+      }
+
+      function loadStoryState() {
+        try {
+          const raw = localStorage.getItem(STORAGE_KEY);
+          if (raw) {
+            const parsed = JSON.parse(raw);
+            if (parsed && typeof parsed.unlockedUpTo === 'number') {
+              return { ...defaultStoryState(), ...parsed };
+            }
+          }
+        } catch (_) {}
+        return defaultStoryState();
+      }
+
+      let storyState = loadStoryState();
+
+      function saveStoryState() {
+        try {
+          localStorage.setItem(STORAGE_KEY, JSON.stringify(storyState));
+        } catch (_) {}
+      }
+
+      function completeChapter(chId, rank = 'S', score = 21500, maxCombo = 8) {
+        storyState.completed[String(chId)] = { rank, score, maxCombo };
+        if (chId >= storyState.unlockedUpTo && chId < CHAPTERS.length) {
+          storyState.unlockedUpTo = chId + 1;
+          storyState.selectedChapter = chId + 1;
+        }
+        if (Object.keys(storyState.completed).length >= CHAPTERS.length || chId === CHAPTERS.length) {
+          storyState.storyFinished = true;
+        }
+        saveStoryState();
+      }
+
+      // Procesar retorno automático desde TAB 06
+      function consumeLastStoryMatch() {
+        try {
+          const raw = localStorage.getItem(LAST_STORY_KEY);
+          if (!raw) return;
+          localStorage.removeItem(LAST_STORY_KEY);
+          const data = JSON.parse(raw);
+          if (!data || !data.chapter) return;
+
+          const chNum = Math.max(1, Math.min(CHAPTERS.length, Number(data.chapter) || 1));
+          const chObj = CHAPTERS[chNum - 1];
+          const toast = document.getElementById('match-toast');
+          const toastText = document.getElementById('match-toast-text');
+
+          if (data.won) {
+            completeChapter(chNum, data.rank || 'A', Number(data.score) || 18000, Number(data.maxCombo) || 5);
+            toastText.innerHTML = `<strong style="color:#00e676;">✅ ¡Capítulo ${chObj.roman} Superado!</strong> — Rango <strong>${data.rank || 'A'}</strong> • ${chObj.epilogueLine}`;
+          } else {
+            storyState.selectedChapter = chNum;
+            saveStoryState();
+            toastText.innerHTML = `<strong style="color:#ff5c7c;">⚔️ Derrota en Capítulo ${chObj.roman}</strong> — Vuelve a intentarlo cuando estés listo.`;
+          }
+          toast.classList.add('show');
+        } catch (_) {}
+      }
+
+      function applyTheme(streetInk) {
+        isStreetInk = streetInk;
+        document.body.classList.toggle('theme-street-ink', isStreetInk);
+        document.getElementById('btn-theme-toggle').textContent = isStreetInk
+          ? '⚡ Estilo: Street-Ink AAA'
+          : '🖼️ Estilo: Renacimiento Sfumato';
+        renderActiveChapter();
+      }
+
+      function renderChapterList() {
+        const listEl = document.getElementById('chapter-list');
+        listEl.innerHTML = '';
+
+        const completedCount = Object.keys(storyState.completed).length;
+        document.getElementById('story-progress-pill').textContent = `${completedCount} / ${CHAPTERS.length} COMPLETADOS`;
+
+        CHAPTERS.forEach((ch) => {
+          const isUnlocked = ch.id <= storyState.unlockedUpTo;
+          const comp = storyState.completed[String(ch.id)];
+          const isActive = ch.id === storyState.selectedChapter;
+
+          const card = document.createElement('article');
+          card.className = `chapter-card${isActive ? ' active' : ''}${comp ? ' completed' : ''}${!isUnlocked ? ' locked' : ''}`;
+          card.dataset.chapter = String(ch.id);
+
+          const statusTxt = comp
+            ? `✅ Rango ${comp.rank}`
+            : (isUnlocked ? '⚔️ Disponible' : '🔒 Bloqueado');
+
+          const p1 = getFighter(ch.p1Idx);
+          const p2 = getFighter(ch.p2Idx);
+
+          card.innerHTML = `
+            <div class="ch-top">
+              <span>CAPÍTULO ${ch.roman}${ch.isBoss ? ' • BOSS FINAL' : ''}</span>
+              <span style="color:${comp ? 'var(--sfumato-emerald)' : (isUnlocked ? 'var(--sfumato-gold-bright)' : '#8d8070')}; font-weight:800;">${statusTxt}</span>
+            </div>
+            <div class="ch-title">${ch.title}</div>
+            <div class="ch-sub">${p1.DisplayName} vs ${p2.DisplayName}</div>
+          `;
+
+          card.addEventListener('click', () => {
+            if (!isUnlocked) return;
+            storyState.selectedChapter = ch.id;
+            currentLineIdx = 0;
+            saveStoryState();
+            renderChapterList();
+            renderActiveChapter();
+          });
+
+          listEl.appendChild(card);
+        });
+      }
+
+      function renderActiveChapter() {
+        const ch = CHAPTERS.find((c) => c.id === storyState.selectedChapter) || CHAPTERS[0];
+        const p1 = getFighter(ch.p1Idx);
+        const p2 = getFighter(ch.p2Idx);
+        const comp = storyState.completed[String(ch.id)];
+
+        document.getElementById('scene-act-kicker').textContent = ch.act;
+        document.getElementById('scene-status-tag').textContent = comp
+          ? `✅ COMPLETADO (RANGO ${comp.rank})`
+          : (ch.isBoss ? '👑 BATALLA FINAL' : '⚔️ LISTO PARA JUGAR');
+
+        document.getElementById('scene-backdrop-img').src = ch.backdrop;
+        document.getElementById('scene-stage-pill').textContent = `🏟️ ${ch.stageName}`;
+        document.getElementById('scene-music-pill').textContent = isStreetInk ? '⚡ Arte: Street-Ink AAA' : '🖼️ Arte: Renacimiento Sfumato';
+        document.getElementById('scene-chapter-title').textContent = ch.title;
+        document.getElementById('scene-fighters-line').textContent = `${p1.DisplayName} (${p1.Country}) vs ${p2.DisplayName} (${p2.Country})`;
+        document.getElementById('scene-rank-pill').textContent = comp ? `Mejor Rango: ${comp.rank}` : 'Capítulo Nuevo';
+        document.getElementById('scene-objective').textContent = comp ? `${ch.objective} — Epílogo: "${ch.epilogueLine}"` : ch.objective;
+
+        const safeLineIdx = Math.max(0, Math.min(ch.lines.length - 1, currentLineIdx));
+        currentLineIdx = safeLineIdx;
+        const line = ch.lines[safeLineIdx];
+        const speaker = getFighter(line.speakerIdx);
+
+        const portEl = document.getElementById('speaker-portrait');
+        portEl.style.backgroundImage = `url('${speaker.ArtSheet}')`;
+        portEl.style.backgroundSize = speaker.BgSize;
+        portEl.style.backgroundPosition = speaker.BgPos;
+
+        document.getElementById('speaker-name').textContent = `${speaker.DisplayName.toUpperCase()} (${speaker.Country})`;
+        document.getElementById('dialogue-step-counter').textContent = `Línea ${safeLineIdx + 1} / ${ch.lines.length}`;
+        document.getElementById('dialogue-text').textContent = line.text;
+
+        document.getElementById('btn-prev-line').disabled = safeLineIdx === 0;
+        document.getElementById('btn-next-line').disabled = safeLineIdx >= ch.lines.length - 1;
+
+        document.getElementById('epilogue-banner').classList.toggle('show', Boolean(storyState.storyFinished));
+      }
+
+      document.getElementById('btn-prev-line').addEventListener('click', () => {
+        if (currentLineIdx > 0) {
+          currentLineIdx--;
+          renderActiveChapter();
+        }
+      });
+
+      document.getElementById('btn-next-line').addEventListener('click', () => {
+        const ch = CHAPTERS.find((c) => c.id === storyState.selectedChapter) || CHAPTERS[0];
+        if (currentLineIdx < ch.lines.length - 1) {
+          currentLineIdx++;
+          renderActiveChapter();
+        }
+      });
+
+      document.getElementById('btn-play-chapter').addEventListener('click', () => {
+        const ch = CHAPTERS.find((c) => c.id === storyState.selectedChapter) || CHAPTERS[0];
+        const artParam = isStreetInk ? 'STREET_INK' : 'SFUMATO';
+        saveStoryState();
+        let url = `index.html#tab-6&p1=${ch.p1Idx}&p2=${ch.p2Idx}&stage=${ch.stageIdx}&art=${artParam}&story=1&chapter=${ch.id}`;
+        if (ch.isBoss) url += '&boss=1';
+        window.location.href = url;
+      });
+
+      document.getElementById('btn-demo-complete').addEventListener('click', () => {
+        const ch = CHAPTERS.find((c) => c.id === storyState.selectedChapter) || CHAPTERS[0];
+        completeChapter(ch.id, 'S', 22400 + ch.id * 1100, 7 + ch.id);
+        currentLineIdx = 0;
+        renderChapterList();
+        renderActiveChapter();
+      });
+
+      document.getElementById('btn-reset-story').addEventListener('click', () => {
+        storyState = defaultStoryState();
+        currentLineIdx = 0;
+        saveStoryState();
+        document.getElementById('match-toast').classList.remove('show');
+        renderChapterList();
+        renderActiveChapter();
+      });
+
+      document.getElementById('btn-dismiss-toast').addEventListener('click', () => {
+        document.getElementById('match-toast').classList.remove('show');
+      });
+
+      document.getElementById('btn-theme-toggle').addEventListener('click', () => {
+        applyTheme(!isStreetInk);
+      });
+
+      // Brasas doradas/cian en el fondo
+      const canvas = document.getElementById('embers-canvas');
+      const ctx = canvas.getContext('2d');
+      let cw = (canvas.width = window.innerWidth);
+      let chPx = (canvas.height = window.innerHeight);
+      window.addEventListener('resize', () => {
+        cw = canvas.width = window.innerWidth;
+        chPx = canvas.height = window.innerHeight;
+      });
+      const embers = Array.from({ length: 38 }, () => ({
+        x: Math.random() * cw,
+        y: Math.random() * chPx,
+        r: 1.1 + Math.random() * 2.2,
+        vx: (Math.random() - 0.5) * 0.4,
+        vy: -0.35 - Math.random() * 0.65,
+        alpha: 0.2 + Math.random() * 0.5
+      }));
+      function renderEmbers() {
+        ctx.clearRect(0, 0, cw, chPx);
+        embers.forEach((em) => {
+          em.x += em.vx;
+          em.y += em.vy;
+          if (em.y < -10) {
+            em.y = chPx + 10;
+            em.x = Math.random() * cw;
+          }
+          ctx.fillStyle = isStreetInk
+            ? `rgba(0, 229, 255, ${em.alpha})`
+            : `rgba(245, 196, 81, ${em.alpha})`;
+          ctx.beginPath();
+          ctx.arc(em.x, em.y, em.r, 0, Math.PI * 2);
+          ctx.fill();
+        });
+        requestAnimationFrame(renderEmbers);
+      }
+
+      consumeLastStoryMatch();
+      applyTheme(isStreetInk);
+      renderChapterList();
+      renderActiveChapter();
+      requestAnimationFrame(renderEmbers);
+    })();
+  </script>
+</body>
+</html>

@@ -33,6 +33,12 @@ TARGET_CLIPS = [
     "Kick_High",
     "Special_Chilena",
     "Victory_Pose",
+    "Mocap_Walk_Forward",
+    "Mocap_Backdash_Dodge",
+    "Mocap_Block_Guard",
+    "Mocap_Hitstun_Knockback",
+    "Mocap_Super_Potrero",
+    "Mocap_KO_Knockdown",
 ]
 
 # GLB Constants
@@ -598,6 +604,292 @@ def build_clip_tracks(
 
         return times, tracks
 
+    # ------------------------------------------------------------------
+    # 6. Mocap_Walk_Forward (60 FPS, 61 keyframes = 1.00s athletic forward walk loop)
+    # ------------------------------------------------------------------
+    if clip_name == "Mocap_Walk_Forward":
+        num_frames = 61
+        times = [f / FPS for f in range(num_frames)]
+        us = [f / (num_frames - 1) for f in range(num_frames)]
+
+        root_t, pelvis_t, pelvis_r = [], [], []
+        spine1_r, spine3_r, head_r = [], [], []
+        uarm_l_r, larm_l_r, uarm_r_r, larm_r_r = [], [], [], []
+        thigh_l_r, calf_l_r, foot_l_r, thigh_r_r, calf_r_r, foot_r_r = [], [], [], [], [], []
+        hem1_r, hem2_r = [], []
+
+        for u in us:
+            ang = 2.0 * math.pi * u
+            s = math.sin(ang)
+            c = math.cos(ang)
+            bob = abs(math.sin(ang)) * 0.035
+
+            root_t.append([0.0, 0.0, 0.95 * u])
+            pelvis_t.append([0.022 * c, bob - 0.025, 0.0])
+            pelvis_r.append(euler_xyz_to_quat(4.0, 8.0 * s, 3.5 * c))
+            spine1_r.append(euler_xyz_to_quat(6.0, -7.0 * s, -2.0 * c))
+            spine3_r.append(euler_xyz_to_quat(4.0, -8.0 * s, 0.0))
+            head_r.append(euler_xyz_to_quat(-6.0, 4.0 * s, 0.0))
+
+            uarm_l_r.append(euler_xyz_to_quat(-24.0 + 32.0 * s, 14.0, -18.0))
+            larm_l_r.append(euler_xyz_to_quat(-48.0 - 12.0 * max(0.0, -s), 0.0, 0.0))
+            uarm_r_r.append(euler_xyz_to_quat(-24.0 - 32.0 * s, -14.0, 18.0))
+            larm_r_r.append(euler_xyz_to_quat(-48.0 - 12.0 * max(0.0, s), 0.0, 0.0))
+
+            thigh_l_r.append(euler_xyz_to_quat(-28.0 * s - 6.0, 4.0, 2.0))
+            calf_l_r.append(euler_xyz_to_quat(12.0 + 34.0 * max(0.0, -s), 0.0, 0.0))
+            foot_l_r.append(euler_xyz_to_quat(10.0 * c, 0.0, 0.0))
+            thigh_r_r.append(euler_xyz_to_quat(28.0 * s - 6.0, -4.0, -2.0))
+            calf_r_r.append(euler_xyz_to_quat(12.0 + 34.0 * max(0.0, s), 0.0, 0.0))
+            foot_r_r.append(euler_xyz_to_quat(-10.0 * c, 0.0, 0.0))
+
+            hem1_r.append(euler_xyz_to_quat(8.0 * s, 0.0, 4.0 * c))
+            hem2_r.append(euler_xyz_to_quat(-8.0 * s, 0.0, -4.0 * c))
+
+        add_trans("root", root_t)
+        add_trans("pelvis", pelvis_t)
+        add_rot("pelvis", pelvis_r)
+        add_rot("spine_01", spine1_r)
+        add_rot("spine_03", spine3_r)
+        add_rot("head", head_r)
+        add_rot("upperarm_l", uarm_l_r)
+        add_rot("lowerarm_l", larm_l_r)
+        add_rot("upperarm_r", uarm_r_r)
+        add_rot("lowerarm_r", larm_r_r)
+        add_rot("thigh_l", thigh_l_r)
+        add_rot("calf_l", calf_l_r)
+        add_rot("foot_l", foot_l_r)
+        add_rot("thigh_r", thigh_r_r)
+        add_rot("calf_r", calf_r_r)
+        add_rot("foot_r", foot_r_r)
+        add_rot("kit_hem_01", hem1_r)
+        add_rot("kit_hem_02", hem2_r)
+        return times, tracks
+
+    # ------------------------------------------------------------------
+    # 7. Mocap_Backdash_Dodge (60 FPS, 28 keyframes = 0.45s explosive evade hop)
+    # ------------------------------------------------------------------
+    if clip_name == "Mocap_Backdash_Dodge":
+        num_frames = 28
+        times = [f / FPS for f in range(num_frames)]
+        us = [f / (num_frames - 1) for f in range(num_frames)]
+
+        root_t, pelvis_t, pelvis_r = [], [], []
+        spine1_r, spine3_r, head_r = [], [], []
+        uarm_l_r, uarm_r_r = [], []
+        thigh_l_r, calf_l_r, thigh_r_r, calf_r_r = [], [], [], []
+
+        for u in us:
+            hop = math.sin(math.pi * u)
+            env = bell_curve(u, 0.45, 0.48)
+            root_t.append([0.0, 0.18 * hop, -0.92 * smoothstep(0.05, 0.85, u)])
+            pelvis_t.append([0.0, -0.05 * env, 0.0])
+            pelvis_r.append(euler_xyz_to_quat(-16.0 * env, 8.0 * env, 0.0))
+            spine1_r.append(euler_xyz_to_quat(-12.0 * env, 0.0, 0.0))
+            spine3_r.append(euler_xyz_to_quat(-10.0 * env, 0.0, 0.0))
+            head_r.append(euler_xyz_to_quat(18.0 * env, 0.0, 0.0))
+
+            uarm_l_r.append(euler_xyz_to_quat(-48.0 * env, 22.0, -32.0))
+            uarm_r_r.append(euler_xyz_to_quat(-48.0 * env, -22.0, 32.0))
+
+            thigh_l_r.append(euler_xyz_to_quat(-38.0 * hop, 0.0, 4.0))
+            calf_l_r.append(euler_xyz_to_quat(54.0 * hop, 0.0, 0.0))
+            thigh_r_r.append(euler_xyz_to_quat(-24.0 * hop, 0.0, -4.0))
+            calf_r_r.append(euler_xyz_to_quat(40.0 * hop, 0.0, 0.0))
+
+        add_trans("root", root_t)
+        add_trans("pelvis", pelvis_t)
+        add_rot("pelvis", pelvis_r)
+        add_rot("spine_01", spine1_r)
+        add_rot("spine_03", spine3_r)
+        add_rot("head", head_r)
+        add_rot("upperarm_l", uarm_l_r)
+        add_rot("upperarm_r", uarm_r_r)
+        add_rot("thigh_l", thigh_l_r)
+        add_rot("calf_l", calf_l_r)
+        add_rot("thigh_r", thigh_r_r)
+        add_rot("calf_r", calf_r_r)
+        return times, tracks
+
+    # ------------------------------------------------------------------
+    # 8. Mocap_Block_Guard (60 FPS, 49 keyframes = 0.80s braced FGC defense)
+    # ------------------------------------------------------------------
+    if clip_name == "Mocap_Block_Guard":
+        num_frames = 49
+        times = [f / FPS for f in range(num_frames)]
+        us = [f / (num_frames - 1) for f in range(num_frames)]
+
+        pelvis_t, pelvis_r, spine1_r, spine3_r, head_r = [], [], [], [], []
+        uarm_l_r, larm_l_r, uarm_r_r, larm_r_r = [], [], [], []
+        thigh_l_r, calf_l_r, thigh_r_r, calf_r_r = [], [], [], []
+
+        for u in us:
+            brace = bell_curve(u, 0.45, 0.45)
+            tremor = 0.015 * math.sin(10.0 * math.pi * u) * bell_curve(u, 0.5, 0.3)
+            pelvis_t.append([0.0, -0.095 * height * brace, -0.05 * brace + tremor])
+            pelvis_r.append(euler_xyz_to_quat(8.0 * brace, 24.0 * brace, 0.0))
+            spine1_r.append(euler_xyz_to_quat(12.0 * brace, -10.0 * brace, 0.0))
+            spine3_r.append(euler_xyz_to_quat(10.0 * brace, -10.0 * brace, 0.0))
+            head_r.append(euler_xyz_to_quat(-16.0 * brace, -12.0 * brace, 0.0))
+
+            uarm_l_r.append(euler_xyz_to_quat(-78.0 * brace - 25.0, 38.0 * brace, 18.0 * brace))
+            larm_l_r.append(euler_xyz_to_quat(-95.0 * brace - 20.0, 0.0, 0.0))
+            uarm_r_r.append(euler_xyz_to_quat(-72.0 * brace - 25.0, -38.0 * brace, -18.0 * brace))
+            larm_r_r.append(euler_xyz_to_quat(-90.0 * brace - 20.0, 0.0, 0.0))
+
+            thigh_l_r.append(euler_xyz_to_quat(-28.0 * brace - 8.0, 14.0, 8.0))
+            calf_l_r.append(euler_xyz_to_quat(42.0 * brace + 10.0, 0.0, 0.0))
+            thigh_r_r.append(euler_xyz_to_quat(18.0 * brace - 6.0, -14.0, -8.0))
+            calf_r_r.append(euler_xyz_to_quat(28.0 * brace + 10.0, 0.0, 0.0))
+
+        add_trans("pelvis", pelvis_t)
+        add_rot("pelvis", pelvis_r)
+        add_rot("spine_01", spine1_r)
+        add_rot("spine_03", spine3_r)
+        add_rot("head", head_r)
+        add_rot("upperarm_l", uarm_l_r)
+        add_rot("lowerarm_l", larm_l_r)
+        add_rot("upperarm_r", uarm_r_r)
+        add_rot("lowerarm_r", larm_r_r)
+        add_rot("thigh_l", thigh_l_r)
+        add_rot("calf_l", calf_l_r)
+        add_rot("thigh_r", thigh_r_r)
+        add_rot("calf_r", calf_r_r)
+        return times, tracks
+
+    # ------------------------------------------------------------------
+    # 9. Mocap_Hitstun_Knockback (60 FPS, 31 keyframes = 0.50s hitstop shake + whiplash)
+    # ------------------------------------------------------------------
+    if clip_name == "Mocap_Hitstun_Knockback":
+        num_frames = 31
+        times = [f / FPS for f in range(num_frames)]
+        us = [f / (num_frames - 1) for f in range(num_frames)]
+
+        root_t, pvo_t, pelvis_r, spine1_r, spine3_r, head_r = [], [], [], [], [], []
+        uarm_l_r, uarm_r_r, thigh_l_r, thigh_r_r = [], [], [], []
+
+        for u in us:
+            whip = bell_curve(u, 0.34, 0.34)
+            shake = 0.028 * math.sin(24.0 * math.pi * u) * bell_curve(u, 0.20, 0.20)
+            root_t.append([0.0, 0.02 * whip, -0.45 * smoothstep(0.05, 0.65, u)])
+            pvo_t.append([shake, 0.0, -0.5 * shake])
+            pelvis_r.append(euler_xyz_to_quat(-26.0 * whip, -12.0 * whip, 0.0))
+            spine1_r.append(euler_xyz_to_quat(-22.0 * whip, 10.0 * whip, 0.0))
+            spine3_r.append(euler_xyz_to_quat(-24.0 * whip, 12.0 * whip, 0.0))
+            head_r.append(euler_xyz_to_quat(-38.0 * whip, -14.0 * whip, 0.0))
+
+            uarm_l_r.append(euler_xyz_to_quat(18.0 * whip, -22.0, -58.0 * whip - 18.0))
+            uarm_r_r.append(euler_xyz_to_quat(18.0 * whip, 22.0, 58.0 * whip + 18.0))
+            thigh_l_r.append(euler_xyz_to_quat(-16.0 * whip, 8.0, 0.0))
+            thigh_r_r.append(euler_xyz_to_quat(14.0 * whip, -8.0, 0.0))
+
+        add_trans("root", root_t)
+        add_trans("pelvis_visual_offset", pvo_t)
+        add_rot("pelvis", pelvis_r)
+        add_rot("spine_01", spine1_r)
+        add_rot("spine_03", spine3_r)
+        add_rot("head", head_r)
+        add_rot("upperarm_l", uarm_l_r)
+        add_rot("upperarm_r", uarm_r_r)
+        add_rot("thigh_l", thigh_l_r)
+        add_rot("thigh_r", thigh_r_r)
+        return times, tracks
+
+    # ------------------------------------------------------------------
+    # 10. Mocap_Super_Potrero (60 FPS, 85 keyframes = 1.40s Ultimate Hinchada Strike)
+    # ------------------------------------------------------------------
+    if clip_name == "Mocap_Super_Potrero":
+        num_frames = 85
+        times = [f / FPS for f in range(num_frames)]
+        us = [f / (num_frames - 1) for f in range(num_frames)]
+
+        root_t, pelvis_t, pelvis_r = [], [], []
+        spine1_r, spine3_r, head_r = [], [], []
+        uarm_l_r, uarm_r_r, thigh_l_r, calf_l_r, thigh_r_r, calf_r_r = [], [], [], [], [], []
+        calf_r_s, foot_r_s = [], []
+
+        for u in us:
+            charge = bell_curve(u, 0.18, 0.18)
+            air = smoothstep(0.28, 0.42, u) * (1.0 - smoothstep(0.72, 0.88, u))
+            arc = math.sin(math.pi * max(0.0, min(1.0, (u - 0.25) / 0.62))) if 0.25 <= u <= 0.87 else 0.0
+            apex = bell_curve(u, 0.58, 0.14)
+            spin = 360.0 * smoothstep(0.32, 0.78, u)
+
+            root_t.append([0.0, 0.92 * arc, 1.15 * smoothstep(0.25, 0.82, u)])
+            pelvis_t.append([0.0, -0.09 * height * charge, 0.0])
+            pelvis_r.append(euler_xyz_to_quat(-165.0 * air + 18.0 * charge, spin, 22.0 * air))
+            spine1_r.append(euler_xyz_to_quat(-14.0 * air + 16.0 * charge, 0.0, 0.0))
+            spine3_r.append(euler_xyz_to_quat(-10.0 * air + 14.0 * charge, 0.0, 0.0))
+            head_r.append(euler_xyz_to_quat(18.0 * air - 12.0 * charge, 0.0, 0.0))
+
+            uarm_l_r.append(euler_xyz_to_quat(-42.0 * air - 20.0 * charge, 24.0, -68.0 * air - 20.0))
+            uarm_r_r.append(euler_xyz_to_quat(-42.0 * air - 20.0 * charge, -24.0, 68.0 * air + 20.0))
+            thigh_l_r.append(euler_xyz_to_quat(-34.0 * charge + 32.0 * air, 0.0, 8.0 * air))
+            calf_l_r.append(euler_xyz_to_quat(54.0 * charge + 52.0 * air, 0.0, 0.0))
+            thigh_r_r.append(euler_xyz_to_quat(-24.0 * charge - 120.0 * apex, 0.0, -8.0 * air))
+            calf_r_r.append(euler_xyz_to_quat(42.0 * charge + 10.0 * apex, 0.0, 0.0))
+
+            sm = 1.0 + 0.30 * apex
+            calf_r_s.append([1.0, sm, sm])
+            foot_r_s.append([1.0, sm, sm])
+
+        add_trans("root", root_t)
+        add_trans("pelvis", pelvis_t)
+        add_rot("pelvis", pelvis_r)
+        add_rot("spine_01", spine1_r)
+        add_rot("spine_03", spine3_r)
+        add_rot("head", head_r)
+        add_rot("upperarm_l", uarm_l_r)
+        add_rot("upperarm_r", uarm_r_r)
+        add_rot("thigh_l", thigh_l_r)
+        add_rot("calf_l", calf_l_r)
+        add_rot("thigh_r", thigh_r_r)
+        add_rot("calf_r", calf_r_r)
+        add_scale("calf_r", calf_r_s)
+        add_scale("foot_r", foot_r_s)
+        return times, tracks
+
+    # ------------------------------------------------------------------
+    # 11. Mocap_KO_Knockdown (60 FPS, 73 keyframes = 1.20s spiral knockdown + ground bounce)
+    # ------------------------------------------------------------------
+    if clip_name == "Mocap_KO_Knockdown":
+        num_frames = 73
+        times = [f / FPS for f in range(num_frames)]
+        us = [f / (num_frames - 1) for f in range(num_frames)]
+
+        root_t, pelvis_t, pelvis_r = [], [], []
+        spine1_r, spine3_r, head_r = [], [], []
+        uarm_l_r, uarm_r_r, thigh_l_r, thigh_r_r = [], [], [], []
+
+        for u in us:
+            fall = smoothstep(0.08, 0.62, u)
+            bounce = 0.08 * math.sin(math.pi * max(0.0, (u - 0.62) / 0.25)) if 0.62 <= u <= 0.87 else 0.0
+            air_h = 0.32 * math.sin(math.pi * min(1.0, u / 0.62)) if u < 0.62 else 0.0
+
+            root_t.append([0.0, air_h + bounce, -1.05 * smoothstep(0.0, 0.72, u)])
+            pelvis_t.append([0.0, -0.44 * height * fall, 0.0])
+            pelvis_r.append(euler_xyz_to_quat(-88.0 * fall, -24.0 * fall, 16.0 * fall))
+            spine1_r.append(euler_xyz_to_quat(-12.0 * fall, 0.0, 0.0))
+            spine3_r.append(euler_xyz_to_quat(-10.0 * fall, 0.0, 0.0))
+            head_r.append(euler_xyz_to_quat(14.0 * fall, 18.0 * fall, 0.0))
+
+            uarm_l_r.append(euler_xyz_to_quat(12.0 * fall, 0.0, -78.0 * fall - 15.0))
+            uarm_r_r.append(euler_xyz_to_quat(12.0 * fall, 0.0, 78.0 * fall + 15.0))
+            thigh_l_r.append(euler_xyz_to_quat(10.0 * fall, 14.0 * fall, 12.0 * fall))
+            thigh_r_r.append(euler_xyz_to_quat(6.0 * fall, -14.0 * fall, -12.0 * fall))
+
+        add_trans("root", root_t)
+        add_trans("pelvis", pelvis_t)
+        add_rot("pelvis", pelvis_r)
+        add_rot("spine_01", spine1_r)
+        add_rot("spine_03", spine3_r)
+        add_rot("head", head_r)
+        add_rot("upperarm_l", uarm_l_r)
+        add_rot("upperarm_r", uarm_r_r)
+        add_rot("thigh_l", thigh_l_r)
+        add_rot("thigh_r", thigh_r_r)
+        return times, tracks
+
     raise ValueError(f"Unknown clip name: {clip_name}")
 
 
@@ -906,7 +1198,9 @@ def validate_fighter_glb(glb_path: str) -> dict[str, Any]:
     bin_bytes = raw[bin_hdr_off + 8:bin_hdr_off + 8 + blen]
     expected_dt = 1.0 / FPS
 
-    assert len(anims_by_name) == 10, f"{glb_path}: expected 10 animations, found {len(anims_by_name)}"
+    assert len(anims_by_name) == len(TARGET_CLIPS) + 5, (
+        f"{glb_path}: expected {len(TARGET_CLIPS) + 5} animations, found {len(anims_by_name)}"
+    )
     for clip_name in TARGET_CLIPS:
         assert clip_name in anims_by_name, f"{glb_path}: missing required clip '{clip_name}'"
 
@@ -984,16 +1278,17 @@ def main() -> None:
         validation_results.append(val)
         print(
             f"[OK] {summary['FighterFile']} | {summary['FileSizeBytes']:,} bytes | "
-            f"{summary['TotalAnimationsInGLB']} total clips | validated 5/5 new clips"
+            f"{summary['TotalAnimationsInGLB']} total clips | validated {len(TARGET_CLIPS)}/{len(TARGET_CLIPS)} Mocap/60Hz clips"
         )
 
     manifest = {
-        "SchemaVersion": "2.1.0-UE5.4-GLTF2-Uniform60FPS",
+        "SchemaVersion": "2.2.0-UE5.4-GLTF2-HighPolyMocap60FPS",
         "Project": "LA COPA ETERNA: SANGRE Y POTRERO",
         "TargetFormat": "glTF 2.0 Binary (.glb)",
         "SampleRateFPS": int(FPS),
         "UniformFrameStepSeconds": round(1.0 / FPS, 6),
         "All10ClipsUniform60FPS": True,
+        "All16ClipsUniform60FPS": True,
         "SteppedCombatClipNames": [
             "Anim_Idle",
             "Anim_5LP_Jab4f",
@@ -1094,6 +1389,60 @@ def main() -> None:
                 "Interpolation": "LINEAR",
                 "Looping": False,
                 "Description": "Triumphant championship celebration salute (SK_SUPREME_JUDGE_BOSS features hovering levitation + dual counter-rotating astrolabe halo)",
+            },
+            {
+                "ClipName": "Mocap_Walk_Forward",
+                "DurationSeconds": 1.0,
+                "KeyframeCount": 61,
+                "FPS": 60,
+                "Interpolation": "LINEAR",
+                "Looping": True,
+                "Description": "60 FPS Mocap athletic forward walk cycle with counter-rotating shoulders, pelvis bob, and foot roll",
+            },
+            {
+                "ClipName": "Mocap_Backdash_Dodge",
+                "DurationSeconds": 0.45,
+                "KeyframeCount": 28,
+                "FPS": 60,
+                "Interpolation": "LINEAR",
+                "Looping": False,
+                "Description": "60 FPS Mocap explosive backward evade hop with guarded torso recoil",
+            },
+            {
+                "ClipName": "Mocap_Block_Guard",
+                "DurationSeconds": 0.8,
+                "KeyframeCount": 49,
+                "FPS": 60,
+                "Interpolation": "LINEAR",
+                "Looping": False,
+                "Description": "60 FPS Mocap braced cross-arm competitive block guard with knee absorption",
+            },
+            {
+                "ClipName": "Mocap_Hitstun_Knockback",
+                "DurationSeconds": 0.5,
+                "KeyframeCount": 31,
+                "FPS": 60,
+                "Interpolation": "LINEAR",
+                "Looping": False,
+                "Description": "60 FPS Mocap whiplash hitstun recoil with decoupled pelvis_visual_offset hitstop vibration",
+            },
+            {
+                "ClipName": "Mocap_Super_Potrero",
+                "DurationSeconds": 1.4,
+                "KeyframeCount": 85,
+                "FPS": 60,
+                "Interpolation": "LINEAR",
+                "Looping": False,
+                "Description": "60 FPS Mocap Super Hinchada Nivel 3 leaping volley strike with 1.30x active smear frame",
+            },
+            {
+                "ClipName": "Mocap_KO_Knockdown",
+                "DurationSeconds": 1.2,
+                "KeyframeCount": 73,
+                "FPS": 60,
+                "Interpolation": "LINEAR",
+                "Looping": False,
+                "Description": "60 FPS Mocap full-body knockdown collapse and stadium turf rebound",
             },
         ],
         "Fighters": fighter_entries,

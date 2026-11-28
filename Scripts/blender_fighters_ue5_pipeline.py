@@ -2,38 +2,39 @@
 # -*- coding: utf-8 -*-
 """
 blender_fighters_ue5_pipeline.py - LA COPA ETERNA: SANGRE Y POTRERO
-Blender 5.2+ headless UE 5.4+ Fighters Production Pipeline (`bpy`).
+Blender 5.2+ headless UE 5.8+ Fighters Production Pipeline (`bpy`).
 
 Run with:
   "C:\\Program Files\\Blender Foundation\\Blender 5.2\\blender.exe" --background --python Scripts/blender_fighters_ue5_pipeline.py
+Optional single-fighter dry-run:
+  "C:\\Program Files\\Blender Foundation\\Blender 5.2\\blender.exe" --background --python Scripts/blender_fighters_ue5_pipeline.py -- --only FENOMENO_BR
 
 What it does:
   1. Discovers all 17 fighter `.glb` files in `Assets/Models3D/Fighters/SK_*.glb`.
   2. For each fighter (in a clean scene to guarantee zero cross-contamination):
-     - Imports the `.glb` (Armature, Mesh, UV maps, skin weights, and all 10 embedded 60 FPS animations).
+     - Imports the `.glb` (Armature, Mesh, UV maps, skin weights, and all embedded 60 FPS animations).
      - Removes glTF helper objects (e.g., `Icosphere` bone custom-shape artifacts).
-     - Applies Subdivision Surface (`levels=1`, Catmull-Clark, `PRESERVE_CORNERS` UV smoothing)
-       in Rest Pose above the Armature modifier so skin weights and UVs are preserved cleanly.
-     - Enforces smooth shading (`use_smooth = True`) on all faces and verifies clean UV maps.
-     - Binds matching PBR textures from `Assets/TexturesPBR/`:
-         * `T_Kit_<Country>_Albedo.png` (sRGB) -> Base Color
-         * `T_FighterKit_ORM.png` (Non-Color) -> Roughness (G) & Metallic (B)
-         * `T_Retro90s_Jacquard_Normal.png` (Non-Color) -> Normal Map (Kit)
-         * `T_Skin_MicroPores_Normal.png` (Non-Color) -> Normal Map (Skin)
+     - Preserves already-sculpted anatomical LOD0 geometry (`>= 1800` verts), enforcing smooth shading
+       and clean UVs (subdividing `levels=1` only if a low-poly base mesh is imported).
+     - Binds matching per-fighter PBR textures from `Assets/TexturesPBR/Fighters/` and `Assets/TexturesPBR/`:
+         * Slot 0 (`Skin`): `T_<ID>_Skin_Albedo.png` (sRGB) + `T_Skin_MicroPores_Normal.png` (Non-Color)
+         * Slot 1 (`Kit`): `T_<ID>_Kit_Albedo.png` (sRGB, fallback `T_Kit_<Country>_Albedo.png`)
+           + `T_FighterKit_ORM.png` (Non-Color) + `T_Retro90s_Jacquard_Normal.png` (Non-Color)
+         * Slot 2 (`Hair/Eyes`): `T_<ID>_Hair_Albedo.png` (sRGB)
+         * Cycles Sculpt Bakes: `T_SK_<ID>_Sculpt_Normal.png` & `T_SK_<ID>_Sculpt_AO.png`
      - Paints the UE5 Chaos Cloth Vertex Group `ChaosCloth_Jersey_Weight`:
          * `0.0` pinned on shoulders / collar (`z >= z_collar`)
          * Smooth linear gradient down to `1.0` free hem (`12.0 cm` max distance at `z <= z_hem`)
-     - Exports UE 5.4+-ready `.fbx` (`FBX_SCALE_ALL`, `add_leaf_bones=False`, `bake_anim=True`)
+     - Exports UE 5.8-ready `.fbx` (`FBX_SCALE_ALL`, `add_leaf_bones=False`, `bake_anim=True`)
        into `Assets/BlenderProduction/Fighters/SK_*.fbx`.
-  3. Assembles all 17 enhanced fighters into a lit 2-row showcase scene and saves
+  3. Assembles all fighters into a lit 2-row showcase scene and saves
      `Assets/BlenderProduction/Fighters/Master_17Fighters_Showcase.blend`.
-  4. Writes `Assets/BlenderProduction/Fighters/BlenderFighters_Manifest.json` with exact
-     file sizes, vertex/face/bone/action counts, `ChaosCloth_Jersey_Weight` verification,
-     bound texture paths, and Blender version.
+  4. Writes `Assets/BlenderProduction/Fighters/BlenderFighters_Manifest.json`.
 """
 
 from __future__ import annotations
 
+import argparse
 import glob
 import json
 import math
@@ -48,6 +49,8 @@ from mathutils import Vector
 PROJECT_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SOURCE_FIGHTERS_DIR = os.path.join(PROJECT_ROOT, "Assets", "Models3D", "Fighters")
 TEXTURES_DIR = os.path.join(PROJECT_ROOT, "Assets", "TexturesPBR")
+FIGHTER_TEXTURES_DIR = os.path.join(TEXTURES_DIR, "Fighters")
+SCULPT_BAKES_DIR = os.path.join(TEXTURES_DIR, "HighPolyBakes")
 OUTPUT_FIGHTERS_DIR = os.path.join(PROJECT_ROOT, "Assets", "BlenderProduction", "Fighters")
 SHOWCASE_BLEND_PATH = os.path.join(OUTPUT_FIGHTERS_DIR, "Master_17Fighters_Showcase.blend")
 MANIFEST_PATH = os.path.join(OUTPUT_FIGHTERS_DIR, "BlenderFighters_Manifest.json")
@@ -72,6 +75,23 @@ COUNTRY_CODE_TO_KIT_ALBEDO: dict[str, str] = {
 }
 
 
+def parse_cli_args() -> argparse.Namespace:
+    argv = sys.argv[sys.argv.index("--") + 1:] if "--" in sys.argv else []
+    parser = argparse.ArgumentParser(description="Blender 5.2 UE5 Fighters FBX & Showcase Pipeline")
+    parser.add_argument(
+        "--only",
+        type=str,
+        default="",
+        help="Optional comma-separated Fighter IDs (e.g. FENOMENO_BR)",
+    )
+    parser.add_argument(
+        "--skip-showcase",
+        action="store_true",
+        help="Skip building Master_17Fighters_Showcase.blend (useful for quick single-fighter test)",
+    )
+    return parser.parse_args(argv)
+
+
 def resolve_texture_path(*candidates: str) -> str | None:
     """Return the first existing texture path in `Assets/TexturesPBR/`."""
     for name in candidates:
@@ -79,6 +99,26 @@ def resolve_texture_path(*candidates: str) -> str | None:
         if os.path.isfile(full_path):
             return full_path
     return None
+
+
+def resolve_fighter_albedo_textures(fighter_stem: str) -> dict[str, str]:
+    """
+    Resolve per-fighter `T_<ID>_{Skin,Kit,Hair}_Albedo.png` textures in
+    `Assets/TexturesPBR/Fighters/` (with `VAR_ZERO_BOSS` alias support).
+    """
+    fighter_id = fighter_stem[3:] if fighter_stem.startswith("SK_") else fighter_stem
+    id_candidates = [fighter_id]
+    if fighter_id == "SUPREME_JUDGE_BOSS":
+        id_candidates.append("VAR_ZERO_BOSS")
+
+    found: dict[str, str] = {}
+    for slot_key in ("Skin", "Kit", "Hair"):
+        for fid in id_candidates:
+            cand = os.path.join(FIGHTER_TEXTURES_DIR, f"T_{fid}_{slot_key}_Albedo.png")
+            if os.path.isfile(cand):
+                found[slot_key.lower()] = cand
+                break
+    return found
 
 
 def resolve_kit_albedo_for_fighter(fighter_stem: str) -> str | None:
@@ -123,20 +163,35 @@ def ensure_principled_bsdf(nt: bpy.types.NodeTree) -> tuple[bpy.types.Node, bpy.
     return bsdf, output
 
 
+def _clear_input_links(nt: bpy.types.NodeTree, sock: bpy.types.NodeSocket | None) -> None:
+    if sock is None:
+        return
+    for link in list(sock.links):
+        nt.links.remove(link)
+
+
 def bind_pbr_materials(
     mesh_obj: bpy.types.Object,
     fighter_stem: str,
     unique_suffix: str | None = None,
 ) -> dict[str, str]:
     """
-    Bind country kit albedo, retro 90s jacquard normal, ORM, and skin micro-pores normal
-    textures from `Assets/TexturesPBR/` onto the fighter's materials.
-    Returns a dict of bound texture names for the manifest.
+    Bind per-fighter `T_<ID>_{Skin,Kit,Hair}_Albedo.png` (with fallback to country kit albedo),
+    retro 90s jacquard normal, ORM, skin micro-pores normal, and Cycles high-poly sculpt bakes
+    onto the fighter's 3 material slots.
     """
-    kit_albedo_path = resolve_kit_albedo_for_fighter(fighter_stem)
+    per_fighter_albedos = resolve_fighter_albedo_textures(fighter_stem)
+    kit_albedo_path = per_fighter_albedos.get("kit") or resolve_kit_albedo_for_fighter(fighter_stem)
+    skin_albedo_path = per_fighter_albedos.get("skin")
+    hair_albedo_path = per_fighter_albedos.get("hair")
+
     kit_normal_path = resolve_texture_path("T_Kit_Jacquard_Normal.png", "T_Retro90s_Jacquard_Normal.png")
     kit_orm_path = resolve_texture_path("T_FighterKit_ORM.png")
     skin_normal_path = resolve_texture_path("T_Skin_MicroPores_Normal.png")
+    sculpt_normal_candidate = os.path.join(SCULPT_BAKES_DIR, f"T_{fighter_stem}_Sculpt_Normal.png")
+    sculpt_ao_candidate = os.path.join(SCULPT_BAKES_DIR, f"T_{fighter_stem}_Sculpt_AO.png")
+    sculpt_normal_path = sculpt_normal_candidate if os.path.isfile(sculpt_normal_candidate) else None
+    sculpt_ao_path = sculpt_ao_candidate if os.path.isfile(sculpt_ao_candidate) else None
 
     bound_textures: dict[str, str] = {}
 
@@ -155,53 +210,68 @@ def bind_pbr_materials(
         bsdf, _ = ensure_principled_bsdf(nt)
 
         if "kit" in mat_name_lower or "cloth" in mat_name_lower:
-            # Base Color: Country Kit Albedo
             if kit_albedo_path:
+                _clear_input_links(nt, bsdf.inputs.get("Base Color"))
                 tex_albedo = nt.nodes.new("ShaderNodeTexImage")
                 tex_albedo.label = "Kit_Albedo"
                 tex_albedo.location = (-500, 260)
                 tex_albedo.image = load_image_cached(kit_albedo_path, "sRGB")
                 nt.links.new(tex_albedo.outputs["Color"], bsdf.inputs["Base Color"])
-                bound_textures["kit_albedo"] = os.path.basename(kit_albedo_path)
+                bound_textures["kit_albedo"] = (
+                    f"Fighters/{os.path.basename(kit_albedo_path)}"
+                    if per_fighter_albedos.get("kit")
+                    else os.path.basename(kit_albedo_path)
+                )
 
-            # ORM: Connect T_FighterKit_ORM.png directly to Principled BSDF Roughness & Metallic sockets
-            # so Blender 5.2's PrincipledBSDFWrapper / FBX exporter exports and embeds T_FighterKit_ORM.png
-            # inside every .fbx file (intermediate SeparateColor nodes are ignored by io_scene_fbx).
             if kit_orm_path:
+                _clear_input_links(nt, bsdf.inputs.get("Roughness"))
+                _clear_input_links(nt, bsdf.inputs.get("Metallic"))
                 tex_orm = nt.nodes.new("ShaderNodeTexImage")
                 tex_orm.name = "Kit_ORM"
                 tex_orm.label = "Kit_ORM"
                 tex_orm.location = (-500, 0)
                 tex_orm.image = load_image_cached(kit_orm_path, "Non-Color")
+                sep_orm = nt.nodes.new("ShaderNodeSeparateColor")
+                sep_orm.location = (-280, -20)
+                nt.links.new(tex_orm.outputs["Color"], sep_orm.inputs["Color"])
                 if "Roughness" in bsdf.inputs:
-                    nt.links.new(tex_orm.outputs["Color"], bsdf.inputs["Roughness"])
+                    nt.links.new(sep_orm.outputs["Green"], bsdf.inputs["Roughness"])
                 if "Metallic" in bsdf.inputs:
-                    nt.links.new(tex_orm.outputs["Color"], bsdf.inputs["Metallic"])
+                    bsdf.inputs["Metallic"].default_value = 0.25 if "SUPREME_JUDGE" in fighter_stem else 0.03
                 bound_textures["kit_orm"] = os.path.basename(kit_orm_path)
 
-            # Normal: Retro 90s Jacquard Normal
             if kit_normal_path:
+                _clear_input_links(nt, bsdf.inputs.get("Normal"))
                 tex_norm = nt.nodes.new("ShaderNodeTexImage")
                 tex_norm.label = "Kit_Jacquard_Normal"
                 tex_norm.location = (-500, -260)
                 tex_norm.image = load_image_cached(kit_normal_path, "Non-Color")
                 norm_map = nt.nodes.new("ShaderNodeNormalMap")
                 norm_map.location = (-200, -260)
-                norm_map.inputs["Strength"].default_value = 0.65
+                norm_map.inputs["Strength"].default_value = 0.14
                 nt.links.new(tex_norm.outputs["Color"], norm_map.inputs["Color"])
                 nt.links.new(norm_map.outputs["Normal"], bsdf.inputs["Normal"])
                 bound_textures["kit_normal"] = os.path.basename(kit_normal_path)
 
         elif "skin" in mat_name_lower:
-            # Normal: Skin Micro-Pores Normal
+            if skin_albedo_path:
+                _clear_input_links(nt, bsdf.inputs.get("Base Color"))
+                tex_skin_albedo = nt.nodes.new("ShaderNodeTexImage")
+                tex_skin_albedo.label = "Skin_Albedo"
+                tex_skin_albedo.location = (-500, 260)
+                tex_skin_albedo.image = load_image_cached(skin_albedo_path, "sRGB")
+                nt.links.new(tex_skin_albedo.outputs["Color"], bsdf.inputs["Base Color"])
+                bound_textures["skin_albedo"] = f"Fighters/{os.path.basename(skin_albedo_path)}"
+
             if skin_normal_path:
+                _clear_input_links(nt, bsdf.inputs.get("Normal"))
                 tex_skin_norm = nt.nodes.new("ShaderNodeTexImage")
                 tex_skin_norm.label = "Skin_MicroPores_Normal"
                 tex_skin_norm.location = (-500, -220)
                 tex_skin_norm.image = load_image_cached(skin_normal_path, "Non-Color")
                 norm_map = nt.nodes.new("ShaderNodeNormalMap")
                 norm_map.location = (-200, -220)
-                norm_map.inputs["Strength"].default_value = 0.35
+                norm_map.inputs["Strength"].default_value = 0.12
                 nt.links.new(tex_skin_norm.outputs["Color"], norm_map.inputs["Color"])
                 nt.links.new(norm_map.outputs["Normal"], bsdf.inputs["Normal"])
                 bound_textures["skin_normal"] = os.path.basename(skin_normal_path)
@@ -210,6 +280,30 @@ def bind_pbr_materials(
                 bsdf.inputs["Subsurface Weight"].default_value = 0.15
             if "Roughness" in bsdf.inputs and not bsdf.inputs["Roughness"].is_linked:
                 bsdf.inputs["Roughness"].default_value = 0.45
+
+        elif "hair" in mat_name_lower or "eyes" in mat_name_lower:
+            if hair_albedo_path:
+                _clear_input_links(nt, bsdf.inputs.get("Base Color"))
+                tex_hair_albedo = nt.nodes.new("ShaderNodeTexImage")
+                tex_hair_albedo.label = "Hair_And_Eyes_Albedo"
+                tex_hair_albedo.location = (-500, 260)
+                tex_hair_albedo.image = load_image_cached(hair_albedo_path, "sRGB")
+                nt.links.new(tex_hair_albedo.outputs["Color"], bsdf.inputs["Base Color"])
+                bound_textures["hair_albedo"] = f"Fighters/{os.path.basename(hair_albedo_path)}"
+
+        if sculpt_normal_path and ("skin" in mat_name_lower or "kit" in mat_name_lower):
+            tex_sn = nt.nodes.new("ShaderNodeTexImage")
+            tex_sn.label = "HighPoly_Sculpt_Normal"
+            tex_sn.location = (-500, -480)
+            tex_sn.image = load_image_cached(sculpt_normal_path, "Non-Color")
+            bound_textures["sculpt_normal"] = f"HighPolyBakes/{os.path.basename(sculpt_normal_path)}"
+
+        if sculpt_ao_path and ("skin" in mat_name_lower or "kit" in mat_name_lower):
+            tex_sao = nt.nodes.new("ShaderNodeTexImage")
+            tex_sao.label = "HighPoly_Sculpt_AO"
+            tex_sao.location = (-500, -680)
+            tex_sao.image = load_image_cached(sculpt_ao_path, "Non-Color")
+            bound_textures["sculpt_ao"] = f"HighPolyBakes/{os.path.basename(sculpt_ao_path)}"
 
     return bound_textures
 
@@ -230,8 +324,8 @@ def remove_gltf_helper_objects() -> None:
 
 def apply_subsurf_and_smooth(mesh_obj: bpy.types.Object, arm_obj: bpy.types.Object) -> None:
     """
-    Apply Catmull-Clark Subdivision Surface (`levels=1`) cleanly in Rest Pose above the
-    Armature modifier, enforce smooth shading on all faces, and verify clean UV maps.
+    Apply Catmull-Clark Subdivision Surface (`levels=1`) only if the imported mesh is low-poly
+    (< 1800 vertices), enforce smooth shading on all faces, and verify clean UV maps.
     """
     prev_pose_pos = arm_obj.data.pose_position
     arm_obj.data.pose_position = "REST"
@@ -241,23 +335,20 @@ def apply_subsurf_and_smooth(mesh_obj: bpy.types.Object, arm_obj: bpy.types.Obje
     mesh_obj.select_set(True)
     bpy.context.view_layer.objects.active = mesh_obj
 
-    subsurf = mesh_obj.modifiers.new(name="Subdivision_UE5", type="SUBSURF")
-    subsurf.subdivision_type = "CATMULL_CLARK"
-    subsurf.levels = 1
-    subsurf.render_levels = 1
-    subsurf.uv_smooth = "PRESERVE_CORNERS"
+    if len(mesh_obj.data.vertices) < 1800:
+        subsurf = mesh_obj.modifiers.new(name="Subdivision_UE5", type="SUBSURF")
+        subsurf.subdivision_type = "CATMULL_CLARK"
+        subsurf.levels = 1
+        subsurf.render_levels = 1
+        subsurf.uv_smooth = "PRESERVE_CORNERS"
+        bpy.ops.object.modifier_move_to_index(modifier=subsurf.name, index=0)
+        bpy.ops.object.modifier_apply(modifier=subsurf.name)
 
-    # Place Subsurf before Armature so skinning weights subdivide cleanly in rest pose
-    bpy.ops.object.modifier_move_to_index(modifier=subsurf.name, index=0)
-    bpy.ops.object.modifier_apply(modifier=subsurf.name)
-
-    # Smooth shading on all polygons (Blender 5.2 safe, no deprecated auto_smooth calls)
     poly_count = len(mesh_obj.data.polygons)
     if poly_count > 0:
         mesh_obj.data.polygons.foreach_set("use_smooth", [True] * poly_count)
     mesh_obj.data.update()
 
-    # Ensure at least one clean UV map exists
     if len(mesh_obj.data.uv_layers) == 0:
         bpy.ops.object.mode_set(mode="EDIT")
         bpy.ops.mesh.select_all(action="SELECT")
@@ -272,8 +363,7 @@ def ensure_chaos_cloth_helper_bones(arm_obj: bpy.types.Object) -> list[str]:
     """
     Add non-deforming helper bones (`cloth_jersey_weight` and `ChaosCloth_Jersey_Weight`, both with
     `use_deform = False` parented to `spine_03`) so Blender 5.2's FBX exporter writes a SubDeformer
-    Cluster preserving the `ChaosCloth_Jersey_Weight` vertex group in all 17 exported `.fbx` files
-    without affecting armature skinning deformation.
+    Cluster preserving the `ChaosCloth_Jersey_Weight` vertex group in all 17 exported `.fbx` files.
     """
     bpy.ops.object.select_all(action="DESELECT")
     arm_obj.select_set(True)
@@ -307,20 +397,17 @@ def paint_chaos_cloth_jersey_weight(mesh_obj: bpy.types.Object) -> dict[str, Any
       - Shoulders / collar of jersey (`z >= z_collar`): `0.0` (pinned)
       - Free jersey hem (`z <= z_hem`): `1.0` (`12.0 cm` Chaos Cloth max distance)
       - Smooth linear gradient across torso jersey vertices.
-    Returns verification metrics for the manifest.
     """
     existing = mesh_obj.vertex_groups.get(CHAOS_CLOTH_VG_NAME)
     if existing is not None:
         mesh_obj.vertex_groups.remove(existing)
     vg = mesh_obj.vertex_groups.new(name=CHAOS_CLOTH_VG_NAME)
 
-    # Identify Kit / Cloth material slot indices
     kit_mat_indices = {
         idx for idx, mat in enumerate(mesh_obj.data.materials)
         if mat is not None and ("kit" in mat.name.lower() or "cloth" in mat.name.lower())
     }
 
-    # Collect vertices belonging to kit polygons in the jersey torso height band (z >= 0.85m)
     jersey_vert_indices: set[int] = set()
     for poly in mesh_obj.data.polygons:
         if poly.material_index in kit_mat_indices:
@@ -328,7 +415,6 @@ def paint_chaos_cloth_jersey_weight(mesh_obj: bpy.types.Object) -> dict[str, Any
                 if mesh_obj.data.vertices[vid].co.z >= 0.85:
                     jersey_vert_indices.add(vid)
 
-    # Fallback if a fighter mesh uses different Z bounds
     if not jersey_vert_indices:
         jersey_vert_indices = {v.index for v in mesh_obj.data.vertices if 0.85 <= v.co.z <= 1.45}
 
@@ -337,7 +423,6 @@ def paint_chaos_cloth_jersey_weight(mesh_obj: bpy.types.Object) -> dict[str, Any
     z_max = max(jersey_zs)
     z_span = max(z_max - z_min, 1e-4)
 
-    # Top 15% of jersey = pinned shoulders/collar (0.0); bottom 15% = free hem (1.0 -> 12.0 cm)
     z_collar = z_max - 0.15 * z_span
     z_hem = z_min + 0.15 * z_span
     grad_span = max(z_collar - z_hem, 1e-4)
@@ -387,6 +472,44 @@ def configure_scene_60fps() -> None:
     scene.render.fps_base = 1.0
 
 
+def add_facial_and_combat_shape_keys(mesh_obj: bpy.types.Object) -> list[str]:
+    """
+    Create 4 facial & combat Morph Targets (`Shape Keys`) on the anatomical LOD0 mesh:
+      - `Smile_Victory`, `Battle_Roar`, `Pain_Hitstun`, `Effort_Sprint`.
+    """
+    if mesh_obj.data.shape_keys is None:
+        mesh_obj.shape_key_add(name="Basis", from_mix=False)
+
+    zs = [v.co.z for v in mesh_obj.data.vertices]
+    max_z = max(zs) if zs else 1.80
+    vg_names = {vg.index: vg.name for vg in mesh_obj.vertex_groups}
+
+    morph_defs = [
+        ("Smile_Victory", lambda co, b: (0.0, -0.006, 0.005) if b == "head" and co.y < -0.02 and 0.85 * max_z <= co.z <= 0.90 * max_z else (0.0, 0.0, 0.0)),
+        ("Battle_Roar",   lambda co, b: (0.0, -0.008, -0.012 if co.z < 0.89 * max_z else 0.004) if b == "head" and co.y < -0.02 else ((0.0, -0.012, 0.006) if b == "spine_03" and co.y < -0.04 else (0.0, 0.0, 0.0))),
+        ("Pain_Hitstun",  lambda co, b: (0.0, 0.006, -0.005) if b == "head" and co.y < -0.02 else (0.0, 0.0, 0.0)),
+        ("Effort_Sprint", lambda co, b: (0.0, -0.009, 0.003) if b in ("head", "spine_03") and co.y < -0.03 else (0.0, 0.0, 0.0)),
+    ]
+
+    created_names = []
+    for key_name, disp_fn in morph_defs:
+        sk = mesh_obj.data.shape_keys.key_blocks.get(key_name) or mesh_obj.shape_key_add(name=key_name, from_mix=False)
+        for v in mesh_obj.data.vertices:
+            dom_bone = ""
+            best_w = -1.0
+            for g in v.groups:
+                if g.weight > best_w:
+                    best_w = g.weight
+                    dom_bone = vg_names.get(g.group, "")
+            dx, dy, dz = disp_fn(v.co, dom_bone)
+            sk.data[v.index].co = Vector((v.co.x + dx, v.co.y + dy, v.co.z + dz))
+        sk.value = 0.0
+        created_names.append(key_name)
+
+    mesh_obj.data.update()
+    return created_names
+
+
 def enhance_imported_fighter(
     glb_path: str,
     unique_material_suffix: str | None = None,
@@ -418,6 +541,7 @@ def enhance_imported_fighter(
     pre_faces = len(mesh_obj.data.polygons)
 
     apply_subsurf_and_smooth(mesh_obj, arm_obj)
+    morph_targets = add_facial_and_combat_shape_keys(mesh_obj)
     helper_bones = ensure_chaos_cloth_helper_bones(arm_obj)
     bound_textures = bind_pbr_materials(mesh_obj, fighter_stem, unique_suffix=unique_material_suffix)
     cloth_info = paint_chaos_cloth_jersey_weight(mesh_obj)
@@ -440,6 +564,7 @@ def enhance_imported_fighter(
         "vertices": post_verts,
         "faces": post_faces,
         "uv_layers": uv_layers,
+        "morph_targets": morph_targets,
         "smooth_shaded": all(p.use_smooth for p in mesh_obj.data.polygons),
         "materials": [m.name for m in mesh_obj.data.materials if m is not None],
         "bound_textures": bound_textures,
@@ -449,7 +574,7 @@ def enhance_imported_fighter(
 
 
 def export_fighter_fbx(arm_obj: bpy.types.Object, mesh_obj: bpy.types.Object, fbx_path: str) -> int:
-    """Export the enhanced fighter armature + mesh + all baked 60 FPS animations as UE 5.4+ FBX."""
+    """Export the enhanced fighter armature + mesh + all baked 60 FPS animations as UE 5.8 FBX."""
     bpy.ops.object.select_all(action="DESELECT")
     arm_obj.select_set(True)
     mesh_obj.select_set(True)
@@ -466,7 +591,7 @@ def export_fighter_fbx(arm_obj: bpy.types.Object, mesh_obj: bpy.types.Object, fb
         use_space_transform=True,
         bake_space_transform=False,
         mesh_smooth_type="FACE",
-        use_mesh_modifiers=True,
+        use_mesh_modifiers=False,
         use_tspace=True,
         add_leaf_bones=False,
         primary_bone_axis="Y",
@@ -489,7 +614,7 @@ def export_fighter_fbx(arm_obj: bpy.types.Object, mesh_obj: bpy.types.Object, fb
 
 def build_master_showcase_blend(glb_files: list[str], output_blend_path: str) -> int:
     """
-    Build `Master_17Fighters_Showcase.blend` containing all 17 enhanced fighters arranged
+    Build `Master_17Fighters_Showcase.blend` containing all enhanced fighters arranged
     in a clean 2-row stadium lineup with studio 3-point lighting and camera.
     """
     bpy.ops.wm.read_factory_settings(use_empty=True)
@@ -498,7 +623,6 @@ def build_master_showcase_blend(glb_files: list[str], output_blend_path: str) ->
     scene = bpy.context.scene
     root_col = scene.collection
 
-    # Pitch Showcase Floor
     bpy.ops.mesh.primitive_plane_add(size=32.0, location=(0.0, 1.0, 0.0))
     floor_obj = bpy.context.active_object
     floor_obj.name = "Showcase_Pitch_Floor"
@@ -509,7 +633,6 @@ def build_master_showcase_blend(glb_files: list[str], output_blend_path: str) ->
     bsdf.inputs["Roughness"].default_value = 0.72
     floor_obj.data.materials.append(floor_mat)
 
-    # 3-Point Stadium Studio Lighting
     def add_light(name: str, light_type: str, energy: float, color: tuple[float, float, float], loc: tuple[float, float, float], rot_deg: tuple[float, float, float], size: float = 4.0) -> None:
         ldata = bpy.data.lights.new(name=name, type=light_type)
         ldata.energy = energy
@@ -525,7 +648,6 @@ def build_master_showcase_blend(glb_files: list[str], output_blend_path: str) ->
     add_light("Fill_Cool_Light", "AREA", 2200.0, (0.75, 0.86, 1.0), (-7.5, -7.5, 6.0), (58.0, 0.0, -35.0), size=6.0)
     add_light("Rim_Floodlight", "AREA", 3500.0, (1.0, 0.92, 0.78), (0.0, 8.0, 7.5), (-55.0, 0.0, 180.0), size=8.0)
 
-    # Showcase Camera framing both rows
     cam_data = bpy.data.cameras.new(name="Showcase_Camera")
     cam_data.lens = 35.0
     cam_obj = bpy.data.objects.new(name="Showcase_Camera", object_data=cam_data)
@@ -534,14 +656,12 @@ def build_master_showcase_blend(glb_files: list[str], output_blend_path: str) ->
     root_col.objects.link(cam_obj)
     scene.camera = cam_obj
 
-    # Place 17 fighters in 2 rows: Front Row = 9 fighters, Back Row = 8 fighters
     front_count = 9
     spacing_x = 1.65
     for idx, glb_path in enumerate(glb_files):
         fighter_stem = os.path.splitext(os.path.basename(glb_path))[0]
         arm_obj, mesh_obj, _ = enhance_imported_fighter(glb_path, unique_material_suffix=fighter_stem)
 
-        # Put fighter into its own named collection for easy inspection
         f_col = bpy.data.collections.new(name=fighter_stem)
         root_col.children.link(f_col)
         for obj in (arm_obj, mesh_obj):
@@ -561,7 +681,6 @@ def build_master_showcase_blend(glb_files: list[str], output_blend_path: str) ->
         x_pos = (row_idx - (row_len - 1) * 0.5) * spacing_x
         arm_obj.location = Vector((x_pos, y_pos, 0.0))
 
-    # Pack external PBR textures so Master_17Fighters_Showcase.blend is portable
     bpy.ops.file.pack_all()
     os.makedirs(os.path.dirname(output_blend_path), exist_ok=True)
     bpy.ops.wm.save_as_mainfile(filepath=output_blend_path, compress=True)
@@ -569,13 +688,20 @@ def build_master_showcase_blend(glb_files: list[str], output_blend_path: str) ->
 
 
 def main() -> None:
+    args = parse_cli_args()
+    only_ids = {s.strip().upper() for s in args.only.split(",") if s.strip()} if args.only else set()
+
     os.makedirs(OUTPUT_FIGHTERS_DIR, exist_ok=True)
-    glb_files = sorted(glob.glob(os.path.join(SOURCE_FIGHTERS_DIR, "SK_*.glb")))
+    all_glb_files = sorted(glob.glob(os.path.join(SOURCE_FIGHTERS_DIR, "SK_*.glb")))
+    glb_files = [
+        p for p in all_glb_files
+        if not only_ids or os.path.splitext(os.path.basename(p))[0][3:].upper() in only_ids
+    ]
 
     if not glb_files:
-        raise FileNotFoundError(f"No SK_*.glb fighter files found in {SOURCE_FIGHTERS_DIR}")
+        raise FileNotFoundError(f"No matching SK_*.glb fighter files found in {SOURCE_FIGHTERS_DIR}")
 
-    print(f"[Blender {bpy.app.version_string}] Fighters UE5 Pipeline starting for {len(glb_files)} fighters...")
+    print(f"[Blender {bpy.app.version_string}] Fighters UE5 Pipeline starting for {len(glb_files)} fighter(s)...")
 
     fighter_entries: list[dict[str, Any]] = []
 
@@ -594,16 +720,19 @@ def main() -> None:
         fighter_entries.append(stats)
 
         print(
-            f"  [OK] {fighter_stem:24s} | verts={stats['vertices']:4d} faces={stats['faces']:4d} "
+            f"  [OK] {fighter_stem:24s} | verts={stats['vertices']:5d} faces={stats['faces']:5d} "
             f"| bones={stats['bone_count']} anims={stats['action_count']} "
             f"| cloth_vg={stats['chaos_cloth']['jersey_vertex_count']}v "
             f"[{stats['chaos_cloth']['min_weight']}..{stats['chaos_cloth']['max_weight']}] "
             f"| fbx={fbx_size:,} B"
         )
 
-    print("[Showcase] Building Master_17Fighters_Showcase.blend...")
-    showcase_size = build_master_showcase_blend(glb_files, SHOWCASE_BLEND_PATH)
-    print(f"  [OK] Master_17Fighters_Showcase.blend ({showcase_size:,} B)")
+    if args.skip_showcase:
+        showcase_size = os.path.getsize(SHOWCASE_BLEND_PATH) if os.path.isfile(SHOWCASE_BLEND_PATH) else 0
+    else:
+        print("[Showcase] Building Master_17Fighters_Showcase.blend...")
+        showcase_size = build_master_showcase_blend(all_glb_files if not only_ids else glb_files, SHOWCASE_BLEND_PATH)
+        print(f"  [OK] Master_17Fighters_Showcase.blend ({showcase_size:,} B)")
 
     manifest = {
         "project": "LA COPA ETERNA: SANGRE Y POTRERO",
@@ -611,7 +740,7 @@ def main() -> None:
         "generated_at_utc": datetime.now(timezone.utc).isoformat(),
         "blender_version": bpy.app.version_string,
         "blender_version_tuple": list(bpy.app.version),
-        "target_engine": "Unreal Engine 5.4+",
+        "target_engine": "Unreal Engine 5.8+",
         "fbx_export_settings": {
             "apply_scale_options": "FBX_SCALE_ALL",
             "add_leaf_bones": False,
@@ -624,6 +753,11 @@ def main() -> None:
         },
         "total_fighters": len(fighter_entries),
         "all_fbx_nonzero": all(e["fbx_size_bytes"] > 0 for e in fighter_entries),
+        "all_sculpt_bakes_verified": all(
+            "sculpt_normal" in e["bound_textures"] and "sculpt_ao" in e["bound_textures"]
+            for e in fighter_entries
+        ),
+        "all_morph_targets_verified": all(len(e.get("morph_targets", [])) >= 4 for e in fighter_entries),
         "all_chaos_cloth_verified": all(
             e["chaos_cloth"]["vertex_group"] == CHAOS_CLOTH_VG_NAME
             and e["chaos_cloth"]["min_weight"] == 0.0

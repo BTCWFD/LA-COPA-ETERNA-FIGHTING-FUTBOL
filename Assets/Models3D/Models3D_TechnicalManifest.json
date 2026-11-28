@@ -1,6 +1,6 @@
 {
-  "SchemaVersion": "1.0.0-UE5.4-GLTF2",
-  "TargetEngine": "Unreal Engine 5.4+ (Nanite & Skinned Cloth Pipeline)",
+  "SchemaVersion": "2.3.0-UE5.8-AnatomicalSculptLOD0",
+  "TargetEngine": "Unreal Engine 5.8+ (Skinned Cloth & Stepped FGC Pipeline)",
   "SkeletonStandard": {
     "TotalBones": 38,
     "RootAndHitstopBones": [
@@ -25,28 +25,28 @@
   },
   "GPUBudgetAndLODTargets": {
     "LOD0_CloseUpAndGameplay": {
-      "TargetTriangles": 65000,
+      "TargetTriangles": 16000,
       "MaxMorphTargets": 32,
       "ClothSimulation": true
     },
     "LOD1_MidRange": {
-      "TargetTriangles": 32000,
+      "TargetTriangles": 8000,
       "MaxMorphTargets": 16,
       "ClothSimulation": true
     },
     "LOD2_WideCamera": {
-      "TargetTriangles": 16000,
+      "TargetTriangles": 4000,
       "MaxMorphTargets": 0,
       "ClothSimulation": false
     },
     "LOD3_LowSpecFallback": {
-      "TargetTriangles": 8000,
+      "TargetTriangles": 2000,
       "MaxMorphTargets": 0,
       "ClothSimulation": false
     },
     "UVChannels": {
-      "UV0": "Primary PBR/Street-Ink BaseColor, Normal & ORM",
-      "UV1": "Dynamic Jersey Numbers, National Crest & Pitch Mud Mask"
+      "UV0": "Contracted 3-Slot Atlas (Skin / Retro90s Kit / Hair & Eyes) upright glTF top-left",
+      "UV1": "Non-overlapping Cycles Sculpt Bake (Normal & AO)"
     }
   },
   "GeneratedFighters": [
@@ -56,8 +56,23 @@
       "File": "SK_FENOMENO_BR.glb",
       "HeightMeters": 1.83,
       "SkeletonJoints": 38,
-      "Vertices": 432,
-      "Triangles": 216,
+      "Vertices": 8905,
+      "Triangles": 15300,
+      "HighPolySculptVertices": 42475,
+      "HighPolySculptTriangles": 84720,
+      "EmbeddedAlbedoTextures": [
+        "T_FENOMENO_BR_Skin_Albedo.png",
+        "T_FENOMENO_BR_Kit_Albedo.png",
+        "T_FENOMENO_BR_Hair_Albedo.png"
+      ],
+      "BakedNormalMap": "Assets/TexturesPBR/HighPolyBakes/T_SK_FENOMENO_BR_Sculpt_Normal.png",
+      "BakedAOMap": "Assets/TexturesPBR/HighPolyBakes/T_SK_FENOMENO_BR_Sculpt_AO.png",
+      "MorphTargets": [
+        "Smile_Victory",
+        "Battle_Roar",
+        "Pain_Hitstun",
+        "Effort_Sprint"
+      ],
       "MaterialSlots": [
         "M_FighterSkin_SSS",
         "M_FighterKit_Retro90s_Cloth",
@@ -77,8 +92,23 @@
       "File": "SK_BRUXO_BR.glb",
       "HeightMeters": 1.82,
       "SkeletonJoints": 38,
-      "Vertices": 432,
-      "Triangles": 216,
+      "Vertices": 9336,
+      "Triangles": 15996,
+      "HighPolySculptVertices": 44503,
+      "HighPolySculptTriangles": 88656,
+      "EmbeddedAlbedoTextures": [
+        "T_BRUXO_BR_Skin_Albedo.png",
+        "T_BRUXO_BR_Kit_Albedo.png",
+        "T_BRUXO_BR_Hair_Albedo.png"
+      ],
+      "BakedNormalMap": "Assets/TexturesPBR/HighPolyBakes/T_SK_BRUXO_BR_Sculpt_Normal.png",
+      "BakedAOMap": "Assets/TexturesPBR/HighPolyBakes/T_SK_BRUXO_BR_Sculpt_AO.png",
+      "MorphTargets": [
+        "Smile_Victory",
+        "Battle_Roar",
+        "Pain_Hitstun",
+        "Effort_Sprint"
+      ],
       "MaterialSlots": [
         "M_FighterSkin_SSS",
         "M_FighterKit_Retro90s_Cloth",
@@ -98,8 +128,23 @@
       "File": "SK_CANON_AR.glb",
       "HeightMeters": 1.85,
       "SkeletonJoints": 38,
-      "Vertices": 432,
-      "Triangles": 216,
+      "Vertices": 9344,
+      "Triangles": 16012,
+      "HighPolySculptVertices": 44503,
+      "HighPolySculptTriangles": 88656,
+      "EmbeddedAlbedoTextures": [
+        "T_CANON_AR_Skin_Albedo.png",
+        "T_CANON_AR_Kit_Albedo.png",
+        "T_CANON_AR_Hair_Albedo.png"
+      ],
+      "BakedNormalMap": "Assets/TexturesPBR/HighPolyBakes/T_SK_CANON_AR_Sculpt_Normal.png",
+      "BakedAOMap": "Assets/TexturesPBR/HighPolyBakes/T_SK_CANON_AR_Sculpt_AO.png",
+      "MorphTargets": [
+        "Smile_Victory",
+        "Battle_Roar",
+        "Pain_Hitstun",
+        "Effort_Sprint"
+      ],
       "MaterialSlots": [
         "M_FighterSkin_SSS",
         "M_FighterKit_Retro90s_Cloth",
@@ -119,8 +164,23 @@
       "File": "SK_PULGA_AR.glb",
       "HeightMeters": 1.7,
       "SkeletonJoints": 38,
-      "Vertices": 432,
-      "Triangles": 216,
+      "Vertices": 8931,
+      "Triangles": 15328,
+      "HighPolySculptVertices": 42571,
+      "HighPolySculptTriangles": 84912,
+      "EmbeddedAlbedoTextures": [
+        "T_PULGA_AR_Skin_Albedo.png",
+        "T_PULGA_AR_Kit_Albedo.png",
+        "T_PULGA_AR_Hair_Albedo.png"
+      ],
+      "BakedNormalMap": "Assets/TexturesPBR/HighPolyBakes/T_SK_PULGA_AR_Sculpt_Normal.png",
+      "BakedAOMap": "Assets/TexturesPBR/HighPolyBakes/T_SK_PULGA_AR_Sculpt_AO.png",
+      "MorphTargets": [
+        "Smile_Victory",
+        "Battle_Roar",
+        "Pain_Hitstun",
+        "Effort_Sprint"
+      ],
       "MaterialSlots": [
         "M_FighterSkin_SSS",
         "M_FighterKit_Retro90s_Cloth",
@@ -140,8 +200,23 @@
       "File": "SK_PIBE_CO.glb",
       "HeightMeters": 1.76,
       "SkeletonJoints": 38,
-      "Vertices": 528,
-      "Triangles": 264,
+      "Vertices": 9732,
+      "Triangles": 16572,
+      "HighPolySculptVertices": 45893,
+      "HighPolySculptTriangles": 91536,
+      "EmbeddedAlbedoTextures": [
+        "T_PIBE_CO_Skin_Albedo.png",
+        "T_PIBE_CO_Kit_Albedo.png",
+        "T_PIBE_CO_Hair_Albedo.png"
+      ],
+      "BakedNormalMap": "Assets/TexturesPBR/HighPolyBakes/T_SK_PIBE_CO_Sculpt_Normal.png",
+      "BakedAOMap": "Assets/TexturesPBR/HighPolyBakes/T_SK_PIBE_CO_Sculpt_AO.png",
+      "MorphTargets": [
+        "Smile_Victory",
+        "Battle_Roar",
+        "Pain_Hitstun",
+        "Effort_Sprint"
+      ],
       "MaterialSlots": [
         "M_FighterSkin_SSS",
         "M_FighterKit_Retro90s_Cloth",
@@ -161,8 +236,23 @@
       "File": "SK_LOCO_CO.glb",
       "HeightMeters": 1.76,
       "SkeletonJoints": 38,
-      "Vertices": 528,
-      "Triangles": 264,
+      "Vertices": 9417,
+      "Triangles": 16044,
+      "HighPolySculptVertices": 44451,
+      "HighPolySculptTriangles": 88656,
+      "EmbeddedAlbedoTextures": [
+        "T_LOCO_CO_Skin_Albedo.png",
+        "T_LOCO_CO_Kit_Albedo.png",
+        "T_LOCO_CO_Hair_Albedo.png"
+      ],
+      "BakedNormalMap": "Assets/TexturesPBR/HighPolyBakes/T_SK_LOCO_CO_Sculpt_Normal.png",
+      "BakedAOMap": "Assets/TexturesPBR/HighPolyBakes/T_SK_LOCO_CO_Sculpt_AO.png",
+      "MorphTargets": [
+        "Smile_Victory",
+        "Battle_Roar",
+        "Pain_Hitstun",
+        "Effort_Sprint"
+      ],
       "MaterialSlots": [
         "M_FighterSkin_SSS",
         "M_FighterKit_Retro90s_Cloth",
@@ -182,8 +272,23 @@
       "File": "SK_PISTOLERO_UY.glb",
       "HeightMeters": 1.82,
       "SkeletonJoints": 38,
-      "Vertices": 432,
-      "Triangles": 216,
+      "Vertices": 8939,
+      "Triangles": 15344,
+      "HighPolySculptVertices": 42571,
+      "HighPolySculptTriangles": 84912,
+      "EmbeddedAlbedoTextures": [
+        "T_PISTOLERO_UY_Skin_Albedo.png",
+        "T_PISTOLERO_UY_Kit_Albedo.png",
+        "T_PISTOLERO_UY_Hair_Albedo.png"
+      ],
+      "BakedNormalMap": "Assets/TexturesPBR/HighPolyBakes/T_SK_PISTOLERO_UY_Sculpt_Normal.png",
+      "BakedAOMap": "Assets/TexturesPBR/HighPolyBakes/T_SK_PISTOLERO_UY_Sculpt_AO.png",
+      "MorphTargets": [
+        "Smile_Victory",
+        "Battle_Roar",
+        "Pain_Hitstun",
+        "Effort_Sprint"
+      ],
       "MaterialSlots": [
         "M_FighterSkin_SSS",
         "M_FighterKit_Retro90s_Cloth",
@@ -203,8 +308,23 @@
       "File": "SK_MATADOR_UY.glb",
       "HeightMeters": 1.8,
       "SkeletonJoints": 38,
-      "Vertices": 432,
-      "Triangles": 216,
+      "Vertices": 9336,
+      "Triangles": 15996,
+      "HighPolySculptVertices": 44503,
+      "HighPolySculptTriangles": 88656,
+      "EmbeddedAlbedoTextures": [
+        "T_MATADOR_UY_Skin_Albedo.png",
+        "T_MATADOR_UY_Kit_Albedo.png",
+        "T_MATADOR_UY_Hair_Albedo.png"
+      ],
+      "BakedNormalMap": "Assets/TexturesPBR/HighPolyBakes/T_SK_MATADOR_UY_Sculpt_Normal.png",
+      "BakedAOMap": "Assets/TexturesPBR/HighPolyBakes/T_SK_MATADOR_UY_Sculpt_AO.png",
+      "MorphTargets": [
+        "Smile_Victory",
+        "Battle_Roar",
+        "Pain_Hitstun",
+        "Effort_Sprint"
+      ],
       "MaterialSlots": [
         "M_FighterSkin_SSS",
         "M_FighterKit_Retro90s_Cloth",
@@ -224,8 +344,23 @@
       "File": "SK_BAMBAM_CL.glb",
       "HeightMeters": 1.78,
       "SkeletonJoints": 38,
-      "Vertices": 432,
-      "Triangles": 216,
+      "Vertices": 8939,
+      "Triangles": 15344,
+      "HighPolySculptVertices": 42571,
+      "HighPolySculptTriangles": 84912,
+      "EmbeddedAlbedoTextures": [
+        "T_BAMBAM_CL_Skin_Albedo.png",
+        "T_BAMBAM_CL_Kit_Albedo.png",
+        "T_BAMBAM_CL_Hair_Albedo.png"
+      ],
+      "BakedNormalMap": "Assets/TexturesPBR/HighPolyBakes/T_SK_BAMBAM_CL_Sculpt_Normal.png",
+      "BakedAOMap": "Assets/TexturesPBR/HighPolyBakes/T_SK_BAMBAM_CL_Sculpt_AO.png",
+      "MorphTargets": [
+        "Smile_Victory",
+        "Battle_Roar",
+        "Pain_Hitstun",
+        "Effort_Sprint"
+      ],
       "MaterialSlots": [
         "M_FighterSkin_SSS",
         "M_FighterKit_Retro90s_Cloth",
@@ -245,8 +380,23 @@
       "File": "SK_REY_CL.glb",
       "HeightMeters": 1.8,
       "SkeletonJoints": 38,
-      "Vertices": 408,
-      "Triangles": 204,
+      "Vertices": 8885,
+      "Triangles": 15268,
+      "HighPolySculptVertices": 42379,
+      "HighPolySculptTriangles": 84528,
+      "EmbeddedAlbedoTextures": [
+        "T_REY_CL_Skin_Albedo.png",
+        "T_REY_CL_Kit_Albedo.png",
+        "T_REY_CL_Hair_Albedo.png"
+      ],
+      "BakedNormalMap": "Assets/TexturesPBR/HighPolyBakes/T_SK_REY_CL_Sculpt_Normal.png",
+      "BakedAOMap": "Assets/TexturesPBR/HighPolyBakes/T_SK_REY_CL_Sculpt_AO.png",
+      "MorphTargets": [
+        "Smile_Victory",
+        "Battle_Roar",
+        "Pain_Hitstun",
+        "Effort_Sprint"
+      ],
       "MaterialSlots": [
         "M_FighterSkin_SSS",
         "M_FighterKit_Retro90s_Cloth",
@@ -266,8 +416,23 @@
       "File": "SK_BULLDOG_PY.glb",
       "HeightMeters": 1.92,
       "SkeletonJoints": 38,
-      "Vertices": 432,
-      "Triangles": 216,
+      "Vertices": 8435,
+      "Triangles": 14480,
+      "HighPolySculptVertices": 40263,
+      "HighPolySculptTriangles": 80304,
+      "EmbeddedAlbedoTextures": [
+        "T_BULLDOG_PY_Skin_Albedo.png",
+        "T_BULLDOG_PY_Kit_Albedo.png",
+        "T_BULLDOG_PY_Hair_Albedo.png"
+      ],
+      "BakedNormalMap": "Assets/TexturesPBR/HighPolyBakes/T_SK_BULLDOG_PY_Sculpt_Normal.png",
+      "BakedAOMap": "Assets/TexturesPBR/HighPolyBakes/T_SK_BULLDOG_PY_Sculpt_AO.png",
+      "MorphTargets": [
+        "Smile_Victory",
+        "Battle_Roar",
+        "Pain_Hitstun",
+        "Effort_Sprint"
+      ],
       "MaterialSlots": [
         "M_FighterSkin_SSS",
         "M_FighterKit_Retro90s_Cloth",
@@ -287,8 +452,23 @@
       "File": "SK_MAESTRO_PE.glb",
       "HeightMeters": 1.77,
       "SkeletonJoints": 38,
-      "Vertices": 432,
-      "Triangles": 216,
+      "Vertices": 8931,
+      "Triangles": 15328,
+      "HighPolySculptVertices": 42571,
+      "HighPolySculptTriangles": 84912,
+      "EmbeddedAlbedoTextures": [
+        "T_MAESTRO_PE_Skin_Albedo.png",
+        "T_MAESTRO_PE_Kit_Albedo.png",
+        "T_MAESTRO_PE_Hair_Albedo.png"
+      ],
+      "BakedNormalMap": "Assets/TexturesPBR/HighPolyBakes/T_SK_MAESTRO_PE_Sculpt_Normal.png",
+      "BakedAOMap": "Assets/TexturesPBR/HighPolyBakes/T_SK_MAESTRO_PE_Sculpt_AO.png",
+      "MorphTargets": [
+        "Smile_Victory",
+        "Battle_Roar",
+        "Pain_Hitstun",
+        "Effort_Sprint"
+      ],
       "MaterialSlots": [
         "M_FighterSkin_SSS",
         "M_FighterKit_Retro90s_Cloth",
@@ -308,8 +488,23 @@
       "File": "SK_TREN_EC.glb",
       "HeightMeters": 1.79,
       "SkeletonJoints": 38,
-      "Vertices": 432,
-      "Triangles": 216,
+      "Vertices": 9097,
+      "Triangles": 15584,
+      "HighPolySculptVertices": 43149,
+      "HighPolySculptTriangles": 86064,
+      "EmbeddedAlbedoTextures": [
+        "T_TREN_EC_Skin_Albedo.png",
+        "T_TREN_EC_Kit_Albedo.png",
+        "T_TREN_EC_Hair_Albedo.png"
+      ],
+      "BakedNormalMap": "Assets/TexturesPBR/HighPolyBakes/T_SK_TREN_EC_Sculpt_Normal.png",
+      "BakedAOMap": "Assets/TexturesPBR/HighPolyBakes/T_SK_TREN_EC_Sculpt_AO.png",
+      "MorphTargets": [
+        "Smile_Victory",
+        "Battle_Roar",
+        "Pain_Hitstun",
+        "Effort_Sprint"
+      ],
       "MaterialSlots": [
         "M_FighterSkin_SSS",
         "M_FighterKit_Retro90s_Cloth",
@@ -329,8 +524,23 @@
       "File": "SK_HURACAN_VE.glb",
       "HeightMeters": 1.8,
       "SkeletonJoints": 38,
-      "Vertices": 432,
-      "Triangles": 216,
+      "Vertices": 8931,
+      "Triangles": 15328,
+      "HighPolySculptVertices": 42571,
+      "HighPolySculptTriangles": 84912,
+      "EmbeddedAlbedoTextures": [
+        "T_HURACAN_VE_Skin_Albedo.png",
+        "T_HURACAN_VE_Kit_Albedo.png",
+        "T_HURACAN_VE_Hair_Albedo.png"
+      ],
+      "BakedNormalMap": "Assets/TexturesPBR/HighPolyBakes/T_SK_HURACAN_VE_Sculpt_Normal.png",
+      "BakedAOMap": "Assets/TexturesPBR/HighPolyBakes/T_SK_HURACAN_VE_Sculpt_AO.png",
+      "MorphTargets": [
+        "Smile_Victory",
+        "Battle_Roar",
+        "Pain_Hitstun",
+        "Effort_Sprint"
+      ],
       "MaterialSlots": [
         "M_FighterSkin_SSS",
         "M_FighterKit_Retro90s_Cloth",
@@ -350,8 +560,23 @@
       "File": "SK_DIABLO_BO.glb",
       "HeightMeters": 1.76,
       "SkeletonJoints": 38,
-      "Vertices": 432,
-      "Triangles": 216,
+      "Vertices": 9249,
+      "Triangles": 15884,
+      "HighPolySculptVertices": 44111,
+      "HighPolySculptTriangles": 87984,
+      "EmbeddedAlbedoTextures": [
+        "T_DIABLO_BO_Skin_Albedo.png",
+        "T_DIABLO_BO_Kit_Albedo.png",
+        "T_DIABLO_BO_Hair_Albedo.png"
+      ],
+      "BakedNormalMap": "Assets/TexturesPBR/HighPolyBakes/T_SK_DIABLO_BO_Sculpt_Normal.png",
+      "BakedAOMap": "Assets/TexturesPBR/HighPolyBakes/T_SK_DIABLO_BO_Sculpt_AO.png",
+      "MorphTargets": [
+        "Smile_Victory",
+        "Battle_Roar",
+        "Pain_Hitstun",
+        "Effort_Sprint"
+      ],
       "MaterialSlots": [
         "M_FighterSkin_SSS",
         "M_FighterKit_Retro90s_Cloth",
@@ -371,8 +596,23 @@
       "File": "SK_GENERAL_FR.glb",
       "HeightMeters": 1.85,
       "SkeletonJoints": 38,
-      "Vertices": 432,
-      "Triangles": 216,
+      "Vertices": 8931,
+      "Triangles": 15328,
+      "HighPolySculptVertices": 42571,
+      "HighPolySculptTriangles": 84912,
+      "EmbeddedAlbedoTextures": [
+        "T_GENERAL_FR_Skin_Albedo.png",
+        "T_GENERAL_FR_Kit_Albedo.png",
+        "T_GENERAL_FR_Hair_Albedo.png"
+      ],
+      "BakedNormalMap": "Assets/TexturesPBR/HighPolyBakes/T_SK_GENERAL_FR_Sculpt_Normal.png",
+      "BakedAOMap": "Assets/TexturesPBR/HighPolyBakes/T_SK_GENERAL_FR_Sculpt_AO.png",
+      "MorphTargets": [
+        "Smile_Victory",
+        "Battle_Roar",
+        "Pain_Hitstun",
+        "Effort_Sprint"
+      ],
       "MaterialSlots": [
         "M_FighterSkin_SSS",
         "M_FighterKit_Retro90s_Cloth",
@@ -392,8 +632,23 @@
       "File": "SK_SUPREME_JUDGE_BOSS.glb",
       "HeightMeters": 2.15,
       "SkeletonJoints": 38,
-      "Vertices": 432,
-      "Triangles": 216,
+      "Vertices": 10236,
+      "Triangles": 17628,
+      "HighPolySculptVertices": 49729,
+      "HighPolySculptTriangles": 99120,
+      "EmbeddedAlbedoTextures": [
+        "T_SUPREME_JUDGE_BOSS_Skin_Albedo.png",
+        "T_SUPREME_JUDGE_BOSS_Kit_Albedo.png",
+        "T_SUPREME_JUDGE_BOSS_Hair_Albedo.png"
+      ],
+      "BakedNormalMap": "Assets/TexturesPBR/HighPolyBakes/T_SK_SUPREME_JUDGE_BOSS_Sculpt_Normal.png",
+      "BakedAOMap": "Assets/TexturesPBR/HighPolyBakes/T_SK_SUPREME_JUDGE_BOSS_Sculpt_AO.png",
+      "MorphTargets": [
+        "Smile_Victory",
+        "Battle_Roar",
+        "Pain_Hitstun",
+        "Effort_Sprint"
+      ],
       "MaterialSlots": [
         "M_FighterSkin_SSS",
         "M_FighterKit_Retro90s_Cloth",
@@ -417,5 +672,23 @@
       "Vertices": 216,
       "Triangles": 108
     }
+  },
+  "HighPolySculptPipeline": {
+    "BlenderVersion": "5.2.1 LTS",
+    "HighPolySubsurfLevels": 2,
+    "GameLOD0SubsurfLevels": 1,
+    "BakeResolution": 512,
+    "BakeSamples": 16,
+    "BakedMaps": [
+      "TangentNormal",
+      "AmbientOcclusion"
+    ],
+    "BakesDirectory": "Assets/TexturesPBR/HighPolyBakes",
+    "MorphTargetSet": [
+      "Smile_Victory",
+      "Battle_Roar",
+      "Pain_Hitstun",
+      "Effort_Sprint"
+    ]
   }
 }

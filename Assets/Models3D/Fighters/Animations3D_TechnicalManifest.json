@@ -1,10 +1,11 @@
 {
-  "SchemaVersion": "2.1.0-UE5.4-GLTF2-Uniform60FPS",
+  "SchemaVersion": "2.2.0-UE5.4-GLTF2-HighPolyMocap60FPS",
   "Project": "LA COPA ETERNA: SANGRE Y POTRERO",
   "TargetFormat": "glTF 2.0 Binary (.glb)",
   "SampleRateFPS": 60,
   "UniformFrameStepSeconds": 0.016667,
   "All10ClipsUniform60FPS": true,
+  "All16ClipsUniform60FPS": true,
   "SteppedCombatClipNames": [
     "Anim_Idle",
     "Anim_5LP_Jab4f",
@@ -17,7 +18,13 @@
     "Dash_Forward",
     "Kick_High",
     "Special_Chilena",
-    "Victory_Pose"
+    "Victory_Pose",
+    "Mocap_Walk_Forward",
+    "Mocap_Backdash_Dodge",
+    "Mocap_Block_Guard",
+    "Mocap_Hitstun_Knockback",
+    "Mocap_Super_Potrero",
+    "Mocap_KO_Knockdown"
   ],
   "TotalFightersUpgraded": 17,
   "ValidationPassed": true,
@@ -111,6 +118,60 @@
       "Interpolation": "LINEAR",
       "Looping": false,
       "Description": "Triumphant championship celebration salute (SK_SUPREME_JUDGE_BOSS features hovering levitation + dual counter-rotating astrolabe halo)"
+    },
+    {
+      "ClipName": "Mocap_Walk_Forward",
+      "DurationSeconds": 1.0,
+      "KeyframeCount": 61,
+      "FPS": 60,
+      "Interpolation": "LINEAR",
+      "Looping": true,
+      "Description": "60 FPS Mocap athletic forward walk cycle with counter-rotating shoulders, pelvis bob, and foot roll"
+    },
+    {
+      "ClipName": "Mocap_Backdash_Dodge",
+      "DurationSeconds": 0.45,
+      "KeyframeCount": 28,
+      "FPS": 60,
+      "Interpolation": "LINEAR",
+      "Looping": false,
+      "Description": "60 FPS Mocap explosive backward evade hop with guarded torso recoil"
+    },
+    {
+      "ClipName": "Mocap_Block_Guard",
+      "DurationSeconds": 0.8,
+      "KeyframeCount": 49,
+      "FPS": 60,
+      "Interpolation": "LINEAR",
+      "Looping": false,
+      "Description": "60 FPS Mocap braced cross-arm competitive block guard with knee absorption"
+    },
+    {
+      "ClipName": "Mocap_Hitstun_Knockback",
+      "DurationSeconds": 0.5,
+      "KeyframeCount": 31,
+      "FPS": 60,
+      "Interpolation": "LINEAR",
+      "Looping": false,
+      "Description": "60 FPS Mocap whiplash hitstun recoil with decoupled pelvis_visual_offset hitstop vibration"
+    },
+    {
+      "ClipName": "Mocap_Super_Potrero",
+      "DurationSeconds": 1.4,
+      "KeyframeCount": 85,
+      "FPS": 60,
+      "Interpolation": "LINEAR",
+      "Looping": false,
+      "Description": "60 FPS Mocap Super Hinchada Nivel 3 leaping volley strike with 1.30x active smear frame"
+    },
+    {
+      "ClipName": "Mocap_KO_Knockdown",
+      "DurationSeconds": 1.2,
+      "KeyframeCount": 73,
+      "FPS": 60,
+      "Interpolation": "LINEAR",
+      "Looping": false,
+      "Description": "60 FPS Mocap full-body knockdown collapse and stadium turf rebound"
     }
   ],
   "Fighters": [
@@ -118,8 +179,8 @@
       "FighterFile": "SK_BAMBAM_CL.glb",
       "FighterID": "BAMBAM_CL",
       "IsBoss": false,
-      "FileSizeBytes": 154512,
-      "TotalAnimationsInGLB": 10,
+      "FileSizeBytes": 909772,
+      "TotalAnimationsInGLB": 16,
       "AllAnimationNames": [
         "Anim_Idle",
         "Anim_5LP_Jab4f",
@@ -130,7 +191,13 @@
         "Dash_Forward",
         "Kick_High",
         "Special_Chilena",
-        "Victory_Pose"
+        "Victory_Pose",
+        "Mocap_Walk_Forward",
+        "Mocap_Backdash_Dodge",
+        "Mocap_Block_Guard",
+        "Mocap_Hitstun_Knockback",
+        "Mocap_Super_Potrero",
+        "Mocap_KO_Knockdown"
       ],
       "AllClipsUniform60FPS": true,
       "AllClips": [
@@ -243,6 +310,72 @@
           "SamplerCount": 14,
           "Interpolation": "LINEAR",
           "SpecialFeatures": "Full-body 60 FPS keyframe animation"
+        },
+        {
+          "ClipName": "Mocap_Walk_Forward",
+          "DurationSeconds": 1.0,
+          "FPS": 60,
+          "UniformFrameStepSeconds": 0.016667,
+          "KeyframeCount": 61,
+          "ChannelCount": 18,
+          "SamplerCount": 18,
+          "Interpolation": "LINEAR",
+          "SpecialFeatures": "Full-body 60 FPS keyframe animation"
+        },
+        {
+          "ClipName": "Mocap_Backdash_Dodge",
+          "DurationSeconds": 0.45,
+          "FPS": 60,
+          "UniformFrameStepSeconds": 0.016667,
+          "KeyframeCount": 28,
+          "ChannelCount": 12,
+          "SamplerCount": 12,
+          "Interpolation": "LINEAR",
+          "SpecialFeatures": "Full-body 60 FPS keyframe animation"
+        },
+        {
+          "ClipName": "Mocap_Block_Guard",
+          "DurationSeconds": 0.8,
+          "FPS": 60,
+          "UniformFrameStepSeconds": 0.016667,
+          "KeyframeCount": 49,
+          "ChannelCount": 13,
+          "SamplerCount": 13,
+          "Interpolation": "LINEAR",
+          "SpecialFeatures": "Full-body 60 FPS keyframe animation"
+        },
+        {
+          "ClipName": "Mocap_Hitstun_Knockback",
+          "DurationSeconds": 0.5,
+          "FPS": 60,
+          "UniformFrameStepSeconds": 0.016667,
+          "KeyframeCount": 31,
+          "ChannelCount": 10,
+          "SamplerCount": 10,
+          "Interpolation": "LINEAR",
+          "SpecialFeatures": "Full-body 60 FPS keyframe animation"
+        },
+        {
+          "ClipName": "Mocap_Super_Potrero",
+          "DurationSeconds": 1.4,
+          "FPS": 60,
+          "UniformFrameStepSeconds": 0.016667,
+          "KeyframeCount": 85,
+          "ChannelCount": 14,
+          "SamplerCount": 14,
+          "Interpolation": "LINEAR",
+          "SpecialFeatures": "Full-body 60 FPS keyframe animation"
+        },
+        {
+          "ClipName": "Mocap_KO_Knockdown",
+          "DurationSeconds": 1.2,
+          "FPS": 60,
+          "UniformFrameStepSeconds": 0.016667,
+          "KeyframeCount": 73,
+          "ChannelCount": 10,
+          "SamplerCount": 10,
+          "Interpolation": "LINEAR",
+          "SpecialFeatures": "Full-body 60 FPS keyframe animation"
         }
       ],
       "UpgradedClips": [
@@ -298,6 +431,72 @@
           "KeyframeCount": 91,
           "ChannelCount": 14,
           "SamplerCount": 14,
+          "Interpolation": "LINEAR",
+          "SpecialFeatures": "Full-body 60 FPS keyframe animation"
+        },
+        {
+          "ClipName": "Mocap_Walk_Forward",
+          "DurationSeconds": 1.0,
+          "FPS": 60,
+          "UniformFrameStepSeconds": 0.016667,
+          "KeyframeCount": 61,
+          "ChannelCount": 18,
+          "SamplerCount": 18,
+          "Interpolation": "LINEAR",
+          "SpecialFeatures": "Full-body 60 FPS keyframe animation"
+        },
+        {
+          "ClipName": "Mocap_Backdash_Dodge",
+          "DurationSeconds": 0.45,
+          "FPS": 60,
+          "UniformFrameStepSeconds": 0.016667,
+          "KeyframeCount": 28,
+          "ChannelCount": 12,
+          "SamplerCount": 12,
+          "Interpolation": "LINEAR",
+          "SpecialFeatures": "Full-body 60 FPS keyframe animation"
+        },
+        {
+          "ClipName": "Mocap_Block_Guard",
+          "DurationSeconds": 0.8,
+          "FPS": 60,
+          "UniformFrameStepSeconds": 0.016667,
+          "KeyframeCount": 49,
+          "ChannelCount": 13,
+          "SamplerCount": 13,
+          "Interpolation": "LINEAR",
+          "SpecialFeatures": "Full-body 60 FPS keyframe animation"
+        },
+        {
+          "ClipName": "Mocap_Hitstun_Knockback",
+          "DurationSeconds": 0.5,
+          "FPS": 60,
+          "UniformFrameStepSeconds": 0.016667,
+          "KeyframeCount": 31,
+          "ChannelCount": 10,
+          "SamplerCount": 10,
+          "Interpolation": "LINEAR",
+          "SpecialFeatures": "Full-body 60 FPS keyframe animation"
+        },
+        {
+          "ClipName": "Mocap_Super_Potrero",
+          "DurationSeconds": 1.4,
+          "FPS": 60,
+          "UniformFrameStepSeconds": 0.016667,
+          "KeyframeCount": 85,
+          "ChannelCount": 14,
+          "SamplerCount": 14,
+          "Interpolation": "LINEAR",
+          "SpecialFeatures": "Full-body 60 FPS keyframe animation"
+        },
+        {
+          "ClipName": "Mocap_KO_Knockdown",
+          "DurationSeconds": 1.2,
+          "FPS": 60,
+          "UniformFrameStepSeconds": 0.016667,
+          "KeyframeCount": 73,
+          "ChannelCount": 10,
+          "SamplerCount": 10,
           "Interpolation": "LINEAR",
           "SpecialFeatures": "Full-body 60 FPS keyframe animation"
         }
@@ -307,8 +506,8 @@
       "FighterFile": "SK_BRUXO_BR.glb",
       "FighterID": "BRUXO_BR",
       "IsBoss": false,
-      "FileSizeBytes": 154504,
-      "TotalAnimationsInGLB": 10,
+      "FileSizeBytes": 940672,
+      "TotalAnimationsInGLB": 16,
       "AllAnimationNames": [
         "Anim_Idle",
         "Anim_5LP_Jab4f",
@@ -319,7 +518,13 @@
         "Dash_Forward",
         "Kick_High",
         "Special_Chilena",
-        "Victory_Pose"
+        "Victory_Pose",
+        "Mocap_Walk_Forward",
+        "Mocap_Backdash_Dodge",
+        "Mocap_Block_Guard",
+        "Mocap_Hitstun_Knockback",
+        "Mocap_Super_Potrero",
+        "Mocap_KO_Knockdown"
       ],
       "AllClipsUniform60FPS": true,
       "AllClips": [
@@ -432,6 +637,72 @@
           "SamplerCount": 14,
           "Interpolation": "LINEAR",
           "SpecialFeatures": "Full-body 60 FPS keyframe animation"
+        },
+        {
+          "ClipName": "Mocap_Walk_Forward",
+          "DurationSeconds": 1.0,
+          "FPS": 60,
+          "UniformFrameStepSeconds": 0.016667,
+          "KeyframeCount": 61,
+          "ChannelCount": 18,
+          "SamplerCount": 18,
+          "Interpolation": "LINEAR",
+          "SpecialFeatures": "Full-body 60 FPS keyframe animation"
+        },
+        {
+          "ClipName": "Mocap_Backdash_Dodge",
+          "DurationSeconds": 0.45,
+          "FPS": 60,
+          "UniformFrameStepSeconds": 0.016667,
+          "KeyframeCount": 28,
+          "ChannelCount": 12,
+          "SamplerCount": 12,
+          "Interpolation": "LINEAR",
+          "SpecialFeatures": "Full-body 60 FPS keyframe animation"
+        },
+        {
+          "ClipName": "Mocap_Block_Guard",
+          "DurationSeconds": 0.8,
+          "FPS": 60,
+          "UniformFrameStepSeconds": 0.016667,
+          "KeyframeCount": 49,
+          "ChannelCount": 13,
+          "SamplerCount": 13,
+          "Interpolation": "LINEAR",
+          "SpecialFeatures": "Full-body 60 FPS keyframe animation"
+        },
+        {
+          "ClipName": "Mocap_Hitstun_Knockback",
+          "DurationSeconds": 0.5,
+          "FPS": 60,
+          "UniformFrameStepSeconds": 0.016667,
+          "KeyframeCount": 31,
+          "ChannelCount": 10,
+          "SamplerCount": 10,
+          "Interpolation": "LINEAR",
+          "SpecialFeatures": "Full-body 60 FPS keyframe animation"
+        },
+        {
+          "ClipName": "Mocap_Super_Potrero",
+          "DurationSeconds": 1.4,
+          "FPS": 60,
+          "UniformFrameStepSeconds": 0.016667,
+          "KeyframeCount": 85,
+          "ChannelCount": 14,
+          "SamplerCount": 14,
+          "Interpolation": "LINEAR",
+          "SpecialFeatures": "Full-body 60 FPS keyframe animation"
+        },
+        {
+          "ClipName": "Mocap_KO_Knockdown",
+          "DurationSeconds": 1.2,
+          "FPS": 60,
+          "UniformFrameStepSeconds": 0.016667,
+          "KeyframeCount": 73,
+          "ChannelCount": 10,
+          "SamplerCount": 10,
+          "Interpolation": "LINEAR",
+          "SpecialFeatures": "Full-body 60 FPS keyframe animation"
         }
       ],
       "UpgradedClips": [
@@ -487,6 +758,72 @@
           "KeyframeCount": 91,
           "ChannelCount": 14,
           "SamplerCount": 14,
+          "Interpolation": "LINEAR",
+          "SpecialFeatures": "Full-body 60 FPS keyframe animation"
+        },
+        {
+          "ClipName": "Mocap_Walk_Forward",
+          "DurationSeconds": 1.0,
+          "FPS": 60,
+          "UniformFrameStepSeconds": 0.016667,
+          "KeyframeCount": 61,
+          "ChannelCount": 18,
+          "SamplerCount": 18,
+          "Interpolation": "LINEAR",
+          "SpecialFeatures": "Full-body 60 FPS keyframe animation"
+        },
+        {
+          "ClipName": "Mocap_Backdash_Dodge",
+          "DurationSeconds": 0.45,
+          "FPS": 60,
+          "UniformFrameStepSeconds": 0.016667,
+          "KeyframeCount": 28,
+          "ChannelCount": 12,
+          "SamplerCount": 12,
+          "Interpolation": "LINEAR",
+          "SpecialFeatures": "Full-body 60 FPS keyframe animation"
+        },
+        {
+          "ClipName": "Mocap_Block_Guard",
+          "DurationSeconds": 0.8,
+          "FPS": 60,
+          "UniformFrameStepSeconds": 0.016667,
+          "KeyframeCount": 49,
+          "ChannelCount": 13,
+          "SamplerCount": 13,
+          "Interpolation": "LINEAR",
+          "SpecialFeatures": "Full-body 60 FPS keyframe animation"
+        },
+        {
+          "ClipName": "Mocap_Hitstun_Knockback",
+          "DurationSeconds": 0.5,
+          "FPS": 60,
+          "UniformFrameStepSeconds": 0.016667,
+          "KeyframeCount": 31,
+          "ChannelCount": 10,
+          "SamplerCount": 10,
+          "Interpolation": "LINEAR",
+          "SpecialFeatures": "Full-body 60 FPS keyframe animation"
+        },
+        {
+          "ClipName": "Mocap_Super_Potrero",
+          "DurationSeconds": 1.4,
+          "FPS": 60,
+          "UniformFrameStepSeconds": 0.016667,
+          "KeyframeCount": 85,
+          "ChannelCount": 14,
+          "SamplerCount": 14,
+          "Interpolation": "LINEAR",
+          "SpecialFeatures": "Full-body 60 FPS keyframe animation"
+        },
+        {
+          "ClipName": "Mocap_KO_Knockdown",
+          "DurationSeconds": 1.2,
+          "FPS": 60,
+          "UniformFrameStepSeconds": 0.016667,
+          "KeyframeCount": 73,
+          "ChannelCount": 10,
+          "SamplerCount": 10,
           "Interpolation": "LINEAR",
           "SpecialFeatures": "Full-body 60 FPS keyframe animation"
         }
@@ -496,8 +833,8 @@
       "FighterFile": "SK_BULLDOG_PY.glb",
       "FighterID": "BULLDOG_PY",
       "IsBoss": false,
-      "FileSizeBytes": 154488,
-      "TotalAnimationsInGLB": 10,
+      "FileSizeBytes": 870296,
+      "TotalAnimationsInGLB": 16,
       "AllAnimationNames": [
         "Anim_Idle",
         "Anim_5LP_Jab4f",
@@ -508,7 +845,13 @@
         "Dash_Forward",
         "Kick_High",
         "Special_Chilena",
-        "Victory_Pose"
+        "Victory_Pose",
+        "Mocap_Walk_Forward",
+        "Mocap_Backdash_Dodge",
+        "Mocap_Block_Guard",
+        "Mocap_Hitstun_Knockback",
+        "Mocap_Super_Potrero",
+        "Mocap_KO_Knockdown"
       ],
       "AllClipsUniform60FPS": true,
       "AllClips": [
@@ -621,6 +964,72 @@
           "SamplerCount": 14,
           "Interpolation": "LINEAR",
           "SpecialFeatures": "Full-body 60 FPS keyframe animation"
+        },
+        {
+          "ClipName": "Mocap_Walk_Forward",
+          "DurationSeconds": 1.0,
+          "FPS": 60,
+          "UniformFrameStepSeconds": 0.016667,
+          "KeyframeCount": 61,
+          "ChannelCount": 18,
+          "SamplerCount": 18,
+          "Interpolation": "LINEAR",
+          "SpecialFeatures": "Full-body 60 FPS keyframe animation"
+        },
+        {
+          "ClipName": "Mocap_Backdash_Dodge",
+          "DurationSeconds": 0.45,
+          "FPS": 60,
+          "UniformFrameStepSeconds": 0.016667,
+          "KeyframeCount": 28,
+          "ChannelCount": 12,
+          "SamplerCount": 12,
+          "Interpolation": "LINEAR",
+          "SpecialFeatures": "Full-body 60 FPS keyframe animation"
+        },
+        {
+          "ClipName": "Mocap_Block_Guard",
+          "DurationSeconds": 0.8,
+          "FPS": 60,
+          "UniformFrameStepSeconds": 0.016667,
+          "KeyframeCount": 49,
+          "ChannelCount": 13,
+          "SamplerCount": 13,
+          "Interpolation": "LINEAR",
+          "SpecialFeatures": "Full-body 60 FPS keyframe animation"
+        },
+        {
+          "ClipName": "Mocap_Hitstun_Knockback",
+          "DurationSeconds": 0.5,
+          "FPS": 60,
+          "UniformFrameStepSeconds": 0.016667,
+          "KeyframeCount": 31,
+          "ChannelCount": 10,
+          "SamplerCount": 10,
+          "Interpolation": "LINEAR",
+          "SpecialFeatures": "Full-body 60 FPS keyframe animation"
+        },
+        {
+          "ClipName": "Mocap_Super_Potrero",
+          "DurationSeconds": 1.4,
+          "FPS": 60,
+          "UniformFrameStepSeconds": 0.016667,
+          "KeyframeCount": 85,
+          "ChannelCount": 14,
+          "SamplerCount": 14,
+          "Interpolation": "LINEAR",
+          "SpecialFeatures": "Full-body 60 FPS keyframe animation"
+        },
+        {
+          "ClipName": "Mocap_KO_Knockdown",
+          "DurationSeconds": 1.2,
+          "FPS": 60,
+          "UniformFrameStepSeconds": 0.016667,
+          "KeyframeCount": 73,
+          "ChannelCount": 10,
+          "SamplerCount": 10,
+          "Interpolation": "LINEAR",
+          "SpecialFeatures": "Full-body 60 FPS keyframe animation"
         }
       ],
       "UpgradedClips": [
@@ -676,6 +1085,72 @@
           "KeyframeCount": 91,
           "ChannelCount": 14,
           "SamplerCount": 14,
+          "Interpolation": "LINEAR",
+          "SpecialFeatures": "Full-body 60 FPS keyframe animation"
+        },
+        {
+          "ClipName": "Mocap_Walk_Forward",
+          "DurationSeconds": 1.0,
+          "FPS": 60,
+          "UniformFrameStepSeconds": 0.016667,
+          "KeyframeCount": 61,
+          "ChannelCount": 18,
+          "SamplerCount": 18,
+          "Interpolation": "LINEAR",
+          "SpecialFeatures": "Full-body 60 FPS keyframe animation"
+        },
+        {
+          "ClipName": "Mocap_Backdash_Dodge",
+          "DurationSeconds": 0.45,
+          "FPS": 60,
+          "UniformFrameStepSeconds": 0.016667,
+          "KeyframeCount": 28,
+          "ChannelCount": 12,
+          "SamplerCount": 12,
+          "Interpolation": "LINEAR",
+          "SpecialFeatures": "Full-body 60 FPS keyframe animation"
+        },
+        {
+          "ClipName": "Mocap_Block_Guard",
+          "DurationSeconds": 0.8,
+          "FPS": 60,
+          "UniformFrameStepSeconds": 0.016667,
+          "KeyframeCount": 49,
+          "ChannelCount": 13,
+          "SamplerCount": 13,
+          "Interpolation": "LINEAR",
+          "SpecialFeatures": "Full-body 60 FPS keyframe animation"
+        },
+        {
+          "ClipName": "Mocap_Hitstun_Knockback",
+          "DurationSeconds": 0.5,
+          "FPS": 60,
+          "UniformFrameStepSeconds": 0.016667,
+          "KeyframeCount": 31,
+          "ChannelCount": 10,
+          "SamplerCount": 10,
+          "Interpolation": "LINEAR",
+          "SpecialFeatures": "Full-body 60 FPS keyframe animation"
+        },
+        {
+          "ClipName": "Mocap_Super_Potrero",
+          "DurationSeconds": 1.4,
+          "FPS": 60,
+          "UniformFrameStepSeconds": 0.016667,
+          "KeyframeCount": 85,
+          "ChannelCount": 14,
+          "SamplerCount": 14,
+          "Interpolation": "LINEAR",
+          "SpecialFeatures": "Full-body 60 FPS keyframe animation"
+        },
+        {
+          "ClipName": "Mocap_KO_Knockdown",
+          "DurationSeconds": 1.2,
+          "FPS": 60,
+          "UniformFrameStepSeconds": 0.016667,
+          "KeyframeCount": 73,
+          "ChannelCount": 10,
+          "SamplerCount": 10,
           "Interpolation": "LINEAR",
           "SpecialFeatures": "Full-body 60 FPS keyframe animation"
         }
@@ -685,8 +1160,8 @@
       "FighterFile": "SK_CANON_AR.glb",
       "FighterID": "CANON_AR",
       "IsBoss": false,
-      "FileSizeBytes": 154492,
-      "TotalAnimationsInGLB": 10,
+      "FileSizeBytes": 941304,
+      "TotalAnimationsInGLB": 16,
       "AllAnimationNames": [
         "Anim_Idle",
         "Anim_5LP_Jab4f",
@@ -697,7 +1172,13 @@
         "Dash_Forward",
         "Kick_High",
         "Special_Chilena",
-        "Victory_Pose"
+        "Victory_Pose",
+        "Mocap_Walk_Forward",
+        "Mocap_Backdash_Dodge",
+        "Mocap_Block_Guard",
+        "Mocap_Hitstun_Knockback",
+        "Mocap_Super_Potrero",
+        "Mocap_KO_Knockdown"
       ],
       "AllClipsUniform60FPS": true,
       "AllClips": [
@@ -810,6 +1291,72 @@
           "SamplerCount": 14,
           "Interpolation": "LINEAR",
           "SpecialFeatures": "Full-body 60 FPS keyframe animation"
+        },
+        {
+          "ClipName": "Mocap_Walk_Forward",
+          "DurationSeconds": 1.0,
+          "FPS": 60,
+          "UniformFrameStepSeconds": 0.016667,
+          "KeyframeCount": 61,
+          "ChannelCount": 18,
+          "SamplerCount": 18,
+          "Interpolation": "LINEAR",
+          "SpecialFeatures": "Full-body 60 FPS keyframe animation"
+        },
+        {
+          "ClipName": "Mocap_Backdash_Dodge",
+          "DurationSeconds": 0.45,
+          "FPS": 60,
+          "UniformFrameStepSeconds": 0.016667,
+          "KeyframeCount": 28,
+          "ChannelCount": 12,
+          "SamplerCount": 12,
+          "Interpolation": "LINEAR",
+          "SpecialFeatures": "Full-body 60 FPS keyframe animation"
+        },
+        {
+          "ClipName": "Mocap_Block_Guard",
+          "DurationSeconds": 0.8,
+          "FPS": 60,
+          "UniformFrameStepSeconds": 0.016667,
+          "KeyframeCount": 49,
+          "ChannelCount": 13,
+          "SamplerCount": 13,
+          "Interpolation": "LINEAR",
+          "SpecialFeatures": "Full-body 60 FPS keyframe animation"
+        },
+        {
+          "ClipName": "Mocap_Hitstun_Knockback",
+          "DurationSeconds": 0.5,
+          "FPS": 60,
+          "UniformFrameStepSeconds": 0.016667,
+          "KeyframeCount": 31,
+          "ChannelCount": 10,
+          "SamplerCount": 10,
+          "Interpolation": "LINEAR",
+          "SpecialFeatures": "Full-body 60 FPS keyframe animation"
+        },
+        {
+          "ClipName": "Mocap_Super_Potrero",
+          "DurationSeconds": 1.4,
+          "FPS": 60,
+          "UniformFrameStepSeconds": 0.016667,
+          "KeyframeCount": 85,
+          "ChannelCount": 14,
+          "SamplerCount": 14,
+          "Interpolation": "LINEAR",
+          "SpecialFeatures": "Full-body 60 FPS keyframe animation"
+        },
+        {
+          "ClipName": "Mocap_KO_Knockdown",
+          "DurationSeconds": 1.2,
+          "FPS": 60,
+          "UniformFrameStepSeconds": 0.016667,
+          "KeyframeCount": 73,
+          "ChannelCount": 10,
+          "SamplerCount": 10,
+          "Interpolation": "LINEAR",
+          "SpecialFeatures": "Full-body 60 FPS keyframe animation"
         }
       ],
       "UpgradedClips": [
@@ -865,6 +1412,72 @@
           "KeyframeCount": 91,
           "ChannelCount": 14,
           "SamplerCount": 14,
+          "Interpolation": "LINEAR",
+          "SpecialFeatures": "Full-body 60 FPS keyframe animation"
+        },
+        {
+          "ClipName": "Mocap_Walk_Forward",
+          "DurationSeconds": 1.0,
+          "FPS": 60,
+          "UniformFrameStepSeconds": 0.016667,
+          "KeyframeCount": 61,
+          "ChannelCount": 18,
+          "SamplerCount": 18,
+          "Interpolation": "LINEAR",
+          "SpecialFeatures": "Full-body 60 FPS keyframe animation"
+        },
+        {
+          "ClipName": "Mocap_Backdash_Dodge",
+          "DurationSeconds": 0.45,
+          "FPS": 60,
+          "UniformFrameStepSeconds": 0.016667,
+          "KeyframeCount": 28,
+          "ChannelCount": 12,
+          "SamplerCount": 12,
+          "Interpolation": "LINEAR",
+          "SpecialFeatures": "Full-body 60 FPS keyframe animation"
+        },
+        {
+          "ClipName": "Mocap_Block_Guard",
+          "DurationSeconds": 0.8,
+          "FPS": 60,
+          "UniformFrameStepSeconds": 0.016667,
+          "KeyframeCount": 49,
+          "ChannelCount": 13,
+          "SamplerCount": 13,
+          "Interpolation": "LINEAR",
+          "SpecialFeatures": "Full-body 60 FPS keyframe animation"
+        },
+        {
+          "ClipName": "Mocap_Hitstun_Knockback",
+          "DurationSeconds": 0.5,
+          "FPS": 60,
+          "UniformFrameStepSeconds": 0.016667,
+          "KeyframeCount": 31,
+          "ChannelCount": 10,
+          "SamplerCount": 10,
+          "Interpolation": "LINEAR",
+          "SpecialFeatures": "Full-body 60 FPS keyframe animation"
+        },
+        {
+          "ClipName": "Mocap_Super_Potrero",
+          "DurationSeconds": 1.4,
+          "FPS": 60,
+          "UniformFrameStepSeconds": 0.016667,
+          "KeyframeCount": 85,
+          "ChannelCount": 14,
+          "SamplerCount": 14,
+          "Interpolation": "LINEAR",
+          "SpecialFeatures": "Full-body 60 FPS keyframe animation"
+        },
+        {
+          "ClipName": "Mocap_KO_Knockdown",
+          "DurationSeconds": 1.2,
+          "FPS": 60,
+          "UniformFrameStepSeconds": 0.016667,
+          "KeyframeCount": 73,
+          "ChannelCount": 10,
+          "SamplerCount": 10,
           "Interpolation": "LINEAR",
           "SpecialFeatures": "Full-body 60 FPS keyframe animation"
         }
@@ -874,8 +1487,8 @@
       "FighterFile": "SK_DIABLO_BO.glb",
       "FighterID": "DIABLO_BO",
       "IsBoss": false,
-      "FileSizeBytes": 154516,
-      "TotalAnimationsInGLB": 10,
+      "FileSizeBytes": 934100,
+      "TotalAnimationsInGLB": 16,
       "AllAnimationNames": [
         "Anim_Idle",
         "Anim_5LP_Jab4f",
@@ -886,7 +1499,13 @@
         "Dash_Forward",
         "Kick_High",
         "Special_Chilena",
-        "Victory_Pose"
+        "Victory_Pose",
+        "Mocap_Walk_Forward",
+        "Mocap_Backdash_Dodge",
+        "Mocap_Block_Guard",
+        "Mocap_Hitstun_Knockback",
+        "Mocap_Super_Potrero",
+        "Mocap_KO_Knockdown"
       ],
       "AllClipsUniform60FPS": true,
       "AllClips": [
@@ -999,6 +1618,72 @@
           "SamplerCount": 14,
           "Interpolation": "LINEAR",
           "SpecialFeatures": "Full-body 60 FPS keyframe animation"
+        },
+        {
+          "ClipName": "Mocap_Walk_Forward",
+          "DurationSeconds": 1.0,
+          "FPS": 60,
+          "UniformFrameStepSeconds": 0.016667,
+          "KeyframeCount": 61,
+          "ChannelCount": 18,
+          "SamplerCount": 18,
+          "Interpolation": "LINEAR",
+          "SpecialFeatures": "Full-body 60 FPS keyframe animation"
+        },
+        {
+          "ClipName": "Mocap_Backdash_Dodge",
+          "DurationSeconds": 0.45,
+          "FPS": 60,
+          "UniformFrameStepSeconds": 0.016667,
+          "KeyframeCount": 28,
+          "ChannelCount": 12,
+          "SamplerCount": 12,
+          "Interpolation": "LINEAR",
+          "SpecialFeatures": "Full-body 60 FPS keyframe animation"
+        },
+        {
+          "ClipName": "Mocap_Block_Guard",
+          "DurationSeconds": 0.8,
+          "FPS": 60,
+          "UniformFrameStepSeconds": 0.016667,
+          "KeyframeCount": 49,
+          "ChannelCount": 13,
+          "SamplerCount": 13,
+          "Interpolation": "LINEAR",
+          "SpecialFeatures": "Full-body 60 FPS keyframe animation"
+        },
+        {
+          "ClipName": "Mocap_Hitstun_Knockback",
+          "DurationSeconds": 0.5,
+          "FPS": 60,
+          "UniformFrameStepSeconds": 0.016667,
+          "KeyframeCount": 31,
+          "ChannelCount": 10,
+          "SamplerCount": 10,
+          "Interpolation": "LINEAR",
+          "SpecialFeatures": "Full-body 60 FPS keyframe animation"
+        },
+        {
+          "ClipName": "Mocap_Super_Potrero",
+          "DurationSeconds": 1.4,
+          "FPS": 60,
+          "UniformFrameStepSeconds": 0.016667,
+          "KeyframeCount": 85,
+          "ChannelCount": 14,
+          "SamplerCount": 14,
+          "Interpolation": "LINEAR",
+          "SpecialFeatures": "Full-body 60 FPS keyframe animation"
+        },
+        {
+          "ClipName": "Mocap_KO_Knockdown",
+          "DurationSeconds": 1.2,
+          "FPS": 60,
+          "UniformFrameStepSeconds": 0.016667,
+          "KeyframeCount": 73,
+          "ChannelCount": 10,
+          "SamplerCount": 10,
+          "Interpolation": "LINEAR",
+          "SpecialFeatures": "Full-body 60 FPS keyframe animation"
         }
       ],
       "UpgradedClips": [
@@ -1054,6 +1739,72 @@
           "KeyframeCount": 91,
           "ChannelCount": 14,
           "SamplerCount": 14,
+          "Interpolation": "LINEAR",
+          "SpecialFeatures": "Full-body 60 FPS keyframe animation"
+        },
+        {
+          "ClipName": "Mocap_Walk_Forward",
+          "DurationSeconds": 1.0,
+          "FPS": 60,
+          "UniformFrameStepSeconds": 0.016667,
+          "KeyframeCount": 61,
+          "ChannelCount": 18,
+          "SamplerCount": 18,
+          "Interpolation": "LINEAR",
+          "SpecialFeatures": "Full-body 60 FPS keyframe animation"
+        },
+        {
+          "ClipName": "Mocap_Backdash_Dodge",
+          "DurationSeconds": 0.45,
+          "FPS": 60,
+          "UniformFrameStepSeconds": 0.016667,
+          "KeyframeCount": 28,
+          "ChannelCount": 12,
+          "SamplerCount": 12,
+          "Interpolation": "LINEAR",
+          "SpecialFeatures": "Full-body 60 FPS keyframe animation"
+        },
+        {
+          "ClipName": "Mocap_Block_Guard",
+          "DurationSeconds": 0.8,
+          "FPS": 60,
+          "UniformFrameStepSeconds": 0.016667,
+          "KeyframeCount": 49,
+          "ChannelCount": 13,
+          "SamplerCount": 13,
+          "Interpolation": "LINEAR",
+          "SpecialFeatures": "Full-body 60 FPS keyframe animation"
+        },
+        {
+          "ClipName": "Mocap_Hitstun_Knockback",
+          "DurationSeconds": 0.5,
+          "FPS": 60,
+          "UniformFrameStepSeconds": 0.016667,
+          "KeyframeCount": 31,
+          "ChannelCount": 10,
+          "SamplerCount": 10,
+          "Interpolation": "LINEAR",
+          "SpecialFeatures": "Full-body 60 FPS keyframe animation"
+        },
+        {
+          "ClipName": "Mocap_Super_Potrero",
+          "DurationSeconds": 1.4,
+          "FPS": 60,
+          "UniformFrameStepSeconds": 0.016667,
+          "KeyframeCount": 85,
+          "ChannelCount": 14,
+          "SamplerCount": 14,
+          "Interpolation": "LINEAR",
+          "SpecialFeatures": "Full-body 60 FPS keyframe animation"
+        },
+        {
+          "ClipName": "Mocap_KO_Knockdown",
+          "DurationSeconds": 1.2,
+          "FPS": 60,
+          "UniformFrameStepSeconds": 0.016667,
+          "KeyframeCount": 73,
+          "ChannelCount": 10,
+          "SamplerCount": 10,
           "Interpolation": "LINEAR",
           "SpecialFeatures": "Full-body 60 FPS keyframe animation"
         }
@@ -1063,8 +1814,8 @@
       "FighterFile": "SK_FENOMENO_BR.glb",
       "FighterID": "FENOMENO_BR",
       "IsBoss": false,
-      "FileSizeBytes": 154516,
-      "TotalAnimationsInGLB": 10,
+      "FileSizeBytes": 907204,
+      "TotalAnimationsInGLB": 16,
       "AllAnimationNames": [
         "Anim_Idle",
         "Anim_5LP_Jab4f",
@@ -1075,7 +1826,13 @@
         "Dash_Forward",
         "Kick_High",
         "Special_Chilena",
-        "Victory_Pose"
+        "Victory_Pose",
+        "Mocap_Walk_Forward",
+        "Mocap_Backdash_Dodge",
+        "Mocap_Block_Guard",
+        "Mocap_Hitstun_Knockback",
+        "Mocap_Super_Potrero",
+        "Mocap_KO_Knockdown"
       ],
       "AllClipsUniform60FPS": true,
       "AllClips": [
@@ -1188,6 +1945,72 @@
           "SamplerCount": 14,
           "Interpolation": "LINEAR",
           "SpecialFeatures": "Full-body 60 FPS keyframe animation"
+        },
+        {
+          "ClipName": "Mocap_Walk_Forward",
+          "DurationSeconds": 1.0,
+          "FPS": 60,
+          "UniformFrameStepSeconds": 0.016667,
+          "KeyframeCount": 61,
+          "ChannelCount": 18,
+          "SamplerCount": 18,
+          "Interpolation": "LINEAR",
+          "SpecialFeatures": "Full-body 60 FPS keyframe animation"
+        },
+        {
+          "ClipName": "Mocap_Backdash_Dodge",
+          "DurationSeconds": 0.45,
+          "FPS": 60,
+          "UniformFrameStepSeconds": 0.016667,
+          "KeyframeCount": 28,
+          "ChannelCount": 12,
+          "SamplerCount": 12,
+          "Interpolation": "LINEAR",
+          "SpecialFeatures": "Full-body 60 FPS keyframe animation"
+        },
+        {
+          "ClipName": "Mocap_Block_Guard",
+          "DurationSeconds": 0.8,
+          "FPS": 60,
+          "UniformFrameStepSeconds": 0.016667,
+          "KeyframeCount": 49,
+          "ChannelCount": 13,
+          "SamplerCount": 13,
+          "Interpolation": "LINEAR",
+          "SpecialFeatures": "Full-body 60 FPS keyframe animation"
+        },
+        {
+          "ClipName": "Mocap_Hitstun_Knockback",
+          "DurationSeconds": 0.5,
+          "FPS": 60,
+          "UniformFrameStepSeconds": 0.016667,
+          "KeyframeCount": 31,
+          "ChannelCount": 10,
+          "SamplerCount": 10,
+          "Interpolation": "LINEAR",
+          "SpecialFeatures": "Full-body 60 FPS keyframe animation"
+        },
+        {
+          "ClipName": "Mocap_Super_Potrero",
+          "DurationSeconds": 1.4,
+          "FPS": 60,
+          "UniformFrameStepSeconds": 0.016667,
+          "KeyframeCount": 85,
+          "ChannelCount": 14,
+          "SamplerCount": 14,
+          "Interpolation": "LINEAR",
+          "SpecialFeatures": "Full-body 60 FPS keyframe animation"
+        },
+        {
+          "ClipName": "Mocap_KO_Knockdown",
+          "DurationSeconds": 1.2,
+          "FPS": 60,
+          "UniformFrameStepSeconds": 0.016667,
+          "KeyframeCount": 73,
+          "ChannelCount": 10,
+          "SamplerCount": 10,
+          "Interpolation": "LINEAR",
+          "SpecialFeatures": "Full-body 60 FPS keyframe animation"
         }
       ],
       "UpgradedClips": [
@@ -1243,6 +2066,72 @@
           "KeyframeCount": 91,
           "ChannelCount": 14,
           "SamplerCount": 14,
+          "Interpolation": "LINEAR",
+          "SpecialFeatures": "Full-body 60 FPS keyframe animation"
+        },
+        {
+          "ClipName": "Mocap_Walk_Forward",
+          "DurationSeconds": 1.0,
+          "FPS": 60,
+          "UniformFrameStepSeconds": 0.016667,
+          "KeyframeCount": 61,
+          "ChannelCount": 18,
+          "SamplerCount": 18,
+          "Interpolation": "LINEAR",
+          "SpecialFeatures": "Full-body 60 FPS keyframe animation"
+        },
+        {
+          "ClipName": "Mocap_Backdash_Dodge",
+          "DurationSeconds": 0.45,
+          "FPS": 60,
+          "UniformFrameStepSeconds": 0.016667,
+          "KeyframeCount": 28,
+          "ChannelCount": 12,
+          "SamplerCount": 12,
+          "Interpolation": "LINEAR",
+          "SpecialFeatures": "Full-body 60 FPS keyframe animation"
+        },
+        {
+          "ClipName": "Mocap_Block_Guard",
+          "DurationSeconds": 0.8,
+          "FPS": 60,
+          "UniformFrameStepSeconds": 0.016667,
+          "KeyframeCount": 49,
+          "ChannelCount": 13,
+          "SamplerCount": 13,
+          "Interpolation": "LINEAR",
+          "SpecialFeatures": "Full-body 60 FPS keyframe animation"
+        },
+        {
+          "ClipName": "Mocap_Hitstun_Knockback",
+          "DurationSeconds": 0.5,
+          "FPS": 60,
+          "UniformFrameStepSeconds": 0.016667,
+          "KeyframeCount": 31,
+          "ChannelCount": 10,
+          "SamplerCount": 10,
+          "Interpolation": "LINEAR",
+          "SpecialFeatures": "Full-body 60 FPS keyframe animation"
+        },
+        {
+          "ClipName": "Mocap_Super_Potrero",
+          "DurationSeconds": 1.4,
+          "FPS": 60,
+          "UniformFrameStepSeconds": 0.016667,
+          "KeyframeCount": 85,
+          "ChannelCount": 14,
+          "SamplerCount": 14,
+          "Interpolation": "LINEAR",
+          "SpecialFeatures": "Full-body 60 FPS keyframe animation"
+        },
+        {
+          "ClipName": "Mocap_KO_Knockdown",
+          "DurationSeconds": 1.2,
+          "FPS": 60,
+          "UniformFrameStepSeconds": 0.016667,
+          "KeyframeCount": 73,
+          "ChannelCount": 10,
+          "SamplerCount": 10,
           "Interpolation": "LINEAR",
           "SpecialFeatures": "Full-body 60 FPS keyframe animation"
         }
@@ -1252,8 +2141,8 @@
       "FighterFile": "SK_GENERAL_FR.glb",
       "FighterID": "GENERAL_FR",
       "IsBoss": false,
-      "FileSizeBytes": 154500,
-      "TotalAnimationsInGLB": 10,
+      "FileSizeBytes": 909124,
+      "TotalAnimationsInGLB": 16,
       "AllAnimationNames": [
         "Anim_Idle",
         "Anim_5LP_Jab4f",
@@ -1264,7 +2153,13 @@
         "Dash_Forward",
         "Kick_High",
         "Special_Chilena",
-        "Victory_Pose"
+        "Victory_Pose",
+        "Mocap_Walk_Forward",
+        "Mocap_Backdash_Dodge",
+        "Mocap_Block_Guard",
+        "Mocap_Hitstun_Knockback",
+        "Mocap_Super_Potrero",
+        "Mocap_KO_Knockdown"
       ],
       "AllClipsUniform60FPS": true,
       "AllClips": [
@@ -1377,6 +2272,72 @@
           "SamplerCount": 14,
           "Interpolation": "LINEAR",
           "SpecialFeatures": "Full-body 60 FPS keyframe animation"
+        },
+        {
+          "ClipName": "Mocap_Walk_Forward",
+          "DurationSeconds": 1.0,
+          "FPS": 60,
+          "UniformFrameStepSeconds": 0.016667,
+          "KeyframeCount": 61,
+          "ChannelCount": 18,
+          "SamplerCount": 18,
+          "Interpolation": "LINEAR",
+          "SpecialFeatures": "Full-body 60 FPS keyframe animation"
+        },
+        {
+          "ClipName": "Mocap_Backdash_Dodge",
+          "DurationSeconds": 0.45,
+          "FPS": 60,
+          "UniformFrameStepSeconds": 0.016667,
+          "KeyframeCount": 28,
+          "ChannelCount": 12,
+          "SamplerCount": 12,
+          "Interpolation": "LINEAR",
+          "SpecialFeatures": "Full-body 60 FPS keyframe animation"
+        },
+        {
+          "ClipName": "Mocap_Block_Guard",
+          "DurationSeconds": 0.8,
+          "FPS": 60,
+          "UniformFrameStepSeconds": 0.016667,
+          "KeyframeCount": 49,
+          "ChannelCount": 13,
+          "SamplerCount": 13,
+          "Interpolation": "LINEAR",
+          "SpecialFeatures": "Full-body 60 FPS keyframe animation"
+        },
+        {
+          "ClipName": "Mocap_Hitstun_Knockback",
+          "DurationSeconds": 0.5,
+          "FPS": 60,
+          "UniformFrameStepSeconds": 0.016667,
+          "KeyframeCount": 31,
+          "ChannelCount": 10,
+          "SamplerCount": 10,
+          "Interpolation": "LINEAR",
+          "SpecialFeatures": "Full-body 60 FPS keyframe animation"
+        },
+        {
+          "ClipName": "Mocap_Super_Potrero",
+          "DurationSeconds": 1.4,
+          "FPS": 60,
+          "UniformFrameStepSeconds": 0.016667,
+          "KeyframeCount": 85,
+          "ChannelCount": 14,
+          "SamplerCount": 14,
+          "Interpolation": "LINEAR",
+          "SpecialFeatures": "Full-body 60 FPS keyframe animation"
+        },
+        {
+          "ClipName": "Mocap_KO_Knockdown",
+          "DurationSeconds": 1.2,
+          "FPS": 60,
+          "UniformFrameStepSeconds": 0.016667,
+          "KeyframeCount": 73,
+          "ChannelCount": 10,
+          "SamplerCount": 10,
+          "Interpolation": "LINEAR",
+          "SpecialFeatures": "Full-body 60 FPS keyframe animation"
         }
       ],
       "UpgradedClips": [
@@ -1432,6 +2393,72 @@
           "KeyframeCount": 91,
           "ChannelCount": 14,
           "SamplerCount": 14,
+          "Interpolation": "LINEAR",
+          "SpecialFeatures": "Full-body 60 FPS keyframe animation"
+        },
+        {
+          "ClipName": "Mocap_Walk_Forward",
+          "DurationSeconds": 1.0,
+          "FPS": 60,
+          "UniformFrameStepSeconds": 0.016667,
+          "KeyframeCount": 61,
+          "ChannelCount": 18,
+          "SamplerCount": 18,
+          "Interpolation": "LINEAR",
+          "SpecialFeatures": "Full-body 60 FPS keyframe animation"
+        },
+        {
+          "ClipName": "Mocap_Backdash_Dodge",
+          "DurationSeconds": 0.45,
+          "FPS": 60,
+          "UniformFrameStepSeconds": 0.016667,
+          "KeyframeCount": 28,
+          "ChannelCount": 12,
+          "SamplerCount": 12,
+          "Interpolation": "LINEAR",
+          "SpecialFeatures": "Full-body 60 FPS keyframe animation"
+        },
+        {
+          "ClipName": "Mocap_Block_Guard",
+          "DurationSeconds": 0.8,
+          "FPS": 60,
+          "UniformFrameStepSeconds": 0.016667,
+          "KeyframeCount": 49,
+          "ChannelCount": 13,
+          "SamplerCount": 13,
+          "Interpolation": "LINEAR",
+          "SpecialFeatures": "Full-body 60 FPS keyframe animation"
+        },
+        {
+          "ClipName": "Mocap_Hitstun_Knockback",
+          "DurationSeconds": 0.5,
+          "FPS": 60,
+          "UniformFrameStepSeconds": 0.016667,
+          "KeyframeCount": 31,
+          "ChannelCount": 10,
+          "SamplerCount": 10,
+          "Interpolation": "LINEAR",
+          "SpecialFeatures": "Full-body 60 FPS keyframe animation"
+        },
+        {
+          "ClipName": "Mocap_Super_Potrero",
+          "DurationSeconds": 1.4,
+          "FPS": 60,
+          "UniformFrameStepSeconds": 0.016667,
+          "KeyframeCount": 85,
+          "ChannelCount": 14,
+          "SamplerCount": 14,
+          "Interpolation": "LINEAR",
+          "SpecialFeatures": "Full-body 60 FPS keyframe animation"
+        },
+        {
+          "ClipName": "Mocap_KO_Knockdown",
+          "DurationSeconds": 1.2,
+          "FPS": 60,
+          "UniformFrameStepSeconds": 0.016667,
+          "KeyframeCount": 73,
+          "ChannelCount": 10,
+          "SamplerCount": 10,
           "Interpolation": "LINEAR",
           "SpecialFeatures": "Full-body 60 FPS keyframe animation"
         }
@@ -1441,8 +2468,8 @@
       "FighterFile": "SK_HURACAN_VE.glb",
       "FighterID": "HURACAN_VE",
       "IsBoss": false,
-      "FileSizeBytes": 154512,
-      "TotalAnimationsInGLB": 10,
+      "FileSizeBytes": 909140,
+      "TotalAnimationsInGLB": 16,
       "AllAnimationNames": [
         "Anim_Idle",
         "Anim_5LP_Jab4f",
@@ -1453,7 +2480,13 @@
         "Dash_Forward",
         "Kick_High",
         "Special_Chilena",
-        "Victory_Pose"
+        "Victory_Pose",
+        "Mocap_Walk_Forward",
+        "Mocap_Backdash_Dodge",
+        "Mocap_Block_Guard",
+        "Mocap_Hitstun_Knockback",
+        "Mocap_Super_Potrero",
+        "Mocap_KO_Knockdown"
       ],
       "AllClipsUniform60FPS": true,
       "AllClips": [
@@ -1566,6 +2599,72 @@
           "SamplerCount": 14,
           "Interpolation": "LINEAR",
           "SpecialFeatures": "Full-body 60 FPS keyframe animation"
+        },
+        {
+          "ClipName": "Mocap_Walk_Forward",
+          "DurationSeconds": 1.0,
+          "FPS": 60,
+          "UniformFrameStepSeconds": 0.016667,
+          "KeyframeCount": 61,
+          "ChannelCount": 18,
+          "SamplerCount": 18,
+          "Interpolation": "LINEAR",
+          "SpecialFeatures": "Full-body 60 FPS keyframe animation"
+        },
+        {
+          "ClipName": "Mocap_Backdash_Dodge",
+          "DurationSeconds": 0.45,
+          "FPS": 60,
+          "UniformFrameStepSeconds": 0.016667,
+          "KeyframeCount": 28,
+          "ChannelCount": 12,
+          "SamplerCount": 12,
+          "Interpolation": "LINEAR",
+          "SpecialFeatures": "Full-body 60 FPS keyframe animation"
+        },
+        {
+          "ClipName": "Mocap_Block_Guard",
+          "DurationSeconds": 0.8,
+          "FPS": 60,
+          "UniformFrameStepSeconds": 0.016667,
+          "KeyframeCount": 49,
+          "ChannelCount": 13,
+          "SamplerCount": 13,
+          "Interpolation": "LINEAR",
+          "SpecialFeatures": "Full-body 60 FPS keyframe animation"
+        },
+        {
+          "ClipName": "Mocap_Hitstun_Knockback",
+          "DurationSeconds": 0.5,
+          "FPS": 60,
+          "UniformFrameStepSeconds": 0.016667,
+          "KeyframeCount": 31,
+          "ChannelCount": 10,
+          "SamplerCount": 10,
+          "Interpolation": "LINEAR",
+          "SpecialFeatures": "Full-body 60 FPS keyframe animation"
+        },
+        {
+          "ClipName": "Mocap_Super_Potrero",
+          "DurationSeconds": 1.4,
+          "FPS": 60,
+          "UniformFrameStepSeconds": 0.016667,
+          "KeyframeCount": 85,
+          "ChannelCount": 14,
+          "SamplerCount": 14,
+          "Interpolation": "LINEAR",
+          "SpecialFeatures": "Full-body 60 FPS keyframe animation"
+        },
+        {
+          "ClipName": "Mocap_KO_Knockdown",
+          "DurationSeconds": 1.2,
+          "FPS": 60,
+          "UniformFrameStepSeconds": 0.016667,
+          "KeyframeCount": 73,
+          "ChannelCount": 10,
+          "SamplerCount": 10,
+          "Interpolation": "LINEAR",
+          "SpecialFeatures": "Full-body 60 FPS keyframe animation"
         }
       ],
       "UpgradedClips": [
@@ -1621,6 +2720,72 @@
           "KeyframeCount": 91,
           "ChannelCount": 14,
           "SamplerCount": 14,
+          "Interpolation": "LINEAR",
+          "SpecialFeatures": "Full-body 60 FPS keyframe animation"
+        },
+        {
+          "ClipName": "Mocap_Walk_Forward",
+          "DurationSeconds": 1.0,
+          "FPS": 60,
+          "UniformFrameStepSeconds": 0.016667,
+          "KeyframeCount": 61,
+          "ChannelCount": 18,
+          "SamplerCount": 18,
+          "Interpolation": "LINEAR",
+          "SpecialFeatures": "Full-body 60 FPS keyframe animation"
+        },
+        {
+          "ClipName": "Mocap_Backdash_Dodge",
+          "DurationSeconds": 0.45,
+          "FPS": 60,
+          "UniformFrameStepSeconds": 0.016667,
+          "KeyframeCount": 28,
+          "ChannelCount": 12,
+          "SamplerCount": 12,
+          "Interpolation": "LINEAR",
+          "SpecialFeatures": "Full-body 60 FPS keyframe animation"
+        },
+        {
+          "ClipName": "Mocap_Block_Guard",
+          "DurationSeconds": 0.8,
+          "FPS": 60,
+          "UniformFrameStepSeconds": 0.016667,
+          "KeyframeCount": 49,
+          "ChannelCount": 13,
+          "SamplerCount": 13,
+          "Interpolation": "LINEAR",
+          "SpecialFeatures": "Full-body 60 FPS keyframe animation"
+        },
+        {
+          "ClipName": "Mocap_Hitstun_Knockback",
+          "DurationSeconds": 0.5,
+          "FPS": 60,
+          "UniformFrameStepSeconds": 0.016667,
+          "KeyframeCount": 31,
+          "ChannelCount": 10,
+          "SamplerCount": 10,
+          "Interpolation": "LINEAR",
+          "SpecialFeatures": "Full-body 60 FPS keyframe animation"
+        },
+        {
+          "ClipName": "Mocap_Super_Potrero",
+          "DurationSeconds": 1.4,
+          "FPS": 60,
+          "UniformFrameStepSeconds": 0.016667,
+          "KeyframeCount": 85,
+          "ChannelCount": 14,
+          "SamplerCount": 14,
+          "Interpolation": "LINEAR",
+          "SpecialFeatures": "Full-body 60 FPS keyframe animation"
+        },
+        {
+          "ClipName": "Mocap_KO_Knockdown",
+          "DurationSeconds": 1.2,
+          "FPS": 60,
+          "UniformFrameStepSeconds": 0.016667,
+          "KeyframeCount": 73,
+          "ChannelCount": 10,
+          "SamplerCount": 10,
           "Interpolation": "LINEAR",
           "SpecialFeatures": "Full-body 60 FPS keyframe animation"
         }
@@ -1630,8 +2795,8 @@
       "FighterFile": "SK_LOCO_CO.glb",
       "FighterID": "LOCO_CO",
       "IsBoss": false,
-      "FileSizeBytes": 161340,
-      "TotalAnimationsInGLB": 10,
+      "FileSizeBytes": 946464,
+      "TotalAnimationsInGLB": 16,
       "AllAnimationNames": [
         "Anim_Idle",
         "Anim_5LP_Jab4f",
@@ -1642,7 +2807,13 @@
         "Dash_Forward",
         "Kick_High",
         "Special_Chilena",
-        "Victory_Pose"
+        "Victory_Pose",
+        "Mocap_Walk_Forward",
+        "Mocap_Backdash_Dodge",
+        "Mocap_Block_Guard",
+        "Mocap_Hitstun_Knockback",
+        "Mocap_Super_Potrero",
+        "Mocap_KO_Knockdown"
       ],
       "AllClipsUniform60FPS": true,
       "AllClips": [
@@ -1755,6 +2926,72 @@
           "SamplerCount": 14,
           "Interpolation": "LINEAR",
           "SpecialFeatures": "Full-body 60 FPS keyframe animation"
+        },
+        {
+          "ClipName": "Mocap_Walk_Forward",
+          "DurationSeconds": 1.0,
+          "FPS": 60,
+          "UniformFrameStepSeconds": 0.016667,
+          "KeyframeCount": 61,
+          "ChannelCount": 18,
+          "SamplerCount": 18,
+          "Interpolation": "LINEAR",
+          "SpecialFeatures": "Full-body 60 FPS keyframe animation"
+        },
+        {
+          "ClipName": "Mocap_Backdash_Dodge",
+          "DurationSeconds": 0.45,
+          "FPS": 60,
+          "UniformFrameStepSeconds": 0.016667,
+          "KeyframeCount": 28,
+          "ChannelCount": 12,
+          "SamplerCount": 12,
+          "Interpolation": "LINEAR",
+          "SpecialFeatures": "Full-body 60 FPS keyframe animation"
+        },
+        {
+          "ClipName": "Mocap_Block_Guard",
+          "DurationSeconds": 0.8,
+          "FPS": 60,
+          "UniformFrameStepSeconds": 0.016667,
+          "KeyframeCount": 49,
+          "ChannelCount": 13,
+          "SamplerCount": 13,
+          "Interpolation": "LINEAR",
+          "SpecialFeatures": "Full-body 60 FPS keyframe animation"
+        },
+        {
+          "ClipName": "Mocap_Hitstun_Knockback",
+          "DurationSeconds": 0.5,
+          "FPS": 60,
+          "UniformFrameStepSeconds": 0.016667,
+          "KeyframeCount": 31,
+          "ChannelCount": 10,
+          "SamplerCount": 10,
+          "Interpolation": "LINEAR",
+          "SpecialFeatures": "Full-body 60 FPS keyframe animation"
+        },
+        {
+          "ClipName": "Mocap_Super_Potrero",
+          "DurationSeconds": 1.4,
+          "FPS": 60,
+          "UniformFrameStepSeconds": 0.016667,
+          "KeyframeCount": 85,
+          "ChannelCount": 14,
+          "SamplerCount": 14,
+          "Interpolation": "LINEAR",
+          "SpecialFeatures": "Full-body 60 FPS keyframe animation"
+        },
+        {
+          "ClipName": "Mocap_KO_Knockdown",
+          "DurationSeconds": 1.2,
+          "FPS": 60,
+          "UniformFrameStepSeconds": 0.016667,
+          "KeyframeCount": 73,
+          "ChannelCount": 10,
+          "SamplerCount": 10,
+          "Interpolation": "LINEAR",
+          "SpecialFeatures": "Full-body 60 FPS keyframe animation"
         }
       ],
       "UpgradedClips": [
@@ -1810,6 +3047,72 @@
           "KeyframeCount": 91,
           "ChannelCount": 14,
           "SamplerCount": 14,
+          "Interpolation": "LINEAR",
+          "SpecialFeatures": "Full-body 60 FPS keyframe animation"
+        },
+        {
+          "ClipName": "Mocap_Walk_Forward",
+          "DurationSeconds": 1.0,
+          "FPS": 60,
+          "UniformFrameStepSeconds": 0.016667,
+          "KeyframeCount": 61,
+          "ChannelCount": 18,
+          "SamplerCount": 18,
+          "Interpolation": "LINEAR",
+          "SpecialFeatures": "Full-body 60 FPS keyframe animation"
+        },
+        {
+          "ClipName": "Mocap_Backdash_Dodge",
+          "DurationSeconds": 0.45,
+          "FPS": 60,
+          "UniformFrameStepSeconds": 0.016667,
+          "KeyframeCount": 28,
+          "ChannelCount": 12,
+          "SamplerCount": 12,
+          "Interpolation": "LINEAR",
+          "SpecialFeatures": "Full-body 60 FPS keyframe animation"
+        },
+        {
+          "ClipName": "Mocap_Block_Guard",
+          "DurationSeconds": 0.8,
+          "FPS": 60,
+          "UniformFrameStepSeconds": 0.016667,
+          "KeyframeCount": 49,
+          "ChannelCount": 13,
+          "SamplerCount": 13,
+          "Interpolation": "LINEAR",
+          "SpecialFeatures": "Full-body 60 FPS keyframe animation"
+        },
+        {
+          "ClipName": "Mocap_Hitstun_Knockback",
+          "DurationSeconds": 0.5,
+          "FPS": 60,
+          "UniformFrameStepSeconds": 0.016667,
+          "KeyframeCount": 31,
+          "ChannelCount": 10,
+          "SamplerCount": 10,
+          "Interpolation": "LINEAR",
+          "SpecialFeatures": "Full-body 60 FPS keyframe animation"
+        },
+        {
+          "ClipName": "Mocap_Super_Potrero",
+          "DurationSeconds": 1.4,
+          "FPS": 60,
+          "UniformFrameStepSeconds": 0.016667,
+          "KeyframeCount": 85,
+          "ChannelCount": 14,
+          "SamplerCount": 14,
+          "Interpolation": "LINEAR",
+          "SpecialFeatures": "Full-body 60 FPS keyframe animation"
+        },
+        {
+          "ClipName": "Mocap_KO_Knockdown",
+          "DurationSeconds": 1.2,
+          "FPS": 60,
+          "UniformFrameStepSeconds": 0.016667,
+          "KeyframeCount": 73,
+          "ChannelCount": 10,
+          "SamplerCount": 10,
           "Interpolation": "LINEAR",
           "SpecialFeatures": "Full-body 60 FPS keyframe animation"
         }
@@ -1819,8 +3122,8 @@
       "FighterFile": "SK_MAESTRO_PE.glb",
       "FighterID": "MAESTRO_PE",
       "IsBoss": false,
-      "FileSizeBytes": 154508,
-      "TotalAnimationsInGLB": 10,
+      "FileSizeBytes": 909132,
+      "TotalAnimationsInGLB": 16,
       "AllAnimationNames": [
         "Anim_Idle",
         "Anim_5LP_Jab4f",
@@ -1831,7 +3134,13 @@
         "Dash_Forward",
         "Kick_High",
         "Special_Chilena",
-        "Victory_Pose"
+        "Victory_Pose",
+        "Mocap_Walk_Forward",
+        "Mocap_Backdash_Dodge",
+        "Mocap_Block_Guard",
+        "Mocap_Hitstun_Knockback",
+        "Mocap_Super_Potrero",
+        "Mocap_KO_Knockdown"
       ],
       "AllClipsUniform60FPS": true,
       "AllClips": [
@@ -1944,6 +3253,72 @@
           "SamplerCount": 14,
           "Interpolation": "LINEAR",
           "SpecialFeatures": "Full-body 60 FPS keyframe animation"
+        },
+        {
+          "ClipName": "Mocap_Walk_Forward",
+          "DurationSeconds": 1.0,
+          "FPS": 60,
+          "UniformFrameStepSeconds": 0.016667,
+          "KeyframeCount": 61,
+          "ChannelCount": 18,
+          "SamplerCount": 18,
+          "Interpolation": "LINEAR",
+          "SpecialFeatures": "Full-body 60 FPS keyframe animation"
+        },
+        {
+          "ClipName": "Mocap_Backdash_Dodge",
+          "DurationSeconds": 0.45,
+          "FPS": 60,
+          "UniformFrameStepSeconds": 0.016667,
+          "KeyframeCount": 28,
+          "ChannelCount": 12,
+          "SamplerCount": 12,
+          "Interpolation": "LINEAR",
+          "SpecialFeatures": "Full-body 60 FPS keyframe animation"
+        },
+        {
+          "ClipName": "Mocap_Block_Guard",
+          "DurationSeconds": 0.8,
+          "FPS": 60,
+          "UniformFrameStepSeconds": 0.016667,
+          "KeyframeCount": 49,
+          "ChannelCount": 13,
+          "SamplerCount": 13,
+          "Interpolation": "LINEAR",
+          "SpecialFeatures": "Full-body 60 FPS keyframe animation"
+        },
+        {
+          "ClipName": "Mocap_Hitstun_Knockback",
+          "DurationSeconds": 0.5,
+          "FPS": 60,
+          "UniformFrameStepSeconds": 0.016667,
+          "KeyframeCount": 31,
+          "ChannelCount": 10,
+          "SamplerCount": 10,
+          "Interpolation": "LINEAR",
+          "SpecialFeatures": "Full-body 60 FPS keyframe animation"
+        },
+        {
+          "ClipName": "Mocap_Super_Potrero",
+          "DurationSeconds": 1.4,
+          "FPS": 60,
+          "UniformFrameStepSeconds": 0.016667,
+          "KeyframeCount": 85,
+          "ChannelCount": 14,
+          "SamplerCount": 14,
+          "Interpolation": "LINEAR",
+          "SpecialFeatures": "Full-body 60 FPS keyframe animation"
+        },
+        {
+          "ClipName": "Mocap_KO_Knockdown",
+          "DurationSeconds": 1.2,
+          "FPS": 60,
+          "UniformFrameStepSeconds": 0.016667,
+          "KeyframeCount": 73,
+          "ChannelCount": 10,
+          "SamplerCount": 10,
+          "Interpolation": "LINEAR",
+          "SpecialFeatures": "Full-body 60 FPS keyframe animation"
         }
       ],
       "UpgradedClips": [
@@ -1999,6 +3374,72 @@
           "KeyframeCount": 91,
           "ChannelCount": 14,
           "SamplerCount": 14,
+          "Interpolation": "LINEAR",
+          "SpecialFeatures": "Full-body 60 FPS keyframe animation"
+        },
+        {
+          "ClipName": "Mocap_Walk_Forward",
+          "DurationSeconds": 1.0,
+          "FPS": 60,
+          "UniformFrameStepSeconds": 0.016667,
+          "KeyframeCount": 61,
+          "ChannelCount": 18,
+          "SamplerCount": 18,
+          "Interpolation": "LINEAR",
+          "SpecialFeatures": "Full-body 60 FPS keyframe animation"
+        },
+        {
+          "ClipName": "Mocap_Backdash_Dodge",
+          "DurationSeconds": 0.45,
+          "FPS": 60,
+          "UniformFrameStepSeconds": 0.016667,
+          "KeyframeCount": 28,
+          "ChannelCount": 12,
+          "SamplerCount": 12,
+          "Interpolation": "LINEAR",
+          "SpecialFeatures": "Full-body 60 FPS keyframe animation"
+        },
+        {
+          "ClipName": "Mocap_Block_Guard",
+          "DurationSeconds": 0.8,
+          "FPS": 60,
+          "UniformFrameStepSeconds": 0.016667,
+          "KeyframeCount": 49,
+          "ChannelCount": 13,
+          "SamplerCount": 13,
+          "Interpolation": "LINEAR",
+          "SpecialFeatures": "Full-body 60 FPS keyframe animation"
+        },
+        {
+          "ClipName": "Mocap_Hitstun_Knockback",
+          "DurationSeconds": 0.5,
+          "FPS": 60,
+          "UniformFrameStepSeconds": 0.016667,
+          "KeyframeCount": 31,
+          "ChannelCount": 10,
+          "SamplerCount": 10,
+          "Interpolation": "LINEAR",
+          "SpecialFeatures": "Full-body 60 FPS keyframe animation"
+        },
+        {
+          "ClipName": "Mocap_Super_Potrero",
+          "DurationSeconds": 1.4,
+          "FPS": 60,
+          "UniformFrameStepSeconds": 0.016667,
+          "KeyframeCount": 85,
+          "ChannelCount": 14,
+          "SamplerCount": 14,
+          "Interpolation": "LINEAR",
+          "SpecialFeatures": "Full-body 60 FPS keyframe animation"
+        },
+        {
+          "ClipName": "Mocap_KO_Knockdown",
+          "DurationSeconds": 1.2,
+          "FPS": 60,
+          "UniformFrameStepSeconds": 0.016667,
+          "KeyframeCount": 73,
+          "ChannelCount": 10,
+          "SamplerCount": 10,
           "Interpolation": "LINEAR",
           "SpecialFeatures": "Full-body 60 FPS keyframe animation"
         }
@@ -2008,8 +3449,8 @@
       "FighterFile": "SK_MATADOR_UY.glb",
       "FighterID": "MATADOR_UY",
       "IsBoss": false,
-      "FileSizeBytes": 154512,
-      "TotalAnimationsInGLB": 10,
+      "FileSizeBytes": 940696,
+      "TotalAnimationsInGLB": 16,
       "AllAnimationNames": [
         "Anim_Idle",
         "Anim_5LP_Jab4f",
@@ -2020,7 +3461,13 @@
         "Dash_Forward",
         "Kick_High",
         "Special_Chilena",
-        "Victory_Pose"
+        "Victory_Pose",
+        "Mocap_Walk_Forward",
+        "Mocap_Backdash_Dodge",
+        "Mocap_Block_Guard",
+        "Mocap_Hitstun_Knockback",
+        "Mocap_Super_Potrero",
+        "Mocap_KO_Knockdown"
       ],
       "AllClipsUniform60FPS": true,
       "AllClips": [
@@ -2133,6 +3580,72 @@
           "SamplerCount": 14,
           "Interpolation": "LINEAR",
           "SpecialFeatures": "Full-body 60 FPS keyframe animation"
+        },
+        {
+          "ClipName": "Mocap_Walk_Forward",
+          "DurationSeconds": 1.0,
+          "FPS": 60,
+          "UniformFrameStepSeconds": 0.016667,
+          "KeyframeCount": 61,
+          "ChannelCount": 18,
+          "SamplerCount": 18,
+          "Interpolation": "LINEAR",
+          "SpecialFeatures": "Full-body 60 FPS keyframe animation"
+        },
+        {
+          "ClipName": "Mocap_Backdash_Dodge",
+          "DurationSeconds": 0.45,
+          "FPS": 60,
+          "UniformFrameStepSeconds": 0.016667,
+          "KeyframeCount": 28,
+          "ChannelCount": 12,
+          "SamplerCount": 12,
+          "Interpolation": "LINEAR",
+          "SpecialFeatures": "Full-body 60 FPS keyframe animation"
+        },
+        {
+          "ClipName": "Mocap_Block_Guard",
+          "DurationSeconds": 0.8,
+          "FPS": 60,
+          "UniformFrameStepSeconds": 0.016667,
+          "KeyframeCount": 49,
+          "ChannelCount": 13,
+          "SamplerCount": 13,
+          "Interpolation": "LINEAR",
+          "SpecialFeatures": "Full-body 60 FPS keyframe animation"
+        },
+        {
+          "ClipName": "Mocap_Hitstun_Knockback",
+          "DurationSeconds": 0.5,
+          "FPS": 60,
+          "UniformFrameStepSeconds": 0.016667,
+          "KeyframeCount": 31,
+          "ChannelCount": 10,
+          "SamplerCount": 10,
+          "Interpolation": "LINEAR",
+          "SpecialFeatures": "Full-body 60 FPS keyframe animation"
+        },
+        {
+          "ClipName": "Mocap_Super_Potrero",
+          "DurationSeconds": 1.4,
+          "FPS": 60,
+          "UniformFrameStepSeconds": 0.016667,
+          "KeyframeCount": 85,
+          "ChannelCount": 14,
+          "SamplerCount": 14,
+          "Interpolation": "LINEAR",
+          "SpecialFeatures": "Full-body 60 FPS keyframe animation"
+        },
+        {
+          "ClipName": "Mocap_KO_Knockdown",
+          "DurationSeconds": 1.2,
+          "FPS": 60,
+          "UniformFrameStepSeconds": 0.016667,
+          "KeyframeCount": 73,
+          "ChannelCount": 10,
+          "SamplerCount": 10,
+          "Interpolation": "LINEAR",
+          "SpecialFeatures": "Full-body 60 FPS keyframe animation"
         }
       ],
       "UpgradedClips": [
@@ -2188,6 +3701,72 @@
           "KeyframeCount": 91,
           "ChannelCount": 14,
           "SamplerCount": 14,
+          "Interpolation": "LINEAR",
+          "SpecialFeatures": "Full-body 60 FPS keyframe animation"
+        },
+        {
+          "ClipName": "Mocap_Walk_Forward",
+          "DurationSeconds": 1.0,
+          "FPS": 60,
+          "UniformFrameStepSeconds": 0.016667,
+          "KeyframeCount": 61,
+          "ChannelCount": 18,
+          "SamplerCount": 18,
+          "Interpolation": "LINEAR",
+          "SpecialFeatures": "Full-body 60 FPS keyframe animation"
+        },
+        {
+          "ClipName": "Mocap_Backdash_Dodge",
+          "DurationSeconds": 0.45,
+          "FPS": 60,
+          "UniformFrameStepSeconds": 0.016667,
+          "KeyframeCount": 28,
+          "ChannelCount": 12,
+          "SamplerCount": 12,
+          "Interpolation": "LINEAR",
+          "SpecialFeatures": "Full-body 60 FPS keyframe animation"
+        },
+        {
+          "ClipName": "Mocap_Block_Guard",
+          "DurationSeconds": 0.8,
+          "FPS": 60,
+          "UniformFrameStepSeconds": 0.016667,
+          "KeyframeCount": 49,
+          "ChannelCount": 13,
+          "SamplerCount": 13,
+          "Interpolation": "LINEAR",
+          "SpecialFeatures": "Full-body 60 FPS keyframe animation"
+        },
+        {
+          "ClipName": "Mocap_Hitstun_Knockback",
+          "DurationSeconds": 0.5,
+          "FPS": 60,
+          "UniformFrameStepSeconds": 0.016667,
+          "KeyframeCount": 31,
+          "ChannelCount": 10,
+          "SamplerCount": 10,
+          "Interpolation": "LINEAR",
+          "SpecialFeatures": "Full-body 60 FPS keyframe animation"
+        },
+        {
+          "ClipName": "Mocap_Super_Potrero",
+          "DurationSeconds": 1.4,
+          "FPS": 60,
+          "UniformFrameStepSeconds": 0.016667,
+          "KeyframeCount": 85,
+          "ChannelCount": 14,
+          "SamplerCount": 14,
+          "Interpolation": "LINEAR",
+          "SpecialFeatures": "Full-body 60 FPS keyframe animation"
+        },
+        {
+          "ClipName": "Mocap_KO_Knockdown",
+          "DurationSeconds": 1.2,
+          "FPS": 60,
+          "UniformFrameStepSeconds": 0.016667,
+          "KeyframeCount": 73,
+          "ChannelCount": 10,
+          "SamplerCount": 10,
           "Interpolation": "LINEAR",
           "SpecialFeatures": "Full-body 60 FPS keyframe animation"
         }
@@ -2197,8 +3776,8 @@
       "FighterFile": "SK_PIBE_CO.glb",
       "FighterID": "PIBE_CO",
       "IsBoss": false,
-      "FileSizeBytes": 161340,
-      "TotalAnimationsInGLB": 10,
+      "FileSizeBytes": 971056,
+      "TotalAnimationsInGLB": 16,
       "AllAnimationNames": [
         "Anim_Idle",
         "Anim_5LP_Jab4f",
@@ -2209,7 +3788,13 @@
         "Dash_Forward",
         "Kick_High",
         "Special_Chilena",
-        "Victory_Pose"
+        "Victory_Pose",
+        "Mocap_Walk_Forward",
+        "Mocap_Backdash_Dodge",
+        "Mocap_Block_Guard",
+        "Mocap_Hitstun_Knockback",
+        "Mocap_Super_Potrero",
+        "Mocap_KO_Knockdown"
       ],
       "AllClipsUniform60FPS": true,
       "AllClips": [
@@ -2322,6 +3907,72 @@
           "SamplerCount": 14,
           "Interpolation": "LINEAR",
           "SpecialFeatures": "Full-body 60 FPS keyframe animation"
+        },
+        {
+          "ClipName": "Mocap_Walk_Forward",
+          "DurationSeconds": 1.0,
+          "FPS": 60,
+          "UniformFrameStepSeconds": 0.016667,
+          "KeyframeCount": 61,
+          "ChannelCount": 18,
+          "SamplerCount": 18,
+          "Interpolation": "LINEAR",
+          "SpecialFeatures": "Full-body 60 FPS keyframe animation"
+        },
+        {
+          "ClipName": "Mocap_Backdash_Dodge",
+          "DurationSeconds": 0.45,
+          "FPS": 60,
+          "UniformFrameStepSeconds": 0.016667,
+          "KeyframeCount": 28,
+          "ChannelCount": 12,
+          "SamplerCount": 12,
+          "Interpolation": "LINEAR",
+          "SpecialFeatures": "Full-body 60 FPS keyframe animation"
+        },
+        {
+          "ClipName": "Mocap_Block_Guard",
+          "DurationSeconds": 0.8,
+          "FPS": 60,
+          "UniformFrameStepSeconds": 0.016667,
+          "KeyframeCount": 49,
+          "ChannelCount": 13,
+          "SamplerCount": 13,
+          "Interpolation": "LINEAR",
+          "SpecialFeatures": "Full-body 60 FPS keyframe animation"
+        },
+        {
+          "ClipName": "Mocap_Hitstun_Knockback",
+          "DurationSeconds": 0.5,
+          "FPS": 60,
+          "UniformFrameStepSeconds": 0.016667,
+          "KeyframeCount": 31,
+          "ChannelCount": 10,
+          "SamplerCount": 10,
+          "Interpolation": "LINEAR",
+          "SpecialFeatures": "Full-body 60 FPS keyframe animation"
+        },
+        {
+          "ClipName": "Mocap_Super_Potrero",
+          "DurationSeconds": 1.4,
+          "FPS": 60,
+          "UniformFrameStepSeconds": 0.016667,
+          "KeyframeCount": 85,
+          "ChannelCount": 14,
+          "SamplerCount": 14,
+          "Interpolation": "LINEAR",
+          "SpecialFeatures": "Full-body 60 FPS keyframe animation"
+        },
+        {
+          "ClipName": "Mocap_KO_Knockdown",
+          "DurationSeconds": 1.2,
+          "FPS": 60,
+          "UniformFrameStepSeconds": 0.016667,
+          "KeyframeCount": 73,
+          "ChannelCount": 10,
+          "SamplerCount": 10,
+          "Interpolation": "LINEAR",
+          "SpecialFeatures": "Full-body 60 FPS keyframe animation"
         }
       ],
       "UpgradedClips": [
@@ -2377,6 +4028,72 @@
           "KeyframeCount": 91,
           "ChannelCount": 14,
           "SamplerCount": 14,
+          "Interpolation": "LINEAR",
+          "SpecialFeatures": "Full-body 60 FPS keyframe animation"
+        },
+        {
+          "ClipName": "Mocap_Walk_Forward",
+          "DurationSeconds": 1.0,
+          "FPS": 60,
+          "UniformFrameStepSeconds": 0.016667,
+          "KeyframeCount": 61,
+          "ChannelCount": 18,
+          "SamplerCount": 18,
+          "Interpolation": "LINEAR",
+          "SpecialFeatures": "Full-body 60 FPS keyframe animation"
+        },
+        {
+          "ClipName": "Mocap_Backdash_Dodge",
+          "DurationSeconds": 0.45,
+          "FPS": 60,
+          "UniformFrameStepSeconds": 0.016667,
+          "KeyframeCount": 28,
+          "ChannelCount": 12,
+          "SamplerCount": 12,
+          "Interpolation": "LINEAR",
+          "SpecialFeatures": "Full-body 60 FPS keyframe animation"
+        },
+        {
+          "ClipName": "Mocap_Block_Guard",
+          "DurationSeconds": 0.8,
+          "FPS": 60,
+          "UniformFrameStepSeconds": 0.016667,
+          "KeyframeCount": 49,
+          "ChannelCount": 13,
+          "SamplerCount": 13,
+          "Interpolation": "LINEAR",
+          "SpecialFeatures": "Full-body 60 FPS keyframe animation"
+        },
+        {
+          "ClipName": "Mocap_Hitstun_Knockback",
+          "DurationSeconds": 0.5,
+          "FPS": 60,
+          "UniformFrameStepSeconds": 0.016667,
+          "KeyframeCount": 31,
+          "ChannelCount": 10,
+          "SamplerCount": 10,
+          "Interpolation": "LINEAR",
+          "SpecialFeatures": "Full-body 60 FPS keyframe animation"
+        },
+        {
+          "ClipName": "Mocap_Super_Potrero",
+          "DurationSeconds": 1.4,
+          "FPS": 60,
+          "UniformFrameStepSeconds": 0.016667,
+          "KeyframeCount": 85,
+          "ChannelCount": 14,
+          "SamplerCount": 14,
+          "Interpolation": "LINEAR",
+          "SpecialFeatures": "Full-body 60 FPS keyframe animation"
+        },
+        {
+          "ClipName": "Mocap_KO_Knockdown",
+          "DurationSeconds": 1.2,
+          "FPS": 60,
+          "UniformFrameStepSeconds": 0.016667,
+          "KeyframeCount": 73,
+          "ChannelCount": 10,
+          "SamplerCount": 10,
           "Interpolation": "LINEAR",
           "SpecialFeatures": "Full-body 60 FPS keyframe animation"
         }
@@ -2386,8 +4103,8 @@
       "FighterFile": "SK_PISTOLERO_UY.glb",
       "FighterID": "PISTOLERO_UY",
       "IsBoss": false,
-      "FileSizeBytes": 154516,
-      "TotalAnimationsInGLB": 10,
+      "FileSizeBytes": 909792,
+      "TotalAnimationsInGLB": 16,
       "AllAnimationNames": [
         "Anim_Idle",
         "Anim_5LP_Jab4f",
@@ -2398,7 +4115,13 @@
         "Dash_Forward",
         "Kick_High",
         "Special_Chilena",
-        "Victory_Pose"
+        "Victory_Pose",
+        "Mocap_Walk_Forward",
+        "Mocap_Backdash_Dodge",
+        "Mocap_Block_Guard",
+        "Mocap_Hitstun_Knockback",
+        "Mocap_Super_Potrero",
+        "Mocap_KO_Knockdown"
       ],
       "AllClipsUniform60FPS": true,
       "AllClips": [
@@ -2511,6 +4234,72 @@
           "SamplerCount": 14,
           "Interpolation": "LINEAR",
           "SpecialFeatures": "Full-body 60 FPS keyframe animation"
+        },
+        {
+          "ClipName": "Mocap_Walk_Forward",
+          "DurationSeconds": 1.0,
+          "FPS": 60,
+          "UniformFrameStepSeconds": 0.016667,
+          "KeyframeCount": 61,
+          "ChannelCount": 18,
+          "SamplerCount": 18,
+          "Interpolation": "LINEAR",
+          "SpecialFeatures": "Full-body 60 FPS keyframe animation"
+        },
+        {
+          "ClipName": "Mocap_Backdash_Dodge",
+          "DurationSeconds": 0.45,
+          "FPS": 60,
+          "UniformFrameStepSeconds": 0.016667,
+          "KeyframeCount": 28,
+          "ChannelCount": 12,
+          "SamplerCount": 12,
+          "Interpolation": "LINEAR",
+          "SpecialFeatures": "Full-body 60 FPS keyframe animation"
+        },
+        {
+          "ClipName": "Mocap_Block_Guard",
+          "DurationSeconds": 0.8,
+          "FPS": 60,
+          "UniformFrameStepSeconds": 0.016667,
+          "KeyframeCount": 49,
+          "ChannelCount": 13,
+          "SamplerCount": 13,
+          "Interpolation": "LINEAR",
+          "SpecialFeatures": "Full-body 60 FPS keyframe animation"
+        },
+        {
+          "ClipName": "Mocap_Hitstun_Knockback",
+          "DurationSeconds": 0.5,
+          "FPS": 60,
+          "UniformFrameStepSeconds": 0.016667,
+          "KeyframeCount": 31,
+          "ChannelCount": 10,
+          "SamplerCount": 10,
+          "Interpolation": "LINEAR",
+          "SpecialFeatures": "Full-body 60 FPS keyframe animation"
+        },
+        {
+          "ClipName": "Mocap_Super_Potrero",
+          "DurationSeconds": 1.4,
+          "FPS": 60,
+          "UniformFrameStepSeconds": 0.016667,
+          "KeyframeCount": 85,
+          "ChannelCount": 14,
+          "SamplerCount": 14,
+          "Interpolation": "LINEAR",
+          "SpecialFeatures": "Full-body 60 FPS keyframe animation"
+        },
+        {
+          "ClipName": "Mocap_KO_Knockdown",
+          "DurationSeconds": 1.2,
+          "FPS": 60,
+          "UniformFrameStepSeconds": 0.016667,
+          "KeyframeCount": 73,
+          "ChannelCount": 10,
+          "SamplerCount": 10,
+          "Interpolation": "LINEAR",
+          "SpecialFeatures": "Full-body 60 FPS keyframe animation"
         }
       ],
       "UpgradedClips": [
@@ -2566,6 +4355,72 @@
           "KeyframeCount": 91,
           "ChannelCount": 14,
           "SamplerCount": 14,
+          "Interpolation": "LINEAR",
+          "SpecialFeatures": "Full-body 60 FPS keyframe animation"
+        },
+        {
+          "ClipName": "Mocap_Walk_Forward",
+          "DurationSeconds": 1.0,
+          "FPS": 60,
+          "UniformFrameStepSeconds": 0.016667,
+          "KeyframeCount": 61,
+          "ChannelCount": 18,
+          "SamplerCount": 18,
+          "Interpolation": "LINEAR",
+          "SpecialFeatures": "Full-body 60 FPS keyframe animation"
+        },
+        {
+          "ClipName": "Mocap_Backdash_Dodge",
+          "DurationSeconds": 0.45,
+          "FPS": 60,
+          "UniformFrameStepSeconds": 0.016667,
+          "KeyframeCount": 28,
+          "ChannelCount": 12,
+          "SamplerCount": 12,
+          "Interpolation": "LINEAR",
+          "SpecialFeatures": "Full-body 60 FPS keyframe animation"
+        },
+        {
+          "ClipName": "Mocap_Block_Guard",
+          "DurationSeconds": 0.8,
+          "FPS": 60,
+          "UniformFrameStepSeconds": 0.016667,
+          "KeyframeCount": 49,
+          "ChannelCount": 13,
+          "SamplerCount": 13,
+          "Interpolation": "LINEAR",
+          "SpecialFeatures": "Full-body 60 FPS keyframe animation"
+        },
+        {
+          "ClipName": "Mocap_Hitstun_Knockback",
+          "DurationSeconds": 0.5,
+          "FPS": 60,
+          "UniformFrameStepSeconds": 0.016667,
+          "KeyframeCount": 31,
+          "ChannelCount": 10,
+          "SamplerCount": 10,
+          "Interpolation": "LINEAR",
+          "SpecialFeatures": "Full-body 60 FPS keyframe animation"
+        },
+        {
+          "ClipName": "Mocap_Super_Potrero",
+          "DurationSeconds": 1.4,
+          "FPS": 60,
+          "UniformFrameStepSeconds": 0.016667,
+          "KeyframeCount": 85,
+          "ChannelCount": 14,
+          "SamplerCount": 14,
+          "Interpolation": "LINEAR",
+          "SpecialFeatures": "Full-body 60 FPS keyframe animation"
+        },
+        {
+          "ClipName": "Mocap_KO_Knockdown",
+          "DurationSeconds": 1.2,
+          "FPS": 60,
+          "UniformFrameStepSeconds": 0.016667,
+          "KeyframeCount": 73,
+          "ChannelCount": 10,
+          "SamplerCount": 10,
           "Interpolation": "LINEAR",
           "SpecialFeatures": "Full-body 60 FPS keyframe animation"
         }
@@ -2575,8 +4430,8 @@
       "FighterFile": "SK_PULGA_AR.glb",
       "FighterID": "PULGA_AR",
       "IsBoss": false,
-      "FileSizeBytes": 154516,
-      "TotalAnimationsInGLB": 10,
+      "FileSizeBytes": 909128,
+      "TotalAnimationsInGLB": 16,
       "AllAnimationNames": [
         "Anim_Idle",
         "Anim_5LP_Jab4f",
@@ -2587,7 +4442,13 @@
         "Dash_Forward",
         "Kick_High",
         "Special_Chilena",
-        "Victory_Pose"
+        "Victory_Pose",
+        "Mocap_Walk_Forward",
+        "Mocap_Backdash_Dodge",
+        "Mocap_Block_Guard",
+        "Mocap_Hitstun_Knockback",
+        "Mocap_Super_Potrero",
+        "Mocap_KO_Knockdown"
       ],
       "AllClipsUniform60FPS": true,
       "AllClips": [
@@ -2700,6 +4561,72 @@
           "SamplerCount": 14,
           "Interpolation": "LINEAR",
           "SpecialFeatures": "Full-body 60 FPS keyframe animation"
+        },
+        {
+          "ClipName": "Mocap_Walk_Forward",
+          "DurationSeconds": 1.0,
+          "FPS": 60,
+          "UniformFrameStepSeconds": 0.016667,
+          "KeyframeCount": 61,
+          "ChannelCount": 18,
+          "SamplerCount": 18,
+          "Interpolation": "LINEAR",
+          "SpecialFeatures": "Full-body 60 FPS keyframe animation"
+        },
+        {
+          "ClipName": "Mocap_Backdash_Dodge",
+          "DurationSeconds": 0.45,
+          "FPS": 60,
+          "UniformFrameStepSeconds": 0.016667,
+          "KeyframeCount": 28,
+          "ChannelCount": 12,
+          "SamplerCount": 12,
+          "Interpolation": "LINEAR",
+          "SpecialFeatures": "Full-body 60 FPS keyframe animation"
+        },
+        {
+          "ClipName": "Mocap_Block_Guard",
+          "DurationSeconds": 0.8,
+          "FPS": 60,
+          "UniformFrameStepSeconds": 0.016667,
+          "KeyframeCount": 49,
+          "ChannelCount": 13,
+          "SamplerCount": 13,
+          "Interpolation": "LINEAR",
+          "SpecialFeatures": "Full-body 60 FPS keyframe animation"
+        },
+        {
+          "ClipName": "Mocap_Hitstun_Knockback",
+          "DurationSeconds": 0.5,
+          "FPS": 60,
+          "UniformFrameStepSeconds": 0.016667,
+          "KeyframeCount": 31,
+          "ChannelCount": 10,
+          "SamplerCount": 10,
+          "Interpolation": "LINEAR",
+          "SpecialFeatures": "Full-body 60 FPS keyframe animation"
+        },
+        {
+          "ClipName": "Mocap_Super_Potrero",
+          "DurationSeconds": 1.4,
+          "FPS": 60,
+          "UniformFrameStepSeconds": 0.016667,
+          "KeyframeCount": 85,
+          "ChannelCount": 14,
+          "SamplerCount": 14,
+          "Interpolation": "LINEAR",
+          "SpecialFeatures": "Full-body 60 FPS keyframe animation"
+        },
+        {
+          "ClipName": "Mocap_KO_Knockdown",
+          "DurationSeconds": 1.2,
+          "FPS": 60,
+          "UniformFrameStepSeconds": 0.016667,
+          "KeyframeCount": 73,
+          "ChannelCount": 10,
+          "SamplerCount": 10,
+          "Interpolation": "LINEAR",
+          "SpecialFeatures": "Full-body 60 FPS keyframe animation"
         }
       ],
       "UpgradedClips": [
@@ -2755,6 +4682,72 @@
           "KeyframeCount": 91,
           "ChannelCount": 14,
           "SamplerCount": 14,
+          "Interpolation": "LINEAR",
+          "SpecialFeatures": "Full-body 60 FPS keyframe animation"
+        },
+        {
+          "ClipName": "Mocap_Walk_Forward",
+          "DurationSeconds": 1.0,
+          "FPS": 60,
+          "UniformFrameStepSeconds": 0.016667,
+          "KeyframeCount": 61,
+          "ChannelCount": 18,
+          "SamplerCount": 18,
+          "Interpolation": "LINEAR",
+          "SpecialFeatures": "Full-body 60 FPS keyframe animation"
+        },
+        {
+          "ClipName": "Mocap_Backdash_Dodge",
+          "DurationSeconds": 0.45,
+          "FPS": 60,
+          "UniformFrameStepSeconds": 0.016667,
+          "KeyframeCount": 28,
+          "ChannelCount": 12,
+          "SamplerCount": 12,
+          "Interpolation": "LINEAR",
+          "SpecialFeatures": "Full-body 60 FPS keyframe animation"
+        },
+        {
+          "ClipName": "Mocap_Block_Guard",
+          "DurationSeconds": 0.8,
+          "FPS": 60,
+          "UniformFrameStepSeconds": 0.016667,
+          "KeyframeCount": 49,
+          "ChannelCount": 13,
+          "SamplerCount": 13,
+          "Interpolation": "LINEAR",
+          "SpecialFeatures": "Full-body 60 FPS keyframe animation"
+        },
+        {
+          "ClipName": "Mocap_Hitstun_Knockback",
+          "DurationSeconds": 0.5,
+          "FPS": 60,
+          "UniformFrameStepSeconds": 0.016667,
+          "KeyframeCount": 31,
+          "ChannelCount": 10,
+          "SamplerCount": 10,
+          "Interpolation": "LINEAR",
+          "SpecialFeatures": "Full-body 60 FPS keyframe animation"
+        },
+        {
+          "ClipName": "Mocap_Super_Potrero",
+          "DurationSeconds": 1.4,
+          "FPS": 60,
+          "UniformFrameStepSeconds": 0.016667,
+          "KeyframeCount": 85,
+          "ChannelCount": 14,
+          "SamplerCount": 14,
+          "Interpolation": "LINEAR",
+          "SpecialFeatures": "Full-body 60 FPS keyframe animation"
+        },
+        {
+          "ClipName": "Mocap_KO_Knockdown",
+          "DurationSeconds": 1.2,
+          "FPS": 60,
+          "UniformFrameStepSeconds": 0.016667,
+          "KeyframeCount": 73,
+          "ChannelCount": 10,
+          "SamplerCount": 10,
           "Interpolation": "LINEAR",
           "SpecialFeatures": "Full-body 60 FPS keyframe animation"
         }
@@ -2764,8 +4757,8 @@
       "FighterFile": "SK_REY_CL.glb",
       "FighterID": "REY_CL",
       "IsBoss": false,
-      "FileSizeBytes": 152792,
-      "TotalAnimationsInGLB": 10,
+      "FileSizeBytes": 905616,
+      "TotalAnimationsInGLB": 16,
       "AllAnimationNames": [
         "Anim_Idle",
         "Anim_5LP_Jab4f",
@@ -2776,7 +4769,13 @@
         "Dash_Forward",
         "Kick_High",
         "Special_Chilena",
-        "Victory_Pose"
+        "Victory_Pose",
+        "Mocap_Walk_Forward",
+        "Mocap_Backdash_Dodge",
+        "Mocap_Block_Guard",
+        "Mocap_Hitstun_Knockback",
+        "Mocap_Super_Potrero",
+        "Mocap_KO_Knockdown"
       ],
       "AllClipsUniform60FPS": true,
       "AllClips": [
@@ -2889,6 +4888,72 @@
           "SamplerCount": 14,
           "Interpolation": "LINEAR",
           "SpecialFeatures": "Full-body 60 FPS keyframe animation"
+        },
+        {
+          "ClipName": "Mocap_Walk_Forward",
+          "DurationSeconds": 1.0,
+          "FPS": 60,
+          "UniformFrameStepSeconds": 0.016667,
+          "KeyframeCount": 61,
+          "ChannelCount": 18,
+          "SamplerCount": 18,
+          "Interpolation": "LINEAR",
+          "SpecialFeatures": "Full-body 60 FPS keyframe animation"
+        },
+        {
+          "ClipName": "Mocap_Backdash_Dodge",
+          "DurationSeconds": 0.45,
+          "FPS": 60,
+          "UniformFrameStepSeconds": 0.016667,
+          "KeyframeCount": 28,
+          "ChannelCount": 12,
+          "SamplerCount": 12,
+          "Interpolation": "LINEAR",
+          "SpecialFeatures": "Full-body 60 FPS keyframe animation"
+        },
+        {
+          "ClipName": "Mocap_Block_Guard",
+          "DurationSeconds": 0.8,
+          "FPS": 60,
+          "UniformFrameStepSeconds": 0.016667,
+          "KeyframeCount": 49,
+          "ChannelCount": 13,
+          "SamplerCount": 13,
+          "Interpolation": "LINEAR",
+          "SpecialFeatures": "Full-body 60 FPS keyframe animation"
+        },
+        {
+          "ClipName": "Mocap_Hitstun_Knockback",
+          "DurationSeconds": 0.5,
+          "FPS": 60,
+          "UniformFrameStepSeconds": 0.016667,
+          "KeyframeCount": 31,
+          "ChannelCount": 10,
+          "SamplerCount": 10,
+          "Interpolation": "LINEAR",
+          "SpecialFeatures": "Full-body 60 FPS keyframe animation"
+        },
+        {
+          "ClipName": "Mocap_Super_Potrero",
+          "DurationSeconds": 1.4,
+          "FPS": 60,
+          "UniformFrameStepSeconds": 0.016667,
+          "KeyframeCount": 85,
+          "ChannelCount": 14,
+          "SamplerCount": 14,
+          "Interpolation": "LINEAR",
+          "SpecialFeatures": "Full-body 60 FPS keyframe animation"
+        },
+        {
+          "ClipName": "Mocap_KO_Knockdown",
+          "DurationSeconds": 1.2,
+          "FPS": 60,
+          "UniformFrameStepSeconds": 0.016667,
+          "KeyframeCount": 73,
+          "ChannelCount": 10,
+          "SamplerCount": 10,
+          "Interpolation": "LINEAR",
+          "SpecialFeatures": "Full-body 60 FPS keyframe animation"
         }
       ],
       "UpgradedClips": [
@@ -2944,6 +5009,72 @@
           "KeyframeCount": 91,
           "ChannelCount": 14,
           "SamplerCount": 14,
+          "Interpolation": "LINEAR",
+          "SpecialFeatures": "Full-body 60 FPS keyframe animation"
+        },
+        {
+          "ClipName": "Mocap_Walk_Forward",
+          "DurationSeconds": 1.0,
+          "FPS": 60,
+          "UniformFrameStepSeconds": 0.016667,
+          "KeyframeCount": 61,
+          "ChannelCount": 18,
+          "SamplerCount": 18,
+          "Interpolation": "LINEAR",
+          "SpecialFeatures": "Full-body 60 FPS keyframe animation"
+        },
+        {
+          "ClipName": "Mocap_Backdash_Dodge",
+          "DurationSeconds": 0.45,
+          "FPS": 60,
+          "UniformFrameStepSeconds": 0.016667,
+          "KeyframeCount": 28,
+          "ChannelCount": 12,
+          "SamplerCount": 12,
+          "Interpolation": "LINEAR",
+          "SpecialFeatures": "Full-body 60 FPS keyframe animation"
+        },
+        {
+          "ClipName": "Mocap_Block_Guard",
+          "DurationSeconds": 0.8,
+          "FPS": 60,
+          "UniformFrameStepSeconds": 0.016667,
+          "KeyframeCount": 49,
+          "ChannelCount": 13,
+          "SamplerCount": 13,
+          "Interpolation": "LINEAR",
+          "SpecialFeatures": "Full-body 60 FPS keyframe animation"
+        },
+        {
+          "ClipName": "Mocap_Hitstun_Knockback",
+          "DurationSeconds": 0.5,
+          "FPS": 60,
+          "UniformFrameStepSeconds": 0.016667,
+          "KeyframeCount": 31,
+          "ChannelCount": 10,
+          "SamplerCount": 10,
+          "Interpolation": "LINEAR",
+          "SpecialFeatures": "Full-body 60 FPS keyframe animation"
+        },
+        {
+          "ClipName": "Mocap_Super_Potrero",
+          "DurationSeconds": 1.4,
+          "FPS": 60,
+          "UniformFrameStepSeconds": 0.016667,
+          "KeyframeCount": 85,
+          "ChannelCount": 14,
+          "SamplerCount": 14,
+          "Interpolation": "LINEAR",
+          "SpecialFeatures": "Full-body 60 FPS keyframe animation"
+        },
+        {
+          "ClipName": "Mocap_KO_Knockdown",
+          "DurationSeconds": 1.2,
+          "FPS": 60,
+          "UniformFrameStepSeconds": 0.016667,
+          "KeyframeCount": 73,
+          "ChannelCount": 10,
+          "SamplerCount": 10,
           "Interpolation": "LINEAR",
           "SpecialFeatures": "Full-body 60 FPS keyframe animation"
         }
@@ -2953,8 +5084,8 @@
       "FighterFile": "SK_SUPREME_JUDGE_BOSS.glb",
       "FighterID": "SUPREME_JUDGE_BOSS",
       "IsBoss": true,
-      "FileSizeBytes": 168176,
-      "TotalAnimationsInGLB": 10,
+      "FileSizeBytes": 1025388,
+      "TotalAnimationsInGLB": 16,
       "AllAnimationNames": [
         "Anim_Idle",
         "Anim_5LP_Jab4f",
@@ -2965,7 +5096,13 @@
         "Dash_Forward",
         "Kick_High",
         "Special_Chilena",
-        "Victory_Pose"
+        "Victory_Pose",
+        "Mocap_Walk_Forward",
+        "Mocap_Backdash_Dodge",
+        "Mocap_Block_Guard",
+        "Mocap_Hitstun_Knockback",
+        "Mocap_Super_Potrero",
+        "Mocap_KO_Knockdown"
       ],
       "AllClipsUniform60FPS": true,
       "AllClips": [
@@ -3078,6 +5215,72 @@
           "SamplerCount": 20,
           "Interpolation": "LINEAR",
           "SpecialFeatures": "Hovering levitation + dual counter-rotating astrolabe halo motion"
+        },
+        {
+          "ClipName": "Mocap_Walk_Forward",
+          "DurationSeconds": 1.0,
+          "FPS": 60,
+          "UniformFrameStepSeconds": 0.016667,
+          "KeyframeCount": 61,
+          "ChannelCount": 18,
+          "SamplerCount": 18,
+          "Interpolation": "LINEAR",
+          "SpecialFeatures": "Full-body 60 FPS keyframe animation"
+        },
+        {
+          "ClipName": "Mocap_Backdash_Dodge",
+          "DurationSeconds": 0.45,
+          "FPS": 60,
+          "UniformFrameStepSeconds": 0.016667,
+          "KeyframeCount": 28,
+          "ChannelCount": 12,
+          "SamplerCount": 12,
+          "Interpolation": "LINEAR",
+          "SpecialFeatures": "Full-body 60 FPS keyframe animation"
+        },
+        {
+          "ClipName": "Mocap_Block_Guard",
+          "DurationSeconds": 0.8,
+          "FPS": 60,
+          "UniformFrameStepSeconds": 0.016667,
+          "KeyframeCount": 49,
+          "ChannelCount": 13,
+          "SamplerCount": 13,
+          "Interpolation": "LINEAR",
+          "SpecialFeatures": "Full-body 60 FPS keyframe animation"
+        },
+        {
+          "ClipName": "Mocap_Hitstun_Knockback",
+          "DurationSeconds": 0.5,
+          "FPS": 60,
+          "UniformFrameStepSeconds": 0.016667,
+          "KeyframeCount": 31,
+          "ChannelCount": 10,
+          "SamplerCount": 10,
+          "Interpolation": "LINEAR",
+          "SpecialFeatures": "Full-body 60 FPS keyframe animation"
+        },
+        {
+          "ClipName": "Mocap_Super_Potrero",
+          "DurationSeconds": 1.4,
+          "FPS": 60,
+          "UniformFrameStepSeconds": 0.016667,
+          "KeyframeCount": 85,
+          "ChannelCount": 14,
+          "SamplerCount": 14,
+          "Interpolation": "LINEAR",
+          "SpecialFeatures": "Full-body 60 FPS keyframe animation"
+        },
+        {
+          "ClipName": "Mocap_KO_Knockdown",
+          "DurationSeconds": 1.2,
+          "FPS": 60,
+          "UniformFrameStepSeconds": 0.016667,
+          "KeyframeCount": 73,
+          "ChannelCount": 10,
+          "SamplerCount": 10,
+          "Interpolation": "LINEAR",
+          "SpecialFeatures": "Full-body 60 FPS keyframe animation"
         }
       ],
       "UpgradedClips": [
@@ -3135,6 +5338,72 @@
           "SamplerCount": 20,
           "Interpolation": "LINEAR",
           "SpecialFeatures": "Hovering levitation + dual counter-rotating astrolabe halo motion"
+        },
+        {
+          "ClipName": "Mocap_Walk_Forward",
+          "DurationSeconds": 1.0,
+          "FPS": 60,
+          "UniformFrameStepSeconds": 0.016667,
+          "KeyframeCount": 61,
+          "ChannelCount": 18,
+          "SamplerCount": 18,
+          "Interpolation": "LINEAR",
+          "SpecialFeatures": "Full-body 60 FPS keyframe animation"
+        },
+        {
+          "ClipName": "Mocap_Backdash_Dodge",
+          "DurationSeconds": 0.45,
+          "FPS": 60,
+          "UniformFrameStepSeconds": 0.016667,
+          "KeyframeCount": 28,
+          "ChannelCount": 12,
+          "SamplerCount": 12,
+          "Interpolation": "LINEAR",
+          "SpecialFeatures": "Full-body 60 FPS keyframe animation"
+        },
+        {
+          "ClipName": "Mocap_Block_Guard",
+          "DurationSeconds": 0.8,
+          "FPS": 60,
+          "UniformFrameStepSeconds": 0.016667,
+          "KeyframeCount": 49,
+          "ChannelCount": 13,
+          "SamplerCount": 13,
+          "Interpolation": "LINEAR",
+          "SpecialFeatures": "Full-body 60 FPS keyframe animation"
+        },
+        {
+          "ClipName": "Mocap_Hitstun_Knockback",
+          "DurationSeconds": 0.5,
+          "FPS": 60,
+          "UniformFrameStepSeconds": 0.016667,
+          "KeyframeCount": 31,
+          "ChannelCount": 10,
+          "SamplerCount": 10,
+          "Interpolation": "LINEAR",
+          "SpecialFeatures": "Full-body 60 FPS keyframe animation"
+        },
+        {
+          "ClipName": "Mocap_Super_Potrero",
+          "DurationSeconds": 1.4,
+          "FPS": 60,
+          "UniformFrameStepSeconds": 0.016667,
+          "KeyframeCount": 85,
+          "ChannelCount": 14,
+          "SamplerCount": 14,
+          "Interpolation": "LINEAR",
+          "SpecialFeatures": "Full-body 60 FPS keyframe animation"
+        },
+        {
+          "ClipName": "Mocap_KO_Knockdown",
+          "DurationSeconds": 1.2,
+          "FPS": 60,
+          "UniformFrameStepSeconds": 0.016667,
+          "KeyframeCount": 73,
+          "ChannelCount": 10,
+          "SamplerCount": 10,
+          "Interpolation": "LINEAR",
+          "SpecialFeatures": "Full-body 60 FPS keyframe animation"
         }
       ]
     },
@@ -3142,8 +5411,8 @@
       "FighterFile": "SK_TREN_EC.glb",
       "FighterID": "TREN_EC",
       "IsBoss": false,
-      "FileSizeBytes": 154500,
-      "TotalAnimationsInGLB": 10,
+      "FileSizeBytes": 921932,
+      "TotalAnimationsInGLB": 16,
       "AllAnimationNames": [
         "Anim_Idle",
         "Anim_5LP_Jab4f",
@@ -3154,7 +5423,13 @@
         "Dash_Forward",
         "Kick_High",
         "Special_Chilena",
-        "Victory_Pose"
+        "Victory_Pose",
+        "Mocap_Walk_Forward",
+        "Mocap_Backdash_Dodge",
+        "Mocap_Block_Guard",
+        "Mocap_Hitstun_Knockback",
+        "Mocap_Super_Potrero",
+        "Mocap_KO_Knockdown"
       ],
       "AllClipsUniform60FPS": true,
       "AllClips": [
@@ -3267,6 +5542,72 @@
           "SamplerCount": 14,
           "Interpolation": "LINEAR",
           "SpecialFeatures": "Full-body 60 FPS keyframe animation"
+        },
+        {
+          "ClipName": "Mocap_Walk_Forward",
+          "DurationSeconds": 1.0,
+          "FPS": 60,
+          "UniformFrameStepSeconds": 0.016667,
+          "KeyframeCount": 61,
+          "ChannelCount": 18,
+          "SamplerCount": 18,
+          "Interpolation": "LINEAR",
+          "SpecialFeatures": "Full-body 60 FPS keyframe animation"
+        },
+        {
+          "ClipName": "Mocap_Backdash_Dodge",
+          "DurationSeconds": 0.45,
+          "FPS": 60,
+          "UniformFrameStepSeconds": 0.016667,
+          "KeyframeCount": 28,
+          "ChannelCount": 12,
+          "SamplerCount": 12,
+          "Interpolation": "LINEAR",
+          "SpecialFeatures": "Full-body 60 FPS keyframe animation"
+        },
+        {
+          "ClipName": "Mocap_Block_Guard",
+          "DurationSeconds": 0.8,
+          "FPS": 60,
+          "UniformFrameStepSeconds": 0.016667,
+          "KeyframeCount": 49,
+          "ChannelCount": 13,
+          "SamplerCount": 13,
+          "Interpolation": "LINEAR",
+          "SpecialFeatures": "Full-body 60 FPS keyframe animation"
+        },
+        {
+          "ClipName": "Mocap_Hitstun_Knockback",
+          "DurationSeconds": 0.5,
+          "FPS": 60,
+          "UniformFrameStepSeconds": 0.016667,
+          "KeyframeCount": 31,
+          "ChannelCount": 10,
+          "SamplerCount": 10,
+          "Interpolation": "LINEAR",
+          "SpecialFeatures": "Full-body 60 FPS keyframe animation"
+        },
+        {
+          "ClipName": "Mocap_Super_Potrero",
+          "DurationSeconds": 1.4,
+          "FPS": 60,
+          "UniformFrameStepSeconds": 0.016667,
+          "KeyframeCount": 85,
+          "ChannelCount": 14,
+          "SamplerCount": 14,
+          "Interpolation": "LINEAR",
+          "SpecialFeatures": "Full-body 60 FPS keyframe animation"
+        },
+        {
+          "ClipName": "Mocap_KO_Knockdown",
+          "DurationSeconds": 1.2,
+          "FPS": 60,
+          "UniformFrameStepSeconds": 0.016667,
+          "KeyframeCount": 73,
+          "ChannelCount": 10,
+          "SamplerCount": 10,
+          "Interpolation": "LINEAR",
+          "SpecialFeatures": "Full-body 60 FPS keyframe animation"
         }
       ],
       "UpgradedClips": [
@@ -3322,6 +5663,72 @@
           "KeyframeCount": 91,
           "ChannelCount": 14,
           "SamplerCount": 14,
+          "Interpolation": "LINEAR",
+          "SpecialFeatures": "Full-body 60 FPS keyframe animation"
+        },
+        {
+          "ClipName": "Mocap_Walk_Forward",
+          "DurationSeconds": 1.0,
+          "FPS": 60,
+          "UniformFrameStepSeconds": 0.016667,
+          "KeyframeCount": 61,
+          "ChannelCount": 18,
+          "SamplerCount": 18,
+          "Interpolation": "LINEAR",
+          "SpecialFeatures": "Full-body 60 FPS keyframe animation"
+        },
+        {
+          "ClipName": "Mocap_Backdash_Dodge",
+          "DurationSeconds": 0.45,
+          "FPS": 60,
+          "UniformFrameStepSeconds": 0.016667,
+          "KeyframeCount": 28,
+          "ChannelCount": 12,
+          "SamplerCount": 12,
+          "Interpolation": "LINEAR",
+          "SpecialFeatures": "Full-body 60 FPS keyframe animation"
+        },
+        {
+          "ClipName": "Mocap_Block_Guard",
+          "DurationSeconds": 0.8,
+          "FPS": 60,
+          "UniformFrameStepSeconds": 0.016667,
+          "KeyframeCount": 49,
+          "ChannelCount": 13,
+          "SamplerCount": 13,
+          "Interpolation": "LINEAR",
+          "SpecialFeatures": "Full-body 60 FPS keyframe animation"
+        },
+        {
+          "ClipName": "Mocap_Hitstun_Knockback",
+          "DurationSeconds": 0.5,
+          "FPS": 60,
+          "UniformFrameStepSeconds": 0.016667,
+          "KeyframeCount": 31,
+          "ChannelCount": 10,
+          "SamplerCount": 10,
+          "Interpolation": "LINEAR",
+          "SpecialFeatures": "Full-body 60 FPS keyframe animation"
+        },
+        {
+          "ClipName": "Mocap_Super_Potrero",
+          "DurationSeconds": 1.4,
+          "FPS": 60,
+          "UniformFrameStepSeconds": 0.016667,
+          "KeyframeCount": 85,
+          "ChannelCount": 14,
+          "SamplerCount": 14,
+          "Interpolation": "LINEAR",
+          "SpecialFeatures": "Full-body 60 FPS keyframe animation"
+        },
+        {
+          "ClipName": "Mocap_KO_Knockdown",
+          "DurationSeconds": 1.2,
+          "FPS": 60,
+          "UniformFrameStepSeconds": 0.016667,
+          "KeyframeCount": 73,
+          "ChannelCount": 10,
+          "SamplerCount": 10,
           "Interpolation": "LINEAR",
           "SpecialFeatures": "Full-body 60 FPS keyframe animation"
         }

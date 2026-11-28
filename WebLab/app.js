@@ -310,6 +310,7 @@
       btn.classList.add('active');
       activeTab = btn.dataset.tab;
       document.getElementById(activeTab).classList.add('active');
+      if (activeTab === 'tab7') renderTab7Studio3D();
       playSynthSound('step');
     });
   });
@@ -2027,6 +2028,49 @@
   const t6SelAI = document.getElementById('t6-sel-ai');
   const t6Canvas = document.getElementById('t6-canvas');
   const t6Ctx = t6Canvas.getContext('2d');
+  const t6WebglCanvas = document.getElementById('t6-webgl-canvas');
+  const t6WebglHud = document.getElementById('t6-webgl-hud');
+  const t6Btn3dMode = document.getElementById('t6-btn-3d-mode');
+  const t6WebGLReady = Boolean(t6WebglCanvas && window.SAFWglArena && window.SAFWglArena.init(t6WebglCanvas));
+  let t6Arena3DEnabled = t6WebGLReady;
+
+  function syncT63DButtonUI() {
+    if (t6Btn3dMode) {
+      if (!t6WebGLReady) {
+        t6Btn3dMode.textContent = '🎨 Motor: 2D Respaldo (Sin GPU WebGL2)';
+        t6Btn3dMode.className = 'btn btn-cyan btn-sm';
+      } else if (t6Arena3DEnabled) {
+        t6Btn3dMode.textContent = '🧊 Motor 3D: ON (17 Modelos .GLB)';
+        t6Btn3dMode.className = 'btn btn-gold btn-sm';
+      } else {
+        t6Btn3dMode.textContent = '🎨 Motor 3D: OFF (Vista 2D Clásica)';
+        t6Btn3dMode.className = 'btn btn-cyan btn-sm';
+      }
+    }
+    if (t6WebglCanvas) {
+      t6WebglCanvas.style.display = (t6WebGLReady && t6Arena3DEnabled) ? 'block' : 'none';
+    }
+    if (t6WebglHud && !(t6WebGLReady && t6Arena3DEnabled)) {
+      t6WebglHud.style.display = 'none';
+    }
+  }
+
+  if (t6Btn3dMode) {
+    t6Btn3dMode.addEventListener('click', () => {
+      if (!t6WebGLReady) {
+        announceT6('⚠️ Tu navegador actual no expuso WebGL2 GPU; usando respaldo 2D.', '#ff9100', 70);
+        return;
+      }
+      t6Arena3DEnabled = !t6Arena3DEnabled;
+      syncT63DButtonUI();
+      announceT6(
+        t6Arena3DEnabled ? '🧊 ARENA 3D WEBGL2 ACTIVADA (17 SK_*.glb EN VIVO)' : '🎨 MODO 2D CLÁSICO ACTIVADO',
+        t6Arena3DEnabled ? '#ffe07d' : '#00e5ff',
+        55
+      );
+    });
+  }
+  syncT63DButtonUI();
 
   ROSTER_DATA.forEach((ch, idx) => {
     const o1 = document.createElement('option');
@@ -2130,6 +2174,8 @@
     matchEnded: false,
     tourneyMode: false,
     tourneyRound: 1,
+    storyMode: false,
+    storyChapter: 1,
     showInputDisplay: true,
     inputLog: [
       { dir: 5, btn: '', frames: 1 }
@@ -2287,7 +2333,7 @@
     rankEl.textContent = rank;
     rankEl.style.color = rank === 'S' ? '#ffe07d' : (rank === 'A' ? '#00e676' : '#00e5ff');
 
-    // Hook de Retorno para Modo Torneo (Llave Copa Eterna)
+    // Hook de Retorno para Modo Torneo (Llave Copa Eterna) y Modo Historia
     const tourneyBtn = document.getElementById('t6-btn-tourney-next');
     if (t6State.tourneyMode) {
       const won = winnerFighter === t6State.p1;
@@ -2304,6 +2350,25 @@
       if (tourneyBtn) tourneyBtn.style.display = 'inline-flex';
     } else if (tourneyBtn) {
       tourneyBtn.style.display = 'none';
+    }
+
+    const storyBtn = document.getElementById('t6-btn-story-next');
+    if (t6State.storyMode) {
+      const won = winnerFighter === t6State.p1;
+      const score = st.p1DamageDealt + (won ? 5000 : 0) + maxCombo * 250;
+      try {
+        localStorage.setItem('copaEternaLastStoryMatch', JSON.stringify({
+          chapter: t6State.storyChapter,
+          won,
+          rank,
+          score,
+          maxCombo,
+          timestamp: Date.now()
+        }));
+      } catch (_) {}
+      if (storyBtn) storyBtn.style.display = 'inline-flex';
+    } else if (storyBtn) {
+      storyBtn.style.display = 'none';
     }
 
     overlayEl.style.display = 'flex';
@@ -2339,6 +2404,16 @@
     t6State.p1 = createMatchFighter(p1Idx, 270, true);
     t6State.p2 = createMatchFighter(p2Idx, 810, false);
     t6State.stageIdx = stIdx;
+    if (t6WebGLReady && window.SAFWglArena) {
+      const p1Code = t6State.p1.data.Name;
+      const p2Code = t6State.p2.data.Name;
+      const p1Glb = `../Assets/Models3D/Fighters/${p1Code === 'VAR_ZERO_BOSS' ? 'SK_SUPREME_JUDGE_BOSS.glb' : 'SK_' + p1Code + '.glb'}`;
+      const p2Glb = `../Assets/Models3D/Fighters/${p2Code === 'VAR_ZERO_BOSS' ? 'SK_SUPREME_JUDGE_BOSS.glb' : 'SK_' + p2Code + '.glb'}`;
+      const st3d = (typeof STAGES_3D_CATALOG !== 'undefined' && STAGES_3D_CATALOG[stIdx]) ? STAGES_3D_CATALOG[stIdx].File : 'SM_Stage_Maracana_BR.glb';
+      window.SAFWglArena.preload([p1Glb, p2Glb, `../Assets/Models3D/Stages/${st3d}`]);
+    }
+    getT6FighterSpritePair(t6State.p1.data.Name);
+    getT6FighterSpritePair(t6State.p2.data.Name);
     if (t6SelArtStyle) t6State.artStyle = t6SelArtStyle.value;
     t6State.wallHp = st.WallHP;
     t6State.maxWallHp = st.WallHP;
@@ -2370,20 +2445,44 @@
       `${t6State.p1.data.DisplayName} vs ${t6State.p2.data.DisplayName} — ${st.DisplayName} (${st.ZoneA})`;
 
     const isLocal2P = t6SelAI.value === 'LOCAL_2P';
+    const isTraining = t6SelAI.value === 'DUMMY';
+    const isStory = Boolean(t6State.storyMode);
+    if (isTraining) {
+      t6State.p1.superMeter = 3000;
+      t6State.p1.gambeta = 1000;
+      t6State.p2.superMeter = 3000;
+      t6State.p2.gambeta = 1000;
+    }
     announceT6(
-      isLocal2P ? '👥 ¡DUELO LOCAL 2P! — P1 (WASD) vs P2 (FLECHAS)' : '⚽ ¡PITAZO INICIAL! — RUEDA EL BALÓN',
-      '#00e676',
+      isTraining
+        ? '🎯 MODO ENTRENAMIENTO — EL POTRERO (TIEMPO ∞)'
+        : (isStory
+            ? `📖 MODO HISTORIA — CAPÍTULO ${t6State.storyChapter} EN VIVO`
+            : (isLocal2P ? '👥 ¡DUELO LOCAL 2P! — P1 (WASD) vs P2 (FLECHAS)' : '⚽ ¡PITAZO INICIAL! — RUEDA EL BALÓN')),
+      isTraining ? '#00e5ff' : (isStory ? '#ffe07d' : '#00e676'),
       85,
-      `"¡Arranca el duelo histórico entre ${t6State.p1.data.DisplayName} y ${t6State.p2.data.DisplayName} en ${st.DisplayName}!"`,
-      isLocal2P
-        ? '2P Local activo: P1 (WASD + U/I/O/J/K o Pad #1) vs P2 (Flechas + Numpad 1-5 / 7,8,9,B,N o Pad #2).'
-        : 'Fase Neutral 2.5D activa @ 60.0 FPS deterministas.'
+      isTraining
+        ? `"¡Sesión de entrenamiento libre para ${t6State.p1.data.DisplayName} frente a ${t6State.p2.data.DisplayName} en ${st.DisplayName}!"`
+        : `"¡Arranca el duelo histórico entre ${t6State.p1.data.DisplayName} y ${t6State.p2.data.DisplayName} en ${st.DisplayName}!"`,
+      isTraining
+        ? 'Training Mode activo: Tiempo ∞, Dummy pasivo con auto-regeneración de HP post-combo y Hinchada Nivel 3 cargada.'
+        : (isStory
+            ? `Campaña Crónicas del Potrero (Capítulo ${t6State.storyChapter}/6): Vence al rival para avanzar la historia.`
+            : (isLocal2P
+                ? '2P Local activo: P1 (WASD + U/I/O/J/K o Pad #1) vs P2 (Flechas + Numpad 1-5 / 7,8,9,B,N o Pad #2).'
+                : 'Fase Neutral 2.5D activa @ 60.0 FPS deterministas.'))
     );
     playSynthSound('stinger');
   }
 
   t6SelP1.addEventListener('change', resetTab6Match);
-  t6SelP2.addEventListener('change', resetTab6Match);
+  t6SelP2.addEventListener('change', () => {
+    const chosenP2 = parseInt(t6SelP2.value, 10);
+    if (t6SelAI.value === 'BOSS_VAR' && chosenP2 !== ROSTER_DATA.length - 1) {
+      t6SelAI.value = 'CPU_PRO';
+    }
+    resetTab6Match();
+  });
   t6SelStage.addEventListener('change', resetTab6Match);
   t6SelAI.addEventListener('change', resetTab6Match);
   document.getElementById('t6-btn-restart').addEventListener('click', resetTab6Match);
@@ -2878,21 +2977,25 @@
         playSynthSound('desync');
       }
 
-      // Verificar K.O. / ¡GOOOOOOL!
+      // Verificar K.O. / ¡GOOOOOOL! (en Modo Entrenamiento, P2/P1 no caen en KO y regeneran post-combo)
       if (defender.hp <= 0) {
-        defender.hp = 0;
-        defender.state = 'KO';
-        t6State.impactInkFrames = 12;
-        t6State.hitstopFrames = 20;
-        announceT6(
-          `⚽🏆 ¡GOOOOOOOLAZO / K.O.! — GANA ${attacker.data.DisplayName.toUpperCase()}`,
-          '#00e676',
-          180,
-          `"¡GOOOOOOLAZO HISTÓRICO DE ${attacker.data.DisplayName.toUpperCase()}! ¡SE CAE EL ESTADIO ABAJO, SEÑORAS Y SEÑORES!"`,
-          'Presiona "⚔️ Revancha Inmediata" o cambia de Leyenda.'
-        );
-        playSynthSound('stinger');
-        showTab6VictoryOverlay(attacker, 'KO');
+        if (t6SelAI.value === 'DUMMY') {
+          defender.hp = 1;
+        } else {
+          defender.hp = 0;
+          defender.state = 'KO';
+          t6State.impactInkFrames = 12;
+          t6State.hitstopFrames = 20;
+          announceT6(
+            `⚽🏆 ¡GOOOOOOOLAZO / K.O.! — GANA ${attacker.data.DisplayName.toUpperCase()}`,
+            '#00e676',
+            180,
+            `"¡GOOOOOOLAZO HISTÓRICO DE ${attacker.data.DisplayName.toUpperCase()}! ¡SE CAE EL ESTADIO ABAJO, SEÑORAS Y SEÑORES!"`,
+            'Presiona "⚔️ Revancha Inmediata" o cambia de Leyenda.'
+          );
+          playSynthSound('stinger');
+          showTab6VictoryOverlay(attacker, 'KO');
+        }
       }
     }
   }
@@ -3181,14 +3284,26 @@
       return;
     }
 
-    // Reloj del partido
-    if (!t6State.matchEnded && p1.state !== 'KO' && p2.state !== 'KO' && t6State.timerFrames > 0) {
+    // Reloj del partido (infinito en Modo Entrenamiento)
+    const isTraining = t6SelAI.value === 'DUMMY';
+    if (!isTraining && !t6State.matchEnded && p1.state !== 'KO' && p2.state !== 'KO' && t6State.timerFrames > 0) {
       t6State.timerFrames--;
       if (t6State.timerFrames === 0) {
         const winnerFighter = p1.hp >= p2.hp ? p1 : p2;
         announceT6(`⏱️ ¡FINAL DEL TIEMPO REGLAMENTARIO! GANA ${winnerFighter.data.DisplayName.toUpperCase()}`, '#ffe07d', 160);
         playSynthSound('stinger');
         showTab6VictoryOverlay(winnerFighter, 'TIME');
+      }
+    }
+
+    // Auto-regeneración de HP y Hinchada en Modo Entrenamiento cuando termina el combo
+    if (isTraining) {
+      if (p2.state === 'IDLE' && p1.comboCount === 0 && p2.hp < p2.maxHp) {
+        p2.hp = Math.min(p2.maxHp, p2.hp + 120);
+      }
+      if (p1.state === 'IDLE') {
+        if (p1.hp < p1.maxHp) p1.hp = Math.min(p1.maxHp, p1.hp + 80);
+        if (p1.superMeter < 3000) p1.superMeter = Math.min(3000, p1.superMeter + 12);
       }
     }
 
@@ -3315,24 +3430,160 @@
     renderTab6VersusCanvas();
   }
 
+  const T6_SPRITE_CACHE = {};
+  function getT6FighterSpritePair(code) {
+    if (!T6_SPRITE_CACHE[code]) {
+      const front = new Image();
+      front.src = `../Assets/Sprites2D/Fighters/Sprite_${code}_Front.png`;
+      const side = new Image();
+      side.src = `../Assets/Sprites2D/Fighters/Sprite_${code}_Side.png`;
+      T6_SPRITE_CACHE[code] = { front, side };
+    }
+    return T6_SPRITE_CACHE[code];
+  }
+
   function drawFighterOnT6Canvas(ctx, f, groundY) {
     const isSfumato = t6State.artStyle === 'SFUMATO';
     const x = f.x;
     const y = groundY + f.y;
     const dir = f.facingRight ? 1 : -1;
     const isBoss = f.data.Name === 'VAR_ZERO_BOSS';
-    const w = f.data.Name === 'BULLDOG_PY' ? 74 : (isBoss ? 72 : 60);
-    const baseH = f.data.Name === 'PULGA_AR' ? 126 : (isBoss ? 156 : 142);
-    const h = f.state === 'CROUCH' ? baseH * 0.68 : baseH;
+    const w = f.data.Name === 'BULLDOG_PY' ? 84 : (isBoss ? 86 : 74);
+    const baseH = f.data.Name === 'PULGA_AR' ? 172 : (isBoss ? 214 : 188);
+    const h = f.state === 'CROUCH' ? baseH * 0.72 : baseH;
+    const t = f.stateFrame;
 
-    // 1. Sombra elíptica en el césped
-    ctx.fillStyle = isSfumato ? 'rgba(22, 14, 6, 0.68)' : 'rgba(0, 0, 0, 0.48)';
+    // 1. Sombra realista sobre el césped
+    ctx.fillStyle = isSfumato ? 'rgba(18, 12, 4, 0.65)' : 'rgba(0, 0, 0, 0.52)';
     ctx.beginPath();
-    ctx.ellipse(x, groundY + 4, (f.state === 'KO' ? w * 1.15 : w * 0.62), 9, 0, 0, Math.PI * 2);
+    ctx.ellipse(x, groundY + 4, (f.state === 'KO' ? w * 1.15 : w * 0.52), 9, 0, 0, Math.PI * 2);
     ctx.fill();
 
-    // 2. Cinemática Articulada por Estado y Frame (Idle, Walk, Dash, Attack/Kick, Block, Hitstun, K.O.)
-    const t = f.stateFrame;
+    const sprites = getT6FighterSpritePair(f.data.Name);
+    const useSide = ['WALK_F', 'WALK_B', 'DASH_F', 'DASH_B', 'STARTUP', 'ACTIVE', 'RECOVERY', 'HITSTUN', 'KO'].includes(f.state);
+    const activeImg = (useSide && sprites.side.complete && sprites.side.naturalWidth > 0)
+      ? sprites.side
+      : (sprites.front.complete && sprites.front.naturalWidth > 0 ? sprites.front : null);
+
+    if (activeImg) {
+      let tilt = 0;
+      let lungeX = 0;
+      let dropY = 0;
+      let scaleX = 1.0;
+      let scaleY = 1.0;
+      const mvKey = f.activeMoveKey;
+
+      if (f.state === 'IDLE') {
+        scaleY = 1.0 + Math.sin(t * 0.12) * 0.015;
+        scaleX = 1.0 - Math.sin(t * 0.12) * 0.008;
+      } else if (f.state === 'CROUCH') {
+        scaleY = 0.72;
+        scaleX = 1.10;
+      } else if (f.state === 'WALK_F' || f.state === 'WALK_B') {
+        tilt = dir * (f.state === 'WALK_F' ? 0.07 : -0.06);
+        dropY = Math.abs(Math.sin(t * 0.28)) * -5;
+      } else if (f.state === 'DASH_F' || f.state === 'DASH_B') {
+        tilt = dir * (f.state === 'DASH_F' ? 0.22 : -0.18);
+        lungeX = dir * (f.state === 'DASH_F' ? 12 : -10);
+      } else if (f.state === 'HITSTUN') {
+        tilt = -dir * 0.26;
+        lungeX = -dir * 10;
+      } else if (f.state === 'BLOCKSTUN' || f.state === 'PARRY') {
+        tilt = -dir * 0.08;
+        scaleY = 0.95;
+      } else if (f.state === 'KO') {
+        tilt = -dir * 1.46;
+        dropY = -baseH * 0.14;
+      } else if (f.state === 'STARTUP' || f.state === 'ACTIVE' || f.state === 'RECOVERY') {
+        const isAct = f.state === 'ACTIVE';
+        if (mvKey === 'SP_623' || mvKey === 'ULT_3') {
+          tilt = -dir * (isAct ? 0.42 : 0.20);
+          lungeX = dir * (isAct ? 22 : 8);
+        } else if (mvKey === 'HP' || mvKey === 'SK' || mvKey === 'SP_236' || mvKey === 'SUPER_1') {
+          tilt = -dir * (isAct ? 0.16 : 0.08);
+          lungeX = dir * (isAct ? 20 : 6);
+        } else {
+          tilt = dir * (isAct ? 0.15 : 0.06);
+          lungeX = dir * (isAct ? 18 : 6);
+        }
+      }
+
+      const drawH = baseH * scaleY;
+      const aspect = activeImg.naturalWidth / Math.max(1, activeImg.naturalHeight);
+      const drawW = drawH * aspect * scaleX;
+
+      ctx.save();
+      ctx.translate(x + lungeX, y + dropY);
+      ctx.rotate(tilt);
+
+      if (f.state === 'PARRY') {
+        ctx.shadowColor = '#00e5ff';
+        ctx.shadowBlur = 24;
+      } else if (f.activeMoveKey && T6_MOVES[f.activeMoveKey]?.invuln) {
+        ctx.shadowColor = '#ffe07d';
+        ctx.shadowBlur = 24;
+      } else if (f.state === 'HITSTUN') {
+        ctx.shadowColor = '#ff2a54';
+        ctx.shadowBlur = 20;
+      } else if (f.superMeter >= 3000) {
+        ctx.shadowColor = '#f5c451';
+        ctx.shadowBlur = 14;
+      }
+
+      // Reflejar horizontalmente según orientación (P1 mira derecha, P2 mira izquierda)
+      ctx.scale(dir, 1);
+      ctx.drawImage(activeImg, -drawW * 0.5, -drawH, drawW, drawH);
+
+      if (f.state === 'HITSTUN') {
+        ctx.globalCompositeOperation = 'source-atop';
+        ctx.fillStyle = 'rgba(255, 42, 84, 0.34)';
+        ctx.fillRect(-drawW * 0.5, -drawH, drawW, drawH);
+      } else if (f.state === 'PARRY' || f.state === 'BLOCKSTUN') {
+        ctx.strokeStyle = 'rgba(0, 229, 255, 0.78)';
+        ctx.lineWidth = 3;
+        ctx.beginPath();
+        ctx.ellipse(0, -drawH * 0.5, drawW * 0.45, drawH * 0.48, 0, 0, Math.PI * 2);
+        ctx.stroke();
+      }
+      ctx.restore();
+
+      // Estela de golpe / patada en fase ACTIVE
+      if (f.state === 'ACTIVE' && mvKey && mvKey !== 'GB') {
+        ctx.save();
+        ctx.strokeStyle = isSfumato ? 'rgba(255, 226, 153, 0.78)' : 'rgba(0, 229, 255, 0.85)';
+        ctx.lineWidth = 9;
+        ctx.lineCap = 'round';
+        ctx.beginPath();
+        ctx.arc(x + dir * 24, y - drawH * 0.52, 54, dir > 0 ? -0.75 : Math.PI - 0.35, dir > 0 ? 0.35 : Math.PI + 0.75);
+        ctx.stroke();
+        ctx.restore();
+      }
+
+      // Hitbox visual en ACTIVE
+      if (f.state === 'ACTIVE' && mvKey) {
+        const mv = T6_MOVES[mvKey];
+        if (mv && mv.range > 0 && mv.type !== 'PROJ') {
+          const hbX = dir > 0 ? x + w * 0.35 : x - w * 0.35 - mv.range;
+          const hbW = mv.range;
+          const hbY = y - h * 0.74;
+          ctx.fillStyle = isSfumato ? 'rgba(245, 196, 81, 0.25)' : 'rgba(255, 42, 84, 0.28)';
+          ctx.strokeStyle = isSfumato ? '#ffe07d' : '#ff2a54';
+          ctx.lineWidth = 2;
+          ctx.fillRect(hbX, hbY, hbW, 50);
+          ctx.strokeRect(hbX, hbY, hbW, 50);
+        }
+      }
+
+      // Etiqueta sobre jugador
+      ctx.fillStyle = isSfumato ? '#ffe599' : '#ffffff';
+      ctx.font = isSfumato ? 'bold 11.5px Georgia, serif' : 'bold 11px Consolas, monospace';
+      ctx.textAlign = 'center';
+      ctx.fillText(`${f.isP1 ? 'P1' : 'P2'}: ${f.data.DisplayName}`, x, y - baseH - 14);
+      ctx.textAlign = 'left';
+      return;
+    }
+
+    // 2. Cinemática Articulada por Estado y Frame (Respaldo mientras decodifica el sprite PNG)
     const breathY = (f.state === 'IDLE') ? Math.sin(t * 0.12) * 3.5 : 0;
     let bodyTilt = 0;
     let torsoDrop = breathY;
@@ -3692,164 +3943,211 @@
     t6Ctx.translate(shakeX, shakeY);
 
     const groundY = 390;
+    const use3DArena = Boolean(t6Arena3DEnabled && t6WebGLReady && window.SAFWglArena && window.SAFWglArena.isReady());
 
-    // 1. Fondo del Estadio según Dirección de Arte (Renacimiento Sfumato vs Street-Ink AAA) o Impact Ink (3f)
-    if (t6State.impactInkFrames > 0) {
-      t6Ctx.fillStyle = t6State.impactInkFrames % 2 === 0 ? (isSfumato ? '#f5e1a4' : '#ffffff') : '#06080d';
-      t6Ctx.fillRect(0, 0, w, h);
-    } else if (isSfumato) {
-      // Cielo Renacentista Sfumato (Da Vinci / Mona Lisa: Ocre cálido, ámbar dorado, verde oliva umbrío y bruma lejana)
-      const sfumatoSky = t6Ctx.createLinearGradient(0, 0, 0, groundY);
-      if (t6State.inZoneB) {
-        sfumatoSky.addColorStop(0, '#1e110a');
-        sfumatoSky.addColorStop(0.5, '#4d2b16');
-        sfumatoSky.addColorStop(1, '#8c5828');
-      } else {
-        sfumatoSky.addColorStop(0, '#18221f');
-        sfumatoSky.addColorStop(0.42, '#3d4a35');
-        sfumatoSky.addColorStop(0.78, '#8a6b38');
-        sfumatoSky.addColorStop(1, '#c89d54');
+    if (use3DArena) {
+      const p1Code = p1.data.Name;
+      const p2Code = p2.data.Name;
+      const p1Prof = (typeof CHAR_3D_PROFILES !== 'undefined' && CHAR_3D_PROFILES[p1Code]) ? CHAR_3D_PROFILES[p1Code] : null;
+      const p2Prof = (typeof CHAR_3D_PROFILES !== 'undefined' && CHAR_3D_PROFILES[p2Code]) ? CHAR_3D_PROFILES[p2Code] : null;
+      const st3d = (typeof STAGES_3D_CATALOG !== 'undefined' && STAGES_3D_CATALOG[t6State.stageIdx])
+        ? STAGES_3D_CATALOG[t6State.stageIdx]
+        : null;
+
+      const p1GlbUrl = `../Assets/Models3D/Fighters/${p1Prof ? p1Prof.file : (p1Code === 'VAR_ZERO_BOSS' ? 'SK_SUPREME_JUDGE_BOSS.glb' : 'SK_' + p1Code + '.glb')}`;
+      const p2GlbUrl = `../Assets/Models3D/Fighters/${p2Prof ? p2Prof.file : (p2Code === 'VAR_ZERO_BOSS' ? 'SK_SUPREME_JUDGE_BOSS.glb' : 'SK_' + p2Code + '.glb')}`;
+      const stageGlbUrl = `../Assets/Models3D/Stages/${st3d ? st3d.File : 'SM_Stage_Maracana_BR.glb'}`;
+
+      window.SAFWglArena.renderFrame({
+        p1: { ...p1, glbUrl: p1GlbUrl },
+        p2: { ...p2, glbUrl: p2GlbUrl },
+        stageGlbUrl,
+        projectiles: t6State.projectiles,
+        lighting: t6State.artStyle,
+        inZoneB: t6State.inZoneB,
+        shakeX,
+        shakeY,
+        impactInkFrames: t6State.impactInkFrames,
+        matchEnded: t6State.matchEnded,
+        winnerIsP1: p1.hp >= p2.hp,
+        clockFrames: t6State.clockFrames = (t6State.clockFrames || 0) + 1
+      });
+
+      const aStat = window.SAFWglArena.getStatus();
+      if (t6WebglHud) {
+        t6WebglHud.style.display = 'block';
+        const p1Badge = aStat.p1Loaded ? `P1 3D: ${aStat.p1Tris.toLocaleString()}t (${aStat.p1Clip})` : 'P1 Cargando...';
+        const p2Badge = aStat.p2Loaded ? `P2 3D: ${aStat.p2Tris.toLocaleString()}t (${aStat.p2Clip})` : 'P2 Cargando...';
+        t6WebglHud.innerHTML = `<div><span class="hud-badge">ARENA 3D WEBGL2</span><strong>${p1.data.DisplayName}</strong> vs <strong>${p2.data.DisplayName}</strong></div>` +
+          `<div class="hud-sub">${p1Badge} | ${p2Badge} | Estadio: ${aStat.stageLoaded ? '3D OK' : 'Cargando'}</div>`;
       }
-      t6Ctx.fillStyle = sfumatoSky;
-      t6Ctx.fillRect(0, 0, w, h);
 
-      // Cordillera y Paisaje Toscano/Andino en Sfumato (Perspectiva atmosférica difuminada)
-      t6Ctx.fillStyle = 'rgba(32, 38, 28, 0.55)';
-      t6Ctx.beginPath();
-      t6Ctx.moveTo(0, groundY - 75);
-      for (let mx = 0; mx <= w; mx += 120) {
-        const peakY = groundY - 115 - Math.sin(mx * 0.012) * 42 - Math.cos(mx * 0.025) * 24;
-        t6Ctx.lineTo(mx, peakY);
-      }
-      t6Ctx.lineTo(w, groundY);
-      t6Ctx.lineTo(0, groundY);
-      t6Ctx.closePath();
-      t6Ctx.fill();
+      // Overlay etiquetas P1/P2 proyectadas desde sus posiciones reales 3D + hitboxes activas + estela proyectil
+      [p1, p2].forEach((f) => {
+        const wx = (f.x - 540) / 145.0;
+        const wy = Math.max(0, -f.y / 145.0) + (f.data.Name === 'VAR_ZERO_BOSS' ? 2.28 : 1.98);
+        const [sx, sy] = window.SAFWglArena.projectToCanvas(wx, wy, 0);
+        t6Ctx.fillStyle = isSfumato ? '#ffe599' : '#ffffff';
+        t6Ctx.font = isSfumato ? 'bold 11.5px Georgia, serif' : 'bold 11px Consolas, monospace';
+        t6Ctx.textAlign = 'center';
+        t6Ctx.fillText(`${f.isP1 ? 'P1' : 'P2'}: ${f.data.DisplayName}`, sx, Math.max(58, sy));
+        t6Ctx.textAlign = 'left';
 
-      // Arcos de Coliseo / Estadio Renacentista en Chiaroscuro
-      t6Ctx.fillStyle = 'rgba(24, 16, 9, 0.72)';
-      t6Ctx.strokeStyle = 'rgba(212, 175, 55, 0.35)';
-      t6Ctx.lineWidth = 2;
-      for (let ax = 75; ax < w - 90; ax += 115) {
-        t6Ctx.fillRect(ax, groundY - 105, 18, 105);
+        if (f.state === 'ACTIVE' && f.activeMoveKey) {
+          const mv = T6_MOVES[f.activeMoveKey];
+          if (mv && mv.range > 0 && mv.type !== 'PROJ') {
+            const dir = f.facingRight ? 1 : -1;
+            const [hbX, hbY] = window.SAFWglArena.projectToCanvas(wx + dir * 0.55, Math.max(0, -f.y / 145.0) + 1.05, 0);
+            t6Ctx.fillStyle = isSfumato ? 'rgba(245, 196, 81, 0.28)' : 'rgba(255, 42, 84, 0.32)';
+            t6Ctx.strokeStyle = isSfumato ? '#ffe07d' : '#ff2a54';
+            t6Ctx.lineWidth = 2;
+            t6Ctx.fillRect(hbX - 35, hbY - 24, 70, 48);
+            t6Ctx.strokeRect(hbX - 35, hbY - 24, 70, 48);
+          }
+        }
+      });
+
+      t6State.projectiles.forEach((pr) => {
+        const bwx = (pr.x - 540) / 145.0;
+        const bwy = Math.max(0.18, (390 - pr.y) / 145.0);
+        const [bx, by] = window.SAFWglArena.projectToCanvas(bwx, bwy, 0);
+        const trailCol = isSfumato ? 'rgba(245, 196, 81, 0.45)' : 'rgba(0, 229, 255, 0.45)';
+        t6Ctx.fillStyle = trailCol;
         t6Ctx.beginPath();
-        t6Ctx.arc(ax + 57, groundY - 105, 39, Math.PI, 0, false);
-        t6Ctx.stroke();
-      }
+        t6Ctx.arc(bx - pr.vx * 1.4, by, 14, 0, Math.PI * 2);
+        t6Ctx.fill();
+      });
 
-      // Neblina Sfumato dorada sobre el horizonte de la cancha
-      const mistGrad = t6Ctx.createLinearGradient(0, groundY - 70, 0, groundY + 15);
-      mistGrad.addColorStop(0, 'rgba(235, 195, 115, 0.0)');
-      mistGrad.addColorStop(0.6, 'rgba(225, 180, 95, 0.32)');
-      mistGrad.addColorStop(1, 'rgba(45, 32, 15, 0.45)');
-      t6Ctx.fillStyle = mistGrad;
-      t6Ctx.fillRect(0, groundY - 70, w, 85);
+      t6State.particles.forEach((pt) => {
+        t6Ctx.fillStyle = pt.color;
+        t6Ctx.beginPath();
+        t6Ctx.arc(pt.x, pt.y, 4, 0, Math.PI * 2);
+        t6Ctx.fill();
+      });
     } else {
-      // Modo Street-Ink AAA: Reflectores nocturnos de estadio y trazos de tinta neón
-      const skyGrad = t6Ctx.createLinearGradient(0, 0, 0, h);
-      if (t6State.inZoneB) {
-        skyGrad.addColorStop(0, '#220b1e');
-        skyGrad.addColorStop(1, '#090d16');
+      // 1. Fondo del Estadio 2D AAA con Arte Conceptual Renacentista / Nocturno según Estadio Activo
+      const T6_STAGE_BACKDROPS = [
+        '../Assets/ConceptArt/Stage_MaracanaBombonera_Concept.jpg',
+        '../Assets/ConceptArt/Stage_MaracanaBombonera_Concept.jpg',
+        '../Assets/ConceptArt/Stage_Centenario_Uruguay_Renaissance.jpg',
+        '../Assets/ConceptArt/Stage_MaracanaBombonera_Concept.jpg',
+        '../Assets/ConceptArt/Stage_HernandoSiles_Bolivia_Renaissance.jpg',
+        '../Assets/ConceptArt/Stage_MaracanaBombonera_Concept.jpg',
+        '../Assets/ConceptArt/Stage_Atahualpa_Ecuador_Renaissance.jpg',
+        '../Assets/ConceptArt/Stage_Atahualpa_Ecuador_Renaissance.jpg',
+        '../Assets/ConceptArt/Stage_Atahualpa_Ecuador_Renaissance.jpg',
+        '../Assets/ConceptArt/Stage_HernandoSiles_Bolivia_Renaissance.jpg'
+      ];
+      if (!window._t6StageImgCache) window._t6StageImgCache = {};
+      const stImgUrl = T6_STAGE_BACKDROPS[t6State.stageIdx] || T6_STAGE_BACKDROPS[0];
+      if (!window._t6StageImgCache[stImgUrl]) {
+        const simg = new Image();
+        simg.src = stImgUrl;
+        window._t6StageImgCache[stImgUrl] = simg;
+      }
+      const bgImg = window._t6StageImgCache[stImgUrl];
+
+      if (t6State.impactInkFrames > 0) {
+        t6Ctx.fillStyle = t6State.impactInkFrames % 2 === 0 ? (isSfumato ? '#f5e1a4' : '#ffffff') : '#06080d';
+        t6Ctx.fillRect(0, 0, w, h);
+      } else if (bgImg && bgImg.complete && bgImg.naturalWidth > 0) {
+        t6Ctx.drawImage(bgImg, 0, 0, w, groundY + 14);
+        t6Ctx.fillStyle = isSfumato
+          ? (t6State.inZoneB ? 'rgba(62, 24, 10, 0.42)' : 'rgba(20, 14, 7, 0.28)')
+          : (t6State.inZoneB ? 'rgba(28, 8, 30, 0.46)' : 'rgba(6, 16, 28, 0.38)');
+        t6Ctx.fillRect(0, 0, w, groundY + 14);
+      } else if (isSfumato) {
+        const sfumatoSky = t6Ctx.createLinearGradient(0, 0, 0, groundY);
+        sfumatoSky.addColorStop(0, '#18221f');
+        sfumatoSky.addColorStop(1, '#c89d54');
+        t6Ctx.fillStyle = sfumatoSky;
+        t6Ctx.fillRect(0, 0, w, h);
       } else {
+        const skyGrad = t6Ctx.createLinearGradient(0, 0, 0, h);
         skyGrad.addColorStop(0, '#071726');
         skyGrad.addColorStop(1, '#0a1914');
+        t6Ctx.fillStyle = skyGrad;
+        t6Ctx.fillRect(0, 0, w, h);
       }
-      t6Ctx.fillStyle = skyGrad;
-      t6Ctx.fillRect(0, 0, w, h);
 
-      // Reflectores LED de estadio (Floodlights)
-      for (let lx = 140; lx <= w - 140; lx += 260) {
-        const beam = t6Ctx.createLinearGradient(lx, 55, lx, groundY);
-        beam.addColorStop(0, 'rgba(0, 229, 255, 0.22)');
-        beam.addColorStop(1, 'rgba(0, 229, 255, 0.0)');
-        t6Ctx.fillStyle = beam;
-        t6Ctx.beginPath();
-        t6Ctx.moveTo(lx - 15, 55);
-        t6Ctx.lineTo(lx + 15, 55);
-        t6Ctx.lineTo(lx + 95, groundY);
-        t6Ctx.lineTo(lx - 95, groundY);
-        t6Ctx.closePath();
-        t6Ctx.fill();
+      // Marco de la cancha
+      t6Ctx.strokeStyle = isSfumato ? 'rgba(212, 175, 55, 0.45)' : 'rgba(245, 196, 81, 0.25)';
+      t6Ctx.lineWidth = 2;
+      t6Ctx.strokeRect(45, 95, w - 90, groundY - 95);
+
+      // Césped con franjas deportivas (Ocre/Oliva al óleo en Sfumato vs Verde Cancha Neón en Street-Ink)
+      for (let sx = 45; sx < w - 45; sx += 90) {
+        const even = Math.floor(sx / 90) % 2 === 0;
+        if (isSfumato) {
+          t6Ctx.fillStyle = even ? 'rgba(68, 78, 36, 0.75)' : 'rgba(52, 62, 28, 0.75)';
+        } else {
+          t6Ctx.fillStyle = even
+            ? (t6State.inZoneB ? 'rgba(255, 145, 0, 0.14)' : 'rgba(0, 230, 118, 0.16)')
+            : (t6State.inZoneB ? 'rgba(255, 145, 0, 0.08)' : 'rgba(0, 230, 118, 0.10)');
+        }
+        t6Ctx.fillRect(sx, groundY, 90, h - groundY);
       }
-    }
-
-    // Marco de la cancha
-    t6Ctx.strokeStyle = isSfumato ? 'rgba(212, 175, 55, 0.45)' : 'rgba(245, 196, 81, 0.25)';
-    t6Ctx.lineWidth = 2;
-    t6Ctx.strokeRect(45, 95, w - 90, groundY - 95);
-
-    // Césped con franjas deportivas (Ocre/Oliva al óleo en Sfumato vs Verde Cancha Neón en Street-Ink)
-    for (let sx = 45; sx < w - 45; sx += 90) {
-      const even = Math.floor(sx / 90) % 2 === 0;
-      if (isSfumato) {
-        t6Ctx.fillStyle = even ? 'rgba(68, 78, 36, 0.75)' : 'rgba(52, 62, 28, 0.75)';
-      } else {
-        t6Ctx.fillStyle = even
-          ? (t6State.inZoneB ? 'rgba(255, 145, 0, 0.14)' : 'rgba(0, 230, 118, 0.16)')
-          : (t6State.inZoneB ? 'rgba(255, 145, 0, 0.08)' : 'rgba(0, 230, 118, 0.10)');
-      }
-      t6Ctx.fillRect(sx, groundY, 90, h - groundY);
-    }
-    t6Ctx.strokeStyle = isSfumato ? '#d4af37' : (t6State.inZoneB ? '#ff9100' : '#00e676');
-    t6Ctx.lineWidth = 3;
-    t6Ctx.beginPath();
-    t6Ctx.moveTo(0, groundY);
-    t6Ctx.lineTo(w, groundY);
-    t6Ctx.stroke();
-
-    // 2. Dibujar Luchadores P1 y P2
-    drawFighterOnT6Canvas(t6Ctx, p1, groundY);
-    drawFighterOnT6Canvas(t6Ctx, p2, groundY);
-
-    // 3. Dibujar Proyectiles de Balón con Estela Elemental
-    t6State.projectiles.forEach((pr) => {
-      const trailCol = isSfumato ? '#e5b95c' : pr.color;
-      t6Ctx.shadowColor = trailCol;
-      t6Ctx.shadowBlur = 18;
-      t6Ctx.fillStyle = trailCol;
+      t6Ctx.strokeStyle = isSfumato ? '#d4af37' : (t6State.inZoneB ? '#ff9100' : '#00e676');
+      t6Ctx.lineWidth = 3;
       t6Ctx.beginPath();
-      t6Ctx.arc(pr.x - pr.vx * 1.4, pr.y, 11, 0, Math.PI * 2);
-      t6Ctx.fill();
-
-      t6Ctx.fillStyle = isSfumato ? '#f5deb3' : '#ffffff';
-      t6Ctx.beginPath();
-      t6Ctx.arc(pr.x, pr.y, 15, 0, Math.PI * 2);
-      t6Ctx.fill();
-      t6Ctx.strokeStyle = isSfumato ? '#3b2313' : '#06080d';
-      t6Ctx.lineWidth = 2.5;
+      t6Ctx.moveTo(0, groundY);
+      t6Ctx.lineTo(w, groundY);
       t6Ctx.stroke();
-      t6Ctx.shadowBlur = 0;
-    });
 
-    // 4. Dibujar Partículas de Impacto (Chispas Ámbar/Oro al óleo en Sfumato vs Salpicaduras Neón en Street-Ink)
-    t6State.particles.forEach((pt) => {
-      t6Ctx.fillStyle = pt.color;
-      if (isSfumato) {
+      // 2. Dibujar Luchadores P1 y P2
+      drawFighterOnT6Canvas(t6Ctx, p1, groundY);
+      drawFighterOnT6Canvas(t6Ctx, p2, groundY);
+
+      // 3. Dibujar Proyectiles de Balón con Estela Elemental
+      t6State.projectiles.forEach((pr) => {
+        const trailCol = isSfumato ? '#e5b95c' : pr.color;
+        t6Ctx.shadowColor = trailCol;
+        t6Ctx.shadowBlur = 18;
+        t6Ctx.fillStyle = trailCol;
         t6Ctx.beginPath();
-        t6Ctx.arc(pt.x, pt.y, 3.8, 0, Math.PI * 2);
+        t6Ctx.arc(pr.x - pr.vx * 1.4, pr.y, 11, 0, Math.PI * 2);
         t6Ctx.fill();
-      } else {
-        t6Ctx.fillRect(pt.x - 3.5, pt.y - 3.5, 7, 7);
-      }
-    });
 
-    // 4.5. Viñeta de Óleo Chiaroscuro y Craquelado Sutil de Lienzo en modo Renacimiento Sfumato
-    if (isSfumato) {
-      const vig = t6Ctx.createRadialGradient(w / 2, h / 2, w * 0.28, w / 2, h / 2, w * 0.62);
-      vig.addColorStop(0, 'rgba(0, 0, 0, 0.0)');
-      vig.addColorStop(1, 'rgba(18, 10, 4, 0.58)');
-      t6Ctx.fillStyle = vig;
-      t6Ctx.fillRect(0, 0, w, h);
-
-      // Sutil malla de craquelado de barniz antiguo (Craquelure)
-      t6Ctx.strokeStyle = 'rgba(245, 215, 150, 0.055)';
-      t6Ctx.lineWidth = 1;
-      for (let cxLine = 120; cxLine < w; cxLine += 180) {
+        t6Ctx.fillStyle = isSfumato ? '#f5deb3' : '#ffffff';
         t6Ctx.beginPath();
-        t6Ctx.moveTo(cxLine, 60);
-        t6Ctx.lineTo(cxLine + 35, 190);
-        t6Ctx.lineTo(cxLine - 15, 340);
+        t6Ctx.arc(pr.x, pr.y, 15, 0, Math.PI * 2);
+        t6Ctx.fill();
+        t6Ctx.strokeStyle = isSfumato ? '#3b2313' : '#06080d';
+        t6Ctx.lineWidth = 2.5;
         t6Ctx.stroke();
+        t6Ctx.shadowBlur = 0;
+      });
+
+      // 4. Dibujar Partículas de Impacto
+      t6State.particles.forEach((pt) => {
+        t6Ctx.fillStyle = pt.color;
+        if (isSfumato) {
+          t6Ctx.beginPath();
+          t6Ctx.arc(pt.x, pt.y, 3.8, 0, Math.PI * 2);
+          t6Ctx.fill();
+        } else {
+          t6Ctx.fillRect(pt.x - 3.5, pt.y - 3.5, 7, 7);
+        }
+      });
+
+      // 4.5. Viñeta de Óleo Chiaroscuro y Craquelado Sutil de Lienzo en modo Renacimiento Sfumato
+      if (isSfumato) {
+        const vig = t6Ctx.createRadialGradient(w / 2, h / 2, w * 0.28, w / 2, h / 2, w * 0.62);
+        vig.addColorStop(0, 'rgba(0, 0, 0, 0.0)');
+        vig.addColorStop(1, 'rgba(18, 10, 4, 0.58)');
+        t6Ctx.fillStyle = vig;
+        t6Ctx.fillRect(0, 0, w, h);
+
+        // Sutil malla de craquelado de barniz antiguo (Craquelure)
+        t6Ctx.strokeStyle = 'rgba(245, 215, 150, 0.055)';
+        t6Ctx.lineWidth = 1;
+        for (let cxLine = 120; cxLine < w; cxLine += 180) {
+          t6Ctx.beginPath();
+          t6Ctx.moveTo(cxLine, 60);
+          t6Ctx.lineTo(cxLine + 35, 190);
+          t6Ctx.lineTo(cxLine - 15, 340);
+          t6Ctx.stroke();
+        }
       }
     }
 
@@ -3898,8 +4196,9 @@
     t6Ctx.fillRect(45, hudY + 27, gbW * (p1.gambeta / 1000), 9);
     t6Ctx.fillRect(w - 45 - gbW * (p2.gambeta / 1000), hudY + 27, gbW * (p2.gambeta / 1000), 9);
 
-    // Reloj Central de 99 Segundos
+    // Reloj Central de 99 Segundos (o ∞ en Modo Entrenamiento)
     const secsLeft = Math.ceil(t6State.timerFrames / 60);
+    const timerDisplay = t6SelAI.value === 'DUMMY' ? '∞' : String(secsLeft).padStart(2, '0');
     t6Ctx.fillStyle = '#0c1018';
     t6Ctx.fillRect(w / 2 - 42, hudY - 4, 84, 42);
     t6Ctx.strokeStyle = '#f5c451';
@@ -3907,7 +4206,7 @@
     t6Ctx.fillStyle = '#ffe07d';
     t6Ctx.font = 'bold 24px Consolas, monospace';
     t6Ctx.textAlign = 'center';
-    t6Ctx.fillText(String(secsLeft).padStart(2, '0'), w / 2, hudY + 25);
+    t6Ctx.fillText(timerDisplay, w / 2, hudY + 25);
 
     // Barras Inferiores de Hinchada (Super Meter Nivel 1 a Nivel 3)
     const supW = 340;
@@ -3961,30 +4260,36 @@
   const t7SelProp3D = document.getElementById('t7-sel-prop3d');
   const t7SelLighting = document.getElementById('t7-sel-lighting');
   const t7SelPose = document.getElementById('t7-sel-pose');
-  const t7Canvas = document.getElementById('t7-canvas');
+  let t7Canvas = document.getElementById('t7-canvas');
   const t7WebglHud = document.getElementById('t7-webgl-hud');
   const t7UseWebGL = Boolean(window.SAFWglViewer && window.SAFWglViewer.init(t7Canvas));
-  const t7Ctx = t7UseWebGL ? null : t7Canvas.getContext('2d');
+  let t7Ctx = t7UseWebGL ? null : t7Canvas.getContext('2d');
+  if (!t7UseWebGL && !t7Ctx && t7Canvas && t7Canvas.parentNode) {
+    const cleanCanvas = t7Canvas.cloneNode(false);
+    t7Canvas.parentNode.replaceChild(cleanCanvas, t7Canvas);
+    t7Canvas = cleanCanvas;
+    t7Ctx = t7Canvas.getContext('2d');
+  }
 
-  // Metadatos 3D específicos por Leyenda (17 SK_*.glb con sus 10 clips @ 60 FPS)
+  // Metadatos 3D específicos por Leyenda (17 SK_*.glb High-Poly LOD0 anatómicos con texturas Turnaround embebidas y 16 clips @ 60 FPS)
   const CHAR_3D_PROFILES = {
-    FENOMENO_BR:   { file: 'SK_FENOMENO_BR.glb', sizeBytes: 149124, verts: 432, tris: 216, heightM: 1.83, build: 1.04, hairStyle: 'SHAVED', hairDesc: 'Rapado Clásico 98 (0 Hair Chains)', bones: 186, number: '9' },
-    BRUXO_BR:      { file: 'SK_BRUXO_BR.glb', sizeBytes: 149112, verts: 432, tris: 216, heightM: 1.82, build: 0.98, hairStyle: 'CURLY_BAND', hairDesc: 'Vincha + Rulos Largos (14 Hair Chains)', bones: 200, number: '10' },
-    CANON_AR:      { file: 'SK_CANON_AR.glb', sizeBytes: 149100, verts: 432, tris: 216, heightM: 1.85, build: 1.08, hairStyle: 'MANE_GOLD', hairDesc: 'Melena Lacia con Vincha (12 Hair Chains)', bones: 198, number: '9' },
-    PULGA_AR:      { file: 'SK_PULGA_AR.glb', sizeBytes: 149124, verts: 432, tris: 216, heightM: 1.70, build: 0.90, hairStyle: 'SHORT', hairDesc: 'Corte Degradado Moderno (4 Hair Cards)', bones: 186, number: '10' },
-    PIBE_CO:       { file: 'SK_PIBE_CO.glb', sizeBytes: 155948, verts: 528, tris: 264, heightM: 1.76, build: 1.00, hairStyle: 'AFRO_GOLD', hairDesc: 'Melena Afro Dorada Icónica (24 Spring Bones)', bones: 210, number: '10' },
-    LOCO_CO:       { file: 'SK_LOCO_CO.glb', sizeBytes: 155948, verts: 528, tris: 264, heightM: 1.76, build: 1.02, hairStyle: 'CURLY_DARK', hairDesc: 'Rulos Negros Acrobáticos (18 Spring Bones)', bones: 204, number: '1' },
-    PISTOLERO_UY:  { file: 'SK_PISTOLERO_UY.glb', sizeBytes: 149124, verts: 432, tris: 216, heightM: 1.82, build: 1.06, hairStyle: 'SHORT', hairDesc: 'Corte Corto Charrúa (0 Hair Chains)', bones: 186, number: '9' },
-    MATADOR_UY:    { file: 'SK_MATADOR_UY.glb', sizeBytes: 149120, verts: 432, tris: 216, heightM: 1.80, build: 1.00, hairStyle: 'MANE_GOLD', hairDesc: 'Melena Rubia con Vincha (12 Hair Chains)', bones: 198, number: '10' },
-    BAMBAM_CL:     { file: 'SK_BAMBAM_CL.glb', sizeBytes: 149120, verts: 432, tris: 216, heightM: 1.78, build: 1.02, hairStyle: 'SHORT', hairDesc: 'Corte Clásico Noventero (4 Hair Cards)', bones: 186, number: '9' },
-    REY_CL:        { file: 'SK_REY_CL.glb', sizeBytes: 147404, verts: 408, tris: 204, heightM: 1.80, build: 1.04, hairStyle: 'MOHAWK', hairDesc: 'Cresta Real Punk (6 Rigid Hair Bones)', bones: 192, number: '8' },
-    BULLDOG_PY:    { file: 'SK_BULLDOG_PY.glb', sizeBytes: 149096, verts: 432, tris: 216, heightM: 1.92, build: 1.18, hairStyle: 'SHAVED', hairDesc: 'Complexión Pesada Guaraní (188 Huesos)', bones: 188, number: '1' },
-    MAESTRO_PE:    { file: 'SK_MAESTRO_PE.glb', sizeBytes: 149116, verts: 432, tris: 216, heightM: 1.77, build: 0.96, hairStyle: 'SHORT', hairDesc: 'Clásico Elegante (4 Hair Cards)', bones: 186, number: '10' },
-    TREN_EC:       { file: 'SK_TREN_EC.glb', sizeBytes: 149108, verts: 432, tris: 216, heightM: 1.79, build: 1.05, hairStyle: 'SHORT', hairDesc: 'Atlético Velocista (186 Huesos)', bones: 186, number: '11' },
-    HURACAN_VE:    { file: 'SK_HURACAN_VE.glb', sizeBytes: 149120, verts: 432, tris: 216, heightM: 1.80, build: 1.00, hairStyle: 'SHORT', hairDesc: 'Corte Francotirador (4 Hair Cards)', bones: 186, number: '18' },
-    DIABLO_BO:     { file: 'SK_DIABLO_BO.glb', sizeBytes: 149124, verts: 432, tris: 216, heightM: 1.76, build: 0.98, hairStyle: 'CURLY_DARK', hairDesc: 'Melena Andina (10 Hair Chains)', bones: 196, number: '10' },
-    GENERAL_FR:    { file: 'SK_GENERAL_FR.glb', sizeBytes: 149108, verts: 432, tris: 216, heightM: 1.85, build: 1.03, hairStyle: 'SHAVED', hairDesc: 'Clásico Francés 98 (186 Huesos)', bones: 186, number: '10' },
-    VAR_ZERO_BOSS: { file: 'SK_SUPREME_JUDGE_BOSS.glb', sizeBytes: 162784, verts: 432, tris: 216, heightM: 2.15, build: 1.24, hairStyle: 'HOLO_CROWN', hairDesc: 'Halo Astrolabio Doble V.A.R. (214 Huesos)', bones: 214, number: '00' }
+    FENOMENO_BR:   { file: 'SK_FENOMENO_BR.glb', sizeBytes: 907204, verts: 8905, tris: 15300, heightM: 1.83, build: 1.04, hairStyle: 'SHAVED', hairDesc: 'Rapado Clásico 98 + Escultura LOD0 Texturizada (38 Joints)', bones: 186, number: '9' },
+    BRUXO_BR:      { file: 'SK_BRUXO_BR.glb', sizeBytes: 940672, verts: 9336, tris: 15996, heightM: 1.82, build: 0.98, hairStyle: 'CURLY_BAND', hairDesc: 'Vincha + Rulos Largos + Escultura LOD0 Texturizada (14 Hair Chains)', bones: 200, number: '10' },
+    CANON_AR:      { file: 'SK_CANON_AR.glb', sizeBytes: 941304, verts: 9344, tris: 16012, heightM: 1.85, build: 1.08, hairStyle: 'MANE_GOLD', hairDesc: 'Melena Lacia con Vincha + Escultura LOD0 Texturizada (12 Hair Chains)', bones: 198, number: '9' },
+    PULGA_AR:      { file: 'SK_PULGA_AR.glb', sizeBytes: 909128, verts: 8931, tris: 15328, heightM: 1.70, build: 0.90, hairStyle: 'SHORT', hairDesc: 'Corte Degradado + Barba + Escultura LOD0 Texturizada (4 Hair Cards)', bones: 186, number: '10' },
+    PIBE_CO:       { file: 'SK_PIBE_CO.glb', sizeBytes: 971056, verts: 9732, tris: 16572, heightM: 1.76, build: 1.00, hairStyle: 'AFRO_GOLD', hairDesc: 'Melena Afro Dorada Esculpida + Bigote (24 Spring Bones)', bones: 210, number: '10' },
+    LOCO_CO:       { file: 'SK_LOCO_CO.glb', sizeBytes: 946464, verts: 9417, tris: 16044, heightM: 1.76, build: 1.02, hairStyle: 'CURLY_DARK', hairDesc: 'Rulos Negros + Guantes Arquero Esculpidos (18 Spring Bones)', bones: 204, number: '1' },
+    PISTOLERO_UY:  { file: 'SK_PISTOLERO_UY.glb', sizeBytes: 909792, verts: 8939, tris: 15344, heightM: 1.82, build: 1.06, hairStyle: 'SHORT', hairDesc: 'Corte Corto Charrúa + Vendaje + Escultura LOD0 Texturizada', bones: 186, number: '9' },
+    MATADOR_UY:    { file: 'SK_MATADOR_UY.glb', sizeBytes: 940696, verts: 9336, tris: 15996, heightM: 1.80, build: 1.00, hairStyle: 'MANE_GOLD', hairDesc: 'Melena con Vincha + Escultura LOD0 Texturizada', bones: 198, number: '10' },
+    BAMBAM_CL:     { file: 'SK_BAMBAM_CL.glb', sizeBytes: 909772, verts: 8939, tris: 15344, heightM: 1.78, build: 1.02, hairStyle: 'SHORT', hairDesc: 'Corte Clásico Noventero + Escultura LOD0 Texturizada', bones: 186, number: '9' },
+    REY_CL:        { file: 'SK_REY_CL.glb', sizeBytes: 905616, verts: 8885, tris: 15268, heightM: 1.80, build: 1.04, hairStyle: 'MOHAWK', hairDesc: 'Cresta Real Punk + Tatuajes Esculpida (6 Rigid Hair Bones)', bones: 192, number: '8' },
+    BULLDOG_PY:    { file: 'SK_BULLDOG_PY.glb', sizeBytes: 870296, verts: 8435, tris: 14480, heightM: 1.92, build: 1.18, hairStyle: 'SHAVED', hairDesc: 'Complexión Pesada Guaraní + Guantes Esculpidos (188 Huesos)', bones: 188, number: '1' },
+    MAESTRO_PE:    { file: 'SK_MAESTRO_PE.glb', sizeBytes: 909132, verts: 8931, tris: 15328, heightM: 1.77, build: 0.96, hairStyle: 'SHORT', hairDesc: 'Franja Carmesí + Bigote Esculpido (4 Hair Cards)', bones: 186, number: '10' },
+    TREN_EC:       { file: 'SK_TREN_EC.glb', sizeBytes: 921932, verts: 9097, tris: 15584, heightM: 1.79, build: 1.05, hairStyle: 'SHORT', hairDesc: 'Velocista + Brazalete Capitán Esculpido (186 Huesos)', bones: 186, number: '16' },
+    HURACAN_VE:    { file: 'SK_HURACAN_VE.glb', sizeBytes: 909140, verts: 8931, tris: 15328, heightM: 1.80, build: 1.00, hairStyle: 'SHORT', hairDesc: 'Vinotinto #18 + Botines Oro Esculpido (4 Hair Cards)', bones: 186, number: '18' },
+    DIABLO_BO:     { file: 'SK_DIABLO_BO.glb', sizeBytes: 934100, verts: 9249, tris: 15884, heightM: 1.76, build: 0.98, hairStyle: 'CURLY_DARK', hairDesc: 'Melena Andina + Bigote Tricolor Esculpida (10 Hair Chains)', bones: 196, number: '10' },
+    GENERAL_FR:    { file: 'SK_GENERAL_FR.glb', sizeBytes: 909124, verts: 8931, tris: 15328, heightM: 1.85, build: 1.03, hairStyle: 'SHAVED', hairDesc: 'Clásico Francés 98 Esculpido (186 Huesos)', bones: 186, number: '10' },
+    VAR_ZERO_BOSS: { file: 'SK_SUPREME_JUDGE_BOSS.glb', sizeBytes: 1025388, verts: 10236, tris: 17628, heightM: 2.15, build: 1.24, hairStyle: 'HOLO_CROWN', hairDesc: 'Halo Astrolabio Doble Simétrico & Visor V.A.R. Esculpido (214 Huesos)', bones: 214, number: '00' }
   };
 
   // Catálogo Exacto de los 10 Estadios CONMEBOL 3D (`Stages3D_TechnicalManifest.json`)
@@ -4072,7 +4377,13 @@
     Anim_5LP_Jab4f:       { dur: 0.24, kf: 14, interp: 'STEP (Cuantizado)', desc: 'Toque corto / Jab rápido de 4 frames de startup con rotación de Twist Bones en antebrazo.' },
     Anim_236SK_Shot:      { dur: 0.83, kf: 50, interp: 'STEP (Cuantizado)', desc: 'Disparo Bati-Cañonazo con Smear Frame Control Rig (1.25x) en tibia mientras la Hurtbox AABB es exacta.' },
     Anim_623HP_BicycleKick:{ dur: 0.68, kf: 41, interp: 'STEP (Cuantizado)', desc: 'Chilena anti-aérea rotando sobre pelvis_visual_offset con root anclado al plano del suelo.' },
-    Anim_214SK_Scorpion:  { dur: 0.76, kf: 46, interp: 'STEP (Cuantizado)', desc: 'El Escorpión acrobático con Hurtbox superior azul (High-Crush Invulnerable) y talones sobre la cabeza.' }
+    Anim_214SK_Scorpion:  { dur: 0.76, kf: 46, interp: 'STEP (Cuantizado)', desc: 'El Escorpión acrobático con Hurtbox superior azul (High-Crush Invulnerable) y talones sobre la cabeza.' },
+    Mocap_Walk_Forward:   { dur: 1.0,  kf: 61, interp: 'LINEAR (60 FPS Mocap)', desc: 'Zancada atlética de avance con rotación de hombros y cadera a 60 FPS uniformes.' },
+    Mocap_Backdash_Dodge: { dur: 0.45, kf: 28, interp: 'LINEAR (60 FPS Mocap)', desc: 'Salto evasivo hacia atrás en 28 cuadros con guardia recogida.' },
+    Mocap_Block_Guard:    { dur: 0.8,  kf: 49, interp: 'LINEAR (60 FPS Mocap)', desc: 'Guardia cerrada cruzando antebrazos con absorción de rodillas frente a presión FGC.' },
+    Mocap_Hitstun_Knockback:{ dur: 0.5, kf: 31, interp: 'LINEAR (60 FPS Mocap)', desc: 'Retroceso de impacto con vibración en pelvis_visual_offset y látigo cervical.' },
+    Mocap_Super_Potrero:  { dur: 1.4,  kf: 85, interp: 'LINEAR (60 FPS Mocap)', desc: 'Super Hinchada Nivel 3: carga en suelo, salto giratorio 360° y volea de smear 1.30x.' },
+    Mocap_KO_Knockdown:   { dur: 1.2,  kf: 73, interp: 'LINEAR (60 FPS Mocap)', desc: 'Caída dramática en espiral al césped con rebote de impacto tras K.O.' }
   };
 
   let t7State = {
@@ -4090,6 +4401,8 @@
     pitch: 0.18,
     zoom: 1.05,
     autoRotate: true,
+    showTurnaround: true,
+    lastSyncedStatsKey: '',
     isDragging: false,
     lastMouseX: 0,
     lastMouseY: 0,
@@ -4133,7 +4446,90 @@
     }
   })();
 
+  function updateTab7TurnaroundUI(ch) {
+    const splitEl = document.getElementById('t7-viewport-split');
+    const cardEl = document.getElementById('t7-turnaround-card');
+    const toggleBtn = document.getElementById('t7-btn-toggle-turnaround');
+    const imgEl = document.getElementById('t7-turnaround-img');
+    const zoomEl = document.getElementById('t7-turnaround-zoom');
+    const badgeEl = document.getElementById('t7-turnaround-badge');
+    const captionEl = document.getElementById('t7-turnaround-caption');
+
+    const isFighter = t7State.category === 'FIGHTERS' && Boolean(ch);
+    const showCard = isFighter && t7State.showTurnaround;
+
+    if (cardEl) cardEl.style.display = showCard ? 'flex' : 'none';
+    if (splitEl) splitEl.classList.toggle('with-turnaround', showCard);
+
+    if (toggleBtn) {
+      toggleBtn.disabled = !isFighter;
+      if (!isFighter) {
+        toggleBtn.textContent = '📐 Turnaround 2D (Solo Luchadores)';
+        toggleBtn.classList.remove('btn-cyan', 'btn-gold');
+      } else {
+        toggleBtn.textContent = t7State.showTurnaround
+          ? '📐 Referencia Turnaround 2D: ON'
+          : '📐 Referencia Turnaround 2D: OFF';
+        toggleBtn.classList.toggle('btn-cyan', t7State.showTurnaround);
+      }
+    }
+
+    if (isFighter) {
+      const pngName = `Turnaround_${ch.Name}.png`;
+      const pngPath = `../Assets/Design3D_Turnarounds/${pngName}`;
+      if (imgEl && imgEl.getAttribute('src') !== pngPath) {
+        imgEl.setAttribute('src', pngPath);
+        imgEl.setAttribute('alt', `Referencia Turnaround 2D — ${ch.DisplayName} (${ch.Name})`);
+      }
+      if (zoomEl) zoomEl.setAttribute('href', pngPath);
+      if (badgeEl) badgeEl.textContent = pngName;
+      if (captionEl) captionEl.textContent = `${ch.DisplayName} (${ch.Name}) • A-Pose / Perfil / Espalda / 3/4`;
+    }
+  }
+
+  function syncTab7LiveGlbStats(stats) {
+    if (!stats || !stats.loaded) return;
+    const statsKey = `${stats.file}|${stats.byteLength}|${stats.verts}|${stats.tris}|${stats.joints}|${stats.clips}|${stats.materials}|${t7State.category}|${t7State.pose}`;
+    if (t7State.lastSyncedStatsKey === statsKey) return;
+    t7State.lastSyncedStatsKey = statsKey;
+
+    const sizeEl = document.getElementById('t7-insp-size');
+    const geoEl = document.getElementById('t7-insp-geo');
+    const boundsEl = document.getElementById('t7-insp-bounds');
+    const clipsEl = document.getElementById('t7-insp-clips');
+    const bonesEl = document.getElementById('t7-stat-bones');
+
+    if (sizeEl && stats.byteLength > 0) {
+      sizeEl.textContent = `${(stats.byteLength / 1024).toFixed(1)} KB`;
+    }
+
+    if (t7State.category === 'FIGHTERS') {
+      const ch = ROSTER_DATA[t7State.charIdx] || ROSTER_DATA[0];
+      const prof = CHAR_3D_PROFILES[ch.Name] || CHAR_3D_PROFILES.FENOMENO_BR;
+      const clipMeta = CLIP_3D_METADATA[t7State.pose] || CLIP_3D_METADATA.Idle_Breath;
+      const jointCount = stats.joints || 38;
+      const matCount = stats.materials || 3;
+      const clipCount = stats.clips || 16;
+      const kfCount = stats.totalKf > 1 ? stats.totalKf : clipMeta.kf;
+      const heightM = stats.heightM > 0.2 ? stats.heightM : prof.heightM;
+
+      if (bonesEl) bonesEl.textContent = `${jointCount} glTF Joints (${prof.bones} Total UE5 Bones)`;
+      if (geoEl) geoEl.textContent = `${stats.verts.toLocaleString()} Verts / ${stats.tris.toLocaleString()} Tris (${matCount} Mats glTF • LOD0 Target: 65k)`;
+      if (boundsEl) boundsEl.textContent = `Altura: ${heightM.toFixed(2)}m • ${jointCount} Joints • TEXCOORD_0 + PBR`;
+      if (clipsEl) clipsEl.textContent = `${clipCount} Clips Mocap/FGC @ 60 FPS | Activo: ${t7State.pose} (${kfCount} KF)`;
+    } else if (t7State.category === 'STAGES') {
+      const st = STAGES_3D_CATALOG[t7State.stageIdx] || STAGES_3D_CATALOG[0];
+      const matCount = stats.materials || st.MaterialCount;
+      if (geoEl) geoEl.textContent = `${stats.verts.toLocaleString()} Verts / ${stats.tris.toLocaleString()} Tris (${matCount} Primitivas glTF)`;
+    } else {
+      const matCount = stats.materials || 1;
+      if (bonesEl) bonesEl.textContent = `${stats.verts.toLocaleString()} Vértices / ${stats.tris.toLocaleString()} Triángulos`;
+      if (geoEl) geoEl.textContent = `${stats.verts.toLocaleString()} Verts / ${stats.tris.toLocaleString()} Tris (${matCount} Mat glTF)`;
+    }
+  }
+
   function updateTab7InspectorUI() {
+    t7State.lastSyncedStatsKey = '';
     const wrapChar = document.getElementById('t7-wrap-char');
     const wrapStage = document.getElementById('t7-wrap-stage');
     const wrapProp = document.getElementById('t7-wrap-prop');
@@ -4157,15 +4553,16 @@
       document.getElementById('t7-manifest-source').textContent = 'Animations3D_TechnicalManifest.json • Validated';
       document.getElementById('t7-insp-size').textContent = `${(prof.sizeBytes / 1024).toFixed(1)} KB`;
       document.getElementById('t7-insp-file').textContent = `Fighters/${prof.file}`;
-      document.getElementById('t7-insp-geo').textContent = `${prof.verts} Verts / ${prof.tris} Tris (LOD0 Target: 65,000 Tris)`;
-      document.getElementById('t7-insp-bounds').textContent = `Altura: ${prof.heightM.toFixed(2)}m • 38 Joints • pelvis_visual_offset`;
-      document.getElementById('t7-insp-clips').textContent = `10 Clips @ 60 FPS | Activo: ${t7State.pose} (${clipMeta.kf} KF)`;
+      document.getElementById('t7-insp-geo').textContent = `${prof.verts.toLocaleString()} Verts / ${prof.tris.toLocaleString()} Tris (HP Bake: 82k+ Tris • 4 Morph Targets)`;
+      document.getElementById('t7-insp-bounds').textContent = `Altura: ${prof.heightM.toFixed(2)}m • 38 Joints • Bakes Normal/AO`;
+      document.getElementById('t7-insp-clips').textContent = `16 Clips Mocap/FGC @ 60 FPS | Activo: ${t7State.pose} (${clipMeta.kf} KF)`;
       document.getElementById('t7-insp-flags').textContent = 'GPUSkinCache: ON | Chaos Cloth 5.4: ON | Nanite: OFF (Skinned)';
       document.getElementById('t7-insp-landmarks').innerHTML =
         `<strong>Clip [${t7State.pose}] (${clipMeta.interp}):</strong> ${clipMeta.desc}`;
 
       if (dlBtn) dlBtn.href = `../Assets/Models3D/Fighters/${prof.file}`;
       if (dlLbl) dlLbl.textContent = `📥 Descargar ${prof.file}`;
+      updateTab7TurnaroundUI(ch);
     } else if (t7State.category === 'STAGES') {
       if (wrapChar) wrapChar.style.display = 'none';
       if (wrapStage) wrapStage.style.display = 'block';
@@ -4189,6 +4586,7 @@
 
       if (dlBtn) dlBtn.href = `../Assets/Models3D/Stages/${st.File}`;
       if (dlLbl) dlLbl.textContent = `📥 Descargar ${st.File}`;
+      updateTab7TurnaroundUI(null);
     } else {
       if (wrapChar) wrapChar.style.display = 'none';
       if (wrapStage) wrapStage.style.display = 'none';
@@ -4216,6 +4614,7 @@
 
       if (dlBtn) dlBtn.href = `../Assets/Models3D/${pFile}`;
       if (dlLbl) dlLbl.textContent = `📥 Descargar ${pBase}`;
+      updateTab7TurnaroundUI(null);
     }
   }
 
@@ -4275,7 +4674,11 @@
   t7SelPose.addEventListener('change', (e) => {
     t7State.pose = e.target.value;
     t7State.animClock = 0;
+    const clipMeta = CLIP_3D_METADATA[t7State.pose] || CLIP_3D_METADATA.Idle_Breath;
+    const kfLbl = document.getElementById('t7-clip-kf-lbl');
+    if (kfLbl) kfLbl.textContent = `KF: 001 / ${clipMeta.kf}`;
     updateTab7InspectorUI();
+    renderTab7Studio3D();
     playSynthSound('hit');
   });
 
@@ -4328,6 +4731,16 @@
     }
     playSynthSound('stinger');
   });
+
+  const t7BtnToggleTurnaround = document.getElementById('t7-btn-toggle-turnaround');
+  if (t7BtnToggleTurnaround) {
+    t7BtnToggleTurnaround.addEventListener('click', () => {
+      if (t7State.category !== 'FIGHTERS') return;
+      t7State.showTurnaround = !t7State.showTurnaround;
+      updateTab7InspectorUI();
+      playSynthSound('step');
+    });
+  }
 
   // Interacción Orbital 360° con Ratón y Rueda de Zoom en el Canvas 3D
   t7Canvas.addEventListener('mousedown', (e) => {
@@ -4633,6 +5046,7 @@
       const glbUrl = getActiveTab7GlbUrl();
       window.SAFWglViewer.render(glbUrl, t7State);
       const stats = window.SAFWglViewer.getStats();
+      syncTab7LiveGlbStats(stats);
 
       const kfLbl = document.getElementById('t7-clip-kf-lbl');
       if (t7State.category === 'FIGHTERS') {
@@ -4817,6 +5231,51 @@
       handL = { x: -0.44 * bScale, y: (1.92 + cheer) * hScale + bossHover, z: 0.12 };
       handR = { x: 0.44 * bScale, y: (1.92 + cheer) * hScale + bossHover, z: 0.12 };
       headPos.y += cheer * 0.5;
+    } else if (t7State.pose === 'Mocap_Walk_Forward') {
+      const stride = Math.sin(animT * 0.14);
+      kneeL.z = stride * 0.25;
+      footL.z = stride * 0.42;
+      footL.y = Math.max(0.05, 0.12 + stride * 0.09);
+      kneeR.z = -stride * 0.25;
+      footR.z = -stride * 0.42;
+      footR.y = Math.max(0.05, 0.12 - stride * 0.09);
+      handL.z = -stride * 0.28;
+      handR.z = stride * 0.28;
+    } else if (t7State.pose === 'Mocap_Backdash_Dodge') {
+      const hop = Math.abs(Math.sin(animT * 0.16));
+      pelvisOffset.z = -0.28;
+      pelvisOffset.y += hop * 0.16;
+      headPos.y += hop * 0.12;
+      headPos.z = -0.22;
+      kneeL.z = 0.24;
+      kneeR.z = 0.18;
+    } else if (t7State.pose === 'Mocap_Block_Guard') {
+      pelvisOffset.y = 0.78 * hScale;
+      headPos.y = 1.48 * hScale;
+      headPos.z = 0.08;
+      handL = { x: -0.14 * bScale, y: 1.42 * hScale, z: 0.34 };
+      handR = { x: 0.14 * bScale, y: 1.46 * hScale, z: 0.36 };
+      kneeL.z = 0.22;
+      kneeR.z = -0.14;
+    } else if (t7State.pose === 'Mocap_Hitstun_Knockback') {
+      const whip = Math.sin(animT * 0.2);
+      pelvisOffset.z = -0.24;
+      headPos.z = -0.45 - whip * 0.08;
+      headPos.y = 1.56 * hScale;
+      handL = { x: -0.52 * bScale, y: 1.45 * hScale, z: -0.12 };
+      handR = { x: 0.52 * bScale, y: 1.45 * hScale, z: -0.12 };
+    } else if (t7State.pose === 'Mocap_Super_Potrero') {
+      const air = 0.45 + Math.abs(Math.sin(animT * 0.12)) * 0.38;
+      pelvisOffset = { x: 0, y: (1.05 + air) * hScale, z: 0.12 };
+      headPos = { x: 0, y: (1.68 + air) * hScale, z: -0.18 };
+      kneeR = { x: 0.16, y: (1.35 + air) * hScale, z: 0.48 };
+      footR = { x: 0.12, y: (1.58 + air) * hScale, z: 0.92 * smearMult };
+    } else if (t7State.pose === 'Mocap_KO_Knockdown') {
+      pelvisOffset = { x: 0, y: 0.28 * hScale, z: -0.18 };
+      headPos = { x: 0, y: 0.22 * hScale, z: -0.92 };
+      kneeL = { x: -0.18, y: 0.24, z: 0.32 };
+      footL = { x: -0.20, y: 0.10, z: 0.72 };
+      footR = { x: 0.20, y: 0.10, z: 0.68 };
     }
 
     const joints = {
@@ -5125,13 +5584,27 @@
         t6State.tourneyMode = false;
       }
 
-      if (isBossChallenge || parseInt(t6SelP2.value, 10) === ROSTER_DATA.length - 1) {
+      if (params.story === '1') {
+        t6State.storyMode = true;
+        t6State.storyChapter = Math.max(1, Math.min(6, parseInt(params.chapter, 10) || 1));
+      } else {
+        t6State.storyMode = false;
+      }
+
+      if (params.mode === 'DUMMY' || params.mode === 'TRAINING') {
+        t6SelAI.value = 'DUMMY';
+      } else if (params.mode === 'LOCAL_2P') {
+        t6SelAI.value = 'LOCAL_2P';
+      } else if (isBossChallenge || parseInt(t6SelP2.value, 10) === ROSTER_DATA.length - 1) {
         t6SelAI.value = 'BOSS_VAR';
         t6SelP2.value = ROSTER_DATA.length - 1;
       } else {
         t6SelAI.value = 'CPU_PRO';
       }
       resetTab6Match();
+    } else if (tabPart === 'tab7') {
+      updateTab7InspectorUI();
+      renderTab7Studio3D();
     }
   }
 

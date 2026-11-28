@@ -16,10 +16,10 @@ Este documento recoge los últimos pasos de estudio necesarios para pasar del pr
 - [ ] Reemplazar los stems temporales de `Audio/GeneratedStems/` (19 archivos 48 kHz 16-bit) por grabaciones de batucada, bombo murga, candombe, cueca, polka, cajón, sanjuanito y joropo, y compilar los `.bnk` hacia `Content/WwiseAudio/`.
 
 ## 3. Arte 3D High-Poly, Escultura & Animaciones Mocap (Blender 5.2 → UE 5.8.4)
-- [ ] Abrir `Assets/BlenderProduction/Fighters/Master_17Fighters_Showcase.blend` y `Assets/BlenderProduction/Stages/Master_Maracana_And_Centenario.blend` en **Blender 5.2.1 LTS**.
-- [ ] Esculpir anatomía *high-poly* / rostros detallados estilo *Renacimiento Sfumato* y hacer *bake* de mapas Normal/AO sobre los 17 personajes preservando los 38 huesos y `ChaosCloth_Jersey_Weight`.
-- [ ] Re-ejecutar `Scripts/blender_fighters_ue5_pipeline.py` y `Scripts/ue5_auto_import_pipeline.py` (o importar directamente desde `Assets/BlenderProduction/Fighters/*.fbx`).
-- [ ] Pintar/ajustar en **Unreal Editor** el vértice físico *Chaos Cloth* sobre los `USkeletalMesh` para simulación 60 Hz de camisetas y melenas.
+- [x] Pipeline automatizado en **Blender 5.2.1 LTS** (`Scripts/blender_highpoly_sculpt_pipeline.py`) con esculpido anatómico *high-poly* (~78k–101k tris fuente), bake Cycles de mapas Tangent Normal & AO (`Assets/TexturesPBR/HighPolyBakes/`), malla LOD0 suavizada en `.glb` y 4 *Morph Targets* (`Shape Keys`).
+- [x] Suite Mocap ampliada a **16 animaciones @ 60 FPS uniformes** por personaje (272 clips totales en `SK_*.glb` y `SK_*.fbx`: 5 Stepped FGC + 11 Full-Body Mocap).
+- [x] Re-ejecutar `Scripts/blender_fighters_ue5_pipeline.py`, actualizar `Assets/BlenderProduction/Fighters/*.fbx` y `Master_17Fighters_Showcase.blend` con 40 huesos y `ChaosCloth_Jersey_Weight`.
+- [ ] Afinar en **Unreal Editor** (opcional artístico manual) pesos físicos finales *Chaos Cloth* sobre los `USkeletalMesh` importados para simulación 60 Hz en consolas.
 
 ## 4. Arte 2D *Renacimiento Sfumato* (7 Escenarios Pendientes)
 - [x] Completados (9 lienzos *Sfumato*): Trofeo Copa Eterna, Key Art, VS Screen, Boss `V.A.R.-ZERO`, Roster Wave 1, Roster Wave 2, Bolivia 3600m, Centenario Uruguay, Volcán de Quito.
