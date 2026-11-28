@@ -1594,7 +1594,7 @@
       case 'DASH_B':
         return { clip: pickClip(['Mocap_Backdash_Dodge', 'Idle_Breath']), frame: actor.stateFrame * 1.3, loop: false };
       case 'CROUCH':
-        return { clip: pickClip(['Mocap_Block_Guard', 'Idle_Breath']), frame: 10, loop: false };
+        return { clip: pickClip(['Mocap_Crouch_Guard', 'Mocap_Block_Guard', 'Idle_Breath']), frame: actor.stateFrame || 12, loop: false };
       case 'JUMP':
         return { clip: pickClip(['Special_Chilena', 'Anim_623HP_BicycleKick', 'Idle_Breath']), frame: Math.min(28, actor.stateFrame * 1.2), loop: false };
       case 'BLOCKSTUN':
@@ -1829,8 +1829,7 @@
         const animPick = resolveFighterClipAndClock(mod, actor, spec.matchEnded, isWinner);
         const poseEval = evaluateAnimation(mod, animPick.clip, animPick.frame, animPick.loop);
         const ry = actor.facingRight ? (Math.PI * 0.5) : (-Math.PI * 0.5);
-        const crouchSy = actor.state === 'CROUCH' ? 0.78 : 1.0;
-        const modMat = mat4FromYRotScaleTrans(wx, wy, wz, ry, 1.0, crouchSy, 1.0);
+        const modMat = mat4FromYRotScaleTrans(wx, wy, wz, ry, 1.0, 1.0, 1.0);
         const hitEm = actor.state === 'HITSTUN' ? [0.45, 0.08, 0.06] : (actor.state === 'PARRY' ? [0.05, 0.38, 0.45] : null);
         drawModel(mod, modMat, viewProj, view, proj, eye, {
           mode: 'SHADED',

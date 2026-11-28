@@ -941,9 +941,11 @@
         document.getElementById(`${prefix}-name`).textContent = charObj.DisplayName;
 
         const portEl = document.getElementById(`${prefix}-portrait`);
-        portEl.style.backgroundImage = `url('${charObj.ArtSheet}')`;
-        portEl.style.backgroundSize = charObj.BgSize;
-        portEl.style.backgroundPosition = charObj.BgPos;
+        const portraitUrl = `../Assets/Sprites2D/Fighters/Sprite_${charObj.Name}_Portrait.png?v=9`;
+        portEl.style.backgroundImage = `url('${portraitUrl}')`;
+        portEl.style.backgroundSize = 'auto 104%';
+        portEl.style.backgroundPosition = 'center 12%';
+        portEl.style.backgroundColor = '#282b31';
 
         const hpPct = Math.min(100, Math.round((charObj.MaxHealth / 14000) * 100));
         const spdPct = Math.min(100, Math.round(((26 - charObj.ForwardDashFrames) / 14) * 100));
@@ -1011,8 +1013,9 @@
         tile.className = 'char-tile' + (ch.idx === 16 ? ' boss-tile' : '');
         tile.dataset.idx = ch.idx;
 
+        const tilePortraitUrl = `../Assets/Sprites2D/Fighters/Sprite_${ch.Name}_Portrait.png?v=9`;
         tile.innerHTML = `
-          <div class="tile-avatar" style="background-image:url('${ch.ArtSheet}'); background-size:${ch.BgSize}; background-position:${ch.BgPos};"></div>
+          <div class="tile-avatar" style="background-image:url('${tilePortraitUrl}'); background-size:cover; background-position:center 18%; background-color:#282b31;"></div>
           <div class="tile-info">
             <div class="tile-name">${ch.DisplayName}</div>
             <div class="tile-sub">${ch.Country} • ${ch.Archetype}</div>

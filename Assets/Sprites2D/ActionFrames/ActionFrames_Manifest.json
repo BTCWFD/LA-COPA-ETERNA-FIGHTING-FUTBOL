@@ -1,0 +1,1348 @@
+{
+  "version": "1.0.0",
+  "fighters": {
+    "FENOMENO_BR": {
+      "idleHeightPx": 176,
+      "sheetA": true,
+      "sheetB": true,
+      "frames": {
+        "IDLE_GUARD": {
+          "file": "FENOMENO_BR/IDLE_GUARD.png",
+          "w": 103,
+          "h": 176,
+          "relHeight": 1.0
+        },
+        "RUN_1": {
+          "file": "FENOMENO_BR/RUN_1.png",
+          "w": 141,
+          "h": 170,
+          "relHeight": 0.9659
+        },
+        "RUN_2": {
+          "file": "FENOMENO_BR/RUN_2.png",
+          "w": 148,
+          "h": 175,
+          "relHeight": 0.9943
+        },
+        "CROUCH": {
+          "file": "FENOMENO_BR/CROUCH.png",
+          "w": 93,
+          "h": 157,
+          "relHeight": 0.892
+        },
+        "PUNCH_LP": {
+          "file": "FENOMENO_BR/PUNCH_LP.png",
+          "w": 162,
+          "h": 179,
+          "relHeight": 1.017
+        },
+        "KICK_HP": {
+          "file": "FENOMENO_BR/KICK_HP.png",
+          "w": 157,
+          "h": 179,
+          "relHeight": 1.017
+        },
+        "JUMP": {
+          "file": "FENOMENO_BR/JUMP.png",
+          "w": 148,
+          "h": 155,
+          "relHeight": 0.8807
+        },
+        "BLOCK_GUARD": {
+          "file": "FENOMENO_BR/BLOCK_GUARD.png",
+          "w": 116,
+          "h": 166,
+          "relHeight": 0.9432
+        },
+        "HITSTUN": {
+          "file": "FENOMENO_BR/HITSTUN.png",
+          "w": 132,
+          "h": 166,
+          "relHeight": 0.9432
+        },
+        "SHOT_SK": {
+          "file": "FENOMENO_BR/SHOT_SK.png",
+          "w": 171,
+          "h": 146,
+          "relHeight": 0.8295
+        },
+        "CHILENA_SP": {
+          "file": "FENOMENO_BR/CHILENA_SP.png",
+          "w": 153,
+          "h": 179,
+          "relHeight": 1.017
+        },
+        "KO": {
+          "file": "FENOMENO_BR/KO.png",
+          "w": 204,
+          "h": 49,
+          "relHeight": 0.2784
+        }
+      }
+    },
+    "BRUXO_BR": {
+      "idleHeightPx": 179,
+      "sheetA": true,
+      "sheetB": true,
+      "frames": {
+        "IDLE_GUARD": {
+          "file": "BRUXO_BR/IDLE_GUARD.png",
+          "w": 102,
+          "h": 179,
+          "relHeight": 1.0
+        },
+        "RUN_1": {
+          "file": "BRUXO_BR/RUN_1.png",
+          "w": 139,
+          "h": 185,
+          "relHeight": 1.0335
+        },
+        "RUN_2": {
+          "file": "BRUXO_BR/RUN_2.png",
+          "w": 140,
+          "h": 179,
+          "relHeight": 1.0
+        },
+        "CROUCH": {
+          "file": "BRUXO_BR/CROUCH.png",
+          "w": 106,
+          "h": 154,
+          "relHeight": 0.8603
+        },
+        "PUNCH_LP": {
+          "file": "BRUXO_BR/PUNCH_LP.png",
+          "w": 156,
+          "h": 181,
+          "relHeight": 1.0112
+        },
+        "KICK_HP": {
+          "file": "BRUXO_BR/KICK_HP.png",
+          "w": 157,
+          "h": 174,
+          "relHeight": 0.9721
+        },
+        "JUMP": {
+          "file": "BRUXO_BR/JUMP.png",
+          "w": 72,
+          "h": 122,
+          "relHeight": 0.6816
+        },
+        "BLOCK_GUARD": {
+          "file": "BRUXO_BR/BLOCK_GUARD.png",
+          "w": 77,
+          "h": 127,
+          "relHeight": 0.7095
+        },
+        "HITSTUN": {
+          "file": "BRUXO_BR/HITSTUN.png",
+          "w": 88,
+          "h": 138,
+          "relHeight": 0.7709
+        },
+        "SHOT_SK": {
+          "file": "BRUXO_BR/SHOT_SK.png",
+          "w": 122,
+          "h": 114,
+          "relHeight": 0.6369
+        },
+        "CHILENA_SP": {
+          "file": "BRUXO_BR/CHILENA_SP.png",
+          "w": 163,
+          "h": 154,
+          "relHeight": 0.8603
+        },
+        "KO": {
+          "file": "BRUXO_BR/KO.png",
+          "w": 125,
+          "h": 40,
+          "relHeight": 0.2235
+        }
+      }
+    },
+    "CANON_AR": {
+      "idleHeightPx": 184,
+      "sheetA": true,
+      "sheetB": true,
+      "frames": {
+        "IDLE_GUARD": {
+          "file": "CANON_AR/IDLE_GUARD.png",
+          "w": 106,
+          "h": 184,
+          "relHeight": 1.0
+        },
+        "RUN_1": {
+          "file": "CANON_AR/RUN_1.png",
+          "w": 142,
+          "h": 178,
+          "relHeight": 0.9674
+        },
+        "RUN_2": {
+          "file": "CANON_AR/RUN_2.png",
+          "w": 148,
+          "h": 179,
+          "relHeight": 0.9728
+        },
+        "CROUCH": {
+          "file": "CANON_AR/CROUCH.png",
+          "w": 94,
+          "h": 167,
+          "relHeight": 0.9076
+        },
+        "PUNCH_LP": {
+          "file": "CANON_AR/PUNCH_LP.png",
+          "w": 165,
+          "h": 185,
+          "relHeight": 1.0054
+        },
+        "KICK_HP": {
+          "file": "CANON_AR/KICK_HP.png",
+          "w": 171,
+          "h": 185,
+          "relHeight": 1.0054
+        },
+        "JUMP": {
+          "file": "CANON_AR/JUMP.png",
+          "w": 100,
+          "h": 181,
+          "relHeight": 0.9837
+        },
+        "BLOCK_GUARD": {
+          "file": "CANON_AR/BLOCK_GUARD.png",
+          "w": 112,
+          "h": 171,
+          "relHeight": 0.9293
+        },
+        "HITSTUN": {
+          "file": "CANON_AR/HITSTUN.png",
+          "w": 111,
+          "h": 170,
+          "relHeight": 0.9239
+        },
+        "SHOT_SK": {
+          "file": "CANON_AR/SHOT_SK.png",
+          "w": 191,
+          "h": 179,
+          "relHeight": 0.9728
+        },
+        "CHILENA_SP": {
+          "file": "CANON_AR/CHILENA_SP.png",
+          "w": 203,
+          "h": 160,
+          "relHeight": 0.8696
+        },
+        "KO": {
+          "file": "CANON_AR/KO.png",
+          "w": 223,
+          "h": 45,
+          "relHeight": 0.2446
+        }
+      }
+    },
+    "PULGA_AR": {
+      "idleHeightPx": 179,
+      "sheetA": true,
+      "sheetB": true,
+      "frames": {
+        "IDLE_GUARD": {
+          "file": "PULGA_AR/IDLE_GUARD.png",
+          "w": 102,
+          "h": 179,
+          "relHeight": 1.0
+        },
+        "RUN_1": {
+          "file": "PULGA_AR/RUN_1.png",
+          "w": 138,
+          "h": 172,
+          "relHeight": 0.9609
+        },
+        "RUN_2": {
+          "file": "PULGA_AR/RUN_2.png",
+          "w": 142,
+          "h": 176,
+          "relHeight": 0.9832
+        },
+        "CROUCH": {
+          "file": "PULGA_AR/CROUCH.png",
+          "w": 98,
+          "h": 163,
+          "relHeight": 0.9106
+        },
+        "PUNCH_LP": {
+          "file": "PULGA_AR/PUNCH_LP.png",
+          "w": 158,
+          "h": 180,
+          "relHeight": 1.0056
+        },
+        "KICK_HP": {
+          "file": "PULGA_AR/KICK_HP.png",
+          "w": 150,
+          "h": 177,
+          "relHeight": 0.9888
+        },
+        "JUMP": {
+          "file": "PULGA_AR/JUMP.png",
+          "w": 127,
+          "h": 157,
+          "relHeight": 0.8771
+        },
+        "BLOCK_GUARD": {
+          "file": "PULGA_AR/BLOCK_GUARD.png",
+          "w": 123,
+          "h": 161,
+          "relHeight": 0.8994
+        },
+        "HITSTUN": {
+          "file": "PULGA_AR/HITSTUN.png",
+          "w": 125,
+          "h": 170,
+          "relHeight": 0.9497
+        },
+        "SHOT_SK": {
+          "file": "PULGA_AR/SHOT_SK.png",
+          "w": 168,
+          "h": 164,
+          "relHeight": 0.9162
+        },
+        "CHILENA_SP": {
+          "file": "PULGA_AR/CHILENA_SP.png",
+          "w": 156,
+          "h": 180,
+          "relHeight": 1.0056
+        },
+        "KO": {
+          "file": "PULGA_AR/KO.png",
+          "w": 213,
+          "h": 54,
+          "relHeight": 0.3017
+        }
+      }
+    },
+    "PIBE_CO": {
+      "idleHeightPx": 181,
+      "sheetA": true,
+      "sheetB": true,
+      "frames": {
+        "IDLE_GUARD": {
+          "file": "PIBE_CO/IDLE_GUARD.png",
+          "w": 99,
+          "h": 181,
+          "relHeight": 1.0
+        },
+        "RUN_1": {
+          "file": "PIBE_CO/RUN_1.png",
+          "w": 119,
+          "h": 181,
+          "relHeight": 1.0
+        },
+        "RUN_2": {
+          "file": "PIBE_CO/RUN_2.png",
+          "w": 139,
+          "h": 183,
+          "relHeight": 1.011
+        },
+        "CROUCH": {
+          "file": "PIBE_CO/CROUCH.png",
+          "w": 91,
+          "h": 160,
+          "relHeight": 0.884
+        },
+        "PUNCH_LP": {
+          "file": "PIBE_CO/PUNCH_LP.png",
+          "w": 146,
+          "h": 183,
+          "relHeight": 1.011
+        },
+        "KICK_HP": {
+          "file": "PIBE_CO/KICK_HP.png",
+          "w": 158,
+          "h": 183,
+          "relHeight": 1.011
+        },
+        "JUMP": {
+          "file": "PIBE_CO/JUMP.png",
+          "w": 79,
+          "h": 139,
+          "relHeight": 0.768
+        },
+        "BLOCK_GUARD": {
+          "file": "PIBE_CO/BLOCK_GUARD.png",
+          "w": 95,
+          "h": 157,
+          "relHeight": 0.8674
+        },
+        "HITSTUN": {
+          "file": "PIBE_CO/HITSTUN.png",
+          "w": 107,
+          "h": 160,
+          "relHeight": 0.884
+        },
+        "SHOT_SK": {
+          "file": "PIBE_CO/SHOT_SK.png",
+          "w": 153,
+          "h": 150,
+          "relHeight": 0.8287
+        },
+        "CHILENA_SP": {
+          "file": "PIBE_CO/CHILENA_SP.png",
+          "w": 147,
+          "h": 123,
+          "relHeight": 0.6796
+        },
+        "KO": {
+          "file": "PIBE_CO/KO.png",
+          "w": 200,
+          "h": 42,
+          "relHeight": 0.232
+        }
+      }
+    },
+    "LOCO_CO": {
+      "idleHeightPx": 187,
+      "sheetA": true,
+      "sheetB": true,
+      "frames": {
+        "IDLE_GUARD": {
+          "file": "LOCO_CO/IDLE_GUARD.png",
+          "w": 157,
+          "h": 187,
+          "relHeight": 1.0
+        },
+        "RUN_1": {
+          "file": "LOCO_CO/RUN_1.png",
+          "w": 146,
+          "h": 185,
+          "relHeight": 0.9893
+        },
+        "RUN_2": {
+          "file": "LOCO_CO/RUN_2.png",
+          "w": 133,
+          "h": 186,
+          "relHeight": 0.9947
+        },
+        "CROUCH": {
+          "file": "LOCO_CO/CROUCH.png",
+          "w": 151,
+          "h": 166,
+          "relHeight": 0.8877
+        },
+        "PUNCH_LP": {
+          "file": "LOCO_CO/PUNCH_LP.png",
+          "w": 163,
+          "h": 179,
+          "relHeight": 0.9572
+        },
+        "KICK_HP": {
+          "file": "LOCO_CO/KICK_HP.png",
+          "w": 171,
+          "h": 179,
+          "relHeight": 0.9572
+        },
+        "JUMP": {
+          "file": "LOCO_CO/JUMP.png",
+          "w": 96,
+          "h": 83,
+          "relHeight": 0.4439
+        },
+        "BLOCK_GUARD": {
+          "file": "LOCO_CO/BLOCK_GUARD.png",
+          "w": 96,
+          "h": 168,
+          "relHeight": 0.8984
+        },
+        "HITSTUN": {
+          "file": "LOCO_CO/HITSTUN.png",
+          "w": 102,
+          "h": 115,
+          "relHeight": 0.615
+        },
+        "SHOT_SK": {
+          "file": "LOCO_CO/SHOT_SK.png",
+          "w": 85,
+          "h": 83,
+          "relHeight": 0.4439
+        },
+        "CHILENA_SP": {
+          "file": "LOCO_CO/CHILENA_SP.png",
+          "w": 96,
+          "h": 68,
+          "relHeight": 0.3636
+        },
+        "KO": {
+          "file": "LOCO_CO/KO.png",
+          "w": 129,
+          "h": 44,
+          "relHeight": 0.2353
+        }
+      }
+    },
+    "PISTOLERO_UY": {
+      "idleHeightPx": 184,
+      "sheetA": true,
+      "sheetB": true,
+      "frames": {
+        "IDLE_GUARD": {
+          "file": "PISTOLERO_UY/IDLE_GUARD.png",
+          "w": 103,
+          "h": 184,
+          "relHeight": 1.0
+        },
+        "RUN_1": {
+          "file": "PISTOLERO_UY/RUN_1.png",
+          "w": 127,
+          "h": 180,
+          "relHeight": 0.9783
+        },
+        "RUN_2": {
+          "file": "PISTOLERO_UY/RUN_2.png",
+          "w": 150,
+          "h": 179,
+          "relHeight": 0.9728
+        },
+        "CROUCH": {
+          "file": "PISTOLERO_UY/CROUCH.png",
+          "w": 91,
+          "h": 173,
+          "relHeight": 0.9402
+        },
+        "PUNCH_LP": {
+          "file": "PISTOLERO_UY/PUNCH_LP.png",
+          "w": 156,
+          "h": 185,
+          "relHeight": 1.0054
+        },
+        "KICK_HP": {
+          "file": "PISTOLERO_UY/KICK_HP.png",
+          "w": 164,
+          "h": 185,
+          "relHeight": 1.0054
+        },
+        "JUMP": {
+          "file": "PISTOLERO_UY/JUMP.png",
+          "w": 109,
+          "h": 170,
+          "relHeight": 0.9239
+        },
+        "BLOCK_GUARD": {
+          "file": "PISTOLERO_UY/BLOCK_GUARD.png",
+          "w": 97,
+          "h": 177,
+          "relHeight": 0.962
+        },
+        "HITSTUN": {
+          "file": "PISTOLERO_UY/HITSTUN.png",
+          "w": 96,
+          "h": 175,
+          "relHeight": 0.9511
+        },
+        "SHOT_SK": {
+          "file": "PISTOLERO_UY/SHOT_SK.png",
+          "w": 184,
+          "h": 182,
+          "relHeight": 0.9891
+        },
+        "CHILENA_SP": {
+          "file": "PISTOLERO_UY/CHILENA_SP.png",
+          "w": 193,
+          "h": 144,
+          "relHeight": 0.7826
+        },
+        "KO": {
+          "file": "PISTOLERO_UY/KO.png",
+          "w": 222,
+          "h": 48,
+          "relHeight": 0.2609
+        }
+      }
+    },
+    "MATADOR_UY": {
+      "idleHeightPx": 184,
+      "sheetA": true,
+      "sheetB": true,
+      "frames": {
+        "IDLE_GUARD": {
+          "file": "MATADOR_UY/IDLE_GUARD.png",
+          "w": 105,
+          "h": 184,
+          "relHeight": 1.0
+        },
+        "RUN_1": {
+          "file": "MATADOR_UY/RUN_1.png",
+          "w": 132,
+          "h": 183,
+          "relHeight": 0.9946
+        },
+        "RUN_2": {
+          "file": "MATADOR_UY/RUN_2.png",
+          "w": 139,
+          "h": 182,
+          "relHeight": 0.9891
+        },
+        "CROUCH": {
+          "file": "MATADOR_UY/CROUCH.png",
+          "w": 92,
+          "h": 163,
+          "relHeight": 0.8859
+        },
+        "PUNCH_LP": {
+          "file": "MATADOR_UY/PUNCH_LP.png",
+          "w": 155,
+          "h": 181,
+          "relHeight": 0.9837
+        },
+        "KICK_HP": {
+          "file": "MATADOR_UY/KICK_HP.png",
+          "w": 162,
+          "h": 180,
+          "relHeight": 0.9783
+        },
+        "JUMP": {
+          "file": "MATADOR_UY/JUMP.png",
+          "w": 79,
+          "h": 148,
+          "relHeight": 0.8043
+        },
+        "BLOCK_GUARD": {
+          "file": "MATADOR_UY/BLOCK_GUARD.png",
+          "w": 94,
+          "h": 176,
+          "relHeight": 0.9565
+        },
+        "HITSTUN": {
+          "file": "MATADOR_UY/HITSTUN.png",
+          "w": 83,
+          "h": 179,
+          "relHeight": 0.9728
+        },
+        "SHOT_SK": {
+          "file": "MATADOR_UY/SHOT_SK.png",
+          "w": 161,
+          "h": 184,
+          "relHeight": 1.0
+        },
+        "CHILENA_SP": {
+          "file": "MATADOR_UY/CHILENA_SP.png",
+          "w": 199,
+          "h": 103,
+          "relHeight": 0.5598
+        },
+        "KO": {
+          "file": "MATADOR_UY/KO.png",
+          "w": 223,
+          "h": 43,
+          "relHeight": 0.2337
+        }
+      }
+    },
+    "BAMBAM_CL": {
+      "idleHeightPx": 181,
+      "sheetA": true,
+      "sheetB": true,
+      "frames": {
+        "IDLE_GUARD": {
+          "file": "BAMBAM_CL/IDLE_GUARD.png",
+          "w": 171,
+          "h": 181,
+          "relHeight": 1.0
+        },
+        "RUN_1": {
+          "file": "BAMBAM_CL/RUN_1.png",
+          "w": 185,
+          "h": 180,
+          "relHeight": 0.9945
+        },
+        "RUN_2": {
+          "file": "BAMBAM_CL/RUN_2.png",
+          "w": 191,
+          "h": 180,
+          "relHeight": 0.9945
+        },
+        "CROUCH": {
+          "file": "BAMBAM_CL/CROUCH.png",
+          "w": 104,
+          "h": 158,
+          "relHeight": 0.8729
+        },
+        "PUNCH_LP": {
+          "file": "BAMBAM_CL/PUNCH_LP.png",
+          "w": 201,
+          "h": 179,
+          "relHeight": 0.989
+        },
+        "KICK_HP": {
+          "file": "BAMBAM_CL/KICK_HP.png",
+          "w": 209,
+          "h": 175,
+          "relHeight": 0.9669
+        },
+        "JUMP": {
+          "file": "BAMBAM_CL/JUMP.png",
+          "w": 158,
+          "h": 159,
+          "relHeight": 0.8785
+        },
+        "BLOCK_GUARD": {
+          "file": "BAMBAM_CL/BLOCK_GUARD.png",
+          "w": 102,
+          "h": 176,
+          "relHeight": 0.9724
+        },
+        "HITSTUN": {
+          "file": "BAMBAM_CL/HITSTUN.png",
+          "w": 116,
+          "h": 174,
+          "relHeight": 0.9613
+        },
+        "SHOT_SK": {
+          "file": "BAMBAM_CL/SHOT_SK.png",
+          "w": 119,
+          "h": 181,
+          "relHeight": 1.0
+        },
+        "CHILENA_SP": {
+          "file": "BAMBAM_CL/CHILENA_SP.png",
+          "w": 150,
+          "h": 151,
+          "relHeight": 0.8343
+        },
+        "KO": {
+          "file": "BAMBAM_CL/KO.png",
+          "w": 233,
+          "h": 47,
+          "relHeight": 0.2597
+        }
+      }
+    },
+    "REY_CL": {
+      "idleHeightPx": 183,
+      "sheetA": true,
+      "sheetB": true,
+      "frames": {
+        "IDLE_GUARD": {
+          "file": "REY_CL/IDLE_GUARD.png",
+          "w": 103,
+          "h": 183,
+          "relHeight": 1.0
+        },
+        "RUN_1": {
+          "file": "REY_CL/RUN_1.png",
+          "w": 128,
+          "h": 182,
+          "relHeight": 0.9945
+        },
+        "RUN_2": {
+          "file": "REY_CL/RUN_2.png",
+          "w": 131,
+          "h": 180,
+          "relHeight": 0.9836
+        },
+        "CROUCH": {
+          "file": "REY_CL/CROUCH.png",
+          "w": 97,
+          "h": 162,
+          "relHeight": 0.8852
+        },
+        "PUNCH_LP": {
+          "file": "REY_CL/PUNCH_LP.png",
+          "w": 151,
+          "h": 183,
+          "relHeight": 1.0
+        },
+        "KICK_HP": {
+          "file": "REY_CL/KICK_HP.png",
+          "w": 156,
+          "h": 183,
+          "relHeight": 1.0
+        },
+        "JUMP": {
+          "file": "REY_CL/JUMP.png",
+          "w": 102,
+          "h": 162,
+          "relHeight": 0.8852
+        },
+        "BLOCK_GUARD": {
+          "file": "REY_CL/BLOCK_GUARD.png",
+          "w": 118,
+          "h": 185,
+          "relHeight": 1.0109
+        },
+        "HITSTUN": {
+          "file": "REY_CL/HITSTUN.png",
+          "w": 94,
+          "h": 183,
+          "relHeight": 1.0
+        },
+        "SHOT_SK": {
+          "file": "REY_CL/SHOT_SK.png",
+          "w": 191,
+          "h": 167,
+          "relHeight": 0.9126
+        },
+        "CHILENA_SP": {
+          "file": "REY_CL/CHILENA_SP.png",
+          "w": 168,
+          "h": 161,
+          "relHeight": 0.8798
+        },
+        "KO": {
+          "file": "REY_CL/KO.png",
+          "w": 221,
+          "h": 43,
+          "relHeight": 0.235
+        }
+      }
+    },
+    "BULLDOG_PY": {
+      "idleHeightPx": 183,
+      "sheetA": true,
+      "sheetB": true,
+      "frames": {
+        "IDLE_GUARD": {
+          "file": "BULLDOG_PY/IDLE_GUARD.png",
+          "w": 127,
+          "h": 183,
+          "relHeight": 1.0
+        },
+        "RUN_1": {
+          "file": "BULLDOG_PY/RUN_1.png",
+          "w": 158,
+          "h": 179,
+          "relHeight": 0.9781
+        },
+        "RUN_2": {
+          "file": "BULLDOG_PY/RUN_2.png",
+          "w": 159,
+          "h": 181,
+          "relHeight": 0.9891
+        },
+        "CROUCH": {
+          "file": "BULLDOG_PY/CROUCH.png",
+          "w": 106,
+          "h": 169,
+          "relHeight": 0.9235
+        },
+        "PUNCH_LP": {
+          "file": "BULLDOG_PY/PUNCH_LP.png",
+          "w": 182,
+          "h": 184,
+          "relHeight": 1.0055
+        },
+        "KICK_HP": {
+          "file": "BULLDOG_PY/KICK_HP.png",
+          "w": 180,
+          "h": 185,
+          "relHeight": 1.0109
+        },
+        "JUMP": {
+          "file": "BULLDOG_PY/JUMP.png",
+          "w": 186,
+          "h": 168,
+          "relHeight": 0.918
+        },
+        "BLOCK_GUARD": {
+          "file": "BULLDOG_PY/BLOCK_GUARD.png",
+          "w": 104,
+          "h": 173,
+          "relHeight": 0.9454
+        },
+        "HITSTUN": {
+          "file": "BULLDOG_PY/HITSTUN.png",
+          "w": 108,
+          "h": 176,
+          "relHeight": 0.9617
+        },
+        "SHOT_SK": {
+          "file": "BULLDOG_PY/SHOT_SK.png",
+          "w": 168,
+          "h": 181,
+          "relHeight": 0.9891
+        },
+        "CHILENA_SP": {
+          "file": "BULLDOG_PY/CHILENA_SP.png",
+          "w": 160,
+          "h": 124,
+          "relHeight": 0.6776
+        },
+        "KO": {
+          "file": "BULLDOG_PY/KO.png",
+          "w": 209,
+          "h": 44,
+          "relHeight": 0.2404
+        }
+      }
+    },
+    "MAESTRO_PE": {
+      "idleHeightPx": 182,
+      "sheetA": true,
+      "sheetB": true,
+      "frames": {
+        "IDLE_GUARD": {
+          "file": "MAESTRO_PE/IDLE_GUARD.png",
+          "w": 102,
+          "h": 182,
+          "relHeight": 1.0
+        },
+        "RUN_1": {
+          "file": "MAESTRO_PE/RUN_1.png",
+          "w": 131,
+          "h": 179,
+          "relHeight": 0.9835
+        },
+        "RUN_2": {
+          "file": "MAESTRO_PE/RUN_2.png",
+          "w": 147,
+          "h": 180,
+          "relHeight": 0.989
+        },
+        "CROUCH": {
+          "file": "MAESTRO_PE/CROUCH.png",
+          "w": 119,
+          "h": 166,
+          "relHeight": 0.9121
+        },
+        "PUNCH_LP": {
+          "file": "MAESTRO_PE/PUNCH_LP.png",
+          "w": 166,
+          "h": 183,
+          "relHeight": 1.0055
+        },
+        "KICK_HP": {
+          "file": "MAESTRO_PE/KICK_HP.png",
+          "w": 153,
+          "h": 183,
+          "relHeight": 1.0055
+        },
+        "JUMP": {
+          "file": "MAESTRO_PE/JUMP.png",
+          "w": 78,
+          "h": 163,
+          "relHeight": 0.8956
+        },
+        "BLOCK_GUARD": {
+          "file": "MAESTRO_PE/BLOCK_GUARD.png",
+          "w": 92,
+          "h": 167,
+          "relHeight": 0.9176
+        },
+        "HITSTUN": {
+          "file": "MAESTRO_PE/HITSTUN.png",
+          "w": 76,
+          "h": 171,
+          "relHeight": 0.9396
+        },
+        "SHOT_SK": {
+          "file": "MAESTRO_PE/SHOT_SK.png",
+          "w": 179,
+          "h": 182,
+          "relHeight": 1.0
+        },
+        "CHILENA_SP": {
+          "file": "MAESTRO_PE/CHILENA_SP.png",
+          "w": 163,
+          "h": 151,
+          "relHeight": 0.8297
+        },
+        "KO": {
+          "file": "MAESTRO_PE/KO.png",
+          "w": 207,
+          "h": 44,
+          "relHeight": 0.2418
+        }
+      }
+    },
+    "TREN_EC": {
+      "idleHeightPx": 185,
+      "sheetA": true,
+      "sheetB": true,
+      "frames": {
+        "IDLE_GUARD": {
+          "file": "TREN_EC/IDLE_GUARD.png",
+          "w": 103,
+          "h": 185,
+          "relHeight": 1.0
+        },
+        "RUN_1": {
+          "file": "TREN_EC/RUN_1.png",
+          "w": 130,
+          "h": 182,
+          "relHeight": 0.9838
+        },
+        "RUN_2": {
+          "file": "TREN_EC/RUN_2.png",
+          "w": 135,
+          "h": 182,
+          "relHeight": 0.9838
+        },
+        "CROUCH": {
+          "file": "TREN_EC/CROUCH.png",
+          "w": 100,
+          "h": 172,
+          "relHeight": 0.9297
+        },
+        "PUNCH_LP": {
+          "file": "TREN_EC/PUNCH_LP.png",
+          "w": 163,
+          "h": 185,
+          "relHeight": 1.0
+        },
+        "KICK_HP": {
+          "file": "TREN_EC/KICK_HP.png",
+          "w": 161,
+          "h": 185,
+          "relHeight": 1.0
+        },
+        "JUMP": {
+          "file": "TREN_EC/JUMP.png",
+          "w": 158,
+          "h": 174,
+          "relHeight": 0.9405
+        },
+        "BLOCK_GUARD": {
+          "file": "TREN_EC/BLOCK_GUARD.png",
+          "w": 119,
+          "h": 184,
+          "relHeight": 0.9946
+        },
+        "HITSTUN": {
+          "file": "TREN_EC/HITSTUN.png",
+          "w": 102,
+          "h": 179,
+          "relHeight": 0.9676
+        },
+        "SHOT_SK": {
+          "file": "TREN_EC/SHOT_SK.png",
+          "w": 168,
+          "h": 176,
+          "relHeight": 0.9514
+        },
+        "CHILENA_SP": {
+          "file": "TREN_EC/CHILENA_SP.png",
+          "w": 179,
+          "h": 131,
+          "relHeight": 0.7081
+        },
+        "KO": {
+          "file": "TREN_EC/KO.png",
+          "w": 217,
+          "h": 47,
+          "relHeight": 0.2541
+        }
+      }
+    },
+    "HURACAN_VE": {
+      "idleHeightPx": 367,
+      "sheetA": true,
+      "sheetB": true,
+      "frames": {
+        "IDLE_GUARD": {
+          "file": "HURACAN_VE/IDLE_GUARD.png",
+          "w": 176,
+          "h": 367,
+          "relHeight": 1.0
+        },
+        "RUN_1": {
+          "file": "HURACAN_VE/RUN_1.png",
+          "w": 247,
+          "h": 351,
+          "relHeight": 0.9564
+        },
+        "RUN_2": {
+          "file": "HURACAN_VE/RUN_2.png",
+          "w": 263,
+          "h": 362,
+          "relHeight": 0.9864
+        },
+        "CROUCH": {
+          "file": "HURACAN_VE/CROUCH.png",
+          "w": 172,
+          "h": 327,
+          "relHeight": 0.891
+        },
+        "PUNCH_LP": {
+          "file": "HURACAN_VE/PUNCH_LP.png",
+          "w": 266,
+          "h": 369,
+          "relHeight": 1.0054
+        },
+        "KICK_HP": {
+          "file": "HURACAN_VE/KICK_HP.png",
+          "w": 294,
+          "h": 356,
+          "relHeight": 0.97
+        },
+        "JUMP": {
+          "file": "HURACAN_VE/JUMP.png",
+          "w": 192,
+          "h": 298,
+          "relHeight": 0.812
+        },
+        "BLOCK_GUARD": {
+          "file": "HURACAN_VE/BLOCK_GUARD.png",
+          "w": 173,
+          "h": 340,
+          "relHeight": 0.9264
+        },
+        "HITSTUN": {
+          "file": "HURACAN_VE/HITSTUN.png",
+          "w": 188,
+          "h": 346,
+          "relHeight": 0.9428
+        },
+        "SHOT_SK": {
+          "file": "HURACAN_VE/SHOT_SK.png",
+          "w": 315,
+          "h": 355,
+          "relHeight": 0.9673
+        },
+        "CHILENA_SP": {
+          "file": "HURACAN_VE/CHILENA_SP.png",
+          "w": 309,
+          "h": 313,
+          "relHeight": 0.8529
+        },
+        "KO": {
+          "file": "HURACAN_VE/KO.png",
+          "w": 409,
+          "h": 91,
+          "relHeight": 0.248
+        }
+      }
+    },
+    "DIABLO_BO": {
+      "idleHeightPx": 351,
+      "sheetA": true,
+      "sheetB": true,
+      "frames": {
+        "IDLE_GUARD": {
+          "file": "DIABLO_BO/IDLE_GUARD.png",
+          "w": 176,
+          "h": 351,
+          "relHeight": 1.0
+        },
+        "RUN_1": {
+          "file": "DIABLO_BO/RUN_1.png",
+          "w": 243,
+          "h": 341,
+          "relHeight": 0.9715
+        },
+        "RUN_2": {
+          "file": "DIABLO_BO/RUN_2.png",
+          "w": 282,
+          "h": 348,
+          "relHeight": 0.9915
+        },
+        "CROUCH": {
+          "file": "DIABLO_BO/CROUCH.png",
+          "w": 214,
+          "h": 305,
+          "relHeight": 0.8689
+        },
+        "PUNCH_LP": {
+          "file": "DIABLO_BO/PUNCH_LP.png",
+          "w": 267,
+          "h": 354,
+          "relHeight": 1.0085
+        },
+        "KICK_HP": {
+          "file": "DIABLO_BO/KICK_HP.png",
+          "w": 302,
+          "h": 336,
+          "relHeight": 0.9573
+        },
+        "JUMP": {
+          "file": "DIABLO_BO/JUMP.png",
+          "w": 225,
+          "h": 309,
+          "relHeight": 0.8803
+        },
+        "BLOCK_GUARD": {
+          "file": "DIABLO_BO/BLOCK_GUARD.png",
+          "w": 186,
+          "h": 346,
+          "relHeight": 0.9858
+        },
+        "HITSTUN": {
+          "file": "DIABLO_BO/HITSTUN.png",
+          "w": 213,
+          "h": 346,
+          "relHeight": 0.9858
+        },
+        "SHOT_SK": {
+          "file": "DIABLO_BO/SHOT_SK.png",
+          "w": 316,
+          "h": 326,
+          "relHeight": 0.9288
+        },
+        "CHILENA_SP": {
+          "file": "DIABLO_BO/CHILENA_SP.png",
+          "w": 334,
+          "h": 359,
+          "relHeight": 1.0228
+        },
+        "KO": {
+          "file": "DIABLO_BO/KO.png",
+          "w": 417,
+          "h": 97,
+          "relHeight": 0.2764
+        }
+      }
+    },
+    "GENERAL_FR": {
+      "idleHeightPx": 364,
+      "sheetA": true,
+      "sheetB": true,
+      "frames": {
+        "IDLE_GUARD": {
+          "file": "GENERAL_FR/IDLE_GUARD.png",
+          "w": 192,
+          "h": 364,
+          "relHeight": 1.0
+        },
+        "RUN_1": {
+          "file": "GENERAL_FR/RUN_1.png",
+          "w": 270,
+          "h": 356,
+          "relHeight": 0.978
+        },
+        "RUN_2": {
+          "file": "GENERAL_FR/RUN_2.png",
+          "w": 263,
+          "h": 358,
+          "relHeight": 0.9835
+        },
+        "CROUCH": {
+          "file": "GENERAL_FR/CROUCH.png",
+          "w": 170,
+          "h": 324,
+          "relHeight": 0.8901
+        },
+        "PUNCH_LP": {
+          "file": "GENERAL_FR/PUNCH_LP.png",
+          "w": 272,
+          "h": 367,
+          "relHeight": 1.0082
+        },
+        "KICK_HP": {
+          "file": "GENERAL_FR/KICK_HP.png",
+          "w": 296,
+          "h": 358,
+          "relHeight": 0.9835
+        },
+        "JUMP": {
+          "file": "GENERAL_FR/JUMP.png",
+          "w": 164,
+          "h": 326,
+          "relHeight": 0.8956
+        },
+        "BLOCK_GUARD": {
+          "file": "GENERAL_FR/BLOCK_GUARD.png",
+          "w": 196,
+          "h": 344,
+          "relHeight": 0.9451
+        },
+        "HITSTUN": {
+          "file": "GENERAL_FR/HITSTUN.png",
+          "w": 160,
+          "h": 339,
+          "relHeight": 0.9313
+        },
+        "SHOT_SK": {
+          "file": "GENERAL_FR/SHOT_SK.png",
+          "w": 318,
+          "h": 322,
+          "relHeight": 0.8846
+        },
+        "CHILENA_SP": {
+          "file": "GENERAL_FR/CHILENA_SP.png",
+          "w": 329,
+          "h": 265,
+          "relHeight": 0.728
+        },
+        "KO": {
+          "file": "GENERAL_FR/KO.png",
+          "w": 429,
+          "h": 90,
+          "relHeight": 0.2473
+        }
+      }
+    },
+    "VAR_ZERO_BOSS": {
+      "idleHeightPx": 351,
+      "sheetA": true,
+      "sheetB": true,
+      "frames": {
+        "IDLE_GUARD": {
+          "file": "VAR_ZERO_BOSS/IDLE_GUARD.png",
+          "w": 225,
+          "h": 351,
+          "relHeight": 1.0
+        },
+        "RUN_1": {
+          "file": "VAR_ZERO_BOSS/RUN_1.png",
+          "w": 304,
+          "h": 352,
+          "relHeight": 1.0028
+        },
+        "RUN_2": {
+          "file": "VAR_ZERO_BOSS/RUN_2.png",
+          "w": 289,
+          "h": 352,
+          "relHeight": 1.0028
+        },
+        "CROUCH": {
+          "file": "VAR_ZERO_BOSS/CROUCH.png",
+          "w": 232,
+          "h": 322,
+          "relHeight": 0.9174
+        },
+        "PUNCH_LP": {
+          "file": "VAR_ZERO_BOSS/PUNCH_LP.png",
+          "w": 315,
+          "h": 363,
+          "relHeight": 1.0342
+        },
+        "KICK_HP": {
+          "file": "VAR_ZERO_BOSS/KICK_HP.png",
+          "w": 366,
+          "h": 367,
+          "relHeight": 1.0456
+        },
+        "JUMP": {
+          "file": "VAR_ZERO_BOSS/JUMP.png",
+          "w": 207,
+          "h": 347,
+          "relHeight": 0.9886
+        },
+        "BLOCK_GUARD": {
+          "file": "VAR_ZERO_BOSS/BLOCK_GUARD.png",
+          "w": 203,
+          "h": 345,
+          "relHeight": 0.9829
+        },
+        "HITSTUN": {
+          "file": "VAR_ZERO_BOSS/HITSTUN.png",
+          "w": 241,
+          "h": 336,
+          "relHeight": 0.9573
+        },
+        "SHOT_SK": {
+          "file": "VAR_ZERO_BOSS/SHOT_SK.png",
+          "w": 315,
+          "h": 341,
+          "relHeight": 0.9715
+        },
+        "CHILENA_SP": {
+          "file": "VAR_ZERO_BOSS/CHILENA_SP.png",
+          "w": 353,
+          "h": 267,
+          "relHeight": 0.7607
+        },
+        "KO": {
+          "file": "VAR_ZERO_BOSS/KO.png",
+          "w": 390,
+          "h": 103,
+          "relHeight": 0.2934
+        }
+      }
+    }
+  }
+}

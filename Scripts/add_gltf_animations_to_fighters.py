@@ -36,6 +36,7 @@ TARGET_CLIPS = [
     "Mocap_Walk_Forward",
     "Mocap_Backdash_Dodge",
     "Mocap_Block_Guard",
+    "Mocap_Crouch_Guard",
     "Mocap_Hitstun_Knockback",
     "Mocap_Super_Potrero",
     "Mocap_KO_Knockdown",
@@ -758,6 +759,52 @@ def build_clip_tracks(
         return times, tracks
 
     # ------------------------------------------------------------------
+    # 8b. Mocap_Crouch_Guard (60 FPS, 31 keyframes = 0.50s deep athletic knee-bend crouch)
+    # ------------------------------------------------------------------
+    if clip_name == "Mocap_Crouch_Guard":
+        num_frames = 31
+        times = [f / FPS for f in range(num_frames)]
+        us = [f / (num_frames - 1) for f in range(num_frames)]
+
+        pelvis_t, pelvis_r, spine1_r, spine3_r, head_r = [], [], [], [], []
+        uarm_l_r, larm_l_r, uarm_r_r, larm_r_r = [], [], [], []
+        thigh_l_r, calf_l_r, thigh_r_r, calf_r_r = [], [], [], []
+
+        for u in us:
+            q = smoothstep(0.0, 1.0, min(1.0, u * 3.5))
+            sway = math.sin(u * 2.0 * math.pi) * 2.0
+            pelvis_t.append([0.0, -0.225 * height * q, -0.04 * q])
+            pelvis_r.append(euler_xyz_to_quat(12.0 * q, 20.0 * q, 0.0))
+            spine1_r.append(euler_xyz_to_quat(16.0 * q + sway, -8.0 * q, 0.0))
+            spine3_r.append(euler_xyz_to_quat(12.0 * q, -8.0 * q, 0.0))
+            head_r.append(euler_xyz_to_quat(-24.0 * q, -6.0 * q, 0.0))
+
+            uarm_l_r.append(euler_xyz_to_quat(-62.0 * q - 20.0, 32.0 * q, 22.0 * q))
+            larm_l_r.append(euler_xyz_to_quat(-105.0 * q, 0.0, 0.0))
+            uarm_r_r.append(euler_xyz_to_quat(-58.0 * q - 20.0, -32.0 * q, -22.0 * q))
+            larm_r_r.append(euler_xyz_to_quat(-98.0 * q, 0.0, 0.0))
+
+            thigh_l_r.append(euler_xyz_to_quat(-68.0 * q, 16.0 * q, 10.0 * q))
+            calf_l_r.append(euler_xyz_to_quat(108.0 * q, 0.0, 0.0))
+            thigh_r_r.append(euler_xyz_to_quat(-42.0 * q, -18.0 * q, -12.0 * q))
+            calf_r_r.append(euler_xyz_to_quat(92.0 * q, 0.0, 0.0))
+
+        add_trans("pelvis", pelvis_t)
+        add_rot("pelvis", pelvis_r)
+        add_rot("spine_01", spine1_r)
+        add_rot("spine_03", spine3_r)
+        add_rot("head", head_r)
+        add_rot("upperarm_l", uarm_l_r)
+        add_rot("lowerarm_l", larm_l_r)
+        add_rot("upperarm_r", uarm_r_r)
+        add_rot("lowerarm_r", larm_r_r)
+        add_rot("thigh_l", thigh_l_r)
+        add_rot("calf_l", calf_l_r)
+        add_rot("thigh_r", thigh_r_r)
+        add_rot("calf_r", calf_r_r)
+        return times, tracks
+
+    # ------------------------------------------------------------------
     # 9. Mocap_Hitstun_Knockback (60 FPS, 31 keyframes = 0.50s hitstop shake + whiplash)
     # ------------------------------------------------------------------
     if clip_name == "Mocap_Hitstun_Knockback":
@@ -1416,6 +1463,15 @@ def main() -> None:
                 "Interpolation": "LINEAR",
                 "Looping": False,
                 "Description": "60 FPS Mocap braced cross-arm competitive block guard with knee absorption",
+            },
+            {
+                "ClipName": "Mocap_Crouch_Guard",
+                "DurationSeconds": 0.5,
+                "KeyframeCount": 31,
+                "FPS": 60,
+                "Interpolation": "LINEAR",
+                "Looping": True,
+                "Description": "60 FPS Mocap deep athletic knee-bend crouch with tight guard",
             },
             {
                 "ClipName": "Mocap_Hitstun_Knockback",

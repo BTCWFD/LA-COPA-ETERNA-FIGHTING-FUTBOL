@@ -3431,6 +3431,146 @@
   }
 
   const T6_SPRITE_CACHE = {};
+  let T6_RIG_MANIFEST = null;
+  const T6_RIG_ATLAS_CACHE = {};
+  let T6_ACTION_MANIFEST = null;
+  const T6_ACTION_IMG_CACHE = {};
+
+  fetch('../Assets/Sprites2D/Fighters/FightersRigManifest.json?v=9')
+    .then((r) => (r.ok ? r.json() : null))
+    .then((data) => {
+      if (data) T6_RIG_MANIFEST = data;
+    })
+    .catch(() => {});
+
+  fetch('../Assets/Sprites2D/ActionFrames/ActionFrames_Manifest.json?v=10')
+    .then((r) => (r.ok ? r.json() : null))
+    .then((data) => {
+      if (data && data.fighters) T6_ACTION_MANIFEST = data;
+    })
+    .catch(() => {});
+
+  const T6_ACTION_FALLBACKS = {
+    IDLE_GUARD: ['IDLE_GUARD'],
+    RUN_1: ['RUN_1', 'IDLE_GUARD'],
+    RUN_2: ['RUN_2', 'IDLE_GUARD'],
+    CROUCH: ['CROUCH', 'IDLE_GUARD'],
+    PUNCH_LP: ['PUNCH_LP', 'KICK_HP', 'IDLE_GUARD'],
+    KICK_HP: ['KICK_HP', 'PUNCH_LP', 'IDLE_GUARD'],
+    JUMP: ['JUMP', 'RUN_1', 'IDLE_GUARD'],
+    BLOCK_GUARD: ['BLOCK_GUARD', 'CROUCH', 'IDLE_GUARD'],
+    HITSTUN: ['HITSTUN', 'RUN_2', 'IDLE_GUARD'],
+    SHOT_SK: ['SHOT_SK', 'KICK_HP', 'PUNCH_LP', 'IDLE_GUARD'],
+    CHILENA_SP: ['CHILENA_SP', 'KICK_HP', 'RUN_1', 'IDLE_GUARD'],
+    KO: ['KO', 'CROUCH', 'IDLE_GUARD']
+  };
+
+  function getActionFrameImage(code, frameName) {
+    const fighterEntry = T6_ACTION_MANIFEST?.fighters?.[code];
+    const frameMeta = fighterEntry?.frames?.[frameName];
+    if (!frameMeta || !frameMeta.file) return null;
+    if (!T6_ACTION_IMG_CACHE[code]) T6_ACTION_IMG_CACHE[code] = {};
+    if (!T6_ACTION_IMG_CACHE[code][frameName]) {
+      const img = new Image();
+      img.src = `../Assets/Sprites2D/ActionFrames/${frameMeta.file}?v=10`;
+      T6_ACTION_IMG_CACHE[code][frameName] = img;
+    }
+    return T6_ACTION_IMG_CACHE[code][frameName];
+  }
+
+  function resolveActionFrameForFighter(f) {
+    const t = Math.max(0, f.stateFrame || 0);
+    const st = f.state;
+    const mvKey = f.activeMoveKey;
+
+    if (st === 'IDLE') return 'IDLE_GUARD';
+    if (st === 'WALK_F') return ['RUN_1', 'IDLE_GUARD', 'RUN_2'][Math.floor(t / 7) % 3];
+    if (st === 'WALK_B') return ['RUN_2', 'IDLE_GUARD', 'RUN_1'][Math.floor(t / 8) % 3];
+    if (st === 'DASH_F') return Math.floor(t / 4) % 2 === 0 ? 'RUN_1' : 'RUN_2';
+    if (st === 'DASH_B') return t <= 6 ? 'JUMP' : 'RUN_2';
+    if (st === 'CROUCH') return 'CROUCH';
+    if (st === 'JUMP') return 'JUMP';
+    if (st === 'BLOCKSTUN') return 'BLOCK_GUARD';
+    if (st === 'PARRY') return (t <= 2 || t > 16) ? 'BLOCK_GUARD' : 'IDLE_GUARD';
+    if (st === 'HITSTUN') return 'HITSTUN';
+    if (st === 'KO') return t <= 8 ? 'HITSTUN' : 'KO';
+
+    if (st === 'STARTUP' || st === 'ACTIVE' || st === 'RECOVERY') {
+      const mv = mvKey ? T6_MOVES[mvKey] : null;
+      const sEnd = mv ? mv.startup : 6;
+      const aEnd = sEnd + (mv ? mv.active : 4);
+      const actFrame = Math.max(1, t - sEnd + 1);
+      const recFrame = Math.max(1, t - aEnd + 1);
+
+      if (mvKey === 'LP') {
+        if (st === 'ACTIVE') return 'PUNCH_LP';
+        return 'IDLE_GUARD';
+      }
+      if (mvKey === 'MP') {
+        if (st === 'STARTUP') return 'CROUCH';
+        if (st === 'ACTIVE') return actFrame <= Math.ceil((mv?.active || 5) / 2) ? 'PUNCH_LP' : 'RUN_1';
+        return 'IDLE_GUARD';
+      }
+      if (mvKey === 'HP') {
+        if (st === 'STARTUP') return 'RUN_2';
+        if (st === 'ACTIVE') return 'KICK_HP';
+        return recFrame <= Math.ceil((mv?.recovery || 18) / 2) ? 'RUN_1' : 'IDLE_GUARD';
+      }
+      if (mvKey === 'SK') {
+        if (st === 'STARTUP') return 'RUN_2';
+        if (st === 'ACTIVE') return 'SHOT_SK';
+        return 'IDLE_GUARD';
+      }
+      if (mvKey === 'SP_236') {
+        if (st === 'STARTUP') return t <= Math.ceil(sEnd / 2) ? 'CROUCH' : 'RUN_2';
+        if (st === 'ACTIVE') return 'SHOT_SK';
+        return recFrame <= Math.ceil((mv?.recovery || 17) / 2) ? 'RUN_1' : 'IDLE_GUARD';
+      }
+      if (mvKey === 'SP_623') {
+        if (st === 'STARTUP') return 'CROUCH';
+        if (st === 'ACTIVE') return 'CHILENA_SP';
+        return recFrame <= Math.ceil((mv?.recovery || 22) * 0.6) ? 'JUMP' : 'CROUCH';
+      }
+      if (mvKey === 'SP_41236') {
+        if (st === 'STARTUP') return 'RUN_1';
+        if (st === 'ACTIVE') return 'SHOT_SK';
+        return 'IDLE_GUARD';
+      }
+      if (mvKey === 'SUPER_1') {
+        if (st === 'STARTUP') return 'CROUCH';
+        if (st === 'ACTIVE') return actFrame <= 7 ? 'SHOT_SK' : 'KICK_HP';
+        return 'IDLE_GUARD';
+      }
+      if (mvKey === 'ULT_3') {
+        if (st === 'STARTUP') return 'CROUCH';
+        if (st === 'ACTIVE') return actFrame <= 8 ? 'SHOT_SK' : 'CHILENA_SP';
+        return recFrame <= Math.ceil((mv?.recovery || 30) * 0.5) ? 'JUMP' : 'IDLE_GUARD';
+      }
+      if (st === 'STARTUP') return 'RUN_2';
+      if (st === 'ACTIVE') return 'KICK_HP';
+      return 'IDLE_GUARD';
+    }
+    return 'IDLE_GUARD';
+  }
+
+  function resolveLoadedActionFrame(f) {
+    const code = f.data.Name;
+    const fighterEntry = T6_ACTION_MANIFEST?.fighters?.[code];
+    if (!fighterEntry || !fighterEntry.frames) return null;
+
+    const desired = resolveActionFrameForFighter(f);
+    const candidates = T6_ACTION_FALLBACKS[desired] || [desired, 'IDLE_GUARD'];
+    for (const candidate of candidates) {
+      const meta = fighterEntry.frames[candidate];
+      if (!meta) continue;
+      const img = getActionFrameImage(code, candidate);
+      if (img && img.complete && img.naturalWidth > 0) {
+        return { frameName: candidate, img, meta, fighterEntry };
+      }
+    }
+    return null;
+  }
+
   function getT6FighterSpritePair(code) {
     if (!T6_SPRITE_CACHE[code]) {
       const front = new Image();
@@ -3439,7 +3579,206 @@
       side.src = `../Assets/Sprites2D/Fighters/Sprite_${code}_Side.png`;
       T6_SPRITE_CACHE[code] = { front, side };
     }
+    if (!T6_RIG_ATLAS_CACHE[code]) {
+      const rigImg = new Image();
+      rigImg.src = `../Assets/Sprites2D/Fighters/Rig_${code}.png?v=8`;
+      T6_RIG_ATLAS_CACHE[code] = rigImg;
+    }
     return T6_SPRITE_CACHE[code];
+  }
+
+  function computeFighterRigPose(f, t) {
+    const D = Math.PI / 180;
+    const lerp = (a, b, k) => a + (b - a) * k;
+    const mvKey = f.activeMoveKey;
+
+    // Angles in radians where 0 = straight down, + = forward (+X), - = backward (-X)
+    let pose = {
+      useSide: false,
+      torsoScaleX: 0.90,
+      shTwistX: 0,
+      hipTwistX: 0,
+      hipDrop: Math.sin(t * 0.12) * 2.5,
+      lungeX: 0,
+      wholeRot: 0,
+      torsoLean: 9 * D,
+      headTilt: -4 * D,
+      legF_thigh: 20 * D,
+      legF_shin: -16 * D,
+      legB_thigh: -22 * D,
+      legB_shin: -24 * D,
+      armF_upper: 38 * D,
+      armF_lower: 122 * D,
+      armB_upper: -14 * D,
+      armB_lower: 98 * D
+    };
+
+    if (f.state === 'CROUCH') {
+      // Deep fighting squat with side-turned torso/head & bent knees
+      pose.useSide = true;
+      pose.torsoScaleX = 0.96;
+      pose.shTwistX = 4;
+      pose.hipDrop = 58;
+      pose.torsoLean = 28 * D;
+      pose.headTilt = -22 * D;
+      pose.legF_thigh = 68 * D;
+      pose.legF_shin = -16 * D;
+      pose.legB_thigh = -66 * D;
+      pose.legB_shin = -28 * D;
+      pose.armF_upper = 38 * D;
+      pose.armF_lower = 118 * D;
+      pose.armB_upper = -16 * D;
+      pose.armB_lower = 102 * D;
+    } else if (f.state === 'WALK_F' || f.state === 'WALK_B' || f.state === 'DASH_F' || f.state === 'DASH_B') {
+      const isDash = f.state === 'DASH_F' || f.state === 'DASH_B';
+      const dirMove = (f.state === 'WALK_B' || f.state === 'DASH_B') ? -1 : 1;
+      const spd = isDash ? 0.56 : 0.32;
+      const amp = isDash ? 56 * D : 36 * D;
+      const ph = t * spd * dirMove;
+      const s = Math.sin(ph);
+      const c = Math.cos(ph);
+      pose.useSide = true;
+      pose.hipDrop = (isDash ? 16 : 8) + Math.abs(c) * 6;
+      pose.torsoLean = (isDash ? 32 : 20) * dirMove * D + Math.abs(s) * (isDash ? 4 : 2) * D;
+      pose.headTilt = -pose.torsoLean * 0.65;
+      pose.torsoScaleX = 1.0 - 0.16 * Math.abs(s);
+      pose.shTwistX = (isDash ? 8 : 5) * s;
+      pose.hipTwistX = -(isDash ? 5 : 3) * s;
+      pose.legF_thigh = amp * s + 10 * D;
+      pose.legF_shin = pose.legF_thigh - (22 * D + Math.max(0, -s) * 54 * D);
+      pose.legB_thigh = -amp * s - 8 * D;
+      pose.legB_shin = pose.legB_thigh - (22 * D + Math.max(0, s) * 54 * D);
+      pose.armF_upper = -amp * 0.92 * s + 14 * D;
+      pose.armF_lower = pose.armF_upper + 78 * D;
+      pose.armB_upper = amp * 0.92 * s + 8 * D;
+      pose.armB_lower = pose.armB_upper + 78 * D;
+    } else if (f.state === 'JUMP') {
+      pose.useSide = true;
+      pose.torsoScaleX = 0.94;
+      pose.hipDrop = 26;
+      pose.torsoLean = 18 * D;
+      pose.headTilt = -10 * D;
+      pose.legF_thigh = 62 * D;
+      pose.legF_shin = -48 * D;
+      pose.legB_thigh = -30 * D;
+      pose.legB_shin = -75 * D;
+      pose.armF_upper = 55 * D;
+      pose.armF_lower = 125 * D;
+      pose.armB_upper = -38 * D;
+      pose.armB_lower = 75 * D;
+    } else if (f.state === 'BLOCKSTUN' || f.state === 'PARRY') {
+      pose.useSide = true;
+      pose.torsoScaleX = 0.95;
+      pose.hipDrop = 22;
+      pose.torsoLean = -10 * D;
+      pose.legF_thigh = 42 * D;
+      pose.legF_shin = -28 * D;
+      pose.legB_thigh = -36 * D;
+      pose.legB_shin = -46 * D;
+      pose.armF_upper = 48 * D;
+      pose.armF_lower = 138 * D;
+      pose.armB_upper = 30 * D;
+      pose.armB_lower = 122 * D;
+    } else if (f.state === 'HITSTUN') {
+      pose.hipDrop = 14;
+      pose.torsoLean = -28 * D;
+      pose.headTilt = -24 * D;
+      pose.legF_thigh = 14 * D;
+      pose.legF_shin = -12 * D;
+      pose.legB_thigh = -26 * D;
+      pose.legB_shin = -38 * D;
+      pose.armF_upper = 75 * D;
+      pose.armF_lower = 50 * D;
+      pose.armB_upper = -60 * D;
+      pose.armB_lower = -35 * D;
+    } else if (f.state === 'KO') {
+      pose.useSide = true;
+      pose.hipDrop = 40;
+      pose.wholeRot = -86 * D;
+      pose.legF_thigh = 36 * D;
+      pose.legF_shin = -12 * D;
+      pose.legB_thigh = -10 * D;
+      pose.legB_shin = -30 * D;
+      pose.armF_upper = 70 * D;
+      pose.armF_lower = 40 * D;
+      pose.armB_upper = -65 * D;
+      pose.armB_lower = -85 * D;
+    } else if (f.state === 'STARTUP' || f.state === 'ACTIVE' || f.state === 'RECOVERY') {
+      const ext = f.state === 'ACTIVE' ? 1.0 : (f.state === 'STARTUP' ? 0.35 : 0.45);
+      pose.useSide = true;
+      if (mvKey === 'LP' || mvKey === 'SP_41236') {
+        // Stretch front arm & hand straight forward while torso twists into the jab/cross
+        pose.lungeX = 20 * ext;
+        pose.hipDrop = 16 * ext;
+        pose.torsoLean = 24 * ext * D;
+        pose.headTilt = -16 * ext * D;
+        pose.shTwistX = 10 * ext;
+        pose.torsoScaleX = 1.0 - 0.14 * ext;
+        pose.legF_thigh = lerp(22, 46, ext) * D;
+        pose.legF_shin = -12 * D;
+        pose.legB_thigh = lerp(-22, -38, ext) * D;
+        pose.legB_shin = -26 * D;
+        pose.armF_upper = lerp(38, 92, ext) * D;
+        pose.armF_lower = lerp(120, 92, ext) * D;
+        pose.armB_upper = lerp(-14, -48, ext) * D;
+        pose.armB_lower = 72 * D;
+      } else if (mvKey === 'MP') {
+        // High flying knee strike
+        pose.lungeX = 16 * ext;
+        pose.torsoLean = -14 * ext * D;
+        pose.headTilt = 8 * ext * D;
+        pose.legF_thigh = lerp(22, 98, ext) * D;
+        pose.legF_shin = lerp(-15, -35, ext) * D;
+        pose.legB_thigh = -12 * D;
+        pose.legB_shin = -14 * D;
+        pose.armF_upper = -22 * D;
+        pose.armF_lower = 88 * D;
+        pose.armB_upper = 52 * D;
+        pose.armB_lower = 115 * D;
+      } else if (mvKey === 'SP_623' || mvKey === 'ULT_3') {
+        // Acrobatic airborne Chilena bicycle kick somersault
+        pose.lungeX = 22 * ext;
+        pose.wholeRot = lerp(-35, -138, ext) * D;
+        pose.legF_thigh = 104 * D;
+        pose.legF_shin = 98 * D;
+        pose.legB_thigh = -36 * D;
+        pose.legB_shin = -70 * D;
+        pose.armF_upper = 115 * D;
+        pose.armF_lower = 125 * D;
+        pose.armB_upper = -95 * D;
+        pose.armB_lower = -75 * D;
+      } else {
+        // Power kick / ball shot (HP, SK, SP_236, SUPER_1): stretch leg & cleat high forward!
+        pose.lungeX = 18 * ext;
+        pose.hipDrop = 10 * ext;
+        pose.torsoLean = -28 * ext * D;
+        pose.headTilt = 16 * ext * D;
+        pose.torsoScaleX = 1.0 - 0.12 * ext;
+        pose.legB_thigh = -14 * D;
+        pose.legB_shin = -12 * D;
+        pose.legF_thigh = lerp(20, 98, ext) * D;
+        pose.legF_shin = lerp(-16, 95, ext) * D;
+        pose.armF_upper = -38 * D;
+        pose.armF_lower = 32 * D;
+        pose.armB_upper = 54 * D;
+        pose.armB_lower = 105 * D;
+      }
+    }
+    return pose;
+  }
+
+  function drawArticulatedRigPart(ctx, atlasImg, part, x, y, targetAng, sc, scaleX = 1) {
+    if (!part || part.w <= 2) return;
+    ctx.save();
+    ctx.translate(x, y);
+    ctx.rotate((part.restAngle || 0) - targetAng);
+    if (scaleX !== 1) ctx.scale(scaleX, 1);
+    ctx.drawImage(
+      atlasImg,
+      part.x, part.y, part.w, part.h,
+      -part.px * sc, -part.py * sc, part.w * sc, part.h * sc
+    );
+    ctx.restore();
   }
 
   function drawFighterOnT6Canvas(ctx, f, groundY) {
@@ -3449,17 +3788,257 @@
     const dir = f.facingRight ? 1 : -1;
     const isBoss = f.data.Name === 'VAR_ZERO_BOSS';
     const w = f.data.Name === 'BULLDOG_PY' ? 84 : (isBoss ? 86 : 74);
-    const baseH = f.data.Name === 'PULGA_AR' ? 172 : (isBoss ? 214 : 188);
-    const h = f.state === 'CROUCH' ? baseH * 0.72 : baseH;
+    const baseH = f.data.Name === 'PULGA_AR' ? 174 : (isBoss ? 216 : 190);
+    const h = f.state === 'CROUCH' ? baseH * 0.66 : baseH;
     const t = f.stateFrame;
 
     // 1. Sombra realista sobre el césped
     ctx.fillStyle = isSfumato ? 'rgba(18, 12, 4, 0.65)' : 'rgba(0, 0, 0, 0.52)';
     ctx.beginPath();
-    ctx.ellipse(x, groundY + 4, (f.state === 'KO' ? w * 1.15 : w * 0.52), 9, 0, 0, Math.PI * 2);
+    ctx.ellipse(x, groundY + 4, (f.state === 'KO' ? w * 1.15 : w * 0.56), 9, 0, 0, Math.PI * 2);
     ctx.fill();
 
     const sprites = getT6FighterSpritePair(f.data.Name);
+    const rig = T6_RIG_MANIFEST ? T6_RIG_MANIFEST[f.data.Name] : null;
+    const rigAtlas = T6_RIG_ATLAS_CACHE[f.data.Name];
+    const mvKey = f.activeMoveKey;
+
+    const actionFrame = resolveLoadedActionFrame(f);
+    if (actionFrame) {
+      const { frameName, img, meta, fighterEntry } = actionFrame;
+      const idlePx = Math.max(1, fighterEntry.idleHeightPx || meta.h || img.naturalHeight);
+      const relH = meta.relHeight || (img.naturalHeight / idlePx);
+      const drawH = baseH * relH;
+      const aspect = img.naturalWidth / Math.max(1, img.naturalHeight);
+      const drawW = drawH * aspect;
+
+      let lungeX = 0;
+      let jitterX = 0;
+      let tilt = 0;
+      let breathScaleY = 1.0;
+
+      if (f.state === 'IDLE') {
+        breathScaleY = 1.0 + Math.sin(t * 0.14) * 0.01;
+      } else if (f.state === 'DASH_F') {
+        tilt = dir * 0.07;
+        lungeX = 6;
+      } else if (f.state === 'JUMP') {
+        tilt = dir * Math.max(-0.18, Math.min(0.18, (f.vy || 0) * 0.014));
+      } else if (f.state === 'PARRY' && t > 2 && t <= 16) {
+        lungeX = 12;
+      } else if (f.state === 'HITSTUN') {
+        jitterX = Math.sin(t * 2.1) * 3;
+      } else if (f.state === 'ACTIVE' && mvKey === 'SP_236') {
+        lungeX = 18;
+      } else if (f.state === 'KO' && frameName !== 'KO') {
+        tilt = -dir * 1.42;
+      }
+
+      ctx.save();
+      ctx.translate(x + dir * lungeX + jitterX, y);
+      if (tilt !== 0) ctx.rotate(tilt);
+
+      if (f.state === 'PARRY') {
+        ctx.shadowColor = '#00e5ff';
+        ctx.shadowBlur = 24;
+      } else if (mvKey && T6_MOVES[mvKey]?.invuln) {
+        ctx.shadowColor = '#ffe07d';
+        ctx.shadowBlur = 24;
+      } else if (f.state === 'HITSTUN') {
+        ctx.shadowColor = '#ff2a54';
+        ctx.shadowBlur = 20;
+      } else if (f.superMeter >= 3000) {
+        ctx.shadowColor = '#f5c451';
+        ctx.shadowBlur = 14;
+      }
+
+      ctx.scale(dir, breathScaleY);
+      ctx.drawImage(img, -drawW * 0.5, -drawH, drawW, drawH);
+
+      if (f.state === 'HITSTUN') {
+        ctx.globalCompositeOperation = 'source-atop';
+        ctx.fillStyle = 'rgba(255, 42, 84, 0.30)';
+        ctx.fillRect(-drawW * 0.5, -drawH, drawW, drawH);
+      } else if (f.state === 'PARRY' || f.state === 'BLOCKSTUN') {
+        ctx.strokeStyle = 'rgba(0, 229, 255, 0.82)';
+        ctx.lineWidth = 3;
+        ctx.beginPath();
+        ctx.ellipse(18, -drawH * 0.5, Math.max(36, drawW * 0.42), Math.max(42, drawH * 0.46), 0, -Math.PI * 0.45, Math.PI * 0.45);
+        ctx.stroke();
+      }
+      ctx.restore();
+
+      // Estela de golpe o patada en fase ACTIVE
+      if (f.state === 'ACTIVE' && mvKey && mvKey !== 'GB') {
+        ctx.save();
+        ctx.strokeStyle = isSfumato ? 'rgba(255, 226, 153, 0.82)' : 'rgba(0, 229, 255, 0.88)';
+        ctx.lineWidth = 9;
+        ctx.lineCap = 'round';
+        ctx.beginPath();
+        const isPunch = mvKey === 'LP' || mvKey === 'SP_41236';
+        ctx.arc(
+          x + dir * (isPunch ? 48 : 34),
+          y + (isPunch ? -baseH * 0.68 : -baseH * 0.48),
+          isPunch ? 32 : 58,
+          dir > 0 ? -0.75 : Math.PI - 0.35,
+          dir > 0 ? 0.35 : Math.PI + 0.75
+        );
+        ctx.stroke();
+        ctx.restore();
+      }
+
+      if (f.state === 'ACTIVE' && mvKey) {
+        const mv = T6_MOVES[mvKey];
+        if (mv && mv.range > 0 && mv.type !== 'PROJ') {
+          const hbX = dir > 0 ? x + w * 0.35 : x - w * 0.35 - mv.range;
+          const hbW = mv.range;
+          const hbY = y - h * 0.78;
+          ctx.fillStyle = isSfumato ? 'rgba(245, 196, 81, 0.22)' : 'rgba(255, 42, 84, 0.26)';
+          ctx.strokeStyle = isSfumato ? '#ffe07d' : '#ff2a54';
+          ctx.lineWidth = 2;
+          ctx.fillRect(hbX, hbY, hbW, 50);
+          ctx.strokeRect(hbX, hbY, hbW, 50);
+        }
+      }
+
+      const nameY = f.state === 'KO' ? y - Math.max(drawH, 48) - 18 : y - h - 18;
+      ctx.fillStyle = isSfumato ? '#ffe599' : '#ffffff';
+      ctx.font = isSfumato ? 'bold 11.5px Georgia, serif' : 'bold 11px Consolas, monospace';
+      ctx.textAlign = 'center';
+      ctx.fillText(`${f.isP1 ? 'P1' : 'P2'}: ${f.data.DisplayName}`, x, nameY);
+      ctx.textAlign = 'left';
+      return;
+    }
+
+    if (rig && rigAtlas && rigAtlas.complete && rigAtlas.naturalWidth > 0) {
+      const sc = baseH / Math.max(1, rig.srcSize[1]);
+      const sk = rig.skeleton;
+      const pts = rig.parts;
+      const pose = computeFighterRigPose(f, t);
+
+      // Compute hip base anchor in local (+X forward, +Y down) coordinates relative to feet (0, 0)
+      const hipBaseY = -sk.hipOffsetFromFeetY * sc + pose.hipDrop;
+      const hipX = 0;
+
+      // Use side-profile torso & head + profile shoulder anchors when running, crouching, blocking, or attacking
+      const useSide = !!(pose.useSide && pts.torso_side && pts.torso_side.w > 4 && pts.head_side && pts.head_side.w > 4);
+      const torsoPart = useSide ? pts.torso_side : pts.torso;
+      const headPart = useSide ? pts.head_side : pts.head;
+      const neckDist = (useSide && sk.neckFromHipSideY ? sk.neckFromHipSideY : sk.neckFromHipY) * sc;
+
+      // Spine & torso pivot rotated by torsoLean
+      const leanS = Math.sin(pose.torsoLean);
+      const leanC = Math.cos(pose.torsoLean);
+      const neckX = hipX + leanS * neckDist;
+      const neckY = hipBaseY - leanC * neckDist;
+
+      const rotPt = (lx, ly) => [
+        hipX + lx * leanC - ly * leanS,
+        hipBaseY + lx * leanS + ly * leanC
+      ];
+      const shBackRaw = (useSide && sk.shSideB) ? sk.shSideB : sk.shL;
+      const shFrontRaw = (useSide && sk.shSideF) ? sk.shSideF : sk.shR;
+      const [shBX, shBY] = rotPt(shBackRaw[0] * sc - pose.shTwistX, shBackRaw[1] * sc);
+      const [shFX, shFY] = rotPt(shFrontRaw[0] * sc + pose.shTwistX, shFrontRaw[1] * sc);
+      const [hipBX, hipBY] = [hipX + (useSide ? -4 * sc : sk.hipL[0] * sc) + pose.hipTwistX, hipBaseY];
+      const [hipFX, hipFY] = [hipX + (useSide ? 4 * sc : sk.hipR[0] * sc) - pose.hipTwistX, hipBaseY];
+
+      // Limb end joints via exact kinematics (elbow = sh + upperLen*[sin, cos], knee = hip + thighLen*[sin, cos])
+      const elBX = shBX + (sk.upperArmLenL * sc) * Math.sin(pose.armB_upper);
+      const elBY = shBY + (sk.upperArmLenL * sc) * Math.cos(pose.armB_upper);
+      const elFX = shFX + (sk.upperArmLenR * sc) * Math.sin(pose.armF_upper);
+      const elFY = shFY + (sk.upperArmLenR * sc) * Math.cos(pose.armF_upper);
+
+      const knBX = hipBX + (sk.thighLen * sc) * Math.sin(pose.legB_thigh);
+      const knBY = hipBY + (sk.thighLen * sc) * Math.cos(pose.legB_thigh);
+      const knFX = hipFX + (sk.thighLen * sc) * Math.sin(pose.legF_thigh);
+      const knFY = hipFY + (sk.thighLen * sc) * Math.cos(pose.legF_thigh);
+
+      ctx.save();
+      ctx.translate(x + dir * pose.lungeX, y);
+      if (f.state === 'PARRY') {
+        ctx.shadowColor = '#00e5ff';
+        ctx.shadowBlur = 24;
+      } else if (mvKey && T6_MOVES[mvKey]?.invuln) {
+        ctx.shadowColor = '#ffe07d';
+        ctx.shadowBlur = 24;
+      } else if (f.state === 'HITSTUN') {
+        ctx.shadowColor = '#ff2a54';
+        ctx.shadowBlur = 20;
+      } else if (f.superMeter >= 3000) {
+        ctx.shadowColor = '#f5c451';
+        ctx.shadowBlur = 14;
+      }
+
+      ctx.scale(dir, 1);
+      if (Math.abs(pose.wholeRot) > 0.01) {
+        ctx.translate(0, hipBaseY);
+        ctx.rotate(pose.wholeRot);
+        ctx.translate(0, -hipBaseY);
+      }
+
+      // Draw articulated hierarchical layers (Rear Arm -> Rear Leg -> Torso -> Head -> Front Leg -> Front Arm)
+      drawArticulatedRigPart(ctx, rigAtlas, pts.armL_upper, shBX, shBY, pose.armB_upper, sc);
+      drawArticulatedRigPart(ctx, rigAtlas, pts.armL_lower, elBX, elBY, pose.armB_lower, sc);
+      drawArticulatedRigPart(ctx, rigAtlas, pts.legL_thigh, hipBX, hipBY, pose.legB_thigh, sc);
+      drawArticulatedRigPart(ctx, rigAtlas, pts.legL_shin,  knBX, knBY, pose.legB_shin,  sc);
+      drawArticulatedRigPart(ctx, rigAtlas, torsoPart,      hipX, hipBaseY, -pose.torsoLean, sc, pose.torsoScaleX);
+      drawArticulatedRigPart(ctx, rigAtlas, headPart,       neckX, neckY, -(pose.torsoLean + pose.headTilt), sc);
+      drawArticulatedRigPart(ctx, rigAtlas, pts.legR_thigh, hipFX, hipFY, pose.legF_thigh, sc);
+      drawArticulatedRigPart(ctx, rigAtlas, pts.legR_shin,  knFX, knFY, pose.legF_shin,  sc);
+      drawArticulatedRigPart(ctx, rigAtlas, pts.armR_upper, shFX, shFY, pose.armF_upper, sc);
+      drawArticulatedRigPart(ctx, rigAtlas, pts.armR_lower, elFX, elFY, pose.armF_lower, sc);
+
+      if (f.state === 'PARRY' || f.state === 'BLOCKSTUN') {
+        ctx.strokeStyle = 'rgba(0, 229, 255, 0.82)';
+        ctx.lineWidth = 3;
+        ctx.beginPath();
+        ctx.ellipse(18, hipBaseY - 18, 46, baseH * 0.44, 0, -Math.PI * 0.45, Math.PI * 0.45);
+        ctx.stroke();
+      }
+      ctx.restore();
+
+      // Estela de golpe o patada en fase ACTIVE
+      if (f.state === 'ACTIVE' && mvKey && mvKey !== 'GB') {
+        ctx.save();
+        ctx.strokeStyle = isSfumato ? 'rgba(255, 226, 153, 0.82)' : 'rgba(0, 229, 255, 0.88)';
+        ctx.lineWidth = 9;
+        ctx.lineCap = 'round';
+        ctx.beginPath();
+        const isPunch = mvKey === 'LP' || mvKey === 'SP_41236';
+        ctx.arc(
+          x + dir * (isPunch ? 48 : 34),
+          y + (isPunch ? -baseH * 0.68 : -baseH * 0.48),
+          isPunch ? 32 : 58,
+          dir > 0 ? -0.75 : Math.PI - 0.35,
+          dir > 0 ? 0.35 : Math.PI + 0.75
+        );
+        ctx.stroke();
+        ctx.restore();
+      }
+
+      if (f.state === 'ACTIVE' && mvKey) {
+        const mv = T6_MOVES[mvKey];
+        if (mv && mv.range > 0 && mv.type !== 'PROJ') {
+          const hbX = dir > 0 ? x + w * 0.35 : x - w * 0.35 - mv.range;
+          const hbW = mv.range;
+          const hbY = y - h * 0.78;
+          ctx.fillStyle = isSfumato ? 'rgba(245, 196, 81, 0.22)' : 'rgba(255, 42, 84, 0.26)';
+          ctx.strokeStyle = isSfumato ? '#ffe07d' : '#ff2a54';
+          ctx.lineWidth = 2;
+          ctx.fillRect(hbX, hbY, hbW, 50);
+          ctx.strokeRect(hbX, hbY, hbW, 50);
+        }
+      }
+
+      ctx.fillStyle = isSfumato ? '#ffe599' : '#ffffff';
+      ctx.font = isSfumato ? 'bold 11.5px Georgia, serif' : 'bold 11px Consolas, monospace';
+      ctx.textAlign = 'center';
+      ctx.fillText(`${f.isP1 ? 'P1' : 'P2'}: ${f.data.DisplayName}`, x, y - h - 18);
+      ctx.textAlign = 'left';
+      return;
+    }
+
     const useSide = ['WALK_F', 'WALK_B', 'DASH_F', 'DASH_B', 'STARTUP', 'ACTIVE', 'RECOVERY', 'HITSTUN', 'KO'].includes(f.state);
     const activeImg = (useSide && sprites.side.complete && sprites.side.naturalWidth > 0)
       ? sprites.side
@@ -3471,7 +4050,6 @@
       let dropY = 0;
       let scaleX = 1.0;
       let scaleY = 1.0;
-      const mvKey = f.activeMoveKey;
 
       if (f.state === 'IDLE') {
         scaleY = 1.0 + Math.sin(t * 0.12) * 0.015;

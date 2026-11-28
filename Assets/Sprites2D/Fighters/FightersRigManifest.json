@@ -1,0 +1,2705 @@
+{
+  "FENOMENO_BR": {
+    "code": "FENOMENO_BR",
+    "atlas": "Rig_FENOMENO_BR.png",
+    "srcSize": [
+      200,
+      378
+    ],
+    "skeleton": {
+      "hipOffsetFromFeetY": 178.5,
+      "neckFromHipY": 155.5,
+      "neckFromHipSideY": 142.5,
+      "shL": [
+        -39.0,
+        -128.76
+      ],
+      "shR": [
+        39.0,
+        -128.76
+      ],
+      "shSideF": [
+        -8.6,
+        -128.76
+      ],
+      "shSideB": [
+        0.42,
+        -126.76
+      ],
+      "elLFromSh": [
+        -25.21,
+        64.04
+      ],
+      "elRFromSh": [
+        26.36,
+        63.82
+      ],
+      "upperArmLenL": 68.82,
+      "upperArmLenR": 69.05,
+      "hipL": [
+        -24.0,
+        0.0
+      ],
+      "hipR": [
+        25.0,
+        0.0
+      ],
+      "thighLen": 96.5,
+      "shinLen": 82.0
+    },
+    "parts": {
+      "head": {
+        "x": 2,
+        "y": 2,
+        "w": 44,
+        "h": 53,
+        "px": 21.0,
+        "py": 45.0,
+        "restAngle": 0.0
+      },
+      "torso": {
+        "x": 50,
+        "y": 2,
+        "w": 85,
+        "h": 157,
+        "px": 42.0,
+        "py": 159.5,
+        "restAngle": 0.0
+      },
+      "armL_upper": {
+        "x": 139,
+        "y": 2,
+        "w": 60,
+        "h": 86,
+        "px": 38.0,
+        "py": 14.74,
+        "restAngle": -0.375
+      },
+      "armL_lower": {
+        "x": 203,
+        "y": 2,
+        "w": 47,
+        "h": 71,
+        "px": 33.79,
+        "py": 7.78,
+        "restAngle": -0.4204
+      },
+      "armR_upper": {
+        "x": 254,
+        "y": 2,
+        "w": 66,
+        "h": 96,
+        "px": 27.0,
+        "py": 24.74,
+        "restAngle": 0.3917
+      },
+      "armR_lower": {
+        "x": 324,
+        "y": 2,
+        "w": 59,
+        "h": 71,
+        "px": 24.36,
+        "py": 7.56,
+        "restAngle": 0.3793
+      },
+      "legL_thigh": {
+        "x": 387,
+        "y": 2,
+        "w": 50,
+        "h": 117,
+        "px": 22.0,
+        "py": 11.5,
+        "restAngle": 0.0
+      },
+      "legL_shin": {
+        "x": 441,
+        "y": 2,
+        "w": 27,
+        "h": 88,
+        "px": 16.0,
+        "py": 8.0,
+        "restAngle": 0.0
+      },
+      "legR_thigh": {
+        "x": 2,
+        "y": 163,
+        "w": 50,
+        "h": 117,
+        "px": 28.0,
+        "py": 11.5,
+        "restAngle": 0.0
+      },
+      "legR_shin": {
+        "x": 56,
+        "y": 163,
+        "w": 26,
+        "h": 88,
+        "px": 10.0,
+        "py": 8.0,
+        "restAngle": 0.0
+      },
+      "head_side": {
+        "x": 86,
+        "y": 163,
+        "w": 63,
+        "h": 66,
+        "px": 24.5,
+        "py": 58.0,
+        "restAngle": 0.0
+      },
+      "torso_side": {
+        "x": 153,
+        "y": 163,
+        "w": 69,
+        "h": 131,
+        "px": 32.0,
+        "py": 146.5,
+        "restAngle": 0.0
+      }
+    }
+  },
+  "BRUXO_BR": {
+    "code": "BRUXO_BR",
+    "atlas": "Rig_BRUXO_BR.png",
+    "srcSize": [
+      176,
+      360
+    ],
+    "skeleton": {
+      "hipOffsetFromFeetY": 159.6,
+      "neckFromHipY": 164.4,
+      "neckFromHipSideY": 150.4,
+      "shL": [
+        -36.0,
+        -138.5
+      ],
+      "shR": [
+        35.0,
+        -138.5
+      ],
+      "shSideF": [
+        -9.0,
+        -138.5
+      ],
+      "shSideB": [
+        -0.2,
+        -136.5
+      ],
+      "elLFromSh": [
+        -18.4,
+        67.87
+      ],
+      "elRFromSh": [
+        21.55,
+        67.5
+      ],
+      "upperArmLenL": 70.32,
+      "upperArmLenR": 70.85,
+      "hipL": [
+        -23.0,
+        0.0
+      ],
+      "hipR": [
+        26.0,
+        0.0
+      ],
+      "thighLen": 89.6,
+      "shinLen": 70.0
+    },
+    "parts": {
+      "head": {
+        "x": 2,
+        "y": 2,
+        "w": 42,
+        "h": 45,
+        "px": 20.0,
+        "py": 37.0,
+        "restAngle": 0.0
+      },
+      "torso": {
+        "x": 48,
+        "y": 2,
+        "w": 78,
+        "h": 165,
+        "px": 39.0,
+        "py": 168.4,
+        "restAngle": 0.0
+      },
+      "armL_upper": {
+        "x": 130,
+        "y": 2,
+        "w": 55,
+        "h": 99,
+        "px": 30.0,
+        "py": 23.9,
+        "restAngle": -0.2648
+      },
+      "armL_lower": {
+        "x": 189,
+        "y": 2,
+        "w": 50,
+        "h": 74,
+        "px": 31.6,
+        "py": 5.77,
+        "restAngle": -0.3696
+      },
+      "armR_upper": {
+        "x": 243,
+        "y": 2,
+        "w": 59,
+        "h": 98,
+        "px": 25.0,
+        "py": 23.9,
+        "restAngle": 0.309
+      },
+      "armR_lower": {
+        "x": 306,
+        "y": 2,
+        "w": 51,
+        "h": 75,
+        "px": 19.55,
+        "py": 6.4,
+        "restAngle": 0.2976
+      },
+      "legL_thigh": {
+        "x": 361,
+        "y": 2,
+        "w": 47,
+        "h": 110,
+        "px": 20.0,
+        "py": 11.4,
+        "restAngle": 0.0
+      },
+      "legL_shin": {
+        "x": 412,
+        "y": 2,
+        "w": 23,
+        "h": 76,
+        "px": 12.0,
+        "py": 8.0,
+        "restAngle": 0.0
+      },
+      "legR_thigh": {
+        "x": 439,
+        "y": 2,
+        "w": 46,
+        "h": 110,
+        "px": 29.0,
+        "py": 11.4,
+        "restAngle": 0.0
+      },
+      "legR_shin": {
+        "x": 2,
+        "y": 171,
+        "w": 20,
+        "h": 76,
+        "px": 10.0,
+        "py": 8.0,
+        "restAngle": 0.0
+      },
+      "head_side": {
+        "x": 26,
+        "y": 171,
+        "w": 71,
+        "h": 59,
+        "px": 34.5,
+        "py": 51.0,
+        "restAngle": 0.0
+      },
+      "torso_side": {
+        "x": 101,
+        "y": 171,
+        "w": 70,
+        "h": 138,
+        "px": 37.0,
+        "py": 154.4,
+        "restAngle": 0.0
+      }
+    }
+  },
+  "CANON_AR": {
+    "code": "CANON_AR",
+    "atlas": "Rig_CANON_AR.png",
+    "srcSize": [
+      195,
+      380
+    ],
+    "skeleton": {
+      "hipOffsetFromFeetY": 175.0,
+      "neckFromHipY": 171.0,
+      "neckFromHipSideY": 155.0,
+      "shL": [
+        -39.5,
+        -143.84
+      ],
+      "shR": [
+        38.5,
+        -143.84
+      ],
+      "shSideF": [
+        -14.8,
+        -143.84
+      ],
+      "shSideB": [
+        -3.14,
+        -141.84
+      ],
+      "elLFromSh": [
+        -14.15,
+        70.49
+      ],
+      "elRFromSh": [
+        25.11,
+        69.13
+      ],
+      "upperArmLenL": 71.9,
+      "upperArmLenR": 73.55,
+      "hipL": [
+        -20.0,
+        0.0
+      ],
+      "hipR": [
+        32.0,
+        0.0
+      ],
+      "thighLen": 97.0,
+      "shinLen": 78.0
+    },
+    "parts": {
+      "head": {
+        "x": 2,
+        "y": 2,
+        "w": 56,
+        "h": 43,
+        "px": 21.5,
+        "py": 35.0,
+        "restAngle": 0.0
+      },
+      "torso": {
+        "x": 62,
+        "y": 2,
+        "w": 85,
+        "h": 171,
+        "px": 42.5,
+        "py": 175.0,
+        "restAngle": 0.0
+      },
+      "armL_upper": {
+        "x": 151,
+        "y": 2,
+        "w": 57,
+        "h": 103,
+        "px": 30.0,
+        "py": 25.16,
+        "restAngle": -0.1982
+      },
+      "armL_lower": {
+        "x": 212,
+        "y": 2,
+        "w": 49,
+        "h": 77,
+        "px": 31.85,
+        "py": 6.65,
+        "restAngle": -0.3436
+      },
+      "armR_upper": {
+        "x": 265,
+        "y": 2,
+        "w": 71,
+        "h": 106,
+        "px": 27.0,
+        "py": 25.16,
+        "restAngle": 0.3485
+      },
+      "armR_lower": {
+        "x": 340,
+        "y": 2,
+        "w": 57,
+        "h": 82,
+        "px": 23.11,
+        "py": 10.29,
+        "restAngle": 0.2666
+      },
+      "legL_thigh": {
+        "x": 401,
+        "y": 2,
+        "w": 45,
+        "h": 117,
+        "px": 21.5,
+        "py": 11.0,
+        "restAngle": 0.0
+      },
+      "legL_shin": {
+        "x": 450,
+        "y": 2,
+        "w": 42,
+        "h": 84,
+        "px": 18.5,
+        "py": 8.0,
+        "restAngle": 0.0
+      },
+      "legR_thigh": {
+        "x": 2,
+        "y": 177,
+        "w": 49,
+        "h": 117,
+        "px": 34.5,
+        "py": 11.0,
+        "restAngle": 0.0
+      },
+      "legR_shin": {
+        "x": 55,
+        "y": 177,
+        "w": 42,
+        "h": 84,
+        "px": 34.5,
+        "py": 8.0,
+        "restAngle": 0.0
+      },
+      "head_side": {
+        "x": 101,
+        "y": 177,
+        "w": 71,
+        "h": 59,
+        "px": 34.5,
+        "py": 51.0,
+        "restAngle": 0.0
+      },
+      "torso_side": {
+        "x": 176,
+        "y": 177,
+        "w": 80,
+        "h": 142,
+        "px": 43.0,
+        "py": 159.0,
+        "restAngle": 0.0
+      }
+    }
+  },
+  "PULGA_AR": {
+    "code": "PULGA_AR",
+    "atlas": "Rig_PULGA_AR.png",
+    "srcSize": [
+      214,
+      373
+    ],
+    "skeleton": {
+      "hipOffsetFromFeetY": 165.5,
+      "neckFromHipY": 157.5,
+      "neckFromHipSideY": 145.5,
+      "shL": [
+        -39.0,
+        -130.76
+      ],
+      "shR": [
+        39.0,
+        -130.76
+      ],
+      "shSideF": [
+        -7.4,
+        -130.76
+      ],
+      "shSideB": [
+        1.18,
+        -128.76
+      ],
+      "elLFromSh": [
+        -26.3,
+        64.34
+      ],
+      "elRFromSh": [
+        32.75,
+        63.02
+      ],
+      "upperArmLenL": 69.5,
+      "upperArmLenR": 71.02,
+      "hipL": [
+        -20.5,
+        0.0
+      ],
+      "hipR": [
+        27.0,
+        0.0
+      ],
+      "thighLen": 91.5,
+      "shinLen": 74.0
+    },
+    "parts": {
+      "head": {
+        "x": 2,
+        "y": 2,
+        "w": 43,
+        "h": 59,
+        "px": 18.0,
+        "py": 51.0,
+        "restAngle": 0.0
+      },
+      "torso": {
+        "x": 49,
+        "y": 2,
+        "w": 85,
+        "h": 159,
+        "px": 42.0,
+        "py": 161.5,
+        "restAngle": 0.0
+      },
+      "armL_upper": {
+        "x": 138,
+        "y": 2,
+        "w": 58,
+        "h": 86,
+        "px": 37.0,
+        "py": 14.74,
+        "restAngle": -0.3881
+      },
+      "armL_lower": {
+        "x": 200,
+        "y": 2,
+        "w": 49,
+        "h": 72,
+        "px": 35.7,
+        "py": 7.08,
+        "restAngle": -0.4869
+      },
+      "armR_upper": {
+        "x": 253,
+        "y": 2,
+        "w": 70,
+        "h": 96,
+        "px": 26.0,
+        "py": 24.74,
+        "restAngle": 0.4792
+      },
+      "armR_lower": {
+        "x": 327,
+        "y": 2,
+        "w": 66,
+        "h": 75,
+        "px": 30.75,
+        "py": 8.76,
+        "restAngle": 0.4582
+      },
+      "legL_thigh": {
+        "x": 397,
+        "y": 2,
+        "w": 46,
+        "h": 112,
+        "px": 21.5,
+        "py": 11.5,
+        "restAngle": 0.0
+      },
+      "legL_shin": {
+        "x": 447,
+        "y": 2,
+        "w": 46,
+        "h": 80,
+        "px": 21.5,
+        "py": 8.0,
+        "restAngle": 0.0
+      },
+      "legR_thigh": {
+        "x": 2,
+        "y": 165,
+        "w": 50,
+        "h": 112,
+        "px": 30.0,
+        "py": 11.5,
+        "restAngle": 0.0
+      },
+      "legR_shin": {
+        "x": 56,
+        "y": 165,
+        "w": 46,
+        "h": 79,
+        "px": 30.0,
+        "py": 8.0,
+        "restAngle": 0.0
+      },
+      "head_side": {
+        "x": 106,
+        "y": 165,
+        "w": 59,
+        "h": 71,
+        "px": 23.5,
+        "py": 63.0,
+        "restAngle": 0.0
+      },
+      "torso_side": {
+        "x": 169,
+        "y": 165,
+        "w": 60,
+        "h": 134,
+        "px": 28.0,
+        "py": 149.5,
+        "restAngle": 0.0
+      }
+    }
+  },
+  "PIBE_CO": {
+    "code": "PIBE_CO",
+    "atlas": "Rig_PIBE_CO.png",
+    "srcSize": [
+      180,
+      383
+    ],
+    "skeleton": {
+      "hipOffsetFromFeetY": 161.0,
+      "neckFromHipY": 143.0,
+      "neckFromHipSideY": 139.0,
+      "shL": [
+        -37.0,
+        -115.84
+      ],
+      "shR": [
+        36.0,
+        -115.84
+      ],
+      "shSideF": [
+        -8.2,
+        -115.84
+      ],
+      "shSideB": [
+        3.24,
+        -113.84
+      ],
+      "elLFromSh": [
+        -17.86,
+        57.26
+      ],
+      "elRFromSh": [
+        24.2,
+        56.27
+      ],
+      "upperArmLenL": 59.98,
+      "upperArmLenR": 61.26,
+      "hipL": [
+        -18.0,
+        0.0
+      ],
+      "hipR": [
+        28.0,
+        0.0
+      ],
+      "thighLen": 87.0,
+      "shinLen": 74.0
+    },
+    "parts": {
+      "head": {
+        "x": 2,
+        "y": 2,
+        "w": 88,
+        "h": 88,
+        "px": 38.0,
+        "py": 80.0,
+        "restAngle": 0.0
+      },
+      "torso": {
+        "x": 94,
+        "y": 2,
+        "w": 80,
+        "h": 146,
+        "px": 40.0,
+        "py": 147.0,
+        "restAngle": 0.0
+      },
+      "armL_upper": {
+        "x": 178,
+        "y": 2,
+        "w": 55,
+        "h": 89,
+        "px": 29.0,
+        "py": 25.16,
+        "restAngle": -0.3024
+      },
+      "armL_lower": {
+        "x": 237,
+        "y": 2,
+        "w": 36,
+        "h": 65,
+        "px": 23.14,
+        "py": 6.42,
+        "restAngle": -0.2971
+      },
+      "armR_upper": {
+        "x": 277,
+        "y": 2,
+        "w": 66,
+        "h": 94,
+        "px": 26.0,
+        "py": 25.16,
+        "restAngle": 0.4061
+      },
+      "armR_lower": {
+        "x": 347,
+        "y": 2,
+        "w": 51,
+        "h": 69,
+        "px": 22.2,
+        "py": 9.43,
+        "restAngle": 0.2587
+      },
+      "legL_thigh": {
+        "x": 402,
+        "y": 2,
+        "w": 43,
+        "h": 107,
+        "px": 21.0,
+        "py": 11.0,
+        "restAngle": 0.0
+      },
+      "legL_shin": {
+        "x": 449,
+        "y": 2,
+        "w": 40,
+        "h": 80,
+        "px": 18.0,
+        "py": 8.0,
+        "restAngle": 0.0
+      },
+      "legR_thigh": {
+        "x": 2,
+        "y": 152,
+        "w": 47,
+        "h": 107,
+        "px": 31.0,
+        "py": 11.0,
+        "restAngle": 0.0
+      },
+      "legR_shin": {
+        "x": 53,
+        "y": 152,
+        "w": 40,
+        "h": 80,
+        "px": 31.0,
+        "py": 8.0,
+        "restAngle": 0.0
+      },
+      "head_side": {
+        "x": 97,
+        "y": 152,
+        "w": 85,
+        "h": 92,
+        "px": 40.0,
+        "py": 84.0,
+        "restAngle": 0.0
+      },
+      "torso_side": {
+        "x": 186,
+        "y": 152,
+        "w": 65,
+        "h": 129,
+        "px": 31.0,
+        "py": 143.0,
+        "restAngle": 0.0
+      }
+    }
+  },
+  "LOCO_CO": {
+    "code": "LOCO_CO",
+    "atlas": "Rig_LOCO_CO.png",
+    "srcSize": [
+      204,
+      378
+    ],
+    "skeleton": {
+      "hipOffsetFromFeetY": 169.7,
+      "neckFromHipY": 174.3,
+      "neckFromHipSideY": 160.3,
+      "shL": [
+        -39.0,
+        -147.56
+      ],
+      "shR": [
+        39.0,
+        -147.56
+      ],
+      "shSideF": [
+        -13.2,
+        -147.56
+      ],
+      "shSideB": [
+        2.64,
+        -145.56
+      ],
+      "elLFromSh": [
+        -15.4,
+        73.61
+      ],
+      "elRFromSh": [
+        22.42,
+        73.29
+      ],
+      "upperArmLenL": 75.21,
+      "upperArmLenR": 76.65,
+      "hipL": [
+        -21.5,
+        0.0
+      ],
+      "hipR": [
+        35.0,
+        0.0
+      ],
+      "thighLen": 95.7,
+      "shinLen": 74.0
+    },
+    "parts": {
+      "head": {
+        "x": 2,
+        "y": 2,
+        "w": 80,
+        "h": 43,
+        "px": 32.0,
+        "py": 35.0,
+        "restAngle": 0.0
+      },
+      "torso": {
+        "x": 86,
+        "y": 2,
+        "w": 85,
+        "h": 174,
+        "px": 42.0,
+        "py": 178.3,
+        "restAngle": 0.0
+      },
+      "armL_upper": {
+        "x": 175,
+        "y": 2,
+        "w": 56,
+        "h": 105,
+        "px": 30.0,
+        "py": 24.74,
+        "restAngle": -0.2063
+      },
+      "armL_lower": {
+        "x": 235,
+        "y": 2,
+        "w": 57,
+        "h": 77,
+        "px": 33.6,
+        "py": 6.35,
+        "restAngle": -0.3569
+      },
+      "armR_upper": {
+        "x": 296,
+        "y": 2,
+        "w": 70,
+        "h": 108,
+        "px": 27.0,
+        "py": 24.74,
+        "restAngle": 0.2968
+      },
+      "armR_lower": {
+        "x": 370,
+        "y": 2,
+        "w": 61,
+        "h": 81,
+        "px": 20.42,
+        "py": 10.03,
+        "restAngle": 0.3058
+      },
+      "legL_thigh": {
+        "x": 435,
+        "y": 2,
+        "w": 47,
+        "h": 116,
+        "px": 21.5,
+        "py": 11.3,
+        "restAngle": 0.0
+      },
+      "legL_shin": {
+        "x": 2,
+        "y": 180,
+        "w": 44,
+        "h": 80,
+        "px": 18.5,
+        "py": 8.0,
+        "restAngle": 0.0
+      },
+      "legR_thigh": {
+        "x": 50,
+        "y": 180,
+        "w": 50,
+        "h": 116,
+        "px": 38.0,
+        "py": 11.3,
+        "restAngle": 0.0
+      },
+      "legR_shin": {
+        "x": 104,
+        "y": 180,
+        "w": 44,
+        "h": 80,
+        "px": 38.0,
+        "py": 8.0,
+        "restAngle": 0.0
+      },
+      "head_side": {
+        "x": 152,
+        "y": 180,
+        "w": 78,
+        "h": 57,
+        "px": 39.0,
+        "py": 49.0,
+        "restAngle": 0.0
+      },
+      "torso_side": {
+        "x": 234,
+        "y": 180,
+        "w": 88,
+        "h": 147,
+        "px": 45.0,
+        "py": 164.3,
+        "restAngle": 0.0
+      }
+    }
+  },
+  "PISTOLERO_UY": {
+    "code": "PISTOLERO_UY",
+    "atlas": "Rig_PISTOLERO_UY.png",
+    "srcSize": [
+      199,
+      375
+    ],
+    "skeleton": {
+      "hipOffsetFromFeetY": 178.1,
+      "neckFromHipY": 148.9,
+      "neckFromHipSideY": 140.9,
+      "shL": [
+        -39.5,
+        -122.16
+      ],
+      "shR": [
+        38.5,
+        -122.16
+      ],
+      "shSideF": [
+        -9.4,
+        -122.16
+      ],
+      "shSideB": [
+        1.38,
+        -120.16
+      ],
+      "elLFromSh": [
+        -25.03,
+        60.96
+      ],
+      "elRFromSh": [
+        27.56,
+        60.64
+      ],
+      "upperArmLenL": 65.9,
+      "upperArmLenR": 66.6,
+      "hipL": [
+        -25.0,
+        0.0
+      ],
+      "hipR": [
+        27.0,
+        0.0
+      ],
+      "thighLen": 96.1,
+      "shinLen": 82.0
+    },
+    "parts": {
+      "head": {
+        "x": 2,
+        "y": 2,
+        "w": 42,
+        "h": 57,
+        "px": 19.5,
+        "py": 49.0,
+        "restAngle": 0.0
+      },
+      "torso": {
+        "x": 48,
+        "y": 2,
+        "w": 85,
+        "h": 151,
+        "px": 42.5,
+        "py": 152.9,
+        "restAngle": 0.0
+      },
+      "armL_upper": {
+        "x": 137,
+        "y": 2,
+        "w": 60,
+        "h": 84,
+        "px": 37.0,
+        "py": 15.74,
+        "restAngle": -0.3896
+      },
+      "armL_lower": {
+        "x": 201,
+        "y": 2,
+        "w": 46,
+        "h": 68,
+        "px": 32.97,
+        "py": 7.7,
+        "restAngle": -0.3985
+      },
+      "armR_upper": {
+        "x": 251,
+        "y": 2,
+        "w": 67,
+        "h": 93,
+        "px": 27.0,
+        "py": 24.74,
+        "restAngle": 0.4266
+      },
+      "armR_lower": {
+        "x": 322,
+        "y": 2,
+        "w": 59,
+        "h": 68,
+        "px": 25.56,
+        "py": 7.38,
+        "restAngle": 0.3932
+      },
+      "legL_thigh": {
+        "x": 385,
+        "y": 2,
+        "w": 49,
+        "h": 117,
+        "px": 20.5,
+        "py": 11.9,
+        "restAngle": 0.0
+      },
+      "legL_shin": {
+        "x": 438,
+        "y": 2,
+        "w": 24,
+        "h": 86,
+        "px": 14.5,
+        "py": 8.0,
+        "restAngle": 0.0
+      },
+      "legR_thigh": {
+        "x": 2,
+        "y": 157,
+        "w": 49,
+        "h": 117,
+        "px": 29.5,
+        "py": 11.9,
+        "restAngle": 0.0
+      },
+      "legR_shin": {
+        "x": 55,
+        "y": 157,
+        "w": 22,
+        "h": 86,
+        "px": 8.5,
+        "py": 8.0,
+        "restAngle": 0.0
+      },
+      "head_side": {
+        "x": 81,
+        "y": 157,
+        "w": 61,
+        "h": 65,
+        "px": 26.0,
+        "py": 57.0,
+        "restAngle": 0.0
+      },
+      "torso_side": {
+        "x": 146,
+        "y": 157,
+        "w": 74,
+        "h": 130,
+        "px": 34.0,
+        "py": 144.9,
+        "restAngle": 0.0
+      }
+    }
+  },
+  "MATADOR_UY": {
+    "code": "MATADOR_UY",
+    "atlas": "Rig_MATADOR_UY.png",
+    "srcSize": [
+      200,
+      374
+    ],
+    "skeleton": {
+      "hipOffsetFromFeetY": 181.1,
+      "neckFromHipY": 150.9,
+      "neckFromHipSideY": 135.9,
+      "shL": [
+        -39.0,
+        -124.16
+      ],
+      "shR": [
+        39.0,
+        -124.16
+      ],
+      "shSideF": [
+        -8.0,
+        -124.16
+      ],
+      "shSideB": [
+        0.8,
+        -122.16
+      ],
+      "elLFromSh": [
+        -20.8,
+        62.54
+      ],
+      "elRFromSh": [
+        24.81,
+        62.14
+      ],
+      "upperArmLenL": 65.91,
+      "upperArmLenR": 66.91,
+      "hipL": [
+        -21.5,
+        0.0
+      ],
+      "hipR": [
+        25.5,
+        0.0
+      ],
+      "thighLen": 97.1,
+      "shinLen": 84.0
+    },
+    "parts": {
+      "head": {
+        "x": 2,
+        "y": 2,
+        "w": 49,
+        "h": 51,
+        "px": 22.0,
+        "py": 43.0,
+        "restAngle": 0.0
+      },
+      "torso": {
+        "x": 55,
+        "y": 2,
+        "w": 85,
+        "h": 153,
+        "px": 42.0,
+        "py": 154.9,
+        "restAngle": 0.0
+      },
+      "armL_upper": {
+        "x": 144,
+        "y": 2,
+        "w": 57,
+        "h": 94,
+        "px": 31.0,
+        "py": 24.74,
+        "restAngle": -0.321
+      },
+      "armL_lower": {
+        "x": 205,
+        "y": 2,
+        "w": 43,
+        "h": 67,
+        "px": 32.2,
+        "py": 6.28,
+        "restAngle": -0.4218
+      },
+      "armR_upper": {
+        "x": 252,
+        "y": 2,
+        "w": 63,
+        "h": 94,
+        "px": 27.0,
+        "py": 24.74,
+        "restAngle": 0.3798
+      },
+      "armR_lower": {
+        "x": 319,
+        "y": 2,
+        "w": 43,
+        "h": 68,
+        "px": 9.81,
+        "py": 6.88,
+        "restAngle": 0.4128
+      },
+      "legL_thigh": {
+        "x": 366,
+        "y": 2,
+        "w": 46,
+        "h": 118,
+        "px": 20.5,
+        "py": 11.9,
+        "restAngle": 0.0
+      },
+      "legL_shin": {
+        "x": 416,
+        "y": 2,
+        "w": 44,
+        "h": 90,
+        "px": 18.5,
+        "py": 8.0,
+        "restAngle": 0.0
+      },
+      "legR_thigh": {
+        "x": 2,
+        "y": 159,
+        "w": 46,
+        "h": 118,
+        "px": 28.5,
+        "py": 11.9,
+        "restAngle": 0.0
+      },
+      "legR_shin": {
+        "x": 52,
+        "y": 159,
+        "w": 44,
+        "h": 89,
+        "px": 28.5,
+        "py": 8.0,
+        "restAngle": 0.0
+      },
+      "head_side": {
+        "x": 100,
+        "y": 159,
+        "w": 60,
+        "h": 66,
+        "px": 23.5,
+        "py": 58.0,
+        "restAngle": 0.0
+      },
+      "torso_side": {
+        "x": 164,
+        "y": 159,
+        "w": 67,
+        "h": 125,
+        "px": 31.0,
+        "py": 139.9,
+        "restAngle": 0.0
+      }
+    }
+  },
+  "BAMBAM_CL": {
+    "code": "BAMBAM_CL",
+    "atlas": "Rig_BAMBAM_CL.png",
+    "srcSize": [
+      198,
+      372
+    ],
+    "skeleton": {
+      "hipOffsetFromFeetY": 171.8,
+      "neckFromHipY": 153.2,
+      "neckFromHipSideY": 141.2,
+      "shL": [
+        -39.0,
+        -126.88
+      ],
+      "shR": [
+        39.0,
+        -126.88
+      ],
+      "shSideF": [
+        -9.4,
+        -126.88
+      ],
+      "shSideB": [
+        -0.82,
+        -124.88
+      ],
+      "elLFromSh": [
+        -19.29,
+        63.15
+      ],
+      "elRFromSh": [
+        28.61,
+        61.8
+      ],
+      "upperArmLenL": 66.03,
+      "upperArmLenR": 68.1,
+      "hipL": [
+        -19.0,
+        0.0
+      ],
+      "hipR": [
+        30.0,
+        0.0
+      ],
+      "thighLen": 93.8,
+      "shinLen": 78.0
+    },
+    "parts": {
+      "head": {
+        "x": 2,
+        "y": 2,
+        "w": 41,
+        "h": 56,
+        "px": 16.0,
+        "py": 48.0,
+        "restAngle": 0.0
+      },
+      "torso": {
+        "x": 47,
+        "y": 2,
+        "w": 85,
+        "h": 155,
+        "px": 42.0,
+        "py": 157.2,
+        "restAngle": 0.0
+      },
+      "armL_upper": {
+        "x": 136,
+        "y": 2,
+        "w": 51,
+        "h": 79,
+        "px": 31.0,
+        "py": 9.32,
+        "restAngle": -0.2964
+      },
+      "armL_lower": {
+        "x": 191,
+        "y": 2,
+        "w": 42,
+        "h": 69,
+        "px": 29.71,
+        "py": 6.47,
+        "restAngle": -0.3952
+      },
+      "armR_upper": {
+        "x": 237,
+        "y": 2,
+        "w": 67,
+        "h": 93,
+        "px": 27.0,
+        "py": 24.32,
+        "restAngle": 0.4335
+      },
+      "armR_lower": {
+        "x": 308,
+        "y": 2,
+        "w": 58,
+        "h": 72,
+        "px": 26.61,
+        "py": 8.12,
+        "restAngle": 0.3392
+      },
+      "legL_thigh": {
+        "x": 370,
+        "y": 2,
+        "w": 45,
+        "h": 114,
+        "px": 22.0,
+        "py": 11.2,
+        "restAngle": 0.0
+      },
+      "legL_shin": {
+        "x": 419,
+        "y": 2,
+        "w": 43,
+        "h": 83,
+        "px": 20.0,
+        "py": 8.0,
+        "restAngle": 0.0
+      },
+      "legR_thigh": {
+        "x": 2,
+        "y": 161,
+        "w": 50,
+        "h": 114,
+        "px": 33.0,
+        "py": 11.2,
+        "restAngle": 0.0
+      },
+      "legR_shin": {
+        "x": 56,
+        "y": 161,
+        "w": 43,
+        "h": 83,
+        "px": 33.0,
+        "py": 8.0,
+        "restAngle": 0.0
+      },
+      "head_side": {
+        "x": 103,
+        "y": 161,
+        "w": 55,
+        "h": 68,
+        "px": 23.0,
+        "py": 60.0,
+        "restAngle": 0.0
+      },
+      "torso_side": {
+        "x": 162,
+        "y": 161,
+        "w": 66,
+        "h": 130,
+        "px": 31.0,
+        "py": 145.2,
+        "restAngle": 0.0
+      }
+    }
+  },
+  "REY_CL": {
+    "code": "REY_CL",
+    "atlas": "Rig_REY_CL.png",
+    "srcSize": [
+      197,
+      366
+    ],
+    "skeleton": {
+      "hipOffsetFromFeetY": 168.7,
+      "neckFromHipY": 145.3,
+      "neckFromHipSideY": 135.3,
+      "shL": [
+        -39.5,
+        -118.98
+      ],
+      "shR": [
+        38.5,
+        -118.98
+      ],
+      "shSideF": [
+        -9.0,
+        -118.98
+      ],
+      "shSideB": [
+        0.9,
+        -116.98
+      ],
+      "elLFromSh": [
+        -23.88,
+        59.86
+      ],
+      "elRFromSh": [
+        25.97,
+        59.6
+      ],
+      "upperArmLenL": 64.45,
+      "upperArmLenR": 65.01,
+      "hipL": [
+        -24.0,
+        0.0
+      ],
+      "hipR": [
+        25.0,
+        0.0
+      ],
+      "thighLen": 90.7,
+      "shinLen": 78.0
+    },
+    "parts": {
+      "head": {
+        "x": 2,
+        "y": 2,
+        "w": 43,
+        "h": 61,
+        "px": 20.5,
+        "py": 53.0,
+        "restAngle": 0.0
+      },
+      "torso": {
+        "x": 49,
+        "y": 2,
+        "w": 85,
+        "h": 148,
+        "px": 42.5,
+        "py": 149.3,
+        "restAngle": 0.0
+      },
+      "armL_upper": {
+        "x": 138,
+        "y": 2,
+        "w": 57,
+        "h": 81,
+        "px": 35.0,
+        "py": 14.32,
+        "restAngle": -0.3796
+      },
+      "armL_lower": {
+        "x": 199,
+        "y": 2,
+        "w": 45,
+        "h": 66,
+        "px": 33.12,
+        "py": 7.18,
+        "restAngle": -0.4355
+      },
+      "armR_upper": {
+        "x": 248,
+        "y": 2,
+        "w": 65,
+        "h": 91,
+        "px": 27.0,
+        "py": 24.32,
+        "restAngle": 0.411
+      },
+      "armR_lower": {
+        "x": 317,
+        "y": 2,
+        "w": 58,
+        "h": 66,
+        "px": 23.97,
+        "py": 6.92,
+        "restAngle": 0.4125
+      },
+      "legL_thigh": {
+        "x": 379,
+        "y": 2,
+        "w": 49,
+        "h": 111,
+        "px": 21.5,
+        "py": 11.3,
+        "restAngle": 0.0
+      },
+      "legL_shin": {
+        "x": 432,
+        "y": 2,
+        "w": 25,
+        "h": 82,
+        "px": 14.5,
+        "py": 8.0,
+        "restAngle": 0.0
+      },
+      "legR_thigh": {
+        "x": 2,
+        "y": 154,
+        "w": 49,
+        "h": 111,
+        "px": 27.5,
+        "py": 11.3,
+        "restAngle": 0.0
+      },
+      "legR_shin": {
+        "x": 55,
+        "y": 154,
+        "w": 23,
+        "h": 82,
+        "px": 8.5,
+        "py": 8.0,
+        "restAngle": 0.0
+      },
+      "head_side": {
+        "x": 82,
+        "y": 154,
+        "w": 58,
+        "h": 71,
+        "px": 24.0,
+        "py": 63.0,
+        "restAngle": 0.0
+      },
+      "torso_side": {
+        "x": 144,
+        "y": 154,
+        "w": 68,
+        "h": 125,
+        "px": 32.0,
+        "py": 139.3,
+        "restAngle": 0.0
+      }
+    }
+  },
+  "BULLDOG_PY": {
+    "code": "BULLDOG_PY",
+    "atlas": "Rig_BULLDOG_PY.png",
+    "srcSize": [
+      195,
+      381
+    ],
+    "skeleton": {
+      "hipOffsetFromFeetY": 171.3,
+      "neckFromHipY": 166.7,
+      "neckFromHipSideY": 152.7,
+      "shL": [
+        -39.5,
+        -139.54
+      ],
+      "shR": [
+        38.5,
+        -139.54
+      ],
+      "shSideF": [
+        -11.6,
+        -139.54
+      ],
+      "shSideB": [
+        -1.48,
+        -137.54
+      ],
+      "elLFromSh": [
+        -16.66,
+        67.75
+      ],
+      "elRFromSh": [
+        26.16,
+        66.6
+      ],
+      "upperArmLenL": 69.77,
+      "upperArmLenR": 71.56,
+      "hipL": [
+        -23.5,
+        0.0
+      ],
+      "hipR": [
+        35.5,
+        0.0
+      ],
+      "thighLen": 95.3,
+      "shinLen": 76.0
+    },
+    "parts": {
+      "head": {
+        "x": 2,
+        "y": 2,
+        "w": 43,
+        "h": 52,
+        "px": 15.5,
+        "py": 44.0,
+        "restAngle": 0.0
+      },
+      "torso": {
+        "x": 49,
+        "y": 2,
+        "w": 85,
+        "h": 167,
+        "px": 42.5,
+        "py": 170.7,
+        "restAngle": 0.0
+      },
+      "armL_upper": {
+        "x": 138,
+        "y": 2,
+        "w": 55,
+        "h": 90,
+        "px": 32.0,
+        "py": 15.16,
+        "restAngle": -0.2411
+      },
+      "armL_lower": {
+        "x": 197,
+        "y": 2,
+        "w": 52,
+        "h": 76,
+        "px": 27.34,
+        "py": 6.91,
+        "restAngle": -0.2271
+      },
+      "armR_upper": {
+        "x": 253,
+        "y": 2,
+        "w": 72,
+        "h": 105,
+        "px": 27.0,
+        "py": 25.16,
+        "restAngle": 0.3743
+      },
+      "armR_lower": {
+        "x": 329,
+        "y": 2,
+        "w": 55,
+        "h": 80,
+        "px": 24.16,
+        "py": 9.76,
+        "restAngle": 0.2041
+      },
+      "legL_thigh": {
+        "x": 388,
+        "y": 2,
+        "w": 46,
+        "h": 116,
+        "px": 19.0,
+        "py": 11.7,
+        "restAngle": 0.0
+      },
+      "legL_shin": {
+        "x": 438,
+        "y": 2,
+        "w": 42,
+        "h": 80,
+        "px": 15.0,
+        "py": 8.0,
+        "restAngle": 0.0
+      },
+      "legR_thigh": {
+        "x": 2,
+        "y": 173,
+        "w": 49,
+        "h": 116,
+        "px": 38.0,
+        "py": 11.7,
+        "restAngle": 0.0
+      },
+      "legR_shin": {
+        "x": 55,
+        "y": 173,
+        "w": 42,
+        "h": 80,
+        "px": 38.0,
+        "py": 8.0,
+        "restAngle": 0.0
+      },
+      "head_side": {
+        "x": 101,
+        "y": 173,
+        "w": 63,
+        "h": 66,
+        "px": 28.0,
+        "py": 58.0,
+        "restAngle": 0.0
+      },
+      "torso_side": {
+        "x": 168,
+        "y": 173,
+        "w": 77,
+        "h": 140,
+        "px": 37.0,
+        "py": 156.7,
+        "restAngle": 0.0
+      }
+    }
+  },
+  "MAESTRO_PE": {
+    "code": "MAESTRO_PE",
+    "atlas": "Rig_MAESTRO_PE.png",
+    "srcSize": [
+      200,
+      380
+    ],
+    "skeleton": {
+      "hipOffsetFromFeetY": 182.7,
+      "neckFromHipY": 145.3,
+      "neckFromHipSideY": 139.3,
+      "shL": [
+        -39.0,
+        -118.14
+      ],
+      "shR": [
+        39.0,
+        -118.14
+      ],
+      "shSideF": [
+        -8.6,
+        -118.14
+      ],
+      "shSideB": [
+        1.52,
+        -116.14
+      ],
+      "elLFromSh": [
+        -26.03,
+        59.12
+      ],
+      "elRFromSh": [
+        27.3,
+        58.96
+      ],
+      "upperArmLenL": 64.6,
+      "upperArmLenR": 64.97,
+      "hipL": [
+        -23.5,
+        0.0
+      ],
+      "hipR": [
+        25.0,
+        0.0
+      ],
+      "thighLen": 96.7,
+      "shinLen": 86.0
+    },
+    "parts": {
+      "head": {
+        "x": 2,
+        "y": 2,
+        "w": 44,
+        "h": 61,
+        "px": 21.0,
+        "py": 53.0,
+        "restAngle": 0.0
+      },
+      "torso": {
+        "x": 50,
+        "y": 2,
+        "w": 85,
+        "h": 148,
+        "px": 42.0,
+        "py": 149.3,
+        "restAngle": 0.0
+      },
+      "armL_upper": {
+        "x": 139,
+        "y": 2,
+        "w": 63,
+        "h": 88,
+        "px": 38.0,
+        "py": 21.16,
+        "restAngle": -0.4148
+      },
+      "armL_lower": {
+        "x": 206,
+        "y": 2,
+        "w": 46,
+        "h": 66,
+        "px": 32.97,
+        "py": 7.28,
+        "restAngle": -0.429
+      },
+      "armR_upper": {
+        "x": 256,
+        "y": 2,
+        "w": 67,
+        "h": 92,
+        "px": 27.0,
+        "py": 25.16,
+        "restAngle": 0.4336
+      },
+      "armR_lower": {
+        "x": 327,
+        "y": 2,
+        "w": 59,
+        "h": 67,
+        "px": 25.3,
+        "py": 8.12,
+        "restAngle": 0.4068
+      },
+      "legL_thigh": {
+        "x": 390,
+        "y": 2,
+        "w": 50,
+        "h": 117,
+        "px": 22.5,
+        "py": 11.3,
+        "restAngle": 0.0
+      },
+      "legL_shin": {
+        "x": 444,
+        "y": 2,
+        "w": 27,
+        "h": 90,
+        "px": 16.5,
+        "py": 8.0,
+        "restAngle": 0.0
+      },
+      "legR_thigh": {
+        "x": 2,
+        "y": 154,
+        "w": 50,
+        "h": 117,
+        "px": 28.0,
+        "py": 11.3,
+        "restAngle": 0.0
+      },
+      "legR_shin": {
+        "x": 56,
+        "y": 154,
+        "w": 26,
+        "h": 92,
+        "px": 10.0,
+        "py": 8.0,
+        "restAngle": 0.0
+      },
+      "head_side": {
+        "x": 86,
+        "y": 154,
+        "w": 58,
+        "h": 67,
+        "px": 24.0,
+        "py": 59.0,
+        "restAngle": 0.0
+      },
+      "torso_side": {
+        "x": 148,
+        "y": 154,
+        "w": 67,
+        "h": 129,
+        "px": 31.0,
+        "py": 143.3,
+        "restAngle": 0.0
+      }
+    }
+  },
+  "TREN_EC": {
+    "code": "TREN_EC",
+    "atlas": "Rig_TREN_EC.png",
+    "srcSize": [
+      208,
+      376
+    ],
+    "skeleton": {
+      "hipOffsetFromFeetY": 183.1,
+      "neckFromHipY": 151.9,
+      "neckFromHipSideY": 136.9,
+      "shL": [
+        -39.0,
+        -125.16
+      ],
+      "shR": [
+        39.0,
+        -125.16
+      ],
+      "shSideF": [
+        -8.8,
+        -125.16
+      ],
+      "shSideB": [
+        -0.44,
+        -123.16
+      ],
+      "elLFromSh": [
+        -24.31,
+        63.5
+      ],
+      "elRFromSh": [
+        26.63,
+        63.0
+      ],
+      "upperArmLenL": 68.0,
+      "upperArmLenR": 68.4,
+      "hipL": [
+        -25.5,
+        0.0
+      ],
+      "hipR": [
+        27.0,
+        0.0
+      ],
+      "thighLen": 98.1,
+      "shinLen": 85.0
+    },
+    "parts": {
+      "head": {
+        "x": 2,
+        "y": 2,
+        "w": 40,
+        "h": 50,
+        "px": 18.0,
+        "py": 42.0,
+        "restAngle": 0.0
+      },
+      "torso": {
+        "x": 46,
+        "y": 2,
+        "w": 85,
+        "h": 154,
+        "px": 42.0,
+        "py": 155.9,
+        "restAngle": 0.0
+      },
+      "armL_upper": {
+        "x": 135,
+        "y": 2,
+        "w": 56,
+        "h": 81,
+        "px": 36.0,
+        "py": 10.74,
+        "restAngle": -0.3656
+      },
+      "armL_lower": {
+        "x": 195,
+        "y": 2,
+        "w": 50,
+        "h": 68,
+        "px": 36.69,
+        "py": 7.24,
+        "restAngle": -0.4797
+      },
+      "armR_upper": {
+        "x": 249,
+        "y": 2,
+        "w": 66,
+        "h": 95,
+        "px": 27.0,
+        "py": 24.74,
+        "restAngle": 0.3999
+      },
+      "armR_lower": {
+        "x": 319,
+        "y": 2,
+        "w": 63,
+        "h": 69,
+        "px": 24.63,
+        "py": 7.74,
+        "restAngle": 0.4573
+      },
+      "legL_thigh": {
+        "x": 386,
+        "y": 2,
+        "w": 49,
+        "h": 119,
+        "px": 19.5,
+        "py": 11.9,
+        "restAngle": 0.0
+      },
+      "legL_shin": {
+        "x": 439,
+        "y": 2,
+        "w": 26,
+        "h": 91,
+        "px": 15.5,
+        "py": 8.0,
+        "restAngle": 0.0
+      },
+      "legR_thigh": {
+        "x": 2,
+        "y": 160,
+        "w": 50,
+        "h": 119,
+        "px": 30.0,
+        "py": 11.9,
+        "restAngle": 0.0
+      },
+      "legR_shin": {
+        "x": 56,
+        "y": 160,
+        "w": 23,
+        "h": 90,
+        "px": 8.0,
+        "py": 8.0,
+        "restAngle": 0.0
+      },
+      "head_side": {
+        "x": 83,
+        "y": 160,
+        "w": 58,
+        "h": 65,
+        "px": 24.0,
+        "py": 57.0,
+        "restAngle": 0.0
+      },
+      "torso_side": {
+        "x": 145,
+        "y": 160,
+        "w": 68,
+        "h": 126,
+        "px": 31.0,
+        "py": 140.9,
+        "restAngle": 0.0
+      }
+    }
+  },
+  "HURACAN_VE": {
+    "code": "HURACAN_VE",
+    "atlas": "Rig_HURACAN_VE.png",
+    "srcSize": [
+      208,
+      377
+    ],
+    "skeleton": {
+      "hipOffsetFromFeetY": 163.2,
+      "neckFromHipY": 160.8,
+      "neckFromHipSideY": 158.8,
+      "shL": [
+        -39.0,
+        -134.06
+      ],
+      "shR": [
+        39.0,
+        -134.06
+      ],
+      "shSideF": [
+        -9.0,
+        -134.06
+      ],
+      "shSideB": [
+        0.9,
+        -132.06
+      ],
+      "elLFromSh": [
+        -21.52,
+        65.99
+      ],
+      "elRFromSh": [
+        30.3,
+        64.59
+      ],
+      "upperArmLenL": 69.41,
+      "upperArmLenR": 71.35,
+      "hipL": [
+        -19.5,
+        0.0
+      ],
+      "hipR": [
+        29.5,
+        0.0
+      ],
+      "thighLen": 91.2,
+      "shinLen": 72.0
+    },
+    "parts": {
+      "head": {
+        "x": 2,
+        "y": 2,
+        "w": 42,
+        "h": 62,
+        "px": 16.0,
+        "py": 54.0,
+        "restAngle": 0.0
+      },
+      "torso": {
+        "x": 48,
+        "y": 2,
+        "w": 85,
+        "h": 162,
+        "px": 42.0,
+        "py": 164.8,
+        "restAngle": 0.0
+      },
+      "armL_upper": {
+        "x": 137,
+        "y": 2,
+        "w": 54,
+        "h": 90,
+        "px": 32.0,
+        "py": 16.74,
+        "restAngle": -0.3153
+      },
+      "armL_lower": {
+        "x": 195,
+        "y": 2,
+        "w": 45,
+        "h": 73,
+        "px": 32.48,
+        "py": 6.73,
+        "restAngle": -0.4321
+      },
+      "armR_upper": {
+        "x": 244,
+        "y": 2,
+        "w": 69,
+        "h": 106,
+        "px": 27.0,
+        "py": 24.74,
+        "restAngle": 0.4386
+      },
+      "armR_lower": {
+        "x": 317,
+        "y": 2,
+        "w": 63,
+        "h": 76,
+        "px": 28.3,
+        "py": 8.33,
+        "restAngle": 0.3516
+      },
+      "legL_thigh": {
+        "x": 384,
+        "y": 2,
+        "w": 44,
+        "h": 112,
+        "px": 20.5,
+        "py": 11.8,
+        "restAngle": 0.0
+      },
+      "legL_shin": {
+        "x": 432,
+        "y": 2,
+        "w": 45,
+        "h": 78,
+        "px": 21.5,
+        "py": 8.0,
+        "restAngle": 0.0
+      },
+      "legR_thigh": {
+        "x": 2,
+        "y": 168,
+        "w": 50,
+        "h": 112,
+        "px": 32.5,
+        "py": 11.8,
+        "restAngle": 0.0
+      },
+      "legR_shin": {
+        "x": 56,
+        "y": 168,
+        "w": 45,
+        "h": 77,
+        "px": 32.5,
+        "py": 8.0,
+        "restAngle": 0.0
+      },
+      "head_side": {
+        "x": 105,
+        "y": 168,
+        "w": 54,
+        "h": 64,
+        "px": 22.0,
+        "py": 56.0,
+        "restAngle": 0.0
+      },
+      "torso_side": {
+        "x": 163,
+        "y": 168,
+        "w": 68,
+        "h": 147,
+        "px": 30.0,
+        "py": 162.8,
+        "restAngle": 0.0
+      }
+    }
+  },
+  "DIABLO_BO": {
+    "code": "DIABLO_BO",
+    "atlas": "Rig_DIABLO_BO.png",
+    "srcSize": [
+      208,
+      372
+    ],
+    "skeleton": {
+      "hipOffsetFromFeetY": 165.4,
+      "neckFromHipY": 148.6,
+      "neckFromHipSideY": 145.6,
+      "shL": [
+        -39.0,
+        -122.28
+      ],
+      "shR": [
+        39.0,
+        -122.28
+      ],
+      "shSideF": [
+        -8.2,
+        -122.28
+      ],
+      "shSideB": [
+        2.14,
+        -120.28
+      ],
+      "elLFromSh": [
+        -27.84,
+        59.39
+      ],
+      "elRFromSh": [
+        33.05,
+        58.16
+      ],
+      "upperArmLenL": 65.59,
+      "upperArmLenR": 66.9,
+      "hipL": [
+        -21.5,
+        0.0
+      ],
+      "hipR": [
+        28.0,
+        0.0
+      ],
+      "thighLen": 90.4,
+      "shinLen": 75.0
+    },
+    "parts": {
+      "head": {
+        "x": 2,
+        "y": 2,
+        "w": 60,
+        "h": 67,
+        "px": 28.0,
+        "py": 59.0,
+        "restAngle": 0.0
+      },
+      "torso": {
+        "x": 66,
+        "y": 2,
+        "w": 85,
+        "h": 151,
+        "px": 42.0,
+        "py": 152.6,
+        "restAngle": 0.0
+      },
+      "armL_upper": {
+        "x": 155,
+        "y": 2,
+        "w": 65,
+        "h": 91,
+        "px": 39.0,
+        "py": 24.32,
+        "restAngle": -0.4383
+      },
+      "armL_lower": {
+        "x": 224,
+        "y": 2,
+        "w": 43,
+        "h": 70,
+        "px": 30.16,
+        "py": 7.71,
+        "restAngle": -0.4298
+      },
+      "armR_upper": {
+        "x": 271,
+        "y": 2,
+        "w": 72,
+        "h": 103,
+        "px": 27.0,
+        "py": 24.32,
+        "restAngle": 0.5168
+      },
+      "armR_lower": {
+        "x": 347,
+        "y": 2,
+        "w": 63,
+        "h": 72,
+        "px": 31.05,
+        "py": 8.48,
+        "restAngle": 0.3815
+      },
+      "legL_thigh": {
+        "x": 414,
+        "y": 2,
+        "w": 48,
+        "h": 111,
+        "px": 22.5,
+        "py": 11.6,
+        "restAngle": 0.0
+      },
+      "legL_shin": {
+        "x": 2,
+        "y": 157,
+        "w": 45,
+        "h": 81,
+        "px": 19.5,
+        "py": 8.0,
+        "restAngle": 0.0
+      },
+      "legR_thigh": {
+        "x": 51,
+        "y": 157,
+        "w": 50,
+        "h": 111,
+        "px": 31.0,
+        "py": 11.6,
+        "restAngle": 0.0
+      },
+      "legR_shin": {
+        "x": 105,
+        "y": 157,
+        "w": 45,
+        "h": 81,
+        "px": 31.0,
+        "py": 8.0,
+        "restAngle": 0.0
+      },
+      "head_side": {
+        "x": 154,
+        "y": 157,
+        "w": 59,
+        "h": 70,
+        "px": 25.5,
+        "py": 62.0,
+        "restAngle": 0.0
+      },
+      "torso_side": {
+        "x": 217,
+        "y": 157,
+        "w": 64,
+        "h": 135,
+        "px": 30.0,
+        "py": 149.6,
+        "restAngle": 0.0
+      }
+    }
+  },
+  "GENERAL_FR": {
+    "code": "GENERAL_FR",
+    "atlas": "Rig_GENERAL_FR.png",
+    "srcSize": [
+      189,
+      370
+    ],
+    "skeleton": {
+      "hipOffsetFromFeetY": 180.4,
+      "neckFromHipY": 146.6,
+      "neckFromHipSideY": 136.6,
+      "shL": [
+        -39.5,
+        -120.28
+      ],
+      "shR": [
+        38.5,
+        -120.28
+      ],
+      "shSideF": [
+        -8.0,
+        -120.28
+      ],
+      "shSideB": [
+        0.8,
+        -118.28
+      ],
+      "elLFromSh": [
+        -18.28,
+        60.55
+      ],
+      "elRFromSh": [
+        21.57,
+        59.97
+      ],
+      "upperArmLenL": 63.25,
+      "upperArmLenR": 63.73,
+      "hipL": [
+        -22.0,
+        0.0
+      ],
+      "hipR": [
+        24.0,
+        0.0
+      ],
+      "thighLen": 96.4,
+      "shinLen": 84.0
+    },
+    "parts": {
+      "head": {
+        "x": 2,
+        "y": 2,
+        "w": 40,
+        "h": 52,
+        "px": 18.5,
+        "py": 44.0,
+        "restAngle": 0.0
+      },
+      "torso": {
+        "x": 46,
+        "y": 2,
+        "w": 85,
+        "h": 149,
+        "px": 42.5,
+        "py": 150.6,
+        "restAngle": 0.0
+      },
+      "armL_upper": {
+        "x": 135,
+        "y": 2,
+        "w": 54,
+        "h": 79,
+        "px": 32.0,
+        "py": 11.32,
+        "restAngle": -0.2932
+      },
+      "armL_lower": {
+        "x": 193,
+        "y": 2,
+        "w": 48,
+        "h": 65,
+        "px": 33.72,
+        "py": 5.87,
+        "restAngle": -0.4438
+      },
+      "armR_upper": {
+        "x": 245,
+        "y": 2,
+        "w": 64,
+        "h": 91,
+        "px": 28.0,
+        "py": 24.32,
+        "restAngle": 0.3452
+      },
+      "armR_lower": {
+        "x": 313,
+        "y": 2,
+        "w": 49,
+        "h": 66,
+        "px": 14.57,
+        "py": 6.29,
+        "restAngle": 0.4354
+      },
+      "legL_thigh": {
+        "x": 366,
+        "y": 2,
+        "w": 48,
+        "h": 117,
+        "px": 22.5,
+        "py": 11.6,
+        "restAngle": 0.0
+      },
+      "legL_shin": {
+        "x": 418,
+        "y": 2,
+        "w": 25,
+        "h": 90,
+        "px": 15.5,
+        "py": 8.0,
+        "restAngle": 0.0
+      },
+      "legR_thigh": {
+        "x": 447,
+        "y": 2,
+        "w": 49,
+        "h": 117,
+        "px": 26.5,
+        "py": 11.6,
+        "restAngle": 0.0
+      },
+      "legR_shin": {
+        "x": 2,
+        "y": 155,
+        "w": 23,
+        "h": 87,
+        "px": 8.5,
+        "py": 8.0,
+        "restAngle": 0.0
+      },
+      "head_side": {
+        "x": 29,
+        "y": 155,
+        "w": 57,
+        "h": 62,
+        "px": 23.0,
+        "py": 54.0,
+        "restAngle": 0.0
+      },
+      "torso_side": {
+        "x": 90,
+        "y": 155,
+        "w": 68,
+        "h": 126,
+        "px": 31.0,
+        "py": 140.6,
+        "restAngle": 0.0
+      }
+    }
+  },
+  "VAR_ZERO_BOSS": {
+    "code": "VAR_ZERO_BOSS",
+    "atlas": "Rig_VAR_ZERO_BOSS.png",
+    "srcSize": [
+      215,
+      363
+    ],
+    "skeleton": {
+      "hipOffsetFromFeetY": 181.7,
+      "neckFromHipY": 144.3,
+      "neckFromHipSideY": 117.3,
+      "shL": [
+        -39.5,
+        -118.4
+      ],
+      "shR": [
+        38.5,
+        -118.4
+      ],
+      "shSideF": [
+        -12.0,
+        -118.4
+      ],
+      "shSideB": [
+        2.3,
+        -116.4
+      ],
+      "elLFromSh": [
+        -10.49,
+        60.73
+      ],
+      "elRFromSh": [
+        27.32,
+        59.1
+      ],
+      "upperArmLenL": 61.63,
+      "upperArmLenR": 65.11,
+      "hipL": [
+        -24.0,
+        0.0
+      ],
+      "hipR": [
+        32.98,
+        0.0
+      ],
+      "thighLen": 96.7,
+      "shinLen": 85.0
+    },
+    "parts": {
+      "head": {
+        "x": 2,
+        "y": 2,
+        "w": 195,
+        "h": 49,
+        "px": 89.5,
+        "py": 38.0,
+        "restAngle": 0.0
+      },
+      "torso": {
+        "x": 201,
+        "y": 2,
+        "w": 85,
+        "h": 147,
+        "px": 42.5,
+        "py": 148.3,
+        "restAngle": 0.0
+      },
+      "armL_upper": {
+        "x": 290,
+        "y": 2,
+        "w": 57,
+        "h": 83,
+        "px": 39.0,
+        "py": 14.9,
+        "restAngle": -0.1711
+      },
+      "armL_lower": {
+        "x": 351,
+        "y": 2,
+        "w": 63,
+        "h": 63,
+        "px": 34.51,
+        "py": 5.63,
+        "restAngle": -0.4547
+      },
+      "armR_upper": {
+        "x": 418,
+        "y": 2,
+        "w": 77,
+        "h": 82,
+        "px": 22.0,
+        "py": 14.9,
+        "restAngle": 0.433
+      },
+      "armR_lower": {
+        "x": 2,
+        "y": 153,
+        "w": 62,
+        "h": 68,
+        "px": 25.32,
+        "py": 9.0,
+        "restAngle": 0.3718
+      },
+      "legL_thigh": {
+        "x": 68,
+        "y": 153,
+        "w": 46,
+        "h": 117,
+        "px": 18.5,
+        "py": 11.3,
+        "restAngle": 0.0
+      },
+      "legL_shin": {
+        "x": 118,
+        "y": 153,
+        "w": 46,
+        "h": 85,
+        "px": 18.5,
+        "py": 8.0,
+        "restAngle": 0.0
+      },
+      "legR_thigh": {
+        "x": 168,
+        "y": 153,
+        "w": 49,
+        "h": 117,
+        "px": 35.48,
+        "py": 11.3,
+        "restAngle": 0.0
+      },
+      "legR_shin": {
+        "x": 221,
+        "y": 153,
+        "w": 46,
+        "h": 85,
+        "px": 35.48,
+        "py": 8.0,
+        "restAngle": 0.0
+      },
+      "head_side": {
+        "x": 271,
+        "y": 153,
+        "w": 86,
+        "h": 73,
+        "px": 45.0,
+        "py": 65.0,
+        "restAngle": 0.0
+      },
+      "torso_side": {
+        "x": 361,
+        "y": 153,
+        "w": 94,
+        "h": 107,
+        "px": 52.0,
+        "py": 121.3,
+        "restAngle": 0.0
+      }
+    }
+  }
+}

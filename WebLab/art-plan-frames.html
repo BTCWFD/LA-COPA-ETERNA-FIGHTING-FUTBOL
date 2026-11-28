@@ -1,0 +1,739 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>LA COPA ETERNA — Plan de Arte 2D: Prompts y Frames de Combate (17 Luchadores)</title>
+  <link rel="stylesheet" href="styles.css" />
+  <style>
+    :root {
+      --sfumato-gold: #d4a347;
+      --sfumato-gold-bright: #ffe299;
+      --sfumato-crimson: #9e2222;
+      --sfumato-emerald: #00c864;
+      --sfumato-panel: rgba(20, 14, 9, 0.92);
+      --sfumato-border: rgba(212, 163, 71, 0.55);
+      --font-display: 'Georgia', 'Times New Roman', serif;
+    }
+
+    body {
+      margin: 0;
+      padding: 0;
+      background: #0c0805;
+      color: #f5ebd7;
+      font-family: var(--font-ui);
+    }
+
+    .topbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 14px 28px;
+      background: rgba(16, 10, 6, 0.96);
+      border-bottom: 1px solid var(--sfumato-border);
+      flex-wrap: wrap;
+      gap: 12px;
+      position: sticky;
+      top: 0;
+      z-index: 40;
+    }
+
+    .container {
+      max-width: 1560px;
+      margin: 0 auto;
+      padding: 22px 26px 56px;
+      display: flex;
+      flex-direction: column;
+      gap: 22px;
+    }
+
+    .section-card {
+      background: var(--sfumato-panel);
+      border: 1.5px solid var(--sfumato-border);
+      border-radius: 12px;
+      padding: 18px 20px;
+      box-shadow: 0 14px 36px rgba(0, 0, 0, 0.75);
+    }
+
+    .section-card h2 {
+      font-family: var(--font-display);
+      color: var(--sfumato-gold-bright);
+      margin: 0 0 10px;
+      font-size: 1.25rem;
+    }
+
+    .specs-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 12px;
+    }
+
+    .spec-pill {
+      background: rgba(12, 8, 5, 0.85);
+      border-left: 3px solid var(--sfumato-gold-bright);
+      padding: 10px 12px;
+      border-radius: 6px;
+      font-size: 0.84rem;
+      line-height: 1.45;
+    }
+
+    .taxonomy-cols {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(460px, 1fr));
+      gap: 16px;
+      margin-top: 12px;
+    }
+
+    .tax-box {
+      background: #140d08;
+      border: 1px solid rgba(212, 163, 71, 0.35);
+      border-radius: 10px;
+      padding: 14px;
+    }
+
+    .tax-box h3 {
+      margin: 0 0 8px;
+      color: var(--sfumato-gold-bright);
+      font-size: 0.98rem;
+      font-family: var(--font-mono);
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.8rem;
+    }
+
+    th, td {
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+      padding: 7px 8px;
+      text-align: left;
+      vertical-align: top;
+    }
+
+    th {
+      color: var(--sfumato-gold-bright);
+      font-family: var(--font-mono);
+      font-size: 0.74rem;
+      text-transform: uppercase;
+    }
+
+    .toolbar {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 14px;
+    }
+
+    .kpi-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+
+    .kpi-pill {
+      background: rgba(12, 8, 5, 0.9);
+      border: 1px solid rgba(212, 163, 71, 0.35);
+      border-radius: 8px;
+      padding: 7px 12px;
+      font-family: var(--font-mono);
+      font-size: 0.78rem;
+      color: #e6d6bc;
+    }
+
+    .kpi-pill strong {
+      color: var(--sfumato-gold-bright);
+    }
+
+    .filter-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      align-items: center;
+    }
+
+    .search-input {
+      background: #120c07;
+      border: 1px solid rgba(212, 163, 71, 0.45);
+      color: #f5ebd7;
+      padding: 7px 11px;
+      border-radius: 6px;
+      font-family: var(--font-mono);
+      font-size: 0.8rem;
+      min-width: 220px;
+    }
+
+    .fighter-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(560px, 1fr));
+      gap: 18px;
+    }
+
+    @media (max-width: 640px) {
+      .fighter-grid, .taxonomy-cols {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .fcard {
+      background: #140d08;
+      border: 1px solid rgba(212, 163, 71, 0.42);
+      border-radius: 12px;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      padding: 16px;
+    }
+
+    .fcard-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .fcard-title {
+      font-family: var(--font-display);
+      font-size: 1.12rem;
+      font-weight: 800;
+      color: var(--sfumato-gold-bright);
+    }
+
+    .fcard-sub {
+      font-family: var(--font-mono);
+      font-size: 0.76rem;
+      color: #cbbba2;
+      margin-top: 2px;
+    }
+
+    .status-badge {
+      padding: 4px 10px;
+      border-radius: 999px;
+      font-family: var(--font-mono);
+      font-size: 0.74rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.4px;
+    }
+
+    .status-gen {
+      background: rgba(0, 230, 118, 0.16);
+      border: 1px solid #00e676;
+      color: #00e676;
+    }
+
+    .status-part {
+      background: rgba(0, 229, 255, 0.16);
+      border: 1px solid #00e5ff;
+      color: #00e5ff;
+    }
+
+    .status-pend {
+      background: rgba(255, 145, 0, 0.15);
+      border: 1px solid #ff9100;
+      color: #ffe07d;
+    }
+
+    .preview-row {
+      display: grid;
+      grid-template-columns: 1.15fr 1fr 1fr;
+      gap: 10px;
+    }
+
+    .preview-box {
+      background: #1c1e24;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 8px;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .preview-box-hdr {
+      padding: 4px 8px;
+      background: rgba(12, 8, 5, 0.85);
+      font-family: var(--font-mono);
+      font-size: 0.7rem;
+      color: #cbbba2;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .preview-box img {
+      width: 100%;
+      height: 145px;
+      object-fit: contain;
+      background: #383B42;
+      display: block;
+    }
+
+    .preview-empty {
+      height: 145px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 8px;
+      font-family: var(--font-mono);
+      font-size: 0.72rem;
+      color: #8b9bb4;
+      background: repeating-linear-gradient(
+        45deg,
+        #191c22,
+        #191c22 10px,
+        #20242c 10px,
+        #20242c 20px
+      );
+    }
+
+    .prompt-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      align-items: center;
+    }
+
+    .prompt-details {
+      background: #0d0906;
+      border: 1px solid rgba(212, 163, 71, 0.25);
+      border-radius: 8px;
+      padding: 8px 10px;
+      font-size: 0.75rem;
+    }
+
+    .prompt-details summary {
+      cursor: pointer;
+      font-family: var(--font-mono);
+      color: var(--sfumato-gold-bright);
+      font-weight: 700;
+    }
+
+    .prompt-pre {
+      white-space: pre-wrap;
+      font-family: var(--font-mono);
+      font-size: 0.72rem;
+      color: #d9cbb3;
+      margin: 8px 0 0;
+      max-height: 220px;
+      overflow-y: auto;
+      line-height: 1.4;
+    }
+
+    .strip-wrap {
+      display: grid;
+      grid-template-columns: repeat(6, minmax(0, 1fr));
+      gap: 6px;
+    }
+
+    .strip-slot {
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      border-radius: 6px;
+      overflow: hidden;
+      background-color: #242832;
+      background-image:
+        linear-gradient(45deg, #2d323e 25%, transparent 25%),
+        linear-gradient(-45deg, #2d323e 25%, transparent 25%),
+        linear-gradient(45deg, transparent 75%, #2d323e 75%),
+        linear-gradient(-45deg, transparent 75%, #2d323e 75%);
+      background-size: 12px 12px;
+      background-position: 0 0, 0 6px, 6px -6px, -6px 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: space-between;
+      min-height: 86px;
+    }
+
+    .strip-slot img {
+      width: 100%;
+      height: 64px;
+      object-fit: contain;
+      padding: 3px;
+    }
+
+    .strip-slot-empty {
+      height: 64px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: var(--font-mono);
+      font-size: 0.65rem;
+      color: #7c8aa3;
+    }
+
+    .strip-slot-lbl {
+      width: 100%;
+      text-align: center;
+      padding: 2px 3px;
+      font-family: var(--font-mono);
+      font-size: 0.62rem;
+      background: rgba(10, 12, 18, 0.9);
+      color: #d6c5ad;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .strip-slot.ok .strip-slot-lbl {
+      color: #00e676;
+    }
+
+    .swatch-box {
+      display: inline-block;
+      width: 13px;
+      height: 13px;
+      background: #383B42;
+      border: 1px solid #ffe299;
+      vertical-align: middle;
+      border-radius: 3px;
+      margin-right: 4px;
+    }
+  </style>
+</head>
+<body>
+
+  <header class="topbar">
+    <div>
+      <div style="font-family:var(--font-display); font-weight:900; font-size:16px; color:var(--sfumato-gold-bright);">
+        🎬 PLAN DE ARTE 2D — PROMPTS &amp; FRAMES DE COMBATE (17 LUCHADORES × 12 KEYFRAMES)
+      </div>
+      <div style="font-family:var(--font-mono); font-size:11px; color:#cbbba2;">
+        LA COPA ETERNA: SANGRE Y POTRERO • Hojas 3×2 en Estudio #383B42, Slicer Determinista &amp; Playback 60 FPS
+      </div>
+    </div>
+
+    <div class="btn-group">
+      <a href="index.html#tab-6" class="btn btn-crimson btn-sm" style="text-decoration:none;">🎮 Probar Arena 2D/3D (TAB 06)</a>
+      <a href="design-3d-brief.html" class="btn btn-gold btn-sm" style="text-decoration:none;">📦 Brief 3D &amp; Turnarounds</a>
+      <a href="../Docs/PLAN_ARTE_FRAMES_MOVIMIENTO.md" target="_blank" class="btn btn-cyan btn-sm" style="text-decoration:none;">📄 Plan Maestro (.md)</a>
+      <a href="main-menu.html" class="btn btn-turf btn-sm" style="text-decoration:none;">🏛️ Menú Principal</a>
+    </div>
+  </header>
+
+  <main class="container">
+
+    <section class="section-card">
+      <h2>1. Especificación Técnica de Estudio &amp; Taxonomía Oficial (12 Frames = 2 Hojas × 3×2)</h2>
+      <div class="specs-grid">
+        <div class="spec-pill">
+          <strong>🎨 Fondo Studio Grey Obligatorio:</strong><br />
+          <span class="swatch-box"></span><code>#383B42</code> plano continuo sin viñetas, sin pasto, sin sombras proyectadas ni líneas de grilla. Permite <em>floodfill</em> alfa limpio preservando cabello negro, shorts y botines.
+        </div>
+        <div class="spec-pill">
+          <strong>📐 Grilla Ortográfica 3×2 (16:9, +X Derecha):</strong><br />
+          6 celdas iguales por hoja, mirando estrictamente hacia <code>+X</code> (<code>WebLab/app.js</code> espeja con <code>ctx.scale(-1, 1)</code>). Cada pose ocupa el 80–85% interno de su celda.
+        </div>
+        <div class="spec-pill">
+          <strong>✂️ Slicer Determinista &amp; QA:</strong><br />
+          <code>python Scripts/extract_action_frames.py</code> detecta valles de mínima energía, recorta RGBA en <code>Assets/Sprites2D/ActionFrames/&lt;CODE&gt;/</code>, genera <code>QA_ContactSheet_&lt;CODE&gt;.png</code> y actualiza <code>ActionFrames_Manifest.json</code>.
+        </div>
+        <div class="spec-pill">
+          <strong>🕹️ Integración Directa 60 FPS:</strong><br />
+          <code>resolveActionFrameForFighter(f)</code> mapea estados (<code>IDLE</code>, <code>WALK</code>, <code>DASH</code>, <code>PARRY</code>, <code>STARTUP/ACTIVE/RECOVERY</code>, <code>KO</code>) normalizando escala por <code>idleHeightPx</code> con fallback automático.
+        </div>
+      </div>
+
+      <div class="taxonomy-cols">
+        <div class="tax-box">
+          <h3>Lámina A — SheetA_&lt;CODE&gt;.png (Locomotion &amp; Core Combat)</h3>
+          <table>
+            <thead>
+              <tr><th>Celda</th><th>Frame ID</th><th>Coreografía (+X Derecha)</th></tr>
+            </thead>
+            <tbody>
+              <tr><td><code>R1, C1</code></td><td><code>IDLE_GUARD</code></td><td>Guardia lateral 3/4 de combate, rodillas flexionadas, puños arriba.</td></tr>
+              <tr><td><code>R1, C2</code></td><td><code>RUN_1</code></td><td>Zancada sprint A: rodilla frontal alta al frente, torso ~26°.</td></tr>
+              <tr><td><code>R1, C3</code></td><td><code>RUN_2</code></td><td>Zancada sprint B opuesta: pierna trasera impulsando adelante.</td></tr>
+              <tr><td><code>R2, C1</code></td><td><code>CROUCH</code></td><td>Sentadilla baja de guardia (crouch), mentón cubierto.</td></tr>
+              <tr><td><code>R2, C2</code></td><td><code>PUNCH_LP</code></td><td>Jab recto veloz extendido al frente, puño trasero en guardia.</td></tr>
+              <tr><td><code>R2, C3</code></td><td><code>KICK_HP</code></td><td>Patada alta frontal/circular a altura de pecho/cabeza.</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="tax-box">
+          <h3>Lámina B — SheetB_&lt;CODE&gt;.png (Aerial, Defense &amp; Signature Specials)</h3>
+          <table>
+            <thead>
+              <tr><th>Celda</th><th>Frame ID</th><th>Coreografía (+X Derecha)</th></tr>
+            </thead>
+            <tbody>
+              <tr><td><code>R1, C1</code></td><td><code>JUMP</code></td><td>Salto atlético en suspensión, rodillas recogidas, guardia lista.</td></tr>
+              <tr><td><code>R1, C2</code></td><td><code>BLOCK_GUARD</code></td><td>Guardia reforzada de brazos cruzados anclada contra pushback.</td></tr>
+              <tr><td><code>R1, C3</code></td><td><code>HITSTUN</code></td><td>Retroceso dramático (<em>whip-back recoil</em>) por impacto recibido.</td></tr>
+              <tr><td><code>R2, C1</code></td><td><code>SHOT_SK</code></td><td>Remate / técnica especial insignia del arquetipo del luchador.</td></tr>
+              <tr><td><code>R2, C2</code></td><td><code>CHILENA_SP</code></td><td>Patada aérea acrobática invertida (Chilena / Volea / Purga).</td></tr>
+              <tr><td><code>R2, C3</code></td><td><code>KO</code></td><td>Derribo horizontal tendido al ras del suelo (cabeza -X, botines +X).</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <section class="section-card">
+      <div class="toolbar">
+        <div>
+          <h2 style="margin-bottom:4px;">2. Galería Dinámica de Prompts, Hojas 3×2 y Frames Extraídos (17 Luchadores)</h2>
+          <div style="font-size:0.8rem; color:#cbbba2;">
+            Fuente en vivo: <code>Assets/Sprites2D/ActionFrames/ActionFrames_PromptCatalog.json</code> &amp; <code>ActionFrames_Manifest.json</code>
+          </div>
+        </div>
+
+        <div class="kpi-row" id="kpi-row">
+          <div class="kpi-pill">Luchadores: <strong id="kpi-fighters">17</strong></div>
+          <div class="kpi-pill">Hojas Generadas: <strong id="kpi-sheets">0 / 34</strong></div>
+          <div class="kpi-pill">Frames Extraídos: <strong id="kpi-frames">0 / 204</strong></div>
+        </div>
+      </div>
+
+      <div class="filter-row" style="margin-bottom:16px;">
+        <input type="text" id="filter-search" class="search-input" placeholder="Buscar por código, nombre o país..." />
+        <button class="btn btn-sm btn-gold" data-filter="ALL">Todos (17)</button>
+        <button class="btn btn-sm btn-turf" data-filter="GENERATED">Con Frames Extraídos</button>
+        <button class="btn btn-sm btn-crimson" data-filter="PENDING">Pendientes</button>
+        <span id="copy-toast" style="font-family:var(--font-mono); font-size:0.78rem; color:#00e676; margin-left:auto;"></span>
+      </div>
+
+      <div class="fighter-grid" id="fighter-grid">
+        <div style="font-family:var(--font-mono); color:#cbbba2;">Cargando catálogo y manifiesto...</div>
+      </div>
+    </section>
+
+  </main>
+
+  <script>
+    (() => {
+      const CATALOG_URL = '../Assets/Sprites2D/ActionFrames/ActionFrames_PromptCatalog.json?v=9';
+      const MANIFEST_URL = '../Assets/Sprites2D/ActionFrames/ActionFrames_Manifest.json?v=9';
+
+      const grid = document.getElementById('fighter-grid');
+      const searchInput = document.getElementById('filter-search');
+      const toastEl = document.getElementById('copy-toast');
+
+      let catalogData = null;
+      let manifestData = { version: '1.0.0', fighters: {} };
+      let activeFilter = 'ALL';
+
+      function escapeHtml(str) {
+        return String(str)
+          .replace(/&/g, '&amp;')
+          .replace(/</g, '&lt;')
+          .replace(/>/g, '&gt;')
+          .replace(/"/g, '&quot;');
+      }
+
+      async function copyPromptText(text, label) {
+        try {
+          await navigator.clipboard.writeText(text);
+          toastEl.textContent = `✅ Prompt copiado: ${label}`;
+        } catch {
+          const ta = document.createElement('textarea');
+          ta.value = text;
+          document.body.appendChild(ta);
+          ta.select();
+          document.execCommand('copy');
+          ta.remove();
+          toastEl.textContent = `✅ Prompt copiado (fallback): ${label}`;
+        }
+        setTimeout(() => {
+          if (toastEl.textContent.includes(label)) toastEl.textContent = '';
+        }, 3200);
+      }
+
+      function renderGrid() {
+        if (!catalogData) return;
+        const q = searchInput.value.trim().toLowerCase();
+        const mFighters = manifestData?.fighters || {};
+        const allFrames = [
+          ...(catalogData.sheetAFrames || ['IDLE_GUARD', 'RUN_1', 'RUN_2', 'CROUCH', 'PUNCH_LP', 'KICK_HP']),
+          ...(catalogData.sheetBFrames || ['JUMP', 'BLOCK_GUARD', 'HITSTUN', 'SHOT_SK', 'CHILENA_SP', 'KO'])
+        ];
+
+        let totalExtractedFrames = 0;
+        let totalGeneratedSheets = 0;
+        for (const f of catalogData.fighters) {
+          const mf = mFighters[f.code];
+          if (mf && mf.frames) {
+            totalExtractedFrames += Object.keys(mf.frames).length;
+            if (mf.sheetA) totalGeneratedSheets++;
+            if (mf.sheetB) totalGeneratedSheets++;
+          }
+        }
+        document.getElementById('kpi-fighters').textContent = String(catalogData.fighters.length);
+        document.getElementById('kpi-sheets').textContent = `${totalGeneratedSheets} / ${catalogData.totalSheets || 34}`;
+        document.getElementById('kpi-frames').textContent = `${totalExtractedFrames} / ${catalogData.totalFrames || 204}`;
+
+        grid.innerHTML = '';
+
+        const filtered = catalogData.fighters.filter((f) => {
+          const mf = mFighters[f.code];
+          const frameCount = mf && mf.frames ? Object.keys(mf.frames).length : 0;
+          if (activeFilter === 'GENERATED' && frameCount === 0) return false;
+          if (activeFilter === 'PENDING' && frameCount > 0) return false;
+          if (q) {
+            const hay = `${f.code} ${f.displayName} ${f.country} ${f.archetype}`.toLowerCase();
+            if (!hay.includes(q)) return false;
+          }
+          return true;
+        });
+
+        if (filtered.length === 0) {
+          grid.innerHTML = `<div style="font-family:var(--font-mono); color:#ffe07d; padding:16px;">No hay luchadores que coincidan con el filtro actual.</div>`;
+          return;
+        }
+
+        filtered.forEach((f) => {
+          const mf = mFighters[f.code] || null;
+          const framesMap = mf?.frames || {};
+          const frameCount = Object.keys(framesMap).length;
+          const isComplete = frameCount >= allFrames.length;
+          const isPartial = frameCount > 0 && frameCount < allFrames.length;
+
+          const badgeClass = isComplete ? 'status-gen' : (isPartial ? 'status-part' : 'status-pend');
+          const badgeLabel = isComplete
+            ? `Generada (${frameCount}/${allFrames.length})`
+            : (isPartial ? `Parcial (${frameCount}/${allFrames.length})` : `Pendiente (0/${allFrames.length})`);
+
+          const turnaroundUrl = `../${f.turnaroundRef}`;
+          const sheetAUrl = `../${f.sheetATarget}?v=9`;
+          const sheetBUrl = `../${f.sheetBTarget}?v=9`;
+          const qaUrl = `../Assets/Sprites2D/ActionFrames/${f.code}/QA_ContactSheet_${f.code}.png?v=9`;
+
+          const card = document.createElement('article');
+          card.className = 'fcard';
+
+          const stripHtml = allFrames.map((fname) => {
+            const meta = framesMap[fname];
+            if (meta && meta.file) {
+              const src = `../Assets/Sprites2D/ActionFrames/${meta.file}?v=9`;
+              return `
+                <div class="strip-slot ok" title="${fname}: ${meta.w}x${meta.h} (relHeight=${meta.relHeight})">
+                  <img src="${src}" alt="${f.code} ${fname}" loading="lazy" />
+                  <div class="strip-slot-lbl">${fname}</div>
+                </div>
+              `;
+            }
+            return `
+              <div class="strip-slot" title="${fname}: Pendiente">
+                <div class="strip-slot-empty">—</div>
+                <div class="strip-slot-lbl">${fname}</div>
+              </div>
+            `;
+          }).join('');
+
+          card.innerHTML = `
+            <div class="fcard-head">
+              <div>
+                <div class="fcard-title">#${f.index} ${escapeHtml(f.displayName)} <code style="font-size:0.82rem;">(${escapeHtml(f.code)})</code></div>
+                <div class="fcard-sub">${escapeHtml(f.country)} • ${escapeHtml(f.era)} • ${escapeHtml(f.archetype)} • Firma: ${escapeHtml(f.signatureNotation)}</div>
+              </div>
+              <span class="status-badge ${badgeClass}">${badgeLabel}</span>
+            </div>
+
+            <div class="preview-row">
+              <div class="preview-box">
+                <div class="preview-box-hdr">
+                  <span>Ref. Turnaround</span>
+                  <a href="${turnaroundUrl}" target="_blank" style="color:#00e5ff; text-decoration:none;">↗</a>
+                </div>
+                <img src="${turnaroundUrl}" alt="Turnaround ${escapeHtml(f.code)}" loading="lazy" />
+              </div>
+
+              <div class="preview-box">
+                <div class="preview-box-hdr">
+                  <span>SheetA (3×2)</span>
+                  <span style="color:${mf?.sheetA ? '#00e676' : '#ffe07d'};">${mf?.sheetA ? 'OK' : 'Pend.'}</span>
+                </div>
+                <div class="sheet-slot-a"></div>
+              </div>
+
+              <div class="preview-box">
+                <div class="preview-box-hdr">
+                  <span>SheetB (3×2)</span>
+                  <span style="color:${mf?.sheetB ? '#00e676' : '#ffe07d'};">${mf?.sheetB ? 'OK' : 'Pend.'}</span>
+                </div>
+                <div class="sheet-slot-b"></div>
+              </div>
+            </div>
+
+            <div class="prompt-actions">
+              <button class="btn btn-sm btn-gold btn-copy-a">📋 Copiar Prompt Sheet A</button>
+              <button class="btn btn-sm btn-cyan btn-copy-b">📋 Copiar Prompt Sheet B</button>
+              ${frameCount > 0 ? `<a href="${qaUrl}" target="_blank" class="btn btn-sm btn-turf" style="text-decoration:none;">🧪 Ver QA Contact Sheet</a>` : ''}
+              ${mf?.idleHeightPx ? `<span style="font-family:var(--font-mono); font-size:0.74rem; color:#00e676; margin-left:auto;">idleHeightPx: ${mf.idleHeightPx}px</span>` : ''}
+            </div>
+
+            <div class="strip-wrap">${stripHtml}</div>
+
+            <details class="prompt-details">
+              <summary>📝 Ver Prompts Completos de Gemini (Sheet A &amp; Sheet B)</summary>
+              <div style="margin-top:8px;">
+                <strong style="color:#ffe299; font-family:var(--font-mono);">[Sheet A — ${escapeHtml(f.sheetA.sheetName)}]</strong>
+                <pre class="prompt-pre">${escapeHtml(f.sheetA.prompt)}</pre>
+              </div>
+              <div style="margin-top:10px; border-top:1px solid rgba(255,255,255,0.08); padding-top:8px;">
+                <strong style="color:#00e5ff; font-family:var(--font-mono);">[Sheet B — ${escapeHtml(f.sheetB.sheetName)}]</strong>
+                <pre class="prompt-pre">${escapeHtml(f.sheetB.prompt)}</pre>
+              </div>
+            </details>
+          `;
+
+          // Populate SheetA / SheetB preview safely (gracefully show pending placeholder if 404)
+          function mountSheetPreview(container, url, label) {
+            const img = document.createElement('img');
+            img.alt = `${f.code} ${label}`;
+            img.loading = 'lazy';
+            img.src = url;
+            img.onerror = () => {
+              container.innerHTML = `<div class="preview-empty">Pendiente<br/>${label}_${f.code}.png</div>`;
+            };
+            container.appendChild(img);
+          }
+          mountSheetPreview(card.querySelector('.sheet-slot-a'), sheetAUrl, 'SheetA');
+          mountSheetPreview(card.querySelector('.sheet-slot-b'), sheetBUrl, 'SheetB');
+
+          card.querySelector('.btn-copy-a').addEventListener('click', () => {
+            copyPromptText(f.sheetA.prompt, `${f.code} Sheet A`);
+          });
+          card.querySelector('.btn-copy-b').addEventListener('click', () => {
+            copyPromptText(f.sheetB.prompt, `${f.code} Sheet B`);
+          });
+
+          grid.appendChild(card);
+        });
+      }
+
+      document.querySelectorAll('[data-filter]').forEach((btn) => {
+        btn.addEventListener('click', () => {
+          activeFilter = btn.dataset.filter;
+          renderGrid();
+        });
+      });
+      searchInput.addEventListener('input', renderGrid);
+
+      Promise.all([
+        fetch(CATALOG_URL).then((r) => {
+          if (!r.ok) throw new Error(`Catalog HTTP ${r.status}`);
+          return r.json();
+        }),
+        fetch(MANIFEST_URL)
+          .then((r) => (r.ok ? r.json() : { version: '1.0.0', fighters: {} }))
+          .catch(() => ({ version: '1.0.0', fighters: {} }))
+      ])
+        .then(([cat, man]) => {
+          catalogData = cat;
+          manifestData = man || { version: '1.0.0', fighters: {} };
+          renderGrid();
+        })
+        .catch((err) => {
+          grid.innerHTML = `<div style="color:#ff2a54; font-family:var(--font-mono);">Error cargando catálogo: ${escapeHtml(err.message)}</div>`;
+        });
+    })();
+  </script>
+</body>
+</html>

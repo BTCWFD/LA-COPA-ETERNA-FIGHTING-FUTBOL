@@ -22,6 +22,7 @@
     "Mocap_Walk_Forward",
     "Mocap_Backdash_Dodge",
     "Mocap_Block_Guard",
+    "Mocap_Crouch_Guard",
     "Mocap_Hitstun_Knockback",
     "Mocap_Super_Potrero",
     "Mocap_KO_Knockdown"
@@ -147,6 +148,15 @@
       "Description": "60 FPS Mocap braced cross-arm competitive block guard with knee absorption"
     },
     {
+      "ClipName": "Mocap_Crouch_Guard",
+      "DurationSeconds": 0.5,
+      "KeyframeCount": 31,
+      "FPS": 60,
+      "Interpolation": "LINEAR",
+      "Looping": true,
+      "Description": "60 FPS Mocap deep athletic knee-bend crouch with tight guard"
+    },
+    {
       "ClipName": "Mocap_Hitstun_Knockback",
       "DurationSeconds": 0.5,
       "KeyframeCount": 31,
@@ -179,8 +189,8 @@
       "FighterFile": "SK_BAMBAM_CL.glb",
       "FighterID": "BAMBAM_CL",
       "IsBoss": false,
-      "FileSizeBytes": 909772,
-      "TotalAnimationsInGLB": 16,
+      "FileSizeBytes": 919280,
+      "TotalAnimationsInGLB": 17,
       "AllAnimationNames": [
         "Anim_Idle",
         "Anim_5LP_Jab4f",
@@ -195,6 +205,7 @@
         "Mocap_Walk_Forward",
         "Mocap_Backdash_Dodge",
         "Mocap_Block_Guard",
+        "Mocap_Crouch_Guard",
         "Mocap_Hitstun_Knockback",
         "Mocap_Super_Potrero",
         "Mocap_KO_Knockdown"
@@ -345,6 +356,17 @@
           "SpecialFeatures": "Full-body 60 FPS keyframe animation"
         },
         {
+          "ClipName": "Mocap_Crouch_Guard",
+          "DurationSeconds": 0.5,
+          "FPS": 60,
+          "UniformFrameStepSeconds": 0.016667,
+          "KeyframeCount": 31,
+          "ChannelCount": 13,
+          "SamplerCount": 13,
+          "Interpolation": "LINEAR",
+          "SpecialFeatures": "Full-body 60 FPS keyframe animation"
+        },
+        {
           "ClipName": "Mocap_Hitstun_Knockback",
           "DurationSeconds": 0.5,
           "FPS": 60,
@@ -462,6 +484,17 @@
           "FPS": 60,
           "UniformFrameStepSeconds": 0.016667,
           "KeyframeCount": 49,
+          "ChannelCount": 13,
+          "SamplerCount": 13,
+          "Interpolation": "LINEAR",
+          "SpecialFeatures": "Full-body 60 FPS keyframe animation"
+        },
+        {
+          "ClipName": "Mocap_Crouch_Guard",
+          "DurationSeconds": 0.5,
+          "FPS": 60,
+          "UniformFrameStepSeconds": 0.016667,
+          "KeyframeCount": 31,
           "ChannelCount": 13,
           "SamplerCount": 13,
           "Interpolation": "LINEAR",
@@ -506,8 +539,8 @@
       "FighterFile": "SK_BRUXO_BR.glb",
       "FighterID": "BRUXO_BR",
       "IsBoss": false,
-      "FileSizeBytes": 940672,
-      "TotalAnimationsInGLB": 16,
+      "FileSizeBytes": 950176,
+      "TotalAnimationsInGLB": 17,
       "AllAnimationNames": [
         "Anim_Idle",
         "Anim_5LP_Jab4f",
@@ -522,6 +555,7 @@
         "Mocap_Walk_Forward",
         "Mocap_Backdash_Dodge",
         "Mocap_Block_Guard",
+        "Mocap_Crouch_Guard",
         "Mocap_Hitstun_Knockback",
         "Mocap_Super_Potrero",
         "Mocap_KO_Knockdown"
@@ -672,6 +706,17 @@
           "SpecialFeatures": "Full-body 60 FPS keyframe animation"
         },
         {
+          "ClipName": "Mocap_Crouch_Guard",
+          "DurationSeconds": 0.5,
+          "FPS": 60,
+          "UniformFrameStepSeconds": 0.016667,
+          "KeyframeCount": 31,
+          "ChannelCount": 13,
+          "SamplerCount": 13,
+          "Interpolation": "LINEAR",
+          "SpecialFeatures": "Full-body 60 FPS keyframe animation"
+        },
+        {
           "ClipName": "Mocap_Hitstun_Knockback",
           "DurationSeconds": 0.5,
           "FPS": 60,
@@ -789,6 +834,17 @@
           "FPS": 60,
           "UniformFrameStepSeconds": 0.016667,
           "KeyframeCount": 49,
+          "ChannelCount": 13,
+          "SamplerCount": 13,
+          "Interpolation": "LINEAR",
+          "SpecialFeatures": "Full-body 60 FPS keyframe animation"
+        },
+        {
+          "ClipName": "Mocap_Crouch_Guard",
+          "DurationSeconds": 0.5,
+          "FPS": 60,
+          "UniformFrameStepSeconds": 0.016667,
+          "KeyframeCount": 31,
           "ChannelCount": 13,
           "SamplerCount": 13,
           "Interpolation": "LINEAR",
@@ -833,8 +889,8 @@
       "FighterFile": "SK_BULLDOG_PY.glb",
       "FighterID": "BULLDOG_PY",
       "IsBoss": false,
-      "FileSizeBytes": 870296,
-      "TotalAnimationsInGLB": 16,
+      "FileSizeBytes": 879800,
+      "TotalAnimationsInGLB": 17,
       "AllAnimationNames": [
         "Anim_Idle",
         "Anim_5LP_Jab4f",
@@ -849,6 +905,7 @@
         "Mocap_Walk_Forward",
         "Mocap_Backdash_Dodge",
         "Mocap_Block_Guard",
+        "Mocap_Crouch_Guard",
         "Mocap_Hitstun_Knockback",
         "Mocap_Super_Potrero",
         "Mocap_KO_Knockdown"
@@ -999,6 +1056,17 @@
           "SpecialFeatures": "Full-body 60 FPS keyframe animation"
         },
         {
+          "ClipName": "Mocap_Crouch_Guard",
+          "DurationSeconds": 0.5,
+          "FPS": 60,
+          "UniformFrameStepSeconds": 0.016667,
+          "KeyframeCount": 31,
+          "ChannelCount": 13,
+          "SamplerCount": 13,
+          "Interpolation": "LINEAR",
+          "SpecialFeatures": "Full-body 60 FPS keyframe animation"
+        },
+        {
           "ClipName": "Mocap_Hitstun_Knockback",
           "DurationSeconds": 0.5,
           "FPS": 60,
@@ -1116,6 +1184,17 @@
           "FPS": 60,
           "UniformFrameStepSeconds": 0.016667,
           "KeyframeCount": 49,
+          "ChannelCount": 13,
+          "SamplerCount": 13,
+          "Interpolation": "LINEAR",
+          "SpecialFeatures": "Full-body 60 FPS keyframe animation"
+        },
+        {
+          "ClipName": "Mocap_Crouch_Guard",
+          "DurationSeconds": 0.5,
+          "FPS": 60,
+          "UniformFrameStepSeconds": 0.016667,
+          "KeyframeCount": 31,
           "ChannelCount": 13,
           "SamplerCount": 13,
           "Interpolation": "LINEAR",
@@ -1160,8 +1239,8 @@
       "FighterFile": "SK_CANON_AR.glb",
       "FighterID": "CANON_AR",
       "IsBoss": false,
-      "FileSizeBytes": 941304,
-      "TotalAnimationsInGLB": 16,
+      "FileSizeBytes": 950808,
+      "TotalAnimationsInGLB": 17,
       "AllAnimationNames": [
         "Anim_Idle",
         "Anim_5LP_Jab4f",
@@ -1176,6 +1255,7 @@
         "Mocap_Walk_Forward",
         "Mocap_Backdash_Dodge",
         "Mocap_Block_Guard",
+        "Mocap_Crouch_Guard",
         "Mocap_Hitstun_Knockback",
         "Mocap_Super_Potrero",
         "Mocap_KO_Knockdown"
@@ -1326,6 +1406,17 @@
           "SpecialFeatures": "Full-body 60 FPS keyframe animation"
         },
         {
+          "ClipName": "Mocap_Crouch_Guard",
+          "DurationSeconds": 0.5,
+          "FPS": 60,
+          "UniformFrameStepSeconds": 0.016667,
+          "KeyframeCount": 31,
+          "ChannelCount": 13,
+          "SamplerCount": 13,
+          "Interpolation": "LINEAR",
+          "SpecialFeatures": "Full-body 60 FPS keyframe animation"
+        },
+        {
           "ClipName": "Mocap_Hitstun_Knockback",
           "DurationSeconds": 0.5,
           "FPS": 60,
@@ -1443,6 +1534,17 @@
           "FPS": 60,
           "UniformFrameStepSeconds": 0.016667,
           "KeyframeCount": 49,
+          "ChannelCount": 13,
+          "SamplerCount": 13,
+          "Interpolation": "LINEAR",
+          "SpecialFeatures": "Full-body 60 FPS keyframe animation"
+        },
+        {
+          "ClipName": "Mocap_Crouch_Guard",
+          "DurationSeconds": 0.5,
+          "FPS": 60,
+          "UniformFrameStepSeconds": 0.016667,
+          "KeyframeCount": 31,
           "ChannelCount": 13,
           "SamplerCount": 13,
           "Interpolation": "LINEAR",
@@ -1487,8 +1589,8 @@
       "FighterFile": "SK_DIABLO_BO.glb",
       "FighterID": "DIABLO_BO",
       "IsBoss": false,
-      "FileSizeBytes": 934100,
-      "TotalAnimationsInGLB": 16,
+      "FileSizeBytes": 943608,
+      "TotalAnimationsInGLB": 17,
       "AllAnimationNames": [
         "Anim_Idle",
         "Anim_5LP_Jab4f",
@@ -1503,6 +1605,7 @@
         "Mocap_Walk_Forward",
         "Mocap_Backdash_Dodge",
         "Mocap_Block_Guard",
+        "Mocap_Crouch_Guard",
         "Mocap_Hitstun_Knockback",
         "Mocap_Super_Potrero",
         "Mocap_KO_Knockdown"
@@ -1653,6 +1756,17 @@
           "SpecialFeatures": "Full-body 60 FPS keyframe animation"
         },
         {
+          "ClipName": "Mocap_Crouch_Guard",
+          "DurationSeconds": 0.5,
+          "FPS": 60,
+          "UniformFrameStepSeconds": 0.016667,
+          "KeyframeCount": 31,
+          "ChannelCount": 13,
+          "SamplerCount": 13,
+          "Interpolation": "LINEAR",
+          "SpecialFeatures": "Full-body 60 FPS keyframe animation"
+        },
+        {
           "ClipName": "Mocap_Hitstun_Knockback",
           "DurationSeconds": 0.5,
           "FPS": 60,
@@ -1770,6 +1884,17 @@
           "FPS": 60,
           "UniformFrameStepSeconds": 0.016667,
           "KeyframeCount": 49,
+          "ChannelCount": 13,
+          "SamplerCount": 13,
+          "Interpolation": "LINEAR",
+          "SpecialFeatures": "Full-body 60 FPS keyframe animation"
+        },
+        {
+          "ClipName": "Mocap_Crouch_Guard",
+          "DurationSeconds": 0.5,
+          "FPS": 60,
+          "UniformFrameStepSeconds": 0.016667,
+          "KeyframeCount": 31,
           "ChannelCount": 13,
           "SamplerCount": 13,
           "Interpolation": "LINEAR",
@@ -1814,8 +1939,8 @@
       "FighterFile": "SK_FENOMENO_BR.glb",
       "FighterID": "FENOMENO_BR",
       "IsBoss": false,
-      "FileSizeBytes": 907204,
-      "TotalAnimationsInGLB": 16,
+      "FileSizeBytes": 916712,
+      "TotalAnimationsInGLB": 17,
       "AllAnimationNames": [
         "Anim_Idle",
         "Anim_5LP_Jab4f",
@@ -1830,6 +1955,7 @@
         "Mocap_Walk_Forward",
         "Mocap_Backdash_Dodge",
         "Mocap_Block_Guard",
+        "Mocap_Crouch_Guard",
         "Mocap_Hitstun_Knockback",
         "Mocap_Super_Potrero",
         "Mocap_KO_Knockdown"
@@ -1980,6 +2106,17 @@
           "SpecialFeatures": "Full-body 60 FPS keyframe animation"
         },
         {
+          "ClipName": "Mocap_Crouch_Guard",
+          "DurationSeconds": 0.5,
+          "FPS": 60,
+          "UniformFrameStepSeconds": 0.016667,
+          "KeyframeCount": 31,
+          "ChannelCount": 13,
+          "SamplerCount": 13,
+          "Interpolation": "LINEAR",
+          "SpecialFeatures": "Full-body 60 FPS keyframe animation"
+        },
+        {
           "ClipName": "Mocap_Hitstun_Knockback",
           "DurationSeconds": 0.5,
           "FPS": 60,
@@ -2097,6 +2234,17 @@
           "FPS": 60,
           "UniformFrameStepSeconds": 0.016667,
           "KeyframeCount": 49,
+          "ChannelCount": 13,
+          "SamplerCount": 13,
+          "Interpolation": "LINEAR",
+          "SpecialFeatures": "Full-body 60 FPS keyframe animation"
+        },
+        {
+          "ClipName": "Mocap_Crouch_Guard",
+          "DurationSeconds": 0.5,
+          "FPS": 60,
+          "UniformFrameStepSeconds": 0.016667,
+          "KeyframeCount": 31,
           "ChannelCount": 13,
           "SamplerCount": 13,
           "Interpolation": "LINEAR",
@@ -2141,8 +2289,8 @@
       "FighterFile": "SK_GENERAL_FR.glb",
       "FighterID": "GENERAL_FR",
       "IsBoss": false,
-      "FileSizeBytes": 909124,
-      "TotalAnimationsInGLB": 16,
+      "FileSizeBytes": 918632,
+      "TotalAnimationsInGLB": 17,
       "AllAnimationNames": [
         "Anim_Idle",
         "Anim_5LP_Jab4f",
@@ -2157,6 +2305,7 @@
         "Mocap_Walk_Forward",
         "Mocap_Backdash_Dodge",
         "Mocap_Block_Guard",
+        "Mocap_Crouch_Guard",
         "Mocap_Hitstun_Knockback",
         "Mocap_Super_Potrero",
         "Mocap_KO_Knockdown"
@@ -2307,6 +2456,17 @@
           "SpecialFeatures": "Full-body 60 FPS keyframe animation"
         },
         {
+          "ClipName": "Mocap_Crouch_Guard",
+          "DurationSeconds": 0.5,
+          "FPS": 60,
+          "UniformFrameStepSeconds": 0.016667,
+          "KeyframeCount": 31,
+          "ChannelCount": 13,
+          "SamplerCount": 13,
+          "Interpolation": "LINEAR",
+          "SpecialFeatures": "Full-body 60 FPS keyframe animation"
+        },
+        {
           "ClipName": "Mocap_Hitstun_Knockback",
           "DurationSeconds": 0.5,
           "FPS": 60,
@@ -2424,6 +2584,17 @@
           "FPS": 60,
           "UniformFrameStepSeconds": 0.016667,
           "KeyframeCount": 49,
+          "ChannelCount": 13,
+          "SamplerCount": 13,
+          "Interpolation": "LINEAR",
+          "SpecialFeatures": "Full-body 60 FPS keyframe animation"
+        },
+        {
+          "ClipName": "Mocap_Crouch_Guard",
+          "DurationSeconds": 0.5,
+          "FPS": 60,
+          "UniformFrameStepSeconds": 0.016667,
+          "KeyframeCount": 31,
           "ChannelCount": 13,
           "SamplerCount": 13,
           "Interpolation": "LINEAR",
@@ -2468,8 +2639,8 @@
       "FighterFile": "SK_HURACAN_VE.glb",
       "FighterID": "HURACAN_VE",
       "IsBoss": false,
-      "FileSizeBytes": 909140,
-      "TotalAnimationsInGLB": 16,
+      "FileSizeBytes": 918644,
+      "TotalAnimationsInGLB": 17,
       "AllAnimationNames": [
         "Anim_Idle",
         "Anim_5LP_Jab4f",
@@ -2484,6 +2655,7 @@
         "Mocap_Walk_Forward",
         "Mocap_Backdash_Dodge",
         "Mocap_Block_Guard",
+        "Mocap_Crouch_Guard",
         "Mocap_Hitstun_Knockback",
         "Mocap_Super_Potrero",
         "Mocap_KO_Knockdown"
@@ -2634,6 +2806,17 @@
           "SpecialFeatures": "Full-body 60 FPS keyframe animation"
         },
         {
+          "ClipName": "Mocap_Crouch_Guard",
+          "DurationSeconds": 0.5,
+          "FPS": 60,
+          "UniformFrameStepSeconds": 0.016667,
+          "KeyframeCount": 31,
+          "ChannelCount": 13,
+          "SamplerCount": 13,
+          "Interpolation": "LINEAR",
+          "SpecialFeatures": "Full-body 60 FPS keyframe animation"
+        },
+        {
           "ClipName": "Mocap_Hitstun_Knockback",
           "DurationSeconds": 0.5,
           "FPS": 60,
@@ -2751,6 +2934,17 @@
           "FPS": 60,
           "UniformFrameStepSeconds": 0.016667,
           "KeyframeCount": 49,
+          "ChannelCount": 13,
+          "SamplerCount": 13,
+          "Interpolation": "LINEAR",
+          "SpecialFeatures": "Full-body 60 FPS keyframe animation"
+        },
+        {
+          "ClipName": "Mocap_Crouch_Guard",
+          "DurationSeconds": 0.5,
+          "FPS": 60,
+          "UniformFrameStepSeconds": 0.016667,
+          "KeyframeCount": 31,
           "ChannelCount": 13,
           "SamplerCount": 13,
           "Interpolation": "LINEAR",
@@ -2795,8 +2989,8 @@
       "FighterFile": "SK_LOCO_CO.glb",
       "FighterID": "LOCO_CO",
       "IsBoss": false,
-      "FileSizeBytes": 946464,
-      "TotalAnimationsInGLB": 16,
+      "FileSizeBytes": 955972,
+      "TotalAnimationsInGLB": 17,
       "AllAnimationNames": [
         "Anim_Idle",
         "Anim_5LP_Jab4f",
@@ -2811,6 +3005,7 @@
         "Mocap_Walk_Forward",
         "Mocap_Backdash_Dodge",
         "Mocap_Block_Guard",
+        "Mocap_Crouch_Guard",
         "Mocap_Hitstun_Knockback",
         "Mocap_Super_Potrero",
         "Mocap_KO_Knockdown"
@@ -2961,6 +3156,17 @@
           "SpecialFeatures": "Full-body 60 FPS keyframe animation"
         },
         {
+          "ClipName": "Mocap_Crouch_Guard",
+          "DurationSeconds": 0.5,
+          "FPS": 60,
+          "UniformFrameStepSeconds": 0.016667,
+          "KeyframeCount": 31,
+          "ChannelCount": 13,
+          "SamplerCount": 13,
+          "Interpolation": "LINEAR",
+          "SpecialFeatures": "Full-body 60 FPS keyframe animation"
+        },
+        {
           "ClipName": "Mocap_Hitstun_Knockback",
           "DurationSeconds": 0.5,
           "FPS": 60,
@@ -3078,6 +3284,17 @@
           "FPS": 60,
           "UniformFrameStepSeconds": 0.016667,
           "KeyframeCount": 49,
+          "ChannelCount": 13,
+          "SamplerCount": 13,
+          "Interpolation": "LINEAR",
+          "SpecialFeatures": "Full-body 60 FPS keyframe animation"
+        },
+        {
+          "ClipName": "Mocap_Crouch_Guard",
+          "DurationSeconds": 0.5,
+          "FPS": 60,
+          "UniformFrameStepSeconds": 0.016667,
+          "KeyframeCount": 31,
           "ChannelCount": 13,
           "SamplerCount": 13,
           "Interpolation": "LINEAR",
@@ -3122,8 +3339,8 @@
       "FighterFile": "SK_MAESTRO_PE.glb",
       "FighterID": "MAESTRO_PE",
       "IsBoss": false,
-      "FileSizeBytes": 909132,
-      "TotalAnimationsInGLB": 16,
+      "FileSizeBytes": 918640,
+      "TotalAnimationsInGLB": 17,
       "AllAnimationNames": [
         "Anim_Idle",
         "Anim_5LP_Jab4f",
@@ -3138,6 +3355,7 @@
         "Mocap_Walk_Forward",
         "Mocap_Backdash_Dodge",
         "Mocap_Block_Guard",
+        "Mocap_Crouch_Guard",
         "Mocap_Hitstun_Knockback",
         "Mocap_Super_Potrero",
         "Mocap_KO_Knockdown"
@@ -3288,6 +3506,17 @@
           "SpecialFeatures": "Full-body 60 FPS keyframe animation"
         },
         {
+          "ClipName": "Mocap_Crouch_Guard",
+          "DurationSeconds": 0.5,
+          "FPS": 60,
+          "UniformFrameStepSeconds": 0.016667,
+          "KeyframeCount": 31,
+          "ChannelCount": 13,
+          "SamplerCount": 13,
+          "Interpolation": "LINEAR",
+          "SpecialFeatures": "Full-body 60 FPS keyframe animation"
+        },
+        {
           "ClipName": "Mocap_Hitstun_Knockback",
           "DurationSeconds": 0.5,
           "FPS": 60,
@@ -3405,6 +3634,17 @@
           "FPS": 60,
           "UniformFrameStepSeconds": 0.016667,
           "KeyframeCount": 49,
+          "ChannelCount": 13,
+          "SamplerCount": 13,
+          "Interpolation": "LINEAR",
+          "SpecialFeatures": "Full-body 60 FPS keyframe animation"
+        },
+        {
+          "ClipName": "Mocap_Crouch_Guard",
+          "DurationSeconds": 0.5,
+          "FPS": 60,
+          "UniformFrameStepSeconds": 0.016667,
+          "KeyframeCount": 31,
           "ChannelCount": 13,
           "SamplerCount": 13,
           "Interpolation": "LINEAR",
@@ -3449,8 +3689,8 @@
       "FighterFile": "SK_MATADOR_UY.glb",
       "FighterID": "MATADOR_UY",
       "IsBoss": false,
-      "FileSizeBytes": 940696,
-      "TotalAnimationsInGLB": 16,
+      "FileSizeBytes": 950204,
+      "TotalAnimationsInGLB": 17,
       "AllAnimationNames": [
         "Anim_Idle",
         "Anim_5LP_Jab4f",
@@ -3465,6 +3705,7 @@
         "Mocap_Walk_Forward",
         "Mocap_Backdash_Dodge",
         "Mocap_Block_Guard",
+        "Mocap_Crouch_Guard",
         "Mocap_Hitstun_Knockback",
         "Mocap_Super_Potrero",
         "Mocap_KO_Knockdown"
@@ -3615,6 +3856,17 @@
           "SpecialFeatures": "Full-body 60 FPS keyframe animation"
         },
         {
+          "ClipName": "Mocap_Crouch_Guard",
+          "DurationSeconds": 0.5,
+          "FPS": 60,
+          "UniformFrameStepSeconds": 0.016667,
+          "KeyframeCount": 31,
+          "ChannelCount": 13,
+          "SamplerCount": 13,
+          "Interpolation": "LINEAR",
+          "SpecialFeatures": "Full-body 60 FPS keyframe animation"
+        },
+        {
           "ClipName": "Mocap_Hitstun_Knockback",
           "DurationSeconds": 0.5,
           "FPS": 60,
@@ -3732,6 +3984,17 @@
           "FPS": 60,
           "UniformFrameStepSeconds": 0.016667,
           "KeyframeCount": 49,
+          "ChannelCount": 13,
+          "SamplerCount": 13,
+          "Interpolation": "LINEAR",
+          "SpecialFeatures": "Full-body 60 FPS keyframe animation"
+        },
+        {
+          "ClipName": "Mocap_Crouch_Guard",
+          "DurationSeconds": 0.5,
+          "FPS": 60,
+          "UniformFrameStepSeconds": 0.016667,
+          "KeyframeCount": 31,
           "ChannelCount": 13,
           "SamplerCount": 13,
           "Interpolation": "LINEAR",
@@ -3776,8 +4039,8 @@
       "FighterFile": "SK_PIBE_CO.glb",
       "FighterID": "PIBE_CO",
       "IsBoss": false,
-      "FileSizeBytes": 971056,
-      "TotalAnimationsInGLB": 16,
+      "FileSizeBytes": 980560,
+      "TotalAnimationsInGLB": 17,
       "AllAnimationNames": [
         "Anim_Idle",
         "Anim_5LP_Jab4f",
@@ -3792,6 +4055,7 @@
         "Mocap_Walk_Forward",
         "Mocap_Backdash_Dodge",
         "Mocap_Block_Guard",
+        "Mocap_Crouch_Guard",
         "Mocap_Hitstun_Knockback",
         "Mocap_Super_Potrero",
         "Mocap_KO_Knockdown"
@@ -3942,6 +4206,17 @@
           "SpecialFeatures": "Full-body 60 FPS keyframe animation"
         },
         {
+          "ClipName": "Mocap_Crouch_Guard",
+          "DurationSeconds": 0.5,
+          "FPS": 60,
+          "UniformFrameStepSeconds": 0.016667,
+          "KeyframeCount": 31,
+          "ChannelCount": 13,
+          "SamplerCount": 13,
+          "Interpolation": "LINEAR",
+          "SpecialFeatures": "Full-body 60 FPS keyframe animation"
+        },
+        {
           "ClipName": "Mocap_Hitstun_Knockback",
           "DurationSeconds": 0.5,
           "FPS": 60,
@@ -4059,6 +4334,17 @@
           "FPS": 60,
           "UniformFrameStepSeconds": 0.016667,
           "KeyframeCount": 49,
+          "ChannelCount": 13,
+          "SamplerCount": 13,
+          "Interpolation": "LINEAR",
+          "SpecialFeatures": "Full-body 60 FPS keyframe animation"
+        },
+        {
+          "ClipName": "Mocap_Crouch_Guard",
+          "DurationSeconds": 0.5,
+          "FPS": 60,
+          "UniformFrameStepSeconds": 0.016667,
+          "KeyframeCount": 31,
           "ChannelCount": 13,
           "SamplerCount": 13,
           "Interpolation": "LINEAR",
@@ -4103,8 +4389,8 @@
       "FighterFile": "SK_PISTOLERO_UY.glb",
       "FighterID": "PISTOLERO_UY",
       "IsBoss": false,
-      "FileSizeBytes": 909792,
-      "TotalAnimationsInGLB": 16,
+      "FileSizeBytes": 919296,
+      "TotalAnimationsInGLB": 17,
       "AllAnimationNames": [
         "Anim_Idle",
         "Anim_5LP_Jab4f",
@@ -4119,6 +4405,7 @@
         "Mocap_Walk_Forward",
         "Mocap_Backdash_Dodge",
         "Mocap_Block_Guard",
+        "Mocap_Crouch_Guard",
         "Mocap_Hitstun_Knockback",
         "Mocap_Super_Potrero",
         "Mocap_KO_Knockdown"
@@ -4269,6 +4556,17 @@
           "SpecialFeatures": "Full-body 60 FPS keyframe animation"
         },
         {
+          "ClipName": "Mocap_Crouch_Guard",
+          "DurationSeconds": 0.5,
+          "FPS": 60,
+          "UniformFrameStepSeconds": 0.016667,
+          "KeyframeCount": 31,
+          "ChannelCount": 13,
+          "SamplerCount": 13,
+          "Interpolation": "LINEAR",
+          "SpecialFeatures": "Full-body 60 FPS keyframe animation"
+        },
+        {
           "ClipName": "Mocap_Hitstun_Knockback",
           "DurationSeconds": 0.5,
           "FPS": 60,
@@ -4386,6 +4684,17 @@
           "FPS": 60,
           "UniformFrameStepSeconds": 0.016667,
           "KeyframeCount": 49,
+          "ChannelCount": 13,
+          "SamplerCount": 13,
+          "Interpolation": "LINEAR",
+          "SpecialFeatures": "Full-body 60 FPS keyframe animation"
+        },
+        {
+          "ClipName": "Mocap_Crouch_Guard",
+          "DurationSeconds": 0.5,
+          "FPS": 60,
+          "UniformFrameStepSeconds": 0.016667,
+          "KeyframeCount": 31,
           "ChannelCount": 13,
           "SamplerCount": 13,
           "Interpolation": "LINEAR",
@@ -4430,8 +4739,8 @@
       "FighterFile": "SK_PULGA_AR.glb",
       "FighterID": "PULGA_AR",
       "IsBoss": false,
-      "FileSizeBytes": 909128,
-      "TotalAnimationsInGLB": 16,
+      "FileSizeBytes": 918632,
+      "TotalAnimationsInGLB": 17,
       "AllAnimationNames": [
         "Anim_Idle",
         "Anim_5LP_Jab4f",
@@ -4446,6 +4755,7 @@
         "Mocap_Walk_Forward",
         "Mocap_Backdash_Dodge",
         "Mocap_Block_Guard",
+        "Mocap_Crouch_Guard",
         "Mocap_Hitstun_Knockback",
         "Mocap_Super_Potrero",
         "Mocap_KO_Knockdown"
@@ -4596,6 +4906,17 @@
           "SpecialFeatures": "Full-body 60 FPS keyframe animation"
         },
         {
+          "ClipName": "Mocap_Crouch_Guard",
+          "DurationSeconds": 0.5,
+          "FPS": 60,
+          "UniformFrameStepSeconds": 0.016667,
+          "KeyframeCount": 31,
+          "ChannelCount": 13,
+          "SamplerCount": 13,
+          "Interpolation": "LINEAR",
+          "SpecialFeatures": "Full-body 60 FPS keyframe animation"
+        },
+        {
           "ClipName": "Mocap_Hitstun_Knockback",
           "DurationSeconds": 0.5,
           "FPS": 60,
@@ -4713,6 +5034,17 @@
           "FPS": 60,
           "UniformFrameStepSeconds": 0.016667,
           "KeyframeCount": 49,
+          "ChannelCount": 13,
+          "SamplerCount": 13,
+          "Interpolation": "LINEAR",
+          "SpecialFeatures": "Full-body 60 FPS keyframe animation"
+        },
+        {
+          "ClipName": "Mocap_Crouch_Guard",
+          "DurationSeconds": 0.5,
+          "FPS": 60,
+          "UniformFrameStepSeconds": 0.016667,
+          "KeyframeCount": 31,
           "ChannelCount": 13,
           "SamplerCount": 13,
           "Interpolation": "LINEAR",
@@ -4757,8 +5089,8 @@
       "FighterFile": "SK_REY_CL.glb",
       "FighterID": "REY_CL",
       "IsBoss": false,
-      "FileSizeBytes": 905616,
-      "TotalAnimationsInGLB": 16,
+      "FileSizeBytes": 915120,
+      "TotalAnimationsInGLB": 17,
       "AllAnimationNames": [
         "Anim_Idle",
         "Anim_5LP_Jab4f",
@@ -4773,6 +5105,7 @@
         "Mocap_Walk_Forward",
         "Mocap_Backdash_Dodge",
         "Mocap_Block_Guard",
+        "Mocap_Crouch_Guard",
         "Mocap_Hitstun_Knockback",
         "Mocap_Super_Potrero",
         "Mocap_KO_Knockdown"
@@ -4923,6 +5256,17 @@
           "SpecialFeatures": "Full-body 60 FPS keyframe animation"
         },
         {
+          "ClipName": "Mocap_Crouch_Guard",
+          "DurationSeconds": 0.5,
+          "FPS": 60,
+          "UniformFrameStepSeconds": 0.016667,
+          "KeyframeCount": 31,
+          "ChannelCount": 13,
+          "SamplerCount": 13,
+          "Interpolation": "LINEAR",
+          "SpecialFeatures": "Full-body 60 FPS keyframe animation"
+        },
+        {
           "ClipName": "Mocap_Hitstun_Knockback",
           "DurationSeconds": 0.5,
           "FPS": 60,
@@ -5040,6 +5384,17 @@
           "FPS": 60,
           "UniformFrameStepSeconds": 0.016667,
           "KeyframeCount": 49,
+          "ChannelCount": 13,
+          "SamplerCount": 13,
+          "Interpolation": "LINEAR",
+          "SpecialFeatures": "Full-body 60 FPS keyframe animation"
+        },
+        {
+          "ClipName": "Mocap_Crouch_Guard",
+          "DurationSeconds": 0.5,
+          "FPS": 60,
+          "UniformFrameStepSeconds": 0.016667,
+          "KeyframeCount": 31,
           "ChannelCount": 13,
           "SamplerCount": 13,
           "Interpolation": "LINEAR",
@@ -5084,8 +5439,8 @@
       "FighterFile": "SK_SUPREME_JUDGE_BOSS.glb",
       "FighterID": "SUPREME_JUDGE_BOSS",
       "IsBoss": true,
-      "FileSizeBytes": 1025388,
-      "TotalAnimationsInGLB": 16,
+      "FileSizeBytes": 1034896,
+      "TotalAnimationsInGLB": 17,
       "AllAnimationNames": [
         "Anim_Idle",
         "Anim_5LP_Jab4f",
@@ -5100,6 +5455,7 @@
         "Mocap_Walk_Forward",
         "Mocap_Backdash_Dodge",
         "Mocap_Block_Guard",
+        "Mocap_Crouch_Guard",
         "Mocap_Hitstun_Knockback",
         "Mocap_Super_Potrero",
         "Mocap_KO_Knockdown"
@@ -5250,6 +5606,17 @@
           "SpecialFeatures": "Full-body 60 FPS keyframe animation"
         },
         {
+          "ClipName": "Mocap_Crouch_Guard",
+          "DurationSeconds": 0.5,
+          "FPS": 60,
+          "UniformFrameStepSeconds": 0.016667,
+          "KeyframeCount": 31,
+          "ChannelCount": 13,
+          "SamplerCount": 13,
+          "Interpolation": "LINEAR",
+          "SpecialFeatures": "Full-body 60 FPS keyframe animation"
+        },
+        {
           "ClipName": "Mocap_Hitstun_Knockback",
           "DurationSeconds": 0.5,
           "FPS": 60,
@@ -5367,6 +5734,17 @@
           "FPS": 60,
           "UniformFrameStepSeconds": 0.016667,
           "KeyframeCount": 49,
+          "ChannelCount": 13,
+          "SamplerCount": 13,
+          "Interpolation": "LINEAR",
+          "SpecialFeatures": "Full-body 60 FPS keyframe animation"
+        },
+        {
+          "ClipName": "Mocap_Crouch_Guard",
+          "DurationSeconds": 0.5,
+          "FPS": 60,
+          "UniformFrameStepSeconds": 0.016667,
+          "KeyframeCount": 31,
           "ChannelCount": 13,
           "SamplerCount": 13,
           "Interpolation": "LINEAR",
@@ -5411,8 +5789,8 @@
       "FighterFile": "SK_TREN_EC.glb",
       "FighterID": "TREN_EC",
       "IsBoss": false,
-      "FileSizeBytes": 921932,
-      "TotalAnimationsInGLB": 16,
+      "FileSizeBytes": 931440,
+      "TotalAnimationsInGLB": 17,
       "AllAnimationNames": [
         "Anim_Idle",
         "Anim_5LP_Jab4f",
@@ -5427,6 +5805,7 @@
         "Mocap_Walk_Forward",
         "Mocap_Backdash_Dodge",
         "Mocap_Block_Guard",
+        "Mocap_Crouch_Guard",
         "Mocap_Hitstun_Knockback",
         "Mocap_Super_Potrero",
         "Mocap_KO_Knockdown"
@@ -5577,6 +5956,17 @@
           "SpecialFeatures": "Full-body 60 FPS keyframe animation"
         },
         {
+          "ClipName": "Mocap_Crouch_Guard",
+          "DurationSeconds": 0.5,
+          "FPS": 60,
+          "UniformFrameStepSeconds": 0.016667,
+          "KeyframeCount": 31,
+          "ChannelCount": 13,
+          "SamplerCount": 13,
+          "Interpolation": "LINEAR",
+          "SpecialFeatures": "Full-body 60 FPS keyframe animation"
+        },
+        {
           "ClipName": "Mocap_Hitstun_Knockback",
           "DurationSeconds": 0.5,
           "FPS": 60,
@@ -5694,6 +6084,17 @@
           "FPS": 60,
           "UniformFrameStepSeconds": 0.016667,
           "KeyframeCount": 49,
+          "ChannelCount": 13,
+          "SamplerCount": 13,
+          "Interpolation": "LINEAR",
+          "SpecialFeatures": "Full-body 60 FPS keyframe animation"
+        },
+        {
+          "ClipName": "Mocap_Crouch_Guard",
+          "DurationSeconds": 0.5,
+          "FPS": 60,
+          "UniformFrameStepSeconds": 0.016667,
+          "KeyframeCount": 31,
           "ChannelCount": 13,
           "SamplerCount": 13,
           "Interpolation": "LINEAR",
